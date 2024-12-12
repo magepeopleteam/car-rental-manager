@@ -1,0 +1,28 @@
+.mptbm-filter-feature{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-flow: column wrap;
+    justify-content: space-around !important;
+    align-items: center !important;
+}
+
+.mptbm-filter-feature-input{
+    width: 49%;
+}
+
+.mptbm-filter-feature-input select:focus {
+  /* Add your styling here */
+  border-color: #007bff; /* Example border color */
+  outline: none; /* Remove default focus outline */
+  background-color: #fff !important;
+  /* Add any other styles you want for the focus state */
+}
+
+.geo-fence-no-transport{
+  display: none;
+}
+.mptbm_manual_start_place , .mptbm_map_end_place{
+  text-transform: capitalize;
+}
+
+
