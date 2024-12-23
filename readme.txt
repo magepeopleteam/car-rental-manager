@@ -17,7 +17,7 @@ A comprehensive taxi and chauffeur booking solution with fare calculations, inte
 
 ## Make Yourself Comfortable With:
 🧶 [View Live Taxi Booking Demo](https://taxi.mage-people.com/)
-👉 [Plugin Documentation](https://docs.mage-people.com/ecab-taxi-booking-manager/)
+👉 [Plugin Documentation](https://docs.mage-people.com/wpcarrently-car-rental-manager/)
 
 ## Taxi and Chauffeur Booking Solution that Changes the Game
 Since the taxi business has evolved in different shapes with time, online taxi booking has become increasingly popular. Ecab has taken your taxi booking hassle creating the taxi booking manager plugin solution for your WordPress website. It is powered by WooCommerce and known by WordPress users as a taxi booking manager for WooCommerce.
@@ -114,11 +114,11 @@ Understand how Google handles your data through the Maps API: [Google Privacy Po
 
 
 == Installation ==
-Download the ecab-taxi-booking-manager.zip file from the WordPress plugin repository.
+Download the wpcarrently-car-rental-manager.zip file from the WordPress plugin repository.
 Log in to your WordPress admin dashboard.
 Navigate to "Plugins" > "Add New."
 Click the "Upload Plugin" button at the top of the page.
-Choose the ecab-taxi-booking-manager.zip file and click "Install Now."
+Choose the wpcarrently-car-rental-manager.zip file and click "Install Now."
 Once installed, click "Activate" to enable the Ecab Taxi Booking Manager WordPress plugin.
 
 
@@ -137,7 +137,7 @@ You can check the demo of this plugin from here:
 [View Live PRO Version Demo For Business](https://taxi.mage-people.com/)
 
 = Q.Any Documentation? =
-A. Yes! Here is the [Online Documentation](https://docs.mage-people.com/ecab-taxi-booking-manager/).
+A. Yes! Here is the [Online Documentation](https://docs.mage-people.com/wpcarrently-car-rental-manager/).
  
 = Q.I installed correctly but 404 error what can I do?  =
 A. You need to Re-save permalink settings it will solve the 404. if still does not work that means your permalink not working, or you may have an access problem or you have a server permission problem. 

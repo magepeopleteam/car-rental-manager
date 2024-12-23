@@ -399,7 +399,7 @@ $mptbm_passengers = max($mptbm_passengers);
 				<?php if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
 				<div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
 					<div class="mptbm-filter-feature-input">
-						<span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "ecab-taxi-booking-manager"); ?></span>
+						<span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "wpcarrently-car-rental-manager"); ?></span>
                         <label>
 								<select id ="mptbm_passenger_number" class="formControl" name="mptbm_passenger_number">
 								<?php
@@ -412,7 +412,7 @@ $mptbm_passengers = max($mptbm_passengers);
 							</label>
 						</div>
 						<div class="mptbm-filter-feature-input">
-						<span><i class="fa  fa-shopping-bag _textTheme_mR_xs"></i><?php esc_html_e("Number Of Bags", "ecab-taxi-booking-manager"); ?></span>
+						<span><i class="fa  fa-shopping-bag _textTheme_mR_xs"></i><?php esc_html_e("Number Of Bags", "wpcarrently-car-rental-manager"); ?></span>
                         <label>
 								<select id ="mptbm_shopping_number" class="formControl" name="mptbm_shopping_number">
                                     <?php
@@ -447,7 +447,7 @@ if ($all_posts->found_posts > 0) {
 } else {
 ?>
 						<div class="_dLayout_mT_bgWarning">
-							<h3><?php esc_html_e("No Transport Available !", "ecab-taxi-booking-manager"); ?></h3>
+							<h3><?php esc_html_e("No Transport Available !", "wpcarrently-car-rental-manager"); ?></h3>
 						</div>
 					<?php
 }
@@ -469,7 +469,7 @@ if ($all_posts->found_posts > 0) {
 						});
 					</script>
 					<div class="_dLayout_mT_bgWarning geo-fence-no-transport">
-						<h3><?php esc_html_e("No Transport Available !", "ecab-taxi-booking-manager"); ?></h3>
+						<h3><?php esc_html_e("No Transport Available !", "wpcarrently-car-rental-manager"); ?></h3>
 					</div>
 					<div class="mptbm_extra_service"></div>
 				</div>

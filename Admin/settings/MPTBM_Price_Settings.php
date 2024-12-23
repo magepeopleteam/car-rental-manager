@@ -20,49 +20,39 @@ if (!class_exists('MPTBM_Price_Settings')) {
 			$manual_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
 			$terms_location_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
 			$location_terms = get_terms(array('taxonomy' => 'locations', 'hide_empty' => false));
-			
-			$distance_selected = $price_based == 'distance' ? 'selected' : '';
-			$distance_selected = $display_map == 'disable' ? 'disabled' : $distance_selected;
-			
-			$duration_selected = $price_based == 'duration' ? 'selected' : '';
-			$duration_selected = $display_map == 'disable' ? 'disabled' : $duration_selected;
-			$distance_duration_selected = $price_based == 'distance_duration' ? 'selected' : '';
-			$distance_duration_selected = $display_map == 'disable' ? 'disabled' : $distance_duration_selected;
-			$fixed_hourly_selected = $price_based == 'fixed_hourly' ? 'selected' : '';
-			$fixed_hourly_selected = $display_map == 'disable' ? 'disabled' : $fixed_hourly_selected;
 
 ?>
 			<div class="tabsItem" data-tabs="#mptbm_settings_pricing">
-				<h2><?php esc_html_e('Price Settings', 'ecab-taxi-booking-manager'); ?></h2>
-				<p><?php esc_html_e('here you can set initial price, Waiting Time price, price calculation model', 'ecab-taxi-booking-manager'); ?></p>
+				<h2><?php esc_html_e('Price Settings', 'wpcarrently-car-rental-manager'); ?></h2>
+				<p><?php esc_html_e('here you can set initial price, Waiting Time price, price calculation model', 'wpcarrently-car-rental-manager'); ?></p>
 
 				<section class="bg-light" >
-					<h6><?php esc_html_e('Price Settings', 'ecab-taxi-booking-manager'); ?></h6>
-					<span><?php esc_html_e('Here you can set price', 'ecab-taxi-booking-manager'); ?></span>
+					<h6><?php esc_html_e('Price Settings', 'wpcarrently-car-rental-manager'); ?></h6>
+					<span><?php esc_html_e('Here you can set price', 'wpcarrently-car-rental-manager'); ?></span>
 				</section>
 				<section>
 					<label class="label">
 						<div>
-							<h6><?php esc_html_e('Price/Day', 'ecab-taxi-booking-manager'); ?></h6>
+							<h6><?php esc_html_e('Price/Day', 'wpcarrently-car-rental-manager'); ?></h6>
 							<span class="desc"><?php MPTBM_Settings::info_text('mptbm_day_price'); ?></span>
 						</div>
-						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'ecab-taxi-booking-manager'); ?>" />
+						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'wpcarrently-car-rental-manager'); ?>" />
 					</label>
 				</section>
 				
 				<!-- Manual price -->
 				<section class="bg-light" style="margin-top: 20px;" data-collapse="#mp_manual">
-					<h6><?php esc_html_e('Manual Price Settings', 'ecab-taxi-booking-manager'); ?></h6>
-					<span><?php esc_html_e('Manual Price Settings', 'ecab-taxi-booking-manager'); ?></span>
+					<h6><?php esc_html_e('Manual Price Settings', 'wpcarrently-car-rental-manager'); ?></h6>
+					<span><?php esc_html_e('Manual Price Settings', 'wpcarrently-car-rental-manager'); ?></span>
 				</section>
 				<section>
 					<div class="mp_settings_area">
 						<table>
 							<thead>
 								<tr>
-									<th><?php esc_html_e('Start Location', 'ecab-taxi-booking-manager'); ?><span class="textRequired">&nbsp;*</span></th>
-									<th><?php esc_html_e('End Location', 'ecab-taxi-booking-manager'); ?><span class="textRequired">&nbsp;*</span></th>
-									<th class="_w_100"><?php esc_html_e('Action', 'ecab-taxi-booking-manager'); ?></th>
+									<th><?php esc_html_e('Start Location', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></th>
+									<th><?php esc_html_e('End Location', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></th>
+									<th class="_w_100"><?php esc_html_e('Action', 'wpcarrently-car-rental-manager'); ?></th>
 								</tr>
 							</thead>
 							<tbody class="mp_sortable_area mp_item_insert">
@@ -83,7 +73,7 @@ if (!class_exists('MPTBM_Price_Settings')) {
 							</tbody>
 						</table>
 						<div class="my-2"></div>
-						<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Item', 'ecab-taxi-booking-manager')); ?>
+						<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Item', 'wpcarrently-car-rental-manager')); ?>
 						<?php $this->hidden_manual_price_item($location_terms); ?>
 					</div>
 				</section>
@@ -114,12 +104,12 @@ if (!class_exists('MPTBM_Price_Settings')) {
 			<tr class="mp_remove_area">
 				<td>
 					<label>
-						<input type="text" name="mptbm_manual_start_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($start_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'ecab-taxi-booking-manager'); ?>" />
+						<input type="text" name="mptbm_manual_start_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($start_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'wpcarrently-car-rental-manager'); ?>" />
 					</label>
 				</td>
 				<td>
 					<label>
-						<input type="text" name="mptbm_manual_end_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($end_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'ecab-taxi-booking-manager'); ?>" />
+						<input type="text" name="mptbm_manual_end_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($end_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'wpcarrently-car-rental-manager'); ?>" />
 					</label>
 				</td>
 				
@@ -135,7 +125,6 @@ if (!class_exists('MPTBM_Price_Settings')) {
 			foreach ($terms_location_prices as $terms_location_price) {
 				$start_location = $terms_location_price['start_location'];
 				$end_location = $terms_location_price['end_location'];
-				$terms_price = $terms_location_price['price'];
 			?>
 
 

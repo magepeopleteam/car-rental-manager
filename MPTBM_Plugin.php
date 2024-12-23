@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: E-cab taxi booking manager
+ * Plugin Name: WpCarRently car rental manager
  * Plugin URI: http://mage-people.com
- * Description: A Complete Transportation Solution for WordPress by MagePeople.
+ * Description: A Complete Car rental Solution for WordPress by MagePeople.
  * Version: 1.1.6
  * Author: MagePeople Team
  * Author URI: http://www.mage-people.com/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: ecab-taxi-booking-manager
+ * Text Domain: wpcarrently-car-rental-manager
  * Domain Path: /languages/
  */
 if (!defined('ABSPATH')) {
@@ -81,16 +81,7 @@ if (!class_exists('MPTBM_Plugin')) {
 
         public static function create_pages(): void
         {
-            if (!MP_Global_Function::get_page_by_slug('transport_booking')) {
-                $transport_booking = array(
-                    'post_type' => 'page',
-                    'post_name' => 'transport_booking',
-                    'post_title' => 'Transport Booking',
-                    'post_content' => '[mptbm_booking]',
-                    'post_status' => 'publish',
-                );
-                wp_insert_post($transport_booking);
-            }
+            
             if (!MP_Global_Function::get_page_by_slug('transport_booking_manual')) {
                 $transport_booking_manual = array(
                     'post_type' => 'page',
@@ -101,16 +92,7 @@ if (!class_exists('MPTBM_Plugin')) {
                 );
                 wp_insert_post($transport_booking_manual);
             }
-            if (!MP_Global_Function::get_page_by_slug('transport_booking_fixed_hourly')) {
-                $transport_booking_fixed_hourly = array(
-                    'post_type' => 'page',
-                    'post_name' => 'transport_booking_fixed_hourly',
-                    'post_title' => 'Transport Booking Fixed Hourly',
-                    'post_content' => '[mptbm_booking price_based="fixed_hourly"]',
-                    'post_status' => 'publish',
-                );
-                wp_insert_post($transport_booking_fixed_hourly);
-            }
+            
             if (!MP_Global_Function::get_page_by_slug('transport-result')) {
                 $transport_result = array(
                     'post_type' => 'page',

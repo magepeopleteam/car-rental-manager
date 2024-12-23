@@ -21,7 +21,7 @@ if (!class_exists('MPTBM_Dependencies')) {
         public function language_load(): void
         {
             $plugin_dir = basename(dirname(__DIR__)) . "/languages/";
-            load_plugin_textdomain('ecab-taxi-booking-manager', false, $plugin_dir);
+            load_plugin_textdomain('wpcarrently-car-rental-manager', false, $plugin_dir);
         }
         private function load_file(): void
         {
@@ -33,14 +33,7 @@ if (!class_exists('MPTBM_Dependencies')) {
         }
         public function global_enqueue()
         {
-            $api_key = MP_Global_Function::get_settings('mptbm_map_api_settings', 'gmap_api_key');
-            if ($api_key) {
-                wp_enqueue_script('mptbm_map_api', 'https://maps.googleapis.com/maps/api/js?libraries=places,drawing&language=en&v=weekly&key=' . $api_key, array(), null, true);
-                wp_enqueue_script('mptbm_geoLib', MPTBM_PLUGIN_URL . '/assets/admin/geolib.js', array(), null, true);
-                wp_enqueue_script('mptbm_admin_map', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_map.js', array('mptbm_map_api'), time(), true);
-            } else {
-                add_action('admin_notices', [$this, 'map_api_not_active']);
-            }
+             
             do_action('add_mptbm_common_script');
         }
 
@@ -87,23 +80,7 @@ if (!class_exists('MPTBM_Dependencies')) {
             </script>
             <?php
         }
-        public function map_api_not_active()
-        {
-            $display_map = MP_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
-            if ($display_map == 'enable') {
-                $gm_api_url = admin_url('edit.php?post_type=mptbm_rent&page=mptbm_settings_page');
-                $label = MPTBM_Function::get_name();
-            ?>
-                <div class="error" style="background:red; color:#fff;">
-                    <p>
-                        <?php esc_html_e('You Must Add Google Map Api key for E-cab taxi booking manager, Because It is dependent on Google Map. Please enter your Google Maps API key in Plugin Options.', 'ecab-taxi-booking-manager'); ?>
-                        <strong style="font-size: 17px;"><?php echo esc_html($label) . '>' . esc_html($label) . ' ' . esc_html__('Settings>Map Api Settings', 'ecab-taxi-booking-manager'); ?></strong>
-                        <a class="btn button" href="<?php echo esc_attr($gm_api_url); ?>" target="_blank"><?php esc_html_e('Click Here to get google api key', 'ecab-taxi-booking-manager'); ?></a>
-                    </p>
-                </div>
-<?php
-            }
-        }
+        
     }
     new MPTBM_Dependencies();
 }

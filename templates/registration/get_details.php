@@ -116,8 +116,8 @@ if (sizeof($all_dates) > 0) {
 				<div class="inputList">
 					<label class="fdColumn">
 						<input type="hidden" id="mptbm_map_start_date" value="" />
-						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Date', 'ecab-taxi-booking-manager'); ?></span>
-						<input type="text" id="mptbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'ecab-taxi-booking-manager'); ?>" value="" readonly />
+						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Date', 'wpcarrently-car-rental-manager'); ?></span>
+						<input type="text" id="mptbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
 						<span class="far fa-calendar-alt mptbm_left_icon allCenter"></span>
 					</label>
 				</div>
@@ -125,8 +125,8 @@ if (sizeof($all_dates) > 0) {
 				<div class="inputList mp_input_select">
 					<input type="hidden" id="mptbm_map_start_time" value="" />
 					<label class="fdColumn">
-						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Pickup Time', 'ecab-taxi-booking-manager'); ?></span>
-						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'ecab-taxi-booking-manager'); ?>" value="" readonly />
+						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Pickup Time', 'wpcarrently-car-rental-manager'); ?></span>
+						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
 						<span class="far fa-clock mptbm_left_icon allCenter"></span>
 					</label>
 
@@ -173,12 +173,12 @@ if (sizeof($all_dates) > 0) {
 				</div>
 				<div class="inputList">
 					<label class="fdColumn ">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'ecab-taxi-booking-manager'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'wpcarrently-car-rental-manager'); ?></span>
 						<?php if ($price_based == 'manual') {
 						?>
 							<?php $all_start_locations = MPTBM_Function::get_all_start_location(); ?>
 							<select id="mptbm_manual_start_place" class="mptbm_manual_start_place formControl">
-								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'ecab-taxi-booking-manager'); ?></option>
+								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'wpcarrently-car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
 										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
@@ -186,35 +186,35 @@ if (sizeof($all_dates) > 0) {
 								<?php } ?>
 							</select>
 						<?php } else { ?>
-							<input type="text" id="mptbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'ecab-taxi-booking-manager'); ?>" value="" />
+							<input type="text" id="mptbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'wpcarrently-car-rental-manager'); ?>" value="" />
 						<?php } ?>
 					</label>
 				</div>
 				<?php
 				if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'ecab-taxi-booking-manager'); ?></a>
-					<?php esc_html_e('If you are not able to find your desired location', 'ecab-taxi-booking-manager'); ?>
+					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'wpcarrently-car-rental-manager'); ?></a>
+					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently-car-rental-manager'); ?>
 				<?php
 				}
 				?>
 				<div class="inputList">
 					<label class="fdColumn mptbm_manual_end_place">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Drop-Off Location', 'ecab-taxi-booking-manager'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Drop-Off Location', 'wpcarrently-car-rental-manager'); ?></span>
 						<?php if ($price_based == 'manual') { ?>
 							<select class="formControl mptbm_map_end_place" id="mptbm_manual_end_place">
-								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Destination Location', 'ecab-taxi-booking-manager'); ?></option>
+								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Destination Location', 'wpcarrently-car-rental-manager'); ?></option>
 							</select>
 						<?php } else { ?>
-							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Drop-Off Location', 'ecab-taxi-booking-manager'); ?>" value="" />
+							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Drop-Off Location', 'wpcarrently-car-rental-manager'); ?>" value="" />
 						<?php } ?>
 					</label>
 				</div>
 				<?php
 				if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'ecab-taxi-booking-manager'); ?></a>
-					<?php esc_html_e('If you are not able to find your desired location', 'ecab-taxi-booking-manager'); ?>
+					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'wpcarrently-car-rental-manager'); ?></a>
+					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently-car-rental-manager'); ?>
 				<?php
 				}
 				?>
@@ -223,16 +223,16 @@ if (sizeof($all_dates) > 0) {
 				<div class="inputList" >
 					<label class="fdColumn">
 						<input type="hidden" id="mptbm_map_return_date" value="" />
-						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Date', 'ecab-taxi-booking-manager'); ?></span>
-						<input type="text" id="mptbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'ecab-taxi-booking-manager'); ?>" value="" readonly />
+						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Date', 'wpcarrently-car-rental-manager'); ?></span>
+						<input type="text" id="mptbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
 						<span class="far fa-calendar-alt mptbm_left_icon allCenter"></span>
 					</label>
 				</div>
 				<div class="inputList mp_input_select">
 					<input type="hidden" id="mptbm_map_return_time" value="" />
 					<label class="fdColumn">
-						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Return Time', 'ecab-taxi-booking-manager'); ?></span>
-						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'ecab-taxi-booking-manager'); ?>" value="" readonly />
+						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Return Time', 'wpcarrently-car-rental-manager'); ?></span>
+						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
 						<span class="far fa-clock mptbm_left_icon allCenter"></span>
 					</label>
 					<ul class="return_time_list-no-dsiplay" style="display:none">
@@ -280,7 +280,7 @@ if (sizeof($all_dates) > 0) {
 					<span>&nbsp;</span>
 					<button type="button" class="_themeButton_fullWidth" id="mptbm_get_vehicle">
 						<span class="fas fa-search-location mR_xs"></span>
-						<?php esc_html_e('Search', 'ecab-taxi-booking-manager'); ?>
+						<?php esc_html_e('Search', 'wpcarrently-car-rental-manager'); ?>
 					</button>
 				</div>
 				<?php if ($form_style != 'horizontal') { ?>
@@ -308,11 +308,11 @@ if (sizeof($all_dates) > 0) {
 							<span class="fas fa-route textTheme"></span>
 						</h1>
 						<div class="fdColumn">
-							<h6><?php esc_html_e('TOTAL DISTANCE', 'ecab-taxi-booking-manager'); ?></h6>
+							<h6><?php esc_html_e('TOTAL DISTANCE', 'wpcarrently-car-rental-manager'); ?></h6>
 							<?php if ($km_or_mile != 'km') { ?>
-								<strong class="mptbm_total_distance"><?php esc_html_e(' 0 MILE', 'ecab-taxi-booking-manager'); ?></strong>
+								<strong class="mptbm_total_distance"><?php esc_html_e(' 0 MILE', 'wpcarrently-car-rental-manager'); ?></strong>
 							<?php } else { ?>
-								<strong class="mptbm_total_distance"><?php esc_html_e(' 0 KM', 'ecab-taxi-booking-manager'); ?></strong>
+								<strong class="mptbm_total_distance"><?php esc_html_e(' 0 KM', 'wpcarrently-car-rental-manager'); ?></strong>
 							<?php } ?>
 						</div>
 					</div>
@@ -321,8 +321,8 @@ if (sizeof($all_dates) > 0) {
 							<span class="fas fa-clock textTheme"></span>
 						</h1>
 						<div class="fdColumn">
-							<h6><?php esc_html_e('TOTAL TIME', 'ecab-taxi-booking-manager'); ?></h6>
-							<strong class="mptbm_total_time"><?php esc_html_e('0 Hour', 'ecab-taxi-booking-manager'); ?></strong>
+							<h6><?php esc_html_e('TOTAL TIME', 'wpcarrently-car-rental-manager'); ?></h6>
+							<strong class="mptbm_total_time"><?php esc_html_e('0 Hour', 'wpcarrently-car-rental-manager'); ?></strong>
 						</div>
 					</div>
 				</div>
@@ -333,11 +333,11 @@ if (sizeof($all_dates) > 0) {
 		<div class="divider"></div>
 		<div class="justifyBetween">
 			<button type="button" class="mpBtn nextTab_prev">
-				<span>&larr; &nbsp;<?php esc_html_e('Previous', 'ecab-taxi-booking-manager'); ?></span>
+				<span>&larr; &nbsp;<?php esc_html_e('Previous', 'wpcarrently-car-rental-manager'); ?></span>
 			</button>
 			<div></div>
 			<button type="button" class="_themeButton_min_200 nextTab_next">
-				<span><?php esc_html_e('Next', 'ecab-taxi-booking-manager'); ?>&nbsp; &rarr;</span>
+				<span><?php esc_html_e('Next', 'wpcarrently-car-rental-manager'); ?>&nbsp; &rarr;</span>
 			</button>
 		</div>
 	</div>
@@ -352,7 +352,7 @@ if (sizeof($all_dates) > 0) {
 
 			// Translators comment to explain the placeholder
 			/* translators: %s: transportation label */
-			$translated_string = __("No %s configured for this price setting", 'ecab-taxi-booking-manager');
+			$translated_string = __("No %s configured for this price setting", 'wpcarrently-car-rental-manager');
 
 			$formatted_string = sprintf($translated_string, $transportaion_label);
 			echo esc_html($formatted_string);

@@ -61,71 +61,7 @@ if (!class_exists('MPTBM_CPT')) {
 			return $columns;
 		}
 
-		public function update_service_status()
-		{
-			// Debug the $_POST data
-			if (!isset($_POST['post_id']) || !isset($_POST['mptbm_service_status'])) {
-				wp_send_json_error(__('Post data is missing', 'mptbm_plugin_pro'));
-				wp_die();
-			}
-
-			// Validate the post ID and service status
-			$post_id = intval($_POST['post_id']);
-			$meta_value = sanitize_text_field($_POST['mptbm_service_status']);
-
-			if (!get_post($post_id)) {
-				wp_send_json_error(__('Invalid post ID', 'mptbm_plugin_pro'));
-				wp_die();
-			}
-
-			// Debug the current post meta before updating
-			$meta_key = 'mptbm_service_status';
-			$prev_value = get_post_meta($post_id, $meta_key, true);
-			$reference_id = get_post_meta($post_id, 'mptbm_pin', true);
-			$service_status_default = MP_Global_Function::get_settings('mptbm_driver_settings', 'default_ride_status', 'Pending');
-
-			if (empty($prev_value)) {
-				$prev_value = $service_status_default;
-			}
-
-			// Debug previous and new values
-			error_log("Previous value: " . $prev_value);
-			error_log("New value: " . $meta_value);
-
-			// Check if meta is being updated
-			if (update_post_meta($post_id, $meta_key, $meta_value)) {
-				error_log("Meta updated successfully");
-
-				// Continue with the email logic
-				$from_email = get_option('woocommerce_email_from_address');
-				$from_name = get_option('woocommerce_email_from_name');
-				$driver_admin_email = MP_Global_Function::get_settings('mptbm_driver_settings', 'driver_admin_email');
-
-				$placeholders = [
-					'{order_reference}' => $reference_id,
-					'{service_status}' => $meta_value,
-					'{old_service_status}' => $prev_value,
-				];
-
-				$subject = MP_Global_Function::get_settings('mptbm_driver_settings', 'status_change_subject', 'Order status has been changed');
-				$content = MP_Global_Function::get_settings('mptbm_driver_settings', 'service_status_content', 'Order status has been changed');
-				$content = str_replace(array_keys($placeholders), array_values($placeholders), $content);
-
-				$headers = array(
-					'Content-Type: text/html; charset=UTF-8',
-					sprintf("From: %s <%s>", $from_name, $from_email),
-				);
-
-				// Send the email
-				wp_mail($driver_admin_email, $subject, $content, $headers);
-				wp_send_json_success(__('success', 'mptbm_plugin_pro'));
-			} else {
-				error_log("Meta update failed or value did not change");
-				wp_send_json_error(__('Meta update failed', 'mptbm_plugin_pro'));
-			}
-
-			wp_die();
-		}
+		
 
 		public function mptbm_rent_sortable_columns($columns)
 		{
@@ -149,29 +85,29 @@ if (!class_exists('MPTBM_CPT')) {
 				'singular_name' => $label,
 				'menu_name' => $label,
 				'name_admin_bar' => $label,
-				'archives' => $label . ' ' . esc_html__(' List', 'ecab-taxi-booking-manager'),
-				'attributes' => $label . ' ' . esc_html__(' List', 'ecab-taxi-booking-manager'),
-				'parent_item_colon' => $label . ' ' . esc_html__(' Item:', 'ecab-taxi-booking-manager'),
-				'all_items' => esc_html__('All ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'add_new_item' => esc_html__('Add New ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'add_new' => esc_html__('Add New ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'new_item' => esc_html__('New ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'edit_item' => esc_html__('Edit ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'update_item' => esc_html__('Update ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'view_item' => esc_html__('View ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'view_items' => esc_html__('View ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'search_items' => esc_html__('Search ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'not_found' => $label . ' ' . esc_html__(' Not found', 'ecab-taxi-booking-manager'),
-				'not_found_in_trash' => $label . ' ' . esc_html__(' Not found in Trash', 'ecab-taxi-booking-manager'),
-				'featured_image' => $label . ' ' . esc_html__(' Feature Image', 'ecab-taxi-booking-manager'),
-				'set_featured_image' => esc_html__('Set ', 'ecab-taxi-booking-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'ecab-taxi-booking-manager'),
-				'remove_featured_image' => esc_html__('Remove ', 'ecab-taxi-booking-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'ecab-taxi-booking-manager'),
-				'use_featured_image' => esc_html__('Use as featured image', 'ecab-taxi-booking-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'ecab-taxi-booking-manager'),
-				'insert_into_item' => esc_html__('Insert into ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'uploaded_to_this_item' => esc_html__('Uploaded to this ', 'ecab-taxi-booking-manager') . ' ' . $label,
-				'items_list' => $label . ' ' . esc_html__(' list', 'ecab-taxi-booking-manager'),
-				'items_list_navigation' => $label . ' ' . esc_html__(' list navigation', 'ecab-taxi-booking-manager'),
-				'filter_items_list' => esc_html__('Filter ', 'ecab-taxi-booking-manager') . ' ' . $label . ' ' . esc_html__(' list', 'ecab-taxi-booking-manager')
+				'archives' => $label . ' ' . esc_html__(' List', 'wpcarrently-car-rental-manager'),
+				'attributes' => $label . ' ' . esc_html__(' List', 'wpcarrently-car-rental-manager'),
+				'parent_item_colon' => $label . ' ' . esc_html__(' Item:', 'wpcarrently-car-rental-manager'),
+				'all_items' => esc_html__('All ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'add_new_item' => esc_html__('Add New ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'add_new' => esc_html__('Add New ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'new_item' => esc_html__('New ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'edit_item' => esc_html__('Edit ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'update_item' => esc_html__('Update ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'view_item' => esc_html__('View ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'view_items' => esc_html__('View ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'search_items' => esc_html__('Search ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'not_found' => $label . ' ' . esc_html__(' Not found', 'wpcarrently-car-rental-manager'),
+				'not_found_in_trash' => $label . ' ' . esc_html__(' Not found in Trash', 'wpcarrently-car-rental-manager'),
+				'featured_image' => $label . ' ' . esc_html__(' Feature Image', 'wpcarrently-car-rental-manager'),
+				'set_featured_image' => esc_html__('Set ', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently-car-rental-manager'),
+				'remove_featured_image' => esc_html__('Remove ', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently-car-rental-manager'),
+				'use_featured_image' => esc_html__('Use as featured image', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently-car-rental-manager'),
+				'insert_into_item' => esc_html__('Insert into ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'uploaded_to_this_item' => esc_html__('Uploaded to this ', 'wpcarrently-car-rental-manager') . ' ' . $label,
+				'items_list' => $label . ' ' . esc_html__(' list', 'wpcarrently-car-rental-manager'),
+				'items_list_navigation' => $label . ' ' . esc_html__(' list navigation', 'wpcarrently-car-rental-manager'),
+				'filter_items_list' => esc_html__('Filter ', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' list', 'wpcarrently-car-rental-manager')
 			];
 			$args = [
 				'public' => false,
@@ -190,7 +126,7 @@ if (!class_exists('MPTBM_CPT')) {
 			register_post_type($cpt, $args);
 			$ex_args = array(
 				'public' => false,
-				'label' => esc_html__('Extra Services', 'ecab-taxi-booking-manager'),
+				'label' => esc_html__('Extra Services', 'wpcarrently-car-rental-manager'),
 				'supports' => array('title'),
 				'show_in_menu' => 'edit.php?post_type=' . $cpt,
 				'capability_type' => 'post',
@@ -204,7 +140,7 @@ if (!class_exists('MPTBM_CPT')) {
 
 			$dx_args = array(
 				'public' => false,
-				'label' => esc_html__('Operation Areas', 'ecab-taxi-booking-manager'),
+				'label' => esc_html__('Operation Areas', 'wpcarrently-car-rental-manager'),
 				'supports' => array('title'),
 				'show_in_menu' => 'edit.php?post_type=' . $cpt,
 				'capability_type' => 'post',
@@ -217,16 +153,16 @@ if (!class_exists('MPTBM_CPT')) {
 			);
 
 			$taxonomy_labels = array(
-				'name' => esc_html__('Locations', 'ecab-taxi-booking-manager'),
-				'singular_name' => esc_html__('Location', 'ecab-taxi-booking-manager'),
-				'menu_name' => esc_html__('Locations', 'ecab-taxi-booking-manager'),
-				'all_items' => esc_html__('All Locations', 'ecab-taxi-booking-manager'),
-				'edit_item' => esc_html__('Edit Location', 'ecab-taxi-booking-manager'),
-				'view_item' => esc_html__('View Location', 'ecab-taxi-booking-manager'),
-				'update_item' => esc_html__('Update Location', 'ecab-taxi-booking-manager'),
-				'add_new_item' => esc_html__('Add New Location', 'ecab-taxi-booking-manager'),
-				'new_item_name' => esc_html__('New Location Name', 'ecab-taxi-booking-manager'),
-				'search_items' => esc_html__('Search Locations', 'ecab-taxi-booking-manager'),
+				'name' => esc_html__('Locations', 'wpcarrently-car-rental-manager'),
+				'singular_name' => esc_html__('Location', 'wpcarrently-car-rental-manager'),
+				'menu_name' => esc_html__('Locations', 'wpcarrently-car-rental-manager'),
+				'all_items' => esc_html__('All Locations', 'wpcarrently-car-rental-manager'),
+				'edit_item' => esc_html__('Edit Location', 'wpcarrently-car-rental-manager'),
+				'view_item' => esc_html__('View Location', 'wpcarrently-car-rental-manager'),
+				'update_item' => esc_html__('Update Location', 'wpcarrently-car-rental-manager'),
+				'add_new_item' => esc_html__('Add New Location', 'wpcarrently-car-rental-manager'),
+				'new_item_name' => esc_html__('New Location Name', 'wpcarrently-car-rental-manager'),
+				'search_items' => esc_html__('Search Locations', 'wpcarrently-car-rental-manager'),
 			);
 
 			$taxonomy_args = array(
@@ -239,38 +175,7 @@ if (!class_exists('MPTBM_CPT')) {
 				'meta_box_cb' => false,
 			);
 
-			$service_status_labels = array(
-				'name'                       => _x('Service Status', 'taxonomy general name', 'mptbm_plugin_pro'),
-				'singular_name'              => _x('Service Status', 'taxonomy singular name', 'mptbm_plugin_pro'),
-				'search_items'               => __('Search Service Status', 'mptbm_plugin_pro'),
-				'popular_items'              => __('Popular Service Status', 'mptbm_plugin_pro'),
-				'all_items'                  => __('All Service Status', 'mptbm_plugin_pro'),
-				'parent_item'                => __('Parent Service Status', 'mptbm_plugin_pro'),
-				'parent_item_colon'          => __('Parent Service Status:', 'mptbm_plugin_pro'),
-				'edit_item'                  => __('Edit Service Status', 'mptbm_plugin_pro'),
-				'update_item'                => __('Update Service Status', 'mptbm_plugin_pro'),
-				'add_new_item'               => __('Add New Service Status', 'mptbm_plugin_pro'),
-				'new_item_name'              => __('New Service Status Name', 'mptbm_plugin_pro'),
-				'separate_items_with_commas' => __('Separate service Status with commas', 'mptbm_plugin_pro'),
-				'add_or_remove_items'        => __('Add or remove service Status', 'mptbm_plugin_pro'),
-				'choose_from_most_used'      => __('Choose from the most used service Status', 'mptbm_plugin_pro'),
-				'not_found'                  => __('No service Status found.', 'mptbm_plugin_pro'),
-				'menu_name'                  => __('Service Status', 'mptbm_plugin_pro'),
-			);
-
-			$service_status_args = array(
-				'hierarchical'          => false,
-				'labels'                => $service_status_labels,
-				'show_ui'               => true, // Set to false to hide in post sidebar
-				'show_admin_column'     => false, // Set to false to hide in admin columns
-				'query_var'             => true,
-				'rewrite'               => array('slug' => 'service-status'),
-				'show_in_rest'          => false, // Set to false to hide from the block editor (Gutenberg)
-				'show_in_nav_menus'     => false, // Set to false to hide from navigation menus
-				'meta_box_cb' => false,
-			);
-
-			register_taxonomy('mptbm_service_status', $cpt, $service_status_args);
+			
 			register_taxonomy('locations', $cpt, $taxonomy_args);
 			register_post_type('mptbm_extra_services', $ex_args);
 			if (class_exists('MPTBM_Plugin_Pro')) {

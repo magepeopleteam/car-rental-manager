@@ -26,7 +26,7 @@
 				(
 					"billing" => array(
 						"billing_first_name" => array(
-							"label" => __("First name",'ecab-taxi-booking-manager'),
+							"label" => __("First name",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-first"
@@ -35,7 +35,7 @@
 							"priority" => "10",
 						),
 						"billing_last_name" => array(
-							"label" => __("Last name",'ecab-taxi-booking-manager'),
+							"label" => __("Last name",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-last"
@@ -44,7 +44,7 @@
 							"priority" => "20",
 						),
 						"billing_company" => array(
-							"label" => __("Company name",'ecab-taxi-booking-manager'),
+							"label" => __("Company name",'wpcarrently-car-rental-manager'),
 							"class" => array(
 								"0" => "form-row-wide",
 							),
@@ -54,7 +54,7 @@
 						),
 						"billing_country" => array(
 							"type" => "country",
-							"label" => __("Country / Region",'ecab-taxi-booking-manager'),
+							"label" => __("Country / Region",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -65,8 +65,8 @@
 							"priority" => "40",
 						),
 						"billing_address_1" => array(
-							"label" => __("Street address",'ecab-taxi-booking-manager'),
-							"placeholder" => __("House number and street name",'ecab-taxi-booking-manager'),
+							"label" => __("Street address",'wpcarrently-car-rental-manager'),
+							"placeholder" => __("House number and street name",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -76,11 +76,11 @@
 							"priority" => "50"
 						),
 						"billing_address_2" => array(
-							"label" => __("Apartment, suite, unit, etc.",'ecab-taxi-booking-manager'),
+							"label" => __("Apartment, suite, unit, etc.",'wpcarrently-car-rental-manager'),
 							"label_class" => array(
 								"0" => "screen-reader-text",
 							),
-							"placeholder" => __("Apartment, suite, unit, etc. (optional)",'ecab-taxi-booking-manager'),
+							"placeholder" => __("Apartment, suite, unit, etc. (optional)",'wpcarrently-car-rental-manager'),
 							"class" => array(
 								"0" => "form-row-wide",
 								"1" => "address-field"
@@ -90,7 +90,7 @@
 							"required" => "",
 						),
 						"billing_city" => array(
-							"label" => __("Town / City",'ecab-taxi-booking-manager'),
+							"label" => __("Town / City",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -101,7 +101,7 @@
 						),
 						"billing_state" => array(
 							"type" => "state",
-							"label" => __("State / County",'ecab-taxi-booking-manager'),
+							"label" => __("State / County",'wpcarrently-car-rental-manager'),
 							"required" => "",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -116,7 +116,7 @@
 							"country" => "AF"
 						),
 						"billing_postcode" => array(
-							"label" => __("Postcode / ZIP",'ecab-taxi-booking-manager'),
+							"label" => __("Postcode / ZIP",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -129,7 +129,7 @@
 							"priority" => "90"
 						),
 						"billing_phone" => array(
-							"label" => __("Phone",'ecab-taxi-booking-manager'),
+							"label" => __("Phone",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"type" => "tel",
 							"class" => array(
@@ -142,7 +142,7 @@
 							"priority" => "100"
 						),
 						'billing_email' => array(
-							"label" => __("Email address",'ecab-taxi-booking-manager'),
+							"label" => __("Email address",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"type" => "email",
 							"class" => array(
@@ -157,7 +157,7 @@
 					),
 					'shipping' => array(
 						'shipping_first_name' => array(
-							"label" => __("First name",'ecab-taxi-booking-manager'),
+							"label" => __("First name",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-first",
@@ -166,7 +166,7 @@
 							"priority" => "10",
 						),
 						"shipping_last_name" => array(
-							"label" => __("Last name",'ecab-taxi-booking-manager'),
+							"label" => __("Last name",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-last",
@@ -175,7 +175,7 @@
 							"priority" => "20",
 						),
 						"shipping_company" => array(
-							"label" => __("Company name",'ecab-taxi-booking-manager'),
+							"label" => __("Company name",'wpcarrently-car-rental-manager'),
 							"class" => array(
 								"0" => "form-row-wide",
 							),
@@ -185,7 +185,7 @@
 						),
 						"shipping_country" => array(
 							"type" => "country",
-							"label" => __("Country / Region",'ecab-taxi-booking-manager'),
+							"label" => __("Country / Region",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -196,8 +196,8 @@
 							"priority" => "40",
 						),
 						"shipping_address_1" => array(
-							"label" => __("Street address",'ecab-taxi-booking-manager'),
-							"placeholder" =>__( "House number and street name",'ecab-taxi-booking-manager'),
+							"label" => __("Street address",'wpcarrently-car-rental-manager'),
+							"placeholder" =>__( "House number and street name",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -207,11 +207,11 @@
 							"priority" => "50",
 						),
 						"shipping_address_2" => array(
-							"label" => __("Apartment, suite, unit, etc.",'ecab-taxi-booking-manager'),
+							"label" => __("Apartment, suite, unit, etc.",'wpcarrently-car-rental-manager'),
 							"label_class" => array(
 								"0" => "screen-reader-text",
 							),
-							"placeholder" => __("Apartment, suite, unit, etc. (optional)",'ecab-taxi-booking-manager'),
+							"placeholder" => __("Apartment, suite, unit, etc. (optional)",'wpcarrently-car-rental-manager'),
 							"class" => array(
 								"0" => "form-row-wide",
 								"1" => "address-field",
@@ -221,7 +221,7 @@
 							"required" => "",
 						),
 						"shipping_city" => array(
-							"label" => __("Town / City",'ecab-taxi-booking-manager'),
+							"label" => __("Town / City",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -232,7 +232,7 @@
 						),
 						"shipping_state" => array(
 							"type" => "state",
-							"label" => __("State / County",'ecab-taxi-booking-manager'),
+							"label" => __("State / County",'wpcarrently-car-rental-manager'),
 							"required" => "",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -247,7 +247,7 @@
 							"country" => "AF",
 						),
 						"shipping_postcode" => array(
-							"label" => __("Postcode / ZIP",'ecab-taxi-booking-manager'),
+							"label" => __("Postcode / ZIP",'wpcarrently-car-rental-manager'),
 							"required" => "1",
 							"class" => array(
 								"0" => "form-row-wide",
@@ -266,8 +266,8 @@
 							"class" => array(
 								"0" => "notes",
 							),
-							"label" => __("Order notes",'ecab-taxi-booking-manager'),
-							"placeholder" => __("Notes about your order, e.g. special notes for delivery.",'ecab-taxi-booking-manager'),
+							"label" => __("Order notes",'wpcarrently-car-rental-manager'),
+							"placeholder" => __("Notes about your order, e.g. special notes for delivery.",'wpcarrently-car-rental-manager'),
 						)
 					),
 				);

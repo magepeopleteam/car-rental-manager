@@ -119,7 +119,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				ob_start();
 				$this->show_cart_item($cart_item, $post_id);
 				do_action('mptbm_show_cart_item', $cart_item, $post_id);
-				$item_data[] = array('key' => esc_html__('Booking Details ', 'ecab-taxi-booking-manager'), 'value' => ob_get_clean());
+				$item_data[] = array('key' => esc_html__('Booking Details ', 'wpcarrently-car-rental-manager'), 'value' => ob_get_clean());
 			}
 			return $item_data;
 		}
@@ -155,25 +155,25 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				$extra_service = $values['mptbm_extra_service_info'] ?? [];
 				$price = $values['mptbm_tp'] ?? '';
 
-				$item->add_meta_data(esc_html__('Pickup Location ', 'ecab-taxi-booking-manager'), $start_location);
-				$item->add_meta_data(esc_html__('Drop-Off Location ', 'ecab-taxi-booking-manager'), $end_location);
+				$item->add_meta_data(esc_html__('Pickup Location ', 'wpcarrently-car-rental-manager'), $start_location);
+				$item->add_meta_data(esc_html__('Drop-Off Location ', 'wpcarrently-car-rental-manager'), $end_location);
 				$price_type = MP_Global_Function::get_post_info($post_id, 'mptbm_price_based');
 				if ($price_type !== 'manual') {
-					$item->add_meta_data(esc_html__('Approximate Distance ', 'ecab-taxi-booking-manager'), $distance_text);
-					$item->add_meta_data(esc_html__('Approximate Time ', 'ecab-taxi-booking-manager'), $duration_text);
+					$item->add_meta_data(esc_html__('Approximate Distance ', 'wpcarrently-car-rental-manager'), $distance_text);
+					$item->add_meta_data(esc_html__('Approximate Time ', 'wpcarrently-car-rental-manager'), $duration_text);
 				}
 
 				if ($waiting_time && $waiting_time > 0) {
-					$item->add_meta_data(esc_html__('Extra Waiting Hours', 'ecab-taxi-booking-manager'), $waiting_time . ' ' . esc_html__('Hour ', 'ecab-taxi-booking-manager'));
+					$item->add_meta_data(esc_html__('Extra Waiting Hours', 'wpcarrently-car-rental-manager'), $waiting_time . ' ' . esc_html__('Hour ', 'wpcarrently-car-rental-manager'));
 				}
 				if ($fixed_time && $fixed_time > 0) {
-					$item->add_meta_data(esc_html__('Service Times', 'ecab-taxi-booking-manager'), $fixed_time . ' ' . esc_html__('Hour ', 'ecab-taxi-booking-manager'));
+					$item->add_meta_data(esc_html__('Service Times', 'wpcarrently-car-rental-manager'), $fixed_time . ' ' . esc_html__('Hour ', 'wpcarrently-car-rental-manager'));
 				}
-				$item->add_meta_data(esc_html__('Date ', 'ecab-taxi-booking-manager'), esc_html(MP_Global_Function::date_format($date)));
+				$item->add_meta_data(esc_html__('Date ', 'wpcarrently-car-rental-manager'), esc_html(MP_Global_Function::date_format($date)));
 
-				$item->add_meta_data(esc_html__('Time ', 'ecab-taxi-booking-manager'), esc_html(MP_Global_Function::date_format($date, 'time')));
+				$item->add_meta_data(esc_html__('Time ', 'wpcarrently-car-rental-manager'), esc_html(MP_Global_Function::date_format($date, 'time')));
 				if ($return && $return > 1) {
-					$item->add_meta_data(esc_html__('Transfer Type', 'ecab-taxi-booking-manager'), esc_html__('Return ', 'ecab-taxi-booking-manager'));
+					$item->add_meta_data(esc_html__('Transfer Type', 'wpcarrently-car-rental-manager'), esc_html__('Return ', 'wpcarrently-car-rental-manager'));
 					if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_return_in_different_date') == 'yes') {
 						$return_date = $values['mptbm_return_target_date'] ?? '';
 						$return_time = $values['mptbm_return_target_time'] ?? '';
@@ -207,19 +207,19 @@ if (!class_exists('MPTBM_Woocommerce')) {
 						}
 						
 
-						$item->add_meta_data(esc_html__('Return Date', 'ecab-taxi-booking-manager'), esc_html(MP_Global_Function::date_format($return_date_time)));
-						$item->add_meta_data(esc_html__('Return Time', 'ecab-taxi-booking-manager'), esc_html(MP_Global_Function::date_format($return_date_time, 'time')));
+						$item->add_meta_data(esc_html__('Return Date', 'wpcarrently-car-rental-manager'), esc_html(MP_Global_Function::date_format($return_date_time)));
+						$item->add_meta_data(esc_html__('Return Time', 'wpcarrently-car-rental-manager'), esc_html(MP_Global_Function::date_format($return_date_time, 'time')));
 						$item->add_meta_data('_mptbm_return_date', $return_date);
 						$item->add_meta_data('_mptbm_return_time', $return_time);
 					}
 				}
-				$item->add_meta_data(esc_html__('Price ', 'ecab-taxi-booking-manager'), wp_kses_post(wc_price($base_price)));
+				$item->add_meta_data(esc_html__('Price ', 'wpcarrently-car-rental-manager'), wp_kses_post(wc_price($base_price)));
 				if (sizeof($extra_service) > 0) {
-					$item->add_meta_data(esc_html__('Optional Service ', 'ecab-taxi-booking-manager'), '');
+					$item->add_meta_data(esc_html__('Optional Service ', 'wpcarrently-car-rental-manager'), '');
 					foreach ($extra_service as $service) {
-						$item->add_meta_data(esc_html__('Services Name ', 'ecab-taxi-booking-manager'), $service['service_name']);
-						$item->add_meta_data(esc_html__('Services Quantity ', 'ecab-taxi-booking-manager'), $service['service_quantity']);
-						$item->add_meta_data(esc_html__('Price ', 'ecab-taxi-booking-manager'), esc_html(' ( ') . wp_kses_post(wc_price($service['service_price'])) . esc_html(' X ') . esc_html($service['service_quantity']) . esc_html(') = ') . wp_kses_post(wc_price($service['service_price'] * $service['service_quantity'])));
+						$item->add_meta_data(esc_html__('Services Name ', 'wpcarrently-car-rental-manager'), $service['service_name']);
+						$item->add_meta_data(esc_html__('Services Quantity ', 'wpcarrently-car-rental-manager'), $service['service_quantity']);
+						$item->add_meta_data(esc_html__('Price ', 'wpcarrently-car-rental-manager'), esc_html(' ( ') . wp_kses_post(wc_price($service['service_price'])) . esc_html(' X ') . esc_html($service['service_quantity']) . esc_html(') = ') . wp_kses_post(wc_price($service['service_price'] * $service['service_quantity'])));
 					}
 				}
 				if (class_exists('MPTBM_Plugin_Ecab_Calendar_Addon')) {
@@ -274,8 +274,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
 					// Add Google Calendar link as meta data
 					$item->add_meta_data(
-						esc_html__('Add this event to your Google Calendar', 'ecab-taxi-booking-manager'),
-						'<a href="' . esc_url($google_calendar_link) . '" target="_blank">' . esc_html__('Add this event to your Google Calendar', 'ecab-taxi-booking-manager') . '</a>'
+						esc_html__('Add this event to your Google Calendar', 'wpcarrently-car-rental-manager'),
+						'<a href="' . esc_url($google_calendar_link) . '" target="_blank">' . esc_html__('Add this event to your Google Calendar', 'wpcarrently-car-rental-manager') . '</a>'
 					);
 				}
 				$item->add_meta_data('_mptbm_id', $post_id);
@@ -461,12 +461,12 @@ if (!class_exists('MPTBM_Woocommerce')) {
 					<ul class="cart_list">
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
-							<h6 class="_mR_xs"><?php esc_html_e('Pickup Location', 'ecab-taxi-booking-manager'); ?> :</h6>
+							<h6 class="_mR_xs"><?php esc_html_e('Pickup Location', 'wpcarrently-car-rental-manager'); ?> :</h6>
 							<span><?php echo esc_html($start_location); ?></span>
 						</li>
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
-							<h6 class="_mR_xs"><?php esc_html_e('Drop-Off Location', 'ecab-taxi-booking-manager'); ?> :</h6>
+							<h6 class="_mR_xs"><?php esc_html_e('Drop-Off Location', 'wpcarrently-car-rental-manager'); ?> :</h6>
 							<span><?php echo esc_html($end_location); ?></span>
 						</li>
 						<?php
@@ -475,29 +475,29 @@ if (!class_exists('MPTBM_Woocommerce')) {
 						?>
 							<li>
 								<span class="fas fa-route"></span>
-								<h6 class="_mR_xs"><?php esc_html_e('Approximate Distance', 'ecab-taxi-booking-manager'); ?> :</h6>
+								<h6 class="_mR_xs"><?php esc_html_e('Approximate Distance', 'wpcarrently-car-rental-manager'); ?> :</h6>
 								<span><?php echo esc_html($cart_item['mptbm_distance_text']); ?></span>
 							</li>
 							<li>
 								<span class="far fa-clock"></span>
-								<h6 class="_mR_xs"><?php esc_html_e('Approximate Time', 'ecab-taxi-booking-manager'); ?> :</h6>
+								<h6 class="_mR_xs"><?php esc_html_e('Approximate Time', 'wpcarrently-car-rental-manager'); ?> :</h6>
 								<span><?php echo esc_html($cart_item['mptbm_duration_text']); ?></span>
 							</li>
 						<?php } ?>
 						<li>
 							<span class="far fa-calendar-alt"></span>
-							<h6 class="_mR_xs"><?php esc_html_e('Date', 'ecab-taxi-booking-manager'); ?> :</h6>
+							<h6 class="_mR_xs"><?php esc_html_e('Date', 'wpcarrently-car-rental-manager'); ?> :</h6>
 							<span><?php echo esc_html(MP_Global_Function::date_format($date)); ?></span>
 						</li>
 						<li>
 							<span class="far fa-clock"></span>
-							<h6 class="_mR_xs"><?php esc_html_e('Time : ', 'ecab-taxi-booking-manager'); ?></h6>
+							<h6 class="_mR_xs"><?php esc_html_e('Time : ', 'wpcarrently-car-rental-manager'); ?></h6>
 							<span><?php echo esc_html(MP_Global_Function::date_format($date, 'time')); ?></span>
 						</li>
 						<?php if ($return && $return > 1) { ?>
 							<li>
-								<h6 class="_mR_xs"><?php esc_html_e('Transfer Type', 'ecab-taxi-booking-manager'); ?> :</h6>
-								<span><?php esc_html_e('Return', 'ecab-taxi-booking-manager'); ?></span>
+								<h6 class="_mR_xs"><?php esc_html_e('Transfer Type', 'wpcarrently-car-rental-manager'); ?> :</h6>
+								<span><?php esc_html_e('Return', 'wpcarrently-car-rental-manager'); ?></span>
 							</li>
 
 							<?php if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_return_in_different_date') == 'yes') {
@@ -537,52 +537,52 @@ if (!class_exists('MPTBM_Woocommerce')) {
 							?>
 								<li>
 									<span class="far fa-calendar-alt"></span>
-									<h6 class="_mR_xs"><?php esc_html_e('Return Date', 'ecab-taxi-booking-manager'); ?> :</h6>
+									<h6 class="_mR_xs"><?php esc_html_e('Return Date', 'wpcarrently-car-rental-manager'); ?> :</h6>
 									<span><?php echo esc_html(MP_Global_Function::date_format($return_date_time)); ?></span>
 								</li>
 								<li>
 									<span class="far fa-clock"></span>
-									<h6 class="_mR_xs"><?php esc_html_e('Return Time', 'ecab-taxi-booking-manager'); ?> :</h6>
+									<h6 class="_mR_xs"><?php esc_html_e('Return Time', 'wpcarrently-car-rental-manager'); ?> :</h6>
 									<span><?php echo esc_html(MP_Global_Function::date_format($return_date_time, 'time')); ?></span>
 								</li>
 							<?php } ?>
 						<?php } ?>
 						<?php if ($waiting_time && $waiting_time > 0) { ?>
 							<li>
-								<h6 class="_mR_xs"><?php esc_html_e('Extra Waiting Hours', 'ecab-taxi-booking-manager'); ?> :</h6>
-								<span><?php echo esc_html($waiting_time); ?><?php esc_html_e('Hours', 'ecab-taxi-booking-manager'); ?></span>
+								<h6 class="_mR_xs"><?php esc_html_e('Extra Waiting Hours', 'wpcarrently-car-rental-manager'); ?> :</h6>
+								<span><?php echo esc_html($waiting_time); ?><?php esc_html_e('Hours', 'wpcarrently-car-rental-manager'); ?></span>
 							</li>
 						<?php } ?>
 						<?php if ($fixed_time && $fixed_time > 0) { ?>
 							<li>
-								<h6 class="_mR_xs"><?php esc_html_e('Service Times', 'ecab-taxi-booking-manager'); ?> :</h6>
-								<span><?php echo esc_html($fixed_time); ?><?php esc_html_e('Hours', 'ecab-taxi-booking-manager'); ?></span>
+								<h6 class="_mR_xs"><?php esc_html_e('Service Times', 'wpcarrently-car-rental-manager'); ?> :</h6>
+								<span><?php echo esc_html($fixed_time); ?><?php esc_html_e('Hours', 'wpcarrently-car-rental-manager'); ?></span>
 							</li>
 						<?php } ?>
 
 						<li>
 							<span class="fa fa-tag"></span>
-							<h6 class="_mR_xs"><?php esc_html_e('Base Price : ', 'ecab-taxi-booking-manager'); ?></h6>
+							<h6 class="_mR_xs"><?php esc_html_e('Base Price : ', 'wpcarrently-car-rental-manager'); ?></h6>
 							<span><?php echo wp_kses_post(wc_price($base_price)); ?></span>
 						</li>
 						<?php do_action('mptbm_cart_item_display', $cart_item, $post_id); ?>
 					</ul>
 				</div>
 				<?php if (sizeof($extra_service) > 0) { ?>
-					<h5 class="_mB_xs"><?php esc_html_e('Extra Services', 'ecab-taxi-booking-manager'); ?></h5>
+					<h5 class="_mB_xs"><?php esc_html_e('Extra Services', 'wpcarrently-car-rental-manager'); ?></h5>
 					<?php foreach ($extra_service as $service) { ?>
 						<div class="dLayout_xs">
 							<ul class="cart_list">
 								<li>
-									<h6 class="_mR_xs"><?php esc_html_e('Name : ', 'ecab-taxi-booking-manager'); ?></h6>
+									<h6 class="_mR_xs"><?php esc_html_e('Name : ', 'wpcarrently-car-rental-manager'); ?></h6>
 									<span><?php echo esc_html($service['service_name']); ?></span>
 								</li>
 								<li>
-									<h6 class="_mR_xs"><?php esc_html_e('Quantity : ', 'ecab-taxi-booking-manager'); ?></h6>
+									<h6 class="_mR_xs"><?php esc_html_e('Quantity : ', 'wpcarrently-car-rental-manager'); ?></h6>
 									<span><?php echo esc_html($service['service_quantity']); ?></span>
 								</li>
 								<li>
-									<h6 class="_mR_xs"><?php esc_html_e('Price : ', 'ecab-taxi-booking-manager'); ?></h6>
+									<h6 class="_mR_xs"><?php esc_html_e('Price : ', 'wpcarrently-car-rental-manager'); ?></h6>
 									<span><?php echo esc_html(' ( ') . wp_kses_post(wc_price($service['service_price'])) . esc_html(' X ') . esc_html($service['service_quantity']) . esc_html(' ) =') . wp_kses_post(wc_price($service['service_price'] * $service['service_quantity'])); ?></span>
 								</li>
 							</ul>
@@ -740,7 +740,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 					<!-- <div class="divider"></div>
                     <div class="justifyBetween">
                         <button type="button" class="_themeButton_min_200 mptbm_summary_prev">
-                            <span>&larr; &nbsp;<?php esc_html_e('Previous', 'ecab-taxi-booking-manager'); ?></span>
+                            <span>&larr; &nbsp;<?php esc_html_e('Previous', 'wpcarrently-car-rental-manager'); ?></span>
                         </button>
                         <div></div>
                     </div> -->

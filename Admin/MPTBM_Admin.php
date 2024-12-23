@@ -35,7 +35,6 @@
 				require_once MPTBM_PLUGIN_DIR . '/Admin/settings/MPTBM_General_Settings.php';
 				require_once MPTBM_PLUGIN_DIR . '/Admin/settings/MPTBM_Price_Settings.php';
 				require_once MPTBM_PLUGIN_DIR . '/Admin/settings/MPTBM_Extra_Service.php';
-				require_once MPTBM_PLUGIN_DIR . '/Admin/settings/MPTBM_Operation_Areas.php';
 				require_once MPTBM_PLUGIN_DIR . '/Admin/settings/MPTBM_Date_Settings.php';
 				require_once MPTBM_PLUGIN_DIR . '/Admin/settings/MPTBM_Tax_Settings.php';
 				//****************Woocommerce Checkout*********************** */

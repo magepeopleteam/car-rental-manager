@@ -15,10 +15,10 @@
 			}
 			public function default_text($day) {
 				if ($day == 'default') {
-					esc_html_e('Please select', 'ecab-taxi-booking-manager');
+					esc_html_e('Please select', 'wpcarrently-car-rental-manager');
 				}
 				else {
-					esc_html_e('Default', 'ecab-taxi-booking-manager');
+					esc_html_e('Default', 'wpcarrently-car-rental-manager');
 				}
 			}
 			public function time_slot($time, $stat_time = '', $end_time = '') {
@@ -90,7 +90,7 @@
 						</label>
 					</td>
 					<td class="textCenter">
-						<strong><?php esc_html_e('To', 'ecab-taxi-booking-manager'); ?></strong>
+						<strong><?php esc_html_e('To', 'wpcarrently-car-rental-manager'); ?></strong>
 					</td>
 					<td class="mptbm_end_time">
 					<select class="formControl" name="<?php echo esc_attr($end_name); ?>">
@@ -112,32 +112,32 @@
 				$date_type = MP_Global_Function::get_post_info($post_id, 'mptbm_date_type', 'repeated');
 				?>
 				<div class="tabsItem" data-tabs="#mptbm_settings_date">
-					<h2><?php esc_html_e('Date Settings', 'ecab-taxi-booking-manager'); ?></h2>
-					<p><?php _e('Here you can configure date.', 'ecab-taxi-booking-manager'); ?></p>
+					<h2><?php esc_html_e('Date Settings', 'wpcarrently-car-rental-manager'); ?></h2>
+					<p><?php _e('Here you can configure date.', 'wpcarrently-car-rental-manager'); ?></p>
 					<!-- General Date config -->
 					<section class="bg-light">
-						<h6><?php _e('General Date Configuration', 'ecab-taxi-booking-manager'); ?></h6>
-						<span><?php _e('Here you can configure general date', 'ecab-taxi-booking-manager'); ?></span>
+						<h6><?php _e('General Date Configuration', 'wpcarrently-car-rental-manager'); ?></h6>
+						<span><?php _e('Here you can configure general date', 'wpcarrently-car-rental-manager'); ?></span>
 					</section>
 					
 					<section>
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Date Type', 'ecab-taxi-booking-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
-								<span class="desc"><?php _e('Specifies the date type: "Repeated" for recurring dates, or "Particular" for a specific date', "ecab-taxi-booking-manager"); ?></span>
+								<h6><?php esc_html_e('Date Type', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
+								<span class="desc"><?php _e('Specifies the date type: "Repeated" for recurring dates, or "Particular" for a specific date', "wpcarrently-car-rental-manager"); ?></span>
 							</div>
 							<select class="formControl" name="mptbm_date_type" data-collapse-target required>
-								<option disabled selected><?php esc_html_e('Please select ...', 'ecab-taxi-booking-manager'); ?></option>
-								<option value="particular" data-option-target="#mp_particular" <?php echo esc_attr($date_type == 'particular' ? 'selected' : ''); ?>><?php esc_html_e('Particular', 'ecab-taxi-booking-manager'); ?></option>
-								<option value="repeated" data-option-target="#mp_repeated" <?php echo esc_attr($date_type == 'repeated' ? 'selected' : ''); ?>><?php esc_html_e('Repeated', 'ecab-taxi-booking-manager'); ?></option>
+								<option disabled selected><?php esc_html_e('Please select ...', 'wpcarrently-car-rental-manager'); ?></option>
+								<option value="particular" data-option-target="#mp_particular" <?php echo esc_attr($date_type == 'particular' ? 'selected' : ''); ?>><?php esc_html_e('Particular', 'wpcarrently-car-rental-manager'); ?></option>
+								<option value="repeated" data-option-target="#mp_repeated" <?php echo esc_attr($date_type == 'repeated' ? 'selected' : ''); ?>><?php esc_html_e('Repeated', 'wpcarrently-car-rental-manager'); ?></option>
 							</select>
 						</label>
 					</section>
 					<section data-collapse="#mp_particular" class="<?php echo esc_attr($date_type == 'particular' ? 'mActive' : ''); ?>">
 						<label class="label" style="align-items: start;">
 							<div>
-								<h6><?php esc_html_e('Particular Dates', 'ecab-taxi-booking-manager'); ?></h6>
-								<span class="desc"><?php esc_html_e('Add Particular Dates', 'ecab-taxi-booking-manager'); ?></span>
+								<h6><?php esc_html_e('Particular Dates', 'wpcarrently-car-rental-manager'); ?></h6>
+								<span class="desc"><?php esc_html_e('Add Particular Dates', 'wpcarrently-car-rental-manager'); ?></span>
 							</div>
 							
 							<div class="mp_settings_area">
@@ -153,7 +153,7 @@
 											}
 										?>
 									</div>
-									<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Particular date', 'ecab-taxi-booking-manager')); ?>
+									<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Particular date', 'wpcarrently-car-rental-manager')); ?>
 									<div class="mp_hidden_content">
 										<div class="mp_hidden_item">
 											<?php $this->particular_date_item('mptbm_particular_dates[]'); ?>
@@ -176,8 +176,8 @@
 					<section data-collapse="#mp_repeated" class="<?php echo esc_attr($date_type == 'repeated' ? 'mActive' : ''); ?>">
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Repeated Start Date', 'ecab-taxi-booking-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
-								<span class="desc"><?php esc_html_e('Sets the start date for recurring services', 'ecab-taxi-booking-manager'); ?></span>
+								<h6><?php esc_html_e('Repeated Start Date', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
+								<span class="desc"><?php esc_html_e('Sets the start date for recurring services', 'wpcarrently-car-rental-manager'); ?></span>
 							</div>
 							<div >
 								<input type="hidden" name="mptbm_repeated_start_date" value="<?php echo esc_attr($hidden_repeated_start_date); ?>" required/>
@@ -189,8 +189,8 @@
 					<section data-collapse="#mp_repeated" class="<?php echo esc_attr($date_type == 'repeated' ? 'mActive' : ''); ?>">
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Repeated after', 'ecab-taxi-booking-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
-								<span class="desc"><?php esc_html_e('Defines the number of days after which the service or event will repeat', 'ecab-taxi-booking-manager'); ?></span>
+								<h6><?php esc_html_e('Repeated after', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
+								<span class="desc"><?php esc_html_e('Defines the number of days after which the service or event will repeat', 'wpcarrently-car-rental-manager'); ?></span>
 							</div>
 							<input type="text" name="mptbm_repeated_after" class="formControl mp_number_validation" value="<?php echo esc_attr($repeated_after); ?>"/>
 						</label>
@@ -199,8 +199,8 @@
 					<section data-collapse="#mp_repeated" class="<?php echo esc_attr($date_type == 'repeated' ? 'mActive' : ''); ?>">
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Maximum Advanced Day Booking', 'ecab-taxi-booking-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
-								<span class="desc"><?php esc_html_e('Sets the maximum number of days in advance a booking can be made', 'ecab-taxi-booking-manager'); ?></span>
+								<h6><?php esc_html_e('Maximum Advanced Day Booking', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></h6>
+								<span class="desc"><?php esc_html_e('Sets the maximum number of days in advance a booking can be made', 'wpcarrently-car-rental-manager'); ?></span>
 							</div>
 							<input type="text" name="mptbm_active_days" class="formControl mp_number_validation" value="<?php echo esc_attr($active_days); ?>"/>
 						</label>
@@ -209,7 +209,7 @@
 					<section>
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Make Transport Available For 24 Hours', 'ecab-taxi-booking-manager'); ?></h6>
+								<h6><?php esc_html_e('Make Transport Available For 24 Hours', 'wpcarrently-car-rental-manager'); ?></h6>
 								<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
 							</div>
 							<?php MP_Custom_Layout::switch_button('mptbm_available_for_all_time', $checked); ?>
@@ -217,17 +217,17 @@
 					</section>
 					
 					<section class="bg-light" style="margin-top: 20px;">
-						<h6><?php _e('Schedule Date Configuration', 'ecab-taxi-booking-manager'); ?></h6>
-						<span><?php _e('Here you can configure Schedule date.', 'ecab-taxi-booking-manager'); ?></span>
+						<h6><?php _e('Schedule Date Configuration', 'wpcarrently-car-rental-manager'); ?></h6>
+						<span><?php _e('Here you can configure Schedule date.', 'wpcarrently-car-rental-manager'); ?></span>
 					</section>
 					<section>
 						<table>
 							<thead>
 							<tr>
-								<th><?php esc_html_e('Day', 'ecab-taxi-booking-manager'); ?></th>
-								<th><?php esc_html_e('Start Time', 'ecab-taxi-booking-manager'); ?></th>
-								<th><?php esc_html_e('To', 'ecab-taxi-booking-manager'); ?></th>
-								<th><?php esc_html_e('End Time', 'ecab-taxi-booking-manager'); ?></th>
+								<th><?php esc_html_e('Day', 'wpcarrently-car-rental-manager'); ?></th>
+								<th><?php esc_html_e('Start Time', 'wpcarrently-car-rental-manager'); ?></th>
+								<th><?php esc_html_e('To', 'wpcarrently-car-rental-manager'); ?></th>
+								<th><?php esc_html_e('End Time', 'wpcarrently-car-rental-manager'); ?></th>
 								
 							</tr>
 							</thead>
@@ -245,16 +245,16 @@
 					
 					<section class="bg-light" style="margin-top: 20px;">
 						
-						<h6><?php _e('Off Days & Dates Configuration', 'ecab-taxi-booking-manager'); ?></h6>
-						<span><?php _e('Here you can configure Off Days & Dates.', 'ecab-taxi-booking-manager'); ?></span>
+						<h6><?php _e('Off Days & Dates Configuration', 'wpcarrently-car-rental-manager'); ?></h6>
+						<span><?php _e('Here you can configure Off Days & Dates.', 'wpcarrently-car-rental-manager'); ?></span>
 						
 					</section>
 
 					<section data-collapse="#mp_repeated" class="<?php echo esc_attr($date_type == 'repeated' ? 'mActive' : ''); ?>">
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Off Day', 'ecab-taxi-booking-manager'); ?></h6>
-								<span class="desc"><?php esc_html_e('Select checkbox for off day', 'ecab-taxi-booking-manager'); ?></span>
+								<h6><?php esc_html_e('Off Day', 'wpcarrently-car-rental-manager'); ?></h6>
+								<span class="desc"><?php esc_html_e('Select checkbox for off day', 'wpcarrently-car-rental-manager'); ?></span>
 							</div>
 							<div>
 								<?php
@@ -279,8 +279,8 @@
 					<section>
 						<label class="label" style="align-items: start;">
 							<div>
-								<h6><?php esc_html_e('Off Dates', 'ecab-taxi-booking-manager'); ?></h6>
-								<span class="desc"><?php esc_html_e('Add off dates', 'ecab-taxi-booking-manager'); ?></span>
+								<h6><?php esc_html_e('Off Dates', 'wpcarrently-car-rental-manager'); ?></h6>
+								<span class="desc"><?php esc_html_e('Add off dates', 'wpcarrently-car-rental-manager'); ?></span>
 							</div>
 							<div class="mp_settings_area">
 								<div class="mp_item_insert mp_sortable_area mb-1">
@@ -295,7 +295,7 @@
 										}
 									?>
 								</div>
-								<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Off date', 'ecab-taxi-booking-manager')); ?>
+								<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Off date', 'wpcarrently-car-rental-manager')); ?>
 								<div class="mp_hidden_content">
 									<div class="mp_hidden_item">
 										<?php $this->particular_date_item('mptbm_off_dates[]'); ?>

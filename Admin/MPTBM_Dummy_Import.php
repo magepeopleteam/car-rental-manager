@@ -18,11 +18,10 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		{
 			$dummy_post_inserted = get_option('mptbm_dummy_already_inserted', 'no');
 			$count_existing_event = wp_count_posts('mptbm_rent')->publish;
-			$plugin_active = MP_Global_Function::check_plugin('ecab-taxi-booking-manager', 'MPTBM_Plugin.php');
+			$plugin_active = MP_Global_Function::check_plugin('wpcarrently-car-rental-manager', 'MPTBM_Plugin.php');
 			if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				$this->add_post($this->dummy_cpt());
 				$this->location_taxonomy();
-				$this->driver_status_taxanomy();
 				flush_rewrite_rules();
 				update_option('mptbm_dummy_already_inserted', 'yes');
 			}
@@ -89,24 +88,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 			return $taxonomy_data;
 		}
 
-		public function driver_status_taxanomy()
-		{
-			$taxonomy_data = array(
-				'mptbm_service_status' => array(
-					'Received',
-					'Declined',
-					'Processing',
-					'Completed'
-				),
-
-			);
-			foreach ($taxonomy_data as $taxonomy => $terms) {
-				foreach ($terms as $term) {
-					$term_insert_result = wp_insert_term($term, $taxonomy);
-				}
-			}
-			return $taxonomy_data;
-		}
+		
 
 
 		public function dummy_cpt(): array
@@ -190,9 +172,9 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
+								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
 								//faq_settings
@@ -272,9 +254,8 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -355,9 +336,8 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -438,9 +418,8 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -521,9 +500,9 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
+								//extra_settings
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
 								//faq_settings
@@ -603,9 +582,9 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
+								//extra_settings
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
 								//faq_settings
@@ -685,9 +664,9 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 
 								],
 								//price_settings
-								'mptbm_price_based' => 'distance',
-								'mptbm_km_price' => 1.2,
-								'mptbm_hour_price' => 10,
+								'mptbm_price_based' => 'manual',
+								'mptbm_day_price' => 10,
+								//extra_settings
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
 								//faq_settings

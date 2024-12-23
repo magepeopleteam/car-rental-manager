@@ -57,7 +57,7 @@
 									?>
 									<div class="abTopLeft">
 										<button type="button" class="_dButton_bgWhite_textDefault" data-target-popup="superSlider" data-slide-index="1">
-											<?php echo esc_html__( 'View All', 'ecab-taxi-booking-manager' ) . ' ' . sizeof( $image_ids ) . ' ' . esc_html__( 'Images', 'ecab-taxi-booking-manager' ); ?>
+											<?php echo esc_html__( 'View All', 'wpcarrently-car-rental-manager' ) . ' ' . sizeof( $image_ids ) . ' ' . esc_html__( 'Images', 'wpcarrently-car-rental-manager' ); ?>
 										</button>
 									</div>
 									<?php
