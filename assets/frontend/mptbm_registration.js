@@ -183,16 +183,9 @@ function mptbmCreateMarker(place) {
             end_place = document.getElementById("mptbm_map_end_place");
         }
         let start_date = target_date.val();
-        let return_date;
-        let return_time;
-
-        if (mptbm_enable_return_in_different_date == 'yes' && two_way != 1 && price_based != 'fixed_hourly') {
-            return_date = return_target_date.val();
-            return_time = return_target_time.val();
-        } else {
-            return_date = start_date;
-            return_time = 'Not applicable';
-        }
+        let return_date = return_target_date.val();
+        let return_time = return_target_time.val();
+        
         let start_time = target_time.val();
         if (!start_date) {
             target_date.trigger("click");
@@ -253,8 +246,9 @@ function mptbmCreateMarker(place) {
                 });
                 return deferred.promise();
             }
+            
             if (price_based !== 'manual') {
-
+               
                 $.when(
                     getCoordinatesAsync(start_place.value),
                     getCoordinatesAsync(end_place.value)
@@ -333,9 +327,8 @@ function mptbmCreateMarker(place) {
                     }
                 });
             } else {
-
                 if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
-
+                    
                     let actionValue;
                     if (!mptbm_enable_view_search_result_page) {
                         actionValue = "get_mptbm_map_search_result";

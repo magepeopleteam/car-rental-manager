@@ -219,12 +219,10 @@ if (!class_exists('MPTBM_Function')) {
 			usort($all_dates, "MP_Global_Function::sort_date");
 			return $all_dates;
 		}
+
 		//*************Price*********************************//
-		public static function get_price($post_id,  $start_place = '', $destination_place = '', $start_date_time, $return_date_time)
+		public static function get_price($post_id,  $start_place = '', $destination_place = '', $start_date_time = '', $return_date_time = '')
 		{
-
-
-			
 			if (session_status() !== PHP_SESSION_ACTIVE) {
 				session_start();
 			}
@@ -232,7 +230,6 @@ if (!class_exists('MPTBM_Function')) {
 			// Create DateTime objects from the input strings
 			$startDate = new DateTime($start_date_time);
 			$returnDate = new DateTime($return_date_time);
-		
 			// Calculate the difference
 			$interval = $startDate->diff($returnDate);
 		

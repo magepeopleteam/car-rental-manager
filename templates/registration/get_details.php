@@ -224,7 +224,7 @@ if (sizeof($all_dates) > 0) {
 					<label class="fdColumn">
 						<input type="hidden" id="mptbm_map_return_date" value="" />
 						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Date', 'wpcarrently-car-rental-manager'); ?></span>
-						<input type="text" id="mptbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
+						<input type="text" id="mptbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently-car-rental-manager'); ?>" value="" readonly name="return_date"/>
 						<span class="far fa-calendar-alt mptbm_left_icon allCenter"></span>
 					</label>
 				</div>
@@ -232,7 +232,7 @@ if (sizeof($all_dates) > 0) {
 					<input type="hidden" id="mptbm_map_return_time" value="" />
 					<label class="fdColumn">
 						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Return Time', 'wpcarrently-car-rental-manager'); ?></span>
-						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
+						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently-car-rental-manager'); ?>" value="" readonly name="return_time" />
 						<span class="far fa-clock mptbm_left_icon allCenter"></span>
 					</label>
 					<ul class="return_time_list-no-dsiplay" style="display:none">
@@ -295,37 +295,6 @@ if (sizeof($all_dates) > 0) {
 					<?php } ?>
 					<div class="inputList"></div>
 				<?php } ?>
-			</div>
-		</div>
-		<div class="mptbm_map_area fdColumn" style="display: <?php echo ($price_based != 'manual' && $map == 'yes') ? '' : 'none'; ?>;">
-			<div class="fullHeight">
-				<div id="mptbm_map_area"></div>
-			</div>
-			<div class="_dLayout mptbm_distance_time">
-				<div class="_equalChild_separatorRight">
-					<div class="_dFlex_pR_xs">
-						<h1 class="_mR">
-							<span class="fas fa-route textTheme"></span>
-						</h1>
-						<div class="fdColumn">
-							<h6><?php esc_html_e('TOTAL DISTANCE', 'wpcarrently-car-rental-manager'); ?></h6>
-							<?php if ($km_or_mile != 'km') { ?>
-								<strong class="mptbm_total_distance"><?php esc_html_e(' 0 MILE', 'wpcarrently-car-rental-manager'); ?></strong>
-							<?php } else { ?>
-								<strong class="mptbm_total_distance"><?php esc_html_e(' 0 KM', 'wpcarrently-car-rental-manager'); ?></strong>
-							<?php } ?>
-						</div>
-					</div>
-					<div class="dFlex">
-						<h1 class="_mLR">
-							<span class="fas fa-clock textTheme"></span>
-						</h1>
-						<div class="fdColumn">
-							<h6><?php esc_html_e('TOTAL TIME', 'wpcarrently-car-rental-manager'); ?></h6>
-							<strong class="mptbm_total_time"><?php esc_html_e('0 Hour', 'wpcarrently-car-rental-manager'); ?></strong>
-						</div>
-					</div>
-				</div>
 			</div>
 		</div>
 	</div>

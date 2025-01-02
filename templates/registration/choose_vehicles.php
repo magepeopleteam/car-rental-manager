@@ -326,11 +326,11 @@ $return_time_schedule=null;
 
 $price_based = sanitize_text_field($_POST["price_based"]);
 
-if ($two_way > 1 && MP_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") {
+if ($two_way > 1) {
     $return_date = isset($_POST["return_date"]) ? sanitize_text_field($_POST["return_date"]) : "";
     $return_time = isset($_POST["return_time"]) ? sanitize_text_field($_POST["return_time"]): "";
     $return_time_schedule = isset($_POST["return_time"]) ? sanitize_text_field($_POST["return_time"]) : "";
-
+    
     if ($return_time !== "") {
         if ($return_time !== "0") {
             // Convert start time to hours and minutes
@@ -359,7 +359,6 @@ if ($two_way > 1 && MP_Global_Function::get_settings("mptbm_general_settings", "
     if ($return_date_time && $return_time !== "") {
         $return_date_time .= " " . $return_time_formatted;
     }
-    
 }
 if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field($_POST["feature_passenger_number"]) : "";
