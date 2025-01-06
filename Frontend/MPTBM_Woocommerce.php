@@ -27,7 +27,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 			add_action('wp_ajax_mptbm_add_to_cart', [$this, 'mptbm_add_to_cart']);
 			add_action('wp_ajax_nopriv_mptbm_add_to_cart', [$this, 'mptbm_add_to_cart']);
 		}
-		
+
 		public function product_custom_field_to_custom_order_notes($order_id, $data)
 		{
 			foreach ($data as $key => $value) {
@@ -38,18 +38,47 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function add_cart_item_data($cart_item_data, $product_id)
 		{
+
 			$linked_id = MP_Global_Function::get_post_info($product_id, 'link_mptbm_id', $product_id);
+
 			$post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
 			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
-				$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
-				$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
 				$start_place = isset($_POST['mptbm_start_place']) ? sanitize_text_field($_POST['mptbm_start_place']) : '';
 				$end_place = isset($_POST['mptbm_end_place']) ? sanitize_text_field($_POST['mptbm_end_place']) : '';
-				$waiting_time = isset($_POST['mptbm_waiting_time']) ? sanitize_text_field($_POST['mptbm_waiting_time']) : 0;
 				$return = isset($_POST['mptbm_taxi_return']) ? sanitize_text_field($_POST['mptbm_taxi_return']) : 1;
-				$fixed_hour = isset($_POST['mptbm_fixed_hours']) ? sanitize_text_field($_POST['mptbm_fixed_hours']) : 0;
+				$start_time = isset($_POST['mptbm_date']) ? sanitize_text_field($_POST['mptbm_date']) : '';
+				$return_date = isset($_POST['mptbm_return_date']) ? sanitize_text_field($_POST['mptbm_return_date']) : '';
+				$return_time = isset($_POST['mptbm_return_time']) ? sanitize_text_field($_POST['mptbm_return_time']) : '';
+				$return_date_time = $return_date ? gmdate("Y-m-d", strtotime($return_date)) : "";
+
+			if ($return_date && $return_time !== "") {
+				if ($return_time !== "") {
+					if ($return_time !== "0") {
+						// Convert start time to hours and minutes
+						list($hours, $decimal_part) = explode('.', $return_time);
+						$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+						if ($interval_time == "5" || $interval_time == "15") {
+							$minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
+						} else {
+							$minutes = isset($decimal_part) ? (int) $decimal_part * 10 : 0; // Multiply by 10 to convert to minutes
+						}
+					} else {
+						$hours = 0;
+						$minutes = 0;
+					}
+				} else {
+					$hours = 0;
+					$minutes = 0;
+				}
+				$return_time_formatted = sprintf('%02d:%02d', $hours, $minutes);
+				$return_date_time .= " " . $return_time_formatted;
+			}
+				
+				
 				$total_price = $this->get_cart_total_price($post_id);
-				$price = MPTBM_Function::get_price($post_id, $distance, $duration, $start_place, $end_place, $waiting_time, $return, $fixed_hour);
+
+				
+				$price = MPTBM_Function::get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
 				$wc_price = MP_Global_Function::wc_price($post_id, $price);
 				$raw_price = MP_Global_Function::price_convert_raw($wc_price);
 				$cart_item_data['mptbm_date'] = isset($_POST['mptbm_date']) ? sanitize_text_field($_POST['mptbm_date']) : '';
@@ -81,7 +110,6 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function before_calculate_totals($cart_object)
 		{
-
 			foreach ($cart_object->cart_contents as $value) {
 				$post_id = array_key_exists('mptbm_id', $value) ? $value['mptbm_id'] : 0;
 				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
@@ -113,7 +141,6 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function get_item_data($item_data, $cart_item)
 		{
-
 			$post_id = array_key_exists('mptbm_id', $cart_item) ? $cart_item['mptbm_id'] : 0;
 			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
 				ob_start();
@@ -205,7 +232,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 						if ($return_date_time && $return_time !== "") {
 							$return_date_time .= " " . $return_time_formatted;
 						}
-						
+
 
 						$item->add_meta_data(esc_html__('Return Date', 'wpcarrently-car-rental-manager'), esc_html(MP_Global_Function::date_format($return_date_time)));
 						$item->add_meta_data(esc_html__('Return Time', 'wpcarrently-car-rental-manager'), esc_html(MP_Global_Function::date_format($return_date_time, 'time')));
@@ -299,7 +326,6 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		public function checkout_order_processed($order_id)
 		{
 
-			
 			if ($order_id) {
 
 				$order = wc_get_order($order_id);
@@ -391,11 +417,11 @@ if (!class_exists('MPTBM_Woocommerce')) {
 								'mptbm_billing_phone' => $order->get_billing_phone(),
 								'mptbm_target_pickup_interval_time' => MPTBM_Function::get_general_settings('mptbm_pickup_interval_time', '30')
 							]);
-							
-							
+
+
 							$booking_data = apply_filters('add_mptbm_booking_data', $data, $post_id);
-							
-							
+
+
 							self::add_cpt_data('mptbm_booking', $booking_data['mptbm_billing_name'], $booking_data);
 
 							if (sizeof($service_info) > 0) {
@@ -668,14 +694,41 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function get_cart_total_price($post_id)
 		{
-			$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
-			$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
+
 			$start_place = isset($_POST['mptbm_start_place']) ? sanitize_text_field($_POST['mptbm_start_place']) : '';
+
 			$end_place = isset($_POST['mptbm_end_place']) ? sanitize_text_field($_POST['mptbm_end_place']) : '';
-			$waiting_time = isset($_POST['mptbm_waiting_time']) ? sanitize_text_field($_POST['mptbm_waiting_time']) : 0;
-			$return = isset($_POST['mptbm_taxi_return']) ? sanitize_text_field($_POST['mptbm_taxi_return']) : 1;
-			$fixed_hour = isset($_POST['mptbm_fixed_hours']) ? sanitize_text_field($_POST['mptbm_fixed_hours']) : 0;
-			$price = MPTBM_Function::get_price($post_id, $distance, $duration, $start_place, $end_place, $waiting_time, $return, $fixed_hour);
+			$start_date_time = isset($_POST['mptbm_start_date']) ? sanitize_text_field($_POST['mptbm_start_date']) : '';
+			$start_time = isset($_POST['mptbm_date']) ? sanitize_text_field($_POST['mptbm_date']) : '';
+			$return_date = isset($_POST['mptbm_return_date']) ? sanitize_text_field($_POST['mptbm_return_date']) : '';
+			$return_time = isset($_POST['mptbm_return_time']) ? sanitize_text_field($_POST['mptbm_return_time']) : '';
+
+			$return_date_time = $return_date ? gmdate("Y-m-d", strtotime($return_date)) : "";
+
+			if ($return_date && $return_time !== "") {
+				if ($return_time !== "") {
+					if ($return_time !== "0") {
+						// Convert start time to hours and minutes
+						list($hours, $decimal_part) = explode('.', $return_time);
+						$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+						if ($interval_time == "5" || $interval_time == "15") {
+							$minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
+						} else {
+							$minutes = isset($decimal_part) ? (int) $decimal_part * 10 : 0; // Multiply by 10 to convert to minutes
+						}
+					} else {
+						$hours = 0;
+						$minutes = 0;
+					}
+				} else {
+					$hours = 0;
+					$minutes = 0;
+				}
+				$return_time_formatted = sprintf('%02d:%02d', $hours, $minutes);
+				$return_date_time .= " " . $return_time_formatted;
+			}
+
+			$price = MPTBM_Function::get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
 			$wc_price = MP_Global_Function::wc_price($post_id, $price);
 			$raw_price = MP_Global_Function::price_convert_raw($wc_price);
 			$service_name = isset($_POST['mptbm_extra_service']) ? array_map('sanitize_text_field', $_POST['mptbm_extra_service']) : [];
@@ -692,6 +745,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				}
 			}
 			$wc_price = MP_Global_Function::wc_price($post_id, $raw_price);
+
 			return MP_Global_Function::price_convert_raw($wc_price);
 		}
 		public static function add_cpt_data($cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array())
@@ -704,7 +758,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				'post_status' => $status,
 				'post_type' => $cpt_name
 			);
-			
+
 			$post_id = wp_insert_post($new_post);
 			if (sizeof($meta_data) > 0) {
 				foreach ($meta_data as $key => $value) {

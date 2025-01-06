@@ -407,10 +407,9 @@ function mptbmCreateMarker(place) {
         let mptbm_enable_return_in_different_date = $('[name="mptbm_enable_return_in_different_date"]').val();
         let mptbm_buffer_end_minutes = $('[name="mptbm_buffer_end_minutes"]').val();
         let mptbm_first_calendar_date = $('[name="mptbm_first_calendar_date"]').val();
-        
         var selectedDate = $('#mptbm_map_start_date').val();
         var formattedDate = $.datepicker.parseDate('yy-mm-dd', selectedDate);
-
+        
         // Get today's date in YYYY-MM-DD format
         var today = new Date();
         var day = String(today.getDate()).padStart(2, '0');

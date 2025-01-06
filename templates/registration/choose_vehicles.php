@@ -356,9 +356,12 @@ if ($two_way > 1) {
     
     // Combine date and time if both are available
     $return_date_time = $return_date ? gmdate("Y-m-d", strtotime($return_date)) : "";
+    error_log('return date  '.$return_date);
+    error_log('return date time '.$return_date_time);
     if ($return_date_time && $return_time !== "") {
         $return_date_time .= " " . $return_time_formatted;
     }
+    error_log('return date time final'.$return_date_time);
 }
 if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field($_POST["feature_passenger_number"]) : "";

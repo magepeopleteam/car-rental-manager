@@ -19,21 +19,6 @@ if (!class_exists('MPTBM_CPT')) {
 
 		public function mptbm_rent_custom_column($columns,$post_id){
 			switch($columns){
-				case 'mptbm_price_based':
-					$mptbm_price_based = esc_html__(get_post_meta($post_id,'mptbm_price_based',true));
-				
-					$item_price_based = [
-						'inclusive' => 'Inclusive',
-						'distance' => 'Distance as google map',
-						'duration' => 'Duration/Time as google map',
-						'distance_duration' => 'Distance + Duration as google map',
-						'manual' => 'Manual as fixed Location',
-						'fixed_hourly' => 'Fixed Hourly',
-					];
-					foreach($item_price_based as $kay => $value):
-						echo esc_html(($kay==$mptbm_price_based)?$value:'');
-					endforeach;
-				break;
 				case 'mptbm_km_price':
 					$mptbm_km_price = get_post_meta($post_id,'mptbm_km_price',true);
 					echo esc_html($mptbm_km_price?$mptbm_km_price:'');
@@ -46,18 +31,18 @@ if (!class_exists('MPTBM_CPT')) {
 					$mptbm_waiting_price = get_post_meta($post_id,'mptbm_waiting_price',true);
 					echo esc_html($mptbm_waiting_price?$mptbm_waiting_price:'');
 				break;
+				case 'mptbm_day_price':
+					$mptbm_day_price = get_post_meta($post_id, 'mptbm_day_price', true);
+					echo esc_html($mptbm_day_price?$mptbm_day_price:'');
 			}
 		}
 
 		public function mptbm_rent_columns($columns)
 		{
 			unset($columns['date']);
-			$columns['mptbm_price_based'] = esc_html__('Price based', 'booking-and-rental-manager-for-woocommerce');
-			$columns['mptbm_km_price']      =  esc_html__('Kilometer price', 'booking-and-rental-manager-for-woocommerce');
-			$columns['mptbm_hour_price']      =  esc_html__('Hourly price', 'booking-and-rental-manager-for-woocommerce');
-			$columns['mptbm_waiting_price']      =  esc_html__('Waiting price', 'booking-and-rental-manager-for-woocommerce');
-			$columns['author']      =  esc_html__('Author', 'booking-and-rental-manager-for-woocommerce');
-			$columns['date']        = esc_html__('Date', 'booking-and-rental-manager-for-woocommerce');
+			$columns['author']      =  esc_html__('Author', 'wpcarrently-car-rental-manager');
+			$columns['date']        = esc_html__('Date', 'wpcarrently-car-rental-manager');
+			$columns['mptbm_day_price'] = esc_html__('Day Price', 'wpcarrently-car-rental-manager');
 			return $columns;
 		}
 
@@ -65,10 +50,7 @@ if (!class_exists('MPTBM_CPT')) {
 
 		public function mptbm_rent_sortable_columns($columns)
 		{
-			$columns['mptbm_price_based'] = 'mptbm_price_based';
-			$columns['mptbm_km_price'] = 'mptbm_km_price';
-			$columns['mptbm_hour_price'] = 'mptbm_hour_price';
-			$columns['mptbm_waiting_price'] = 'mptbm_waiting_price';
+			$columns['mptbm_day_price'] = 'mptbm_day_price';
 			$columns['author'] = 'author';
 			return $columns;
 		}
