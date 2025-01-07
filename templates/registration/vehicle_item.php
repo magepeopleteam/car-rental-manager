@@ -33,13 +33,12 @@ if ($mptbm_enable_view_search_result_page == '') {
     $hidden_class = '';
 }
 if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
-    $distance = $distance ?? (isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '');
-    $duration = $duration ?? (isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '');
+    
     $label = $label ?? MPTBM_Function::get_name();
     $start_place = $start_place ?? isset($_POST['start_place']) ? sanitize_text_field($_POST['start_place']) : '';
     $end_place = $end_place ?? isset($_POST['end_place']) ? sanitize_text_field($_POST['end_place']) : '';
     $two_way = $two_way ?? 1;
-    $waiting_time = $waiting_time ?? 0;
+    
     $location_exit = MPTBM_Function::location_exit($post_id, $start_place, $end_place);
     if ($location_exit && $post_id) {
         //$product_id = MP_Global_Function::get_post_info($post_id, 'link_wc_product');

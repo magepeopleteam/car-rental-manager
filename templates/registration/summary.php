@@ -6,15 +6,11 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly
-	$distance = $distance ?? (isset($_COOKIE['mptbm_distance']) ?absint($_COOKIE['mptbm_distance']): '');
-	$duration = $duration ?? (isset($_COOKIE['mptbm_duration']) ?absint($_COOKIE['mptbm_duration']): '');
 	$label = $label ?? MPTBM_Function::get_name();
 	$date = $date ?? '';
 	$start_place = $start_place ?? '';
 	$end_place = $end_place ?? '';
 	$two_way = $two_way ?? 1;
-	$waiting_time = $waiting_time ?? 0;
-	$fixed_time = $fixed_time ?? '';
 	$return_date_time = $return_date_time ?? '';
 	$price_based = $price_based ?? '';
 	
@@ -49,26 +45,13 @@
 					<?php if($two_way>1){ 
 						?>
 						<div class="dividerL"></div>
-						<h6 class="_mB_xs"><?php esc_html_e('Transfer Type', 'wpcarrently-car-rental-manager'); ?></h6>
-						<p class="_textLight_1"><?php esc_html_e('Return', 'wpcarrently-car-rental-manager'); ?></p>
 						<?php if(!empty($return_date_time)){ ?>
-                            <div class="dividerL"></div>
                             <h6 class="_mB_xs"><?php esc_html_e('Return Date', 'wpcarrently-car-rental-manager'); ?></h6>
                             <p class="_textLight_1"><?php echo esc_html(MP_Global_Function::date_format($return_date_time)); ?></p>
                             <div class="dividerL"></div>
                             <h6 class="_mB_xs"><?php esc_html_e('Return Time', 'wpcarrently-car-rental-manager'); ?></h6>
                             <p class="_textLight_1"><?php echo esc_html(MP_Global_Function::date_format($return_date_time,'time')); ?></p>
                         <?php } ?>
-					<?php } ?>
-					<?php if($waiting_time>0){ ?>
-						<div class="dividerL"></div>
-						<h6 class="_mB_xs"><?php esc_html_e('Extra Waiting Hours', 'wpcarrently-car-rental-manager'); ?></h6>
-						<p class="_textLight_1"><?php echo esc_html($waiting_time); ?>&nbsp;<?php esc_html_e('Hours', 'wpcarrently-car-rental-manager'); ?></p>
-					<?php } ?>
-					<?php if($fixed_time && $fixed_time>0){ ?>
-						<div class="dividerL"></div>
-						<h6 class="_mB_xs"><?php esc_html_e('Service Times', 'wpcarrently-car-rental-manager'); ?></h6>
-						<p class="_textLight_1"><?php echo esc_html($fixed_time); ?> &nbsp;<?php esc_html_e('Hours', 'wpcarrently-car-rental-manager'); ?></p>
 					<?php } ?>
 					<div class="mptbm_transport_summary">
 						<div class="dividerL"></div>

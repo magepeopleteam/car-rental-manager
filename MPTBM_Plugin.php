@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: WpCarRently car rental manager
+ * Plugin Name: WpCarRently Car Rental Manager
  * Plugin URI: http://mage-people.com
  * Description: A Complete Car rental Solution for WordPress by MagePeople.
- * Version: 1.1.6
+ * Version: 1.0.0
  * Author: MagePeople Team
  * Author URI: http://www.mage-people.com/
  * License: GPL v2 or later
@@ -36,7 +36,7 @@ if (!class_exists('MPTBM_Plugin')) {
 				define('MPTBM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 			}
 			if (!defined('MPTBM_PLUGIN_DATA')) {
-				// define('MPTBM_PLUGIN_DATA', get_plugin_data(__FILE__));
+				define('MPTBM_PLUGIN_DATA', get_plugin_data(__FILE__));
 			}
 			if (!defined('MPTBM_PLUGIN_VERSION')) {
 				define('MPTBM_PLUGIN_VERSION', '1.0.7');
@@ -46,7 +46,6 @@ if (!class_exists('MPTBM_Plugin')) {
 				add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
 				self::on_activation_page_create();
 				require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Dependencies.php';
-				require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Geo_Lib.php';
 			} else {
 				require_once MPTBM_PLUGIN_DIR . '/Admin/MPTBM_Quick_Setup.php';
 				//add_action('admin_notices', [$this, 'woocommerce_not_active']);
@@ -82,12 +81,12 @@ if (!class_exists('MPTBM_Plugin')) {
         public static function create_pages(): void
         {
             
-            if (!MP_Global_Function::get_page_by_slug('transport_booking_manual')) {
+            if (!MP_Global_Function::get_page_by_slug('transport_booking')) {
                 $transport_booking_manual = array(
                     'post_type' => 'page',
-                    'post_name' => 'transport_booking_manual',
-                    'post_title' => 'Transport Booking Manual',
-                    'post_content' => '[mptbm_booking price_based="manual" form="inline"]',
+                    'post_name' => 'transport_booking',
+                    'post_title' => 'Transport Booking',
+                    'post_content' => "[wpcb_booking  form='inline' progressbar='yes']",
                     'post_status' => 'publish',
                 );
                 wp_insert_post($transport_booking_manual);

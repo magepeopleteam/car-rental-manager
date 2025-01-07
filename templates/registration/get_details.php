@@ -7,14 +7,11 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly
 delete_transient('original_price_based');
-$restrict_search_country = MP_Global_Function::get_settings('mptbm_map_api_settings', 'mp_country_restriction', 'no');
 
-$country = MP_Global_Function::get_settings('mptbm_map_api_settings', 'mp_country', 'no');
+
 $km_or_mile = MP_Global_Function::get_settings('mp_global_settings', 'km_or_mile', 'km');
 $price_based = $price_based ?? '';
 set_transient('original_price_based', $price_based);
-
-$map = $map ?? 'yes';
 $all_dates = MPTBM_Function::get_all_dates($price_based);
 $form_style = $form_style ?? 'horizontal';
 $form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
@@ -110,8 +107,6 @@ if (sizeof($all_dates) > 0) {
 				<input type='hidden' id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') ?>" />
 				<input type='hidden' id="mptbm_buffer_end_minutes" name="mptbm_buffer_end_minutes" value="<?php echo $buffer_end_minutes; ?>" />
 				<input type='hidden' id="mptbm_first_calendar_date" name="mptbm_first_calendar_date" value="<?php echo $all_dates[0]; ?>" />
-				<input type='hidden' id="mptbm_country" name="mptbm_country" value="<?php echo $country; ?>" />
-				<input type='hidden' id="mptbm_restrict_search_country" name="mptbm_restrict_search_country" value="<?php echo $restrict_search_country; ?>" />
 
 				<div class="inputList">
 					<label class="fdColumn">
@@ -315,7 +310,6 @@ if (sizeof($all_dates) > 0) {
 <?php } else { ?>
 	<div class="dLayout">
 		<h3 class="_textDanger_textCenter">
-
 			<?php
 			$transportaion_label = MPTBM_Function::get_name();
 
