@@ -19,7 +19,7 @@
 				$sections = array(
 					array(
 						'id' => 'mp_global_settings',
-						'title' => esc_html__('Global Settings', 'wpcarrently-car-rental-manager')
+						'title' => esc_html__('Global Settings', 'wpcarrently')
 					),
 				);
 				return array_merge($default_sec, $sections);
@@ -28,15 +28,15 @@
 				$sections = array(
 					array(
 						'id' => 'mp_style_settings',
-						'title' => esc_html__('Style Settings', 'wpcarrently-car-rental-manager')
+						'title' => esc_html__('Style Settings', 'wpcarrently')
 					),
 					array(
 						'id' => 'mp_add_custom_css',
-						'title' => esc_html__('Custom CSS', 'wpcarrently-car-rental-manager')
+						'title' => esc_html__('Custom CSS', 'wpcarrently')
 					),
 					array(
 						'id' => 'mp_basic_license_settings',
-						'title' => esc_html__('Mage-People License', 'wpcarrently-car-rental-manager')
+						'title' => esc_html__('Mage-People License', 'wpcarrently')
 					)
 				);
 				return array_merge($default_sec, $sections);
@@ -47,19 +47,19 @@
 					'mp_global_settings' => apply_filters('filter_mp_global_settings', array(
 						array(
 							'name' => 'disable_block_editor',
-							'label' => esc_html__('Disable Block/Gutenberg Editor', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('If you want to disable WordPress\'s new Block/Gutenberg editor, please select Yes.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Disable Block/Gutenberg Editor', 'wpcarrently'),
+							'desc' => esc_html__('If you want to disable WordPress\'s new Block/Gutenberg editor, please select Yes.', 'wpcarrently'),
 							'type' => 'select',
 							'default' => 'yes',
 							'options' => array(
-								'yes' => esc_html__('Yes', 'wpcarrently-car-rental-manager'),
-								'no' => esc_html__('No', 'wpcarrently-car-rental-manager')
+								'yes' => esc_html__('Yes', 'wpcarrently'),
+								'no' => esc_html__('No', 'wpcarrently')
 							)
 						),
 						array(
 							'name' => 'date_format',
-							'label' => esc_html__('Date Picker Format', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('If you want to change Date Picker Format, please select format. Default  is D d M , yy.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Date Picker Format', 'wpcarrently'),
+							'desc' => esc_html__('If you want to change Date Picker Format, please select format. Default  is D d M , yy.', 'wpcarrently'),
 							'type' => 'select',
 							'default' => 'D d M , yy',
 							'options' => array(
@@ -79,8 +79,8 @@
 						),
 						array(
 							'name' => 'date_format_short',
-							'label' => esc_html__('Short Date  Format', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('If you want to change Short Date  Format, please select format. Default  is M , Y.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Short Date  Format', 'wpcarrently'),
+							'desc' => esc_html__('If you want to change Short Date  Format, please select format. Default  is M , Y.', 'wpcarrently'),
 							'type' => 'select',
 							'default' => 'M , Y',
 							'options' => array(
@@ -106,113 +106,113 @@
 					'mp_style_settings' => apply_filters('filter_mp_style_settings', array(
 						array(
 							'name' => 'theme_color',
-							'label' => esc_html__('Theme Color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Default Theme Color', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Theme Color', 'wpcarrently'),
+							'desc' => esc_html__('Select Default Theme Color', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#F12971'
 						),
 						array(
 							'name' => 'theme_alternate_color',
-							'label' => esc_html__('Theme Alternate Color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Default Theme Alternate  Color that means, if background theme color then it will be text color.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Theme Alternate Color', 'wpcarrently'),
+							'desc' => esc_html__('Select Default Theme Alternate  Color that means, if background theme color then it will be text color.', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#fff'
 						),
 						array(
 							'name' => 'default_text_color',
-							'label' => esc_html__('Default Text Color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Default Text  Color.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Default Text Color', 'wpcarrently'),
+							'desc' => esc_html__('Select Default Text  Color.', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#303030'
 						),
 						array(
 							'name' => 'default_font_size',
-							'label' => esc_html__('Default Font Size', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Default Font Size(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Default Font Size', 'wpcarrently'),
+							'desc' => esc_html__('Type Default Font Size(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '15'
 						),
 						array(
 							'name' => 'font_size_h1',
-							'label' => esc_html__('Font Size h1 Title', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size Main Title(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Font Size h1 Title', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size Main Title(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '35'
 						),
 						array(
 							'name' => 'font_size_h2',
-							'label' => esc_html__('Font Size h2 Title', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size h2 Title(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Font Size h2 Title', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size h2 Title(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '25'
 						),
 						array(
 							'name' => 'font_size_h3',
-							'label' => esc_html__('Font Size h3 Title', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size h3 Title(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Font Size h3 Title', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size h3 Title(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '22'
 						),
 						array(
 							'name' => 'font_size_h4',
-							'label' => esc_html__('Font Size h4 Title', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size h4 Title(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Font Size h4 Title', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size h4 Title(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '20'
 						),
 						array(
 							'name' => 'font_size_h5',
-							'label' => esc_html__('Font Size h5 Title', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size h5 Title(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Font Size h5 Title', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size h5 Title(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '18'
 						),
 						array(
 							'name' => 'font_size_h6',
-							'label' => esc_html__('Font Size h6 Title', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size h6 Title(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Font Size h6 Title', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size h6 Title(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '16'
 						),
 						array(
 							'name' => 'button_font_size',
-							'label' => esc_html__('Button Font Size ', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size Button(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Button Font Size ', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size Button(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '18'
 						),
 						array(
 							'name' => 'button_color',
-							'label' => esc_html__('Button Text Color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Button Text  Color.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Button Text Color', 'wpcarrently'),
+							'desc' => esc_html__('Select Button Text  Color.', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#FFF'
 						),
 						array(
 							'name' => 'button_bg',
-							'label' => esc_html__('Button Background Color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Button Background  Color.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Button Background Color', 'wpcarrently'),
+							'desc' => esc_html__('Select Button Background  Color.', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#222'
 						),
 						array(
 							'name' => 'font_size_label',
-							'label' => esc_html__('Label Font Size ', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Type Font Size Label(in PX Unit).', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Label Font Size ', 'wpcarrently'),
+							'desc' => esc_html__('Type Font Size Label(in PX Unit).', 'wpcarrently'),
 							'type' => 'number',
 							'default' => '18'
 						),
 						array(
 							'name' => 'warning_color',
-							'label' => esc_html__('Warning Color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Warning  Color.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Warning Color', 'wpcarrently'),
+							'desc' => esc_html__('Select Warning  Color.', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#E67C30'
 						),
 						array(
 							'name' => 'section_bg',
-							'label' => esc_html__('Section Background color', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Select Background  Color.', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Section Background color', 'wpcarrently'),
+							'desc' => esc_html__('Select Background  Color.', 'wpcarrently'),
 							'type' => 'color',
 							'default' => '#FAFCFE'
 						),
@@ -220,8 +220,8 @@
 					'mp_add_custom_css' => apply_filters('filter_mp_add_custom_css', array(
 						array(
 							'name' => 'custom_css',
-							'label' => esc_html__('Custom CSS', 'wpcarrently-car-rental-manager'),
-							'desc' => esc_html__('Write Your Custom CSS Code Here', 'wpcarrently-car-rental-manager'),
+							'label' => esc_html__('Custom CSS', 'wpcarrently'),
+							'desc' => esc_html__('Write Your Custom CSS Code Here', 'wpcarrently'),
 							'type' => 'textarea',
 						)
 					))
@@ -231,10 +231,10 @@
 			public function license_settings() {
 				?>
 				<div class="mp_basic_license_settings">
-					<h3><?php esc_html_e('Mage-People License', 'wpcarrently-car-rental-manager'); ?></h3>
+					<h3><?php esc_html_e('Mage-People License', 'wpcarrently'); ?></h3>
 					<div class="_dFlex">
 						<span class="fas fa-info-circle _mR_xs"></span>
-						<i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin  free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'wpcarrently-car-rental-manager'); ?>                    </i>
+						<i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin  free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'wpcarrently'); ?>                    </i>
 					</div>
 					<div class="divider"></div>
 					<div class="dLayout mp_basic_license_area">
@@ -249,13 +249,13 @@
 				<table>
 					<thead>
 					<tr>
-						<th colspan="4"><?php esc_html_e('Plugin Name', 'wpcarrently-car-rental-manager'); ?></th>
-						<th><?php esc_html_e('Type', 'wpcarrently-car-rental-manager'); ?></th>
-						<th><?php esc_html_e('Order No', 'wpcarrently-car-rental-manager'); ?></th>
-						<th colspan="2"><?php esc_html_e('Expire on', 'wpcarrently-car-rental-manager'); ?></th>
-						<th colspan="3"><?php esc_html_e('License Key', 'wpcarrently-car-rental-manager'); ?></th>
-						<th><?php esc_html_e('Status', 'wpcarrently-car-rental-manager'); ?></th>
-						<th colspan="2"><?php esc_html_e('Action', 'wpcarrently-car-rental-manager'); ?></th>
+						<th colspan="4"><?php esc_html_e('Plugin Name', 'wpcarrently'); ?></th>
+						<th><?php esc_html_e('Type', 'wpcarrently'); ?></th>
+						<th><?php esc_html_e('Order No', 'wpcarrently'); ?></th>
+						<th colspan="2"><?php esc_html_e('Expire on', 'wpcarrently'); ?></th>
+						<th colspan="3"><?php esc_html_e('License Key', 'wpcarrently'); ?></th>
+						<th><?php esc_html_e('Status', 'wpcarrently'); ?></th>
+						<th colspan="2"><?php esc_html_e('Action', 'wpcarrently'); ?></th>
 					</tr>
 					</thead>
 					<tbody>

@@ -40,9 +40,9 @@ if (!class_exists('MPTBM_CPT')) {
 		public function mptbm_rent_columns($columns)
 		{
 			unset($columns['date']);
-			$columns['author']      =  esc_html__('Author', 'wpcarrently-car-rental-manager');
-			$columns['date']        = esc_html__('Date', 'wpcarrently-car-rental-manager');
-			$columns['mptbm_day_price'] = esc_html__('Day Price', 'wpcarrently-car-rental-manager');
+			$columns['author']      =  esc_html__('Author', 'wpcarrently');
+			$columns['date']        = esc_html__('Date', 'wpcarrently');
+			$columns['mptbm_day_price'] = esc_html__('Day Price', 'wpcarrently');
 			return $columns;
 		}
 
@@ -67,29 +67,29 @@ if (!class_exists('MPTBM_CPT')) {
 				'singular_name' => $label,
 				'menu_name' => $label,
 				'name_admin_bar' => $label,
-				'archives' => $label . ' ' . esc_html__(' List', 'wpcarrently-car-rental-manager'),
-				'attributes' => $label . ' ' . esc_html__(' List', 'wpcarrently-car-rental-manager'),
-				'parent_item_colon' => $label . ' ' . esc_html__(' Item:', 'wpcarrently-car-rental-manager'),
-				'all_items' => esc_html__('All ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'add_new_item' => esc_html__('Add New ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'add_new' => esc_html__('Add New ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'new_item' => esc_html__('New ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'edit_item' => esc_html__('Edit ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'update_item' => esc_html__('Update ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'view_item' => esc_html__('View ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'view_items' => esc_html__('View ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'search_items' => esc_html__('Search ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'not_found' => $label . ' ' . esc_html__(' Not found', 'wpcarrently-car-rental-manager'),
-				'not_found_in_trash' => $label . ' ' . esc_html__(' Not found in Trash', 'wpcarrently-car-rental-manager'),
-				'featured_image' => $label . ' ' . esc_html__(' Feature Image', 'wpcarrently-car-rental-manager'),
-				'set_featured_image' => esc_html__('Set ', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently-car-rental-manager'),
-				'remove_featured_image' => esc_html__('Remove ', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently-car-rental-manager'),
-				'use_featured_image' => esc_html__('Use as featured image', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently-car-rental-manager'),
-				'insert_into_item' => esc_html__('Insert into ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'uploaded_to_this_item' => esc_html__('Uploaded to this ', 'wpcarrently-car-rental-manager') . ' ' . $label,
-				'items_list' => $label . ' ' . esc_html__(' list', 'wpcarrently-car-rental-manager'),
-				'items_list_navigation' => $label . ' ' . esc_html__(' list navigation', 'wpcarrently-car-rental-manager'),
-				'filter_items_list' => esc_html__('Filter ', 'wpcarrently-car-rental-manager') . ' ' . $label . ' ' . esc_html__(' list', 'wpcarrently-car-rental-manager')
+				'archives' => $label . ' ' . esc_html__(' List', 'wpcarrently'),
+				'attributes' => $label . ' ' . esc_html__(' List', 'wpcarrently'),
+				'parent_item_colon' => $label . ' ' . esc_html__(' Item:', 'wpcarrently'),
+				'all_items' => esc_html__('All ', 'wpcarrently') . ' ' . $label,
+				'add_new_item' => esc_html__('Add New ', 'wpcarrently') . ' ' . $label,
+				'add_new' => esc_html__('Add New ', 'wpcarrently') . ' ' . $label,
+				'new_item' => esc_html__('New ', 'wpcarrently') . ' ' . $label,
+				'edit_item' => esc_html__('Edit ', 'wpcarrently') . ' ' . $label,
+				'update_item' => esc_html__('Update ', 'wpcarrently') . ' ' . $label,
+				'view_item' => esc_html__('View ', 'wpcarrently') . ' ' . $label,
+				'view_items' => esc_html__('View ', 'wpcarrently') . ' ' . $label,
+				'search_items' => esc_html__('Search ', 'wpcarrently') . ' ' . $label,
+				'not_found' => $label . ' ' . esc_html__(' Not found', 'wpcarrently'),
+				'not_found_in_trash' => $label . ' ' . esc_html__(' Not found in Trash', 'wpcarrently'),
+				'featured_image' => $label . ' ' . esc_html__(' Feature Image', 'wpcarrently'),
+				'set_featured_image' => esc_html__('Set ', 'wpcarrently') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently'),
+				'remove_featured_image' => esc_html__('Remove ', 'wpcarrently') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently'),
+				'use_featured_image' => esc_html__('Use as featured image', 'wpcarrently') . ' ' . $label . ' ' . esc_html__(' featured image', 'wpcarrently'),
+				'insert_into_item' => esc_html__('Insert into ', 'wpcarrently') . ' ' . $label,
+				'uploaded_to_this_item' => esc_html__('Uploaded to this ', 'wpcarrently') . ' ' . $label,
+				'items_list' => $label . ' ' . esc_html__(' list', 'wpcarrently'),
+				'items_list_navigation' => $label . ' ' . esc_html__(' list navigation', 'wpcarrently'),
+				'filter_items_list' => esc_html__('Filter ', 'wpcarrently') . ' ' . $label . ' ' . esc_html__(' list', 'wpcarrently')
 			];
 			$args = [
 				'public' => false,
@@ -108,7 +108,7 @@ if (!class_exists('MPTBM_CPT')) {
 			register_post_type($cpt, $args);
 			$ex_args = array(
 				'public' => false,
-				'label' => esc_html__('Extra Services', 'wpcarrently-car-rental-manager'),
+				'label' => esc_html__('Extra Services', 'wpcarrently'),
 				'supports' => array('title'),
 				'show_in_menu' => 'edit.php?post_type=' . $cpt,
 				'capability_type' => 'post',
@@ -122,7 +122,7 @@ if (!class_exists('MPTBM_CPT')) {
 
 			$dx_args = array(
 				'public' => false,
-				'label' => esc_html__('Operation Areas', 'wpcarrently-car-rental-manager'),
+				'label' => esc_html__('Operation Areas', 'wpcarrently'),
 				'supports' => array('title'),
 				'show_in_menu' => 'edit.php?post_type=' . $cpt,
 				'capability_type' => 'post',
@@ -135,16 +135,16 @@ if (!class_exists('MPTBM_CPT')) {
 			);
 
 			$taxonomy_labels = array(
-				'name' => esc_html__('Locations', 'wpcarrently-car-rental-manager'),
-				'singular_name' => esc_html__('Location', 'wpcarrently-car-rental-manager'),
-				'menu_name' => esc_html__('Locations', 'wpcarrently-car-rental-manager'),
-				'all_items' => esc_html__('All Locations', 'wpcarrently-car-rental-manager'),
-				'edit_item' => esc_html__('Edit Location', 'wpcarrently-car-rental-manager'),
-				'view_item' => esc_html__('View Location', 'wpcarrently-car-rental-manager'),
-				'update_item' => esc_html__('Update Location', 'wpcarrently-car-rental-manager'),
-				'add_new_item' => esc_html__('Add New Location', 'wpcarrently-car-rental-manager'),
-				'new_item_name' => esc_html__('New Location Name', 'wpcarrently-car-rental-manager'),
-				'search_items' => esc_html__('Search Locations', 'wpcarrently-car-rental-manager'),
+				'name' => esc_html__('Locations', 'wpcarrently'),
+				'singular_name' => esc_html__('Location', 'wpcarrently'),
+				'menu_name' => esc_html__('Locations', 'wpcarrently'),
+				'all_items' => esc_html__('All Locations', 'wpcarrently'),
+				'edit_item' => esc_html__('Edit Location', 'wpcarrently'),
+				'view_item' => esc_html__('View Location', 'wpcarrently'),
+				'update_item' => esc_html__('Update Location', 'wpcarrently'),
+				'add_new_item' => esc_html__('Add New Location', 'wpcarrently'),
+				'new_item_name' => esc_html__('New Location Name', 'wpcarrently'),
+				'search_items' => esc_html__('Search Locations', 'wpcarrently'),
 			);
 
 			$taxonomy_args = array(

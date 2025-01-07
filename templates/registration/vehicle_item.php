@@ -83,9 +83,9 @@ if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
                     <?php } ?>
                     <div class="_min_150_mL_xs">
                         <h4 class="textCenter"> <?php echo wp_kses_post(wc_price($raw_price)); ?></h4>
-                        <button type="button" class="_mpBtn_xs_w_150 mptbm_transport_select" data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" data-transport-price="<?php echo esc_attr($raw_price); ?>" data-post-id="<?php echo esc_attr($post_id); ?>" data-open-text="<?php esc_attr_e('Select Car', 'wpcarrently-car-rental-manager'); ?>" data-close-text="<?php esc_html_e('Selected', 'wpcarrently-car-rental-manager'); ?>" data-open-icon="" data-close-icon="fas fa-check mR_xs">
+                        <button type="button" class="_mpBtn_xs_w_150 mptbm_transport_select" data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" data-transport-price="<?php echo esc_attr($raw_price); ?>" data-post-id="<?php echo esc_attr($post_id); ?>" data-open-text="<?php esc_attr_e('Select Car', 'wpcarrently'); ?>" data-close-text="<?php esc_html_e('Selected', 'wpcarrently'); ?>" data-open-icon="" data-close-icon="fas fa-check mR_xs">
                             <span class="" data-icon></span>
-                            <span data-text><?php esc_html_e('Select Car', 'wpcarrently-car-rental-manager'); ?></span>
+                            <span data-text><?php esc_html_e('Select Car', 'wpcarrently'); ?></span>
                         </button>
                     </div>
                 </div>

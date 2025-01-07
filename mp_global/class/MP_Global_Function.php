@@ -202,13 +202,13 @@
 			public static function check_licensee_date($date) {
 				if ($date) {
 					if ($date == 'lifetime') {
-						return esc_html__('Lifetime', 'wpcarrently-car-rental-manager');
+						return esc_html__('Lifetime', 'wpcarrently');
 					}
 					else if (strtotime(current_time('Y-m-d H:i')) < strtotime(date('Y-m-d H:i', strtotime($date)))) {
 						return MP_Global_Function::date_format($date, 'full');
 					}
 					else {
-						return esc_html__('Expired', 'wpcarrently-car-rental-manager');
+						return esc_html__('Expired', 'wpcarrently');
 					}
 				}
 				return $date;
@@ -443,13 +443,13 @@
 			}
 			public static function week_day(): array {
 				return [
-					'monday' => esc_html__('Monday', 'wpcarrently-car-rental-manager'),
-					'tuesday' => esc_html__('Tuesday', 'wpcarrently-car-rental-manager'),
-					'wednesday' => esc_html__('Wednesday', 'wpcarrently-car-rental-manager'),
-					'thursday' => esc_html__('Thursday', 'wpcarrently-car-rental-manager'),
-					'friday' => esc_html__('Friday', 'wpcarrently-car-rental-manager'),
-					'saturday' => esc_html__('Saturday', 'wpcarrently-car-rental-manager'),
-					'sunday' => esc_html__('Sunday', 'wpcarrently-car-rental-manager'),
+					'monday' => esc_html__('Monday', 'wpcarrently'),
+					'tuesday' => esc_html__('Tuesday', 'wpcarrently'),
+					'wednesday' => esc_html__('Wednesday', 'wpcarrently'),
+					'thursday' => esc_html__('Thursday', 'wpcarrently'),
+					'friday' => esc_html__('Friday', 'wpcarrently'),
+					'saturday' => esc_html__('Saturday', 'wpcarrently'),
+					'sunday' => esc_html__('Sunday', 'wpcarrently'),
 				];
 			}
 			public static function get_plugin_data($data) {
@@ -591,7 +591,7 @@
 			//***********************************//
 			public static function license_error_text($response, $license_data, $plugin_name) {
 				if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
-					$message = (is_wp_error($response) && !empty($response->get_error_message())) ? $response->get_error_message() : esc_html__('An error occurred, please try again.', 'wpcarrently-car-rental-manager');
+					$message = (is_wp_error($response) && !empty($response->get_error_message())) ? $response->get_error_message() : esc_html__('An error occurred, please try again.', 'wpcarrently');
 				}
 				else {
 					if (false === $license_data->success) {
@@ -600,32 +600,32 @@
 								$message = esc_html__('Your license key expired on ') . ' ' . date_i18n(get_option('date_format'), strtotime($license_data->expires, current_time('timestamp')));
 								break;
 							case 'revoked':
-								$message = esc_html__('Your license key has been disabled.', 'wpcarrently-car-rental-manager');
+								$message = esc_html__('Your license key has been disabled.', 'wpcarrently');
 								break;
 							case 'missing':
-								$message = esc_html__('Missing license.', 'wpcarrently-car-rental-manager');
+								$message = esc_html__('Missing license.', 'wpcarrently');
 								break;
 							case 'invalid':
-								$message = esc_html__('Invalid license.', 'wpcarrently-car-rental-manager');
+								$message = esc_html__('Invalid license.', 'wpcarrently');
 								break;
 							case 'site_inactive':
-								$message = esc_html__('Your license is not active for this URL.', 'wpcarrently-car-rental-manager');
+								$message = esc_html__('Your license is not active for this URL.', 'wpcarrently');
 								break;
 							case 'item_name_mismatch':
-								$message = esc_html__('This appears to be an invalid license key for .', 'wpcarrently-car-rental-manager') . ' ' . $plugin_name;
+								$message = esc_html__('This appears to be an invalid license key for .', 'wpcarrently') . ' ' . $plugin_name;
 								break;
 							case 'no_activations_left':
-								$message = esc_html__('Your license key has reached its activation limit.', 'wpcarrently-car-rental-manager');
+								$message = esc_html__('Your license key has reached its activation limit.', 'wpcarrently');
 								break;
 							default:
-								$message = esc_html__('An error occurred, please try again.', 'wpcarrently-car-rental-manager');
+								$message = esc_html__('An error occurred, please try again.', 'wpcarrently');
 								break;
 						}
 					}
 					else {
 						$payment_id = $license_data->payment_id;
 						$expire = $license_data->expires;
-						$message = esc_html__('Success, License Key is valid for the plugin', 'wpcarrently-car-rental-manager') . ' ' . $plugin_name . ' ' . esc_html__('Your Order id is', 'wpcarrently-car-rental-manager') . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__('Validity of this licenses is', 'wpcarrently-car-rental-manager') . ' ' . MP_Global_Function::check_licensee_date($expire);
+						$message = esc_html__('Success, License Key is valid for the plugin', 'wpcarrently') . ' ' . $plugin_name . ' ' . esc_html__('Your Order id is', 'wpcarrently') . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__('Validity of this licenses is', 'wpcarrently') . ' ' . MP_Global_Function::check_licensee_date($expire);
 					}
 				}
 				return $message;

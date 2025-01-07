@@ -8,7 +8,7 @@
  * Author URI: http://www.mage-people.com/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wpcarrently-car-rental-manager
+ * Text Domain: wpcarrently
  * Domain Path: /languages/
  */
 if (!defined('ABSPATH')) {
@@ -57,7 +57,7 @@ if (!class_exists('MPTBM_Plugin')) {
         {
             $mptbm_quick_setup_done = get_option('mptbm_quick_setup_done');
             if ($plugin == plugin_basename(__FILE__) && $mptbm_quick_setup_done != 'yes') {
-                exit(wp_redirect(admin_url('edit.php?post_type=mptbm_rent&page=mptbm_quick_setup')));
+                exit(wp_redirect(esc_url(admin_url('edit.php?post_type=mptbm_rent&page=mptbm_quick_setup'))));
             }
         }
 
@@ -65,7 +65,7 @@ if (!class_exists('MPTBM_Plugin')) {
         {
             $mptbm_quick_setup_done = get_option('mptbm_quick_setup_done');
             if ($plugin == plugin_basename(__FILE__) && $mptbm_quick_setup_done != 'yes') {
-                exit(wp_redirect(admin_url('admin.php?post_type=mptbm_rent&page=mptbm_quick_setup')));
+                exit(wp_redirect(esc_url(admin_url('admin.php?post_type=mptbm_rent&page=mptbm_quick_setup'))));
             }
         }
 

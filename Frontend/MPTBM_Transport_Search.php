@@ -39,7 +39,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			$map = $display_map == 'disable' ? 'no' : $map;
 			ob_start();
 			do_shortcode('[shop_messages]');
-			echo ob_get_clean();
+			echo wp_kses_post(ob_get_clean());
 			//echo '<pre>';print_r($params);echo '</pre>';
 			include(MPTBM_Function::template_path('registration/registration_layout.php'));
 		}

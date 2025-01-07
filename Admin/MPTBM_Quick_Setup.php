@@ -14,11 +14,11 @@
 			public function quick_setup_menu() {
 				$status = MP_Global_Function::check_woocommerce();
 				if ($status == 1) {
-					add_submenu_page('edit.php?post_type=mptbm_rent', esc_html__('Quick Setup', 'wpcarrently-car-rental-manager'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'wpcarrently-car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
-					add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'wpcarrently-car-rental-manager'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'wpcarrently-car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
+					add_submenu_page('edit.php?post_type=mptbm_rent', esc_html__('Quick Setup', 'wpcarrently'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
+					add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'wpcarrently'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 				} else {
-					add_menu_page(esc_html__('Transportation', 'wpcarrently-car-rental-manager'), esc_html__('Transportation', 'wpcarrently-car-rental-manager'), 'manage_options', 'mptbm_rent', array($this, 'quick_setup'), 'dashicons-admin-site-alt2', 6);
-					add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'wpcarrently-car-rental-manager'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'wpcarrently-car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
+					add_menu_page(esc_html__('Transportation', 'wpcarrently'), esc_html__('Transportation', 'wpcarrently'), 'manage_options', 'mptbm_rent', array($this, 'quick_setup'), 'dashicons-admin-site-alt2', 6);
+					add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'wpcarrently'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 				}
 			}
 			public function quick_setup() {
@@ -123,21 +123,21 @@
 											<span class="mp_zero" data-icon></span>
 											<span class="mp_zero" data-text>1</span>
 										</h4>
-										<h6 class="circleTitle" data-class><?php esc_html_e('Welcome', 'wpcarrently-car-rental-manager'); ?></h6>
+										<h6 class="circleTitle" data-class><?php esc_html_e('Welcome', 'wpcarrently'); ?></h6>
 									</div>
 									<div data-tabs-target-next="#mptbm_qs_general" class="tabItemNext" data-open-text="2" data-close-text="" data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
 										<h4 class="circleIcon" data-class>
 											<span class="mp_zero" data-icon></span>
 											<span class="mp_zero" data-text>2</span>
 										</h4>
-										<h6 class="circleTitle" data-class><?php esc_html_e('General', 'wpcarrently-car-rental-manager'); ?></h6>
+										<h6 class="circleTitle" data-class><?php esc_html_e('General', 'wpcarrently'); ?></h6>
 									</div>
 									<div data-tabs-target-next="#mptbm_qs_done" class="tabItemNext" data-open-text="3" data-close-text="" data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
 										<h4 class="circleIcon" data-class>
 											<span class="mp_zero" data-icon></span>
 											<span class="mp_zero" data-text>3</span>
 										</h4>
-										<h6 class="circleTitle" data-class><?php esc_html_e('Done', 'wpcarrently-car-rental-manager'); ?></h6>
+										<h6 class="circleTitle" data-class><?php esc_html_e('Done', 'wpcarrently'); ?></h6>
 									</div>
 								</div>
 								<div class="tabsContentNext _infoLayout_mT">
@@ -150,11 +150,11 @@
 								<?php if ($status == 1) { ?>
 									<div class="justifyBetween">
 										<button type="button" class="_mpBtn_dBR nextTab_prev">
-											<span>&longleftarrow;<?php esc_html_e('Previous', 'wpcarrently-car-rental-manager'); ?></span>
+											<span>&longleftarrow;<?php esc_html_e('Previous', 'wpcarrently'); ?></span>
 										</button>
 										<div></div>
 										<button type="button" class="_themeButton_dBR nextTab_next">
-											<span><?php esc_html_e('Next', 'wpcarrently-car-rental-manager'); ?>&longrightarrow;</span>
+											<span><?php esc_html_e('Next', 'wpcarrently'); ?>&longrightarrow;</span>
 										</button>
 									</div>
 								<?php } ?>
@@ -168,16 +168,16 @@
 				$status = MP_Global_Function::check_woocommerce();
 				?>
 				<div data-tabs-next="#mptbm_qs_welcome">
-					<h2><?php esc_html_e('Transportation Booking Manager For Woocommerce Plugin', 'wpcarrently-car-rental-manager'); ?></h2>
-					<p class="mTB_xs"><?php esc_html_e('Thanks for choosing Transportation Booking Manager Plugin for WooCommerce for your site, Please go step by step and choose some options to get started.', 'wpcarrently-car-rental-manager'); ?></p>
+					<h2><?php esc_html_e('Transportation Booking Manager For Woocommerce Plugin', 'wpcarrently'); ?></h2>
+					<p class="mTB_xs"><?php esc_html_e('Thanks for choosing Transportation Booking Manager Plugin for WooCommerce for your site, Please go step by step and choose some options to get started.', 'wpcarrently'); ?></p>
 					<div class="_dLayout_mT_alignCenter justifyBetween">
 						<h5>
 							<?php if ($status == 1) {
-								esc_html_e('Woocommerce already installed and activated', 'wpcarrently-car-rental-manager');
+								esc_html_e('Woocommerce already installed and activated', 'wpcarrently');
 							} elseif ($status == 0) {
-								esc_html_e('Woocommerce need to install and active', 'wpcarrently-car-rental-manager');
+								esc_html_e('Woocommerce need to install and active', 'wpcarrently');
 							} else {
-								esc_html_e('Woocommerce already install , please activate it', 'wpcarrently-car-rental-manager');
+								esc_html_e('Woocommerce already install , please activate it', 'wpcarrently');
 							} ?>
 						</h5>
 						<?php if ($status == 1) { ?>
@@ -185,9 +185,9 @@
 								<span class="fas fa-check-circle textSuccess"></span>
 							</h5>
 						<?php } elseif ($status == 0) { ?>
-							<button class="_warningButton_dBR" type="submit" name="install_and_active_woo_btn"><?php esc_html_e('Install & Active Now', 'wpcarrently-car-rental-manager'); ?></button>
+							<button class="_warningButton_dBR" type="submit" name="install_and_active_woo_btn"><?php esc_html_e('Install & Active Now', 'wpcarrently'); ?></button>
 						<?php } else { ?>
-							<button class="_themeButton_dBR" type="submit" name="active_woo_btn"><?php esc_html_e('Active Now', 'wpcarrently-car-rental-manager'); ?></button>
+							<button class="_themeButton_dBR" type="submit" name="active_woo_btn"><?php esc_html_e('Active Now', 'wpcarrently'); ?></button>
 						<?php } ?>
 					</div>
 				</div>
@@ -199,25 +199,25 @@
 				?>
 				<div data-tabs-next="#mptbm_qs_general">
 					<div class="section">
-						<h2><?php esc_html_e('General settings', 'wpcarrently-car-rental-manager'); ?></h2>
-						<p class="mTB_xs"><?php esc_html_e('Choose some general option.', 'wpcarrently-car-rental-manager'); ?></p>
+						<h2><?php esc_html_e('General settings', 'wpcarrently'); ?></h2>
+						<p class="mTB_xs"><?php esc_html_e('Choose some general option.', 'wpcarrently'); ?></p>
 						<div class="_dLayout_mT">
 							<label class="_fullWidth">
-								<span class="min_200"><?php esc_html_e('Transportation Label:', 'wpcarrently-car-rental-manager'); ?></span>
+								<span class="min_200"><?php esc_html_e('Transportation Label:', 'wpcarrently'); ?></span>
 								<input type="text" class="formControl" name="mptbm_label" value='<?php echo esc_attr($label); ?>'/>
 							</label>
 							<i class="info_text">
 								<span class="fas fa-info-circle"></span>
-								<?php esc_html_e('It will change the Transportation post type label on the entire plugin.', 'wpcarrently-car-rental-manager'); ?>
+								<?php esc_html_e('It will change the Transportation post type label on the entire plugin.', 'wpcarrently'); ?>
 							</i>
 							<div class="divider"></div>
 							<label class="_fullWidth">
-								<span class="min_200"><?php esc_html_e('Transportation Slug:', 'wpcarrently-car-rental-manager'); ?></span>
+								<span class="min_200"><?php esc_html_e('Transportation Slug:', 'wpcarrently'); ?></span>
 								<input type="text" class="formControl" name="mptbm_slug" value='<?php echo esc_attr($slug); ?>'/>
 							</label>
 							<i class="info_text">
 								<span class="fas fa-info-circle"></span>
-								<?php esc_html_e('It will change the Transportation slug on the entire plugin. Remember after changing this slug you need to flush permalinks. Just go to Settings->Permalinks hit the Save Settings button', 'wpcarrently-car-rental-manager'); ?>
+								<?php esc_html_e('It will change the Transportation slug on the entire plugin. Remember after changing this slug you need to flush permalinks. Just go to Settings->Permalinks hit the Save Settings button', 'wpcarrently'); ?>
 							</i>
 						</div>
 					</div>
@@ -227,10 +227,10 @@
 			public function setup_content_done() {
 				?>
 				<div data-tabs-next="#mptbm_qs_done">
-					<h2><?php esc_html_e('Finalize Setup', 'wpcarrently-car-rental-manager'); ?></h2>
-					<p class="mTB_xs"><?php esc_html_e('You are about to Finish & Save Transportation Booking Manager For Woocommerce Plugin setup process', 'wpcarrently-car-rental-manager'); ?></p>
+					<h2><?php esc_html_e('Finalize Setup', 'wpcarrently'); ?></h2>
+					<p class="mTB_xs"><?php esc_html_e('You are about to Finish & Save Transportation Booking Manager For Woocommerce Plugin setup process', 'wpcarrently'); ?></p>
 					<div class="mT allCenter">
-						<button type="submit" name="finish_quick_setup" class="_themeButton_dBR"><?php esc_html_e('Finish & Save', 'wpcarrently-car-rental-manager'); ?></button>
+						<button type="submit" name="finish_quick_setup" class="_themeButton_dBR"><?php esc_html_e('Finish & Save', 'wpcarrently'); ?></button>
 					</div>
 				</div>
 				<?php

@@ -21,7 +21,7 @@ if (!class_exists('MPTBM_Dependencies')) {
         public function language_load(): void
         {
             $plugin_dir = basename(dirname(__DIR__)) . "/languages/";
-            load_plugin_textdomain('wpcarrently-car-rental-manager', false, $plugin_dir);
+            load_plugin_textdomain('wpcarrently', false, $plugin_dir);
         }
         private function load_file(): void
         {

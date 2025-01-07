@@ -13,7 +13,7 @@
 			}
 			public function guideline_menu() {
 				$cpt = MPTBM_Function::get_cpt();
-				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Guideline', 'wpcarrently-car-rental-manager'), '<span>' . esc_html__('Guideline', 'wpcarrently-car-rental-manager') . '</span>', 'manage_options', 'mptbm_guideline_page', array($this, 'guideline_page'));
+				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Guideline', 'wpcarrently'), '<span>' . esc_html__('Guideline', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_guideline_page', array($this, 'guideline_page'));
 			}
 			public function guideline_page() {
 				$label = MPTBM_Function::get_name();
@@ -21,7 +21,7 @@
 				<div class="wrap"></div>
 				<div class="mpStyle">
 					<div class="_dShadow_6_adminLayout">
-						<h2 class="textCenter"><?php echo esc_html($label) . '  ' . esc_html__('Shortcode', 'wpcarrently-car-rental-manager'); ?></h2>
+						<h2 class="textCenter"><?php echo esc_html($label) . '  ' . esc_html__('Shortcode', 'wpcarrently'); ?></h2>
 						<div class="divider"></div>
 						<table class="table table-striped table-bordered" style="background:#EEF5E4;border-radius:10px;">
 							<tbody>

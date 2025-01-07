@@ -15,35 +15,35 @@
 			public function tab_content($post_id) {
 				?>
 				<div class="tabsItem" data-tabs="#wbtm_settings_tax">
-					<h3><?php esc_html_e('Tax Configuration', 'wpcarrently-car-rental-manager'); ?></h3>
-					<p><?php esc_html_e('Tax Configuration settings.', 'wpcarrently-car-rental-manager'); ?></p>
+					<h3><?php esc_html_e('Tax Configuration', 'wpcarrently'); ?></h3>
+					<p><?php esc_html_e('Tax Configuration settings.', 'wpcarrently'); ?></p>
 					<?php
 						$tax_status = MP_Global_Function::get_post_info($post_id, '_tax_status');
 						$tax_class = MP_Global_Function::get_post_info($post_id, '_tax_class');
 						$all_tax_class = MP_Global_Function::all_tax_list();
 					?>
 					<section class="bg-light">
-						<h6><?php esc_html_e('Tax Settings Information', 'wpcarrently-car-rental-manager'); ?></h6>
-						<span ><?php esc_html_e('Configure and manage tax settings', 'wpcarrently-car-rental-manager'); ?></span>
+						<h6><?php esc_html_e('Tax Settings Information', 'wpcarrently'); ?></h6>
+						<span ><?php esc_html_e('Configure and manage tax settings', 'wpcarrently'); ?></span>
 					</section>
 					<?php if (get_option('woocommerce_calc_taxes') == 'yes') { ?>
 						<div class="">
 							<section>
 								<label class="label">
 									<div>
-										<h6><?php esc_html_e('Tax status', 'wpcarrently-car-rental-manager'); ?></h6>
-										<span class="desc"><?php esc_html_e('Select tax status type.', 'wpcarrently-car-rental-manager'); ?></span>
+										<h6><?php esc_html_e('Tax status', 'wpcarrently'); ?></h6>
+										<span class="desc"><?php esc_html_e('Select tax status type.', 'wpcarrently'); ?></span>
 									</div>
 									<select class="formControl max_300" name="_tax_status">
-										<option disabled selected><?php esc_html_e('Please Select', 'bus-ticket-booking-with-seat-reservation');  ?></option>
+										<option disabled selected><?php esc_html_e('Please Select', 'wpcarrently');  ?></option>
 										<option value="taxable" <?php echo esc_attr($tax_status == 'taxable' ? 'selected' : ''); ?>>
-											<?php esc_html_e('Taxable', 'wpcarrently-car-rental-manager'); ?>
+											<?php esc_html_e('Taxable', 'wpcarrently'); ?>
 										</option>
 										<option value="shipping" <?php echo esc_attr($tax_status == 'shipping' ? 'selected' : ''); ?>>
-											<?php esc_html_e('Shipping only', 'wpcarrently-car-rental-manager'); ?>
+											<?php esc_html_e('Shipping only', 'wpcarrently'); ?>
 										</option>
 										<option value="none" <?php echo esc_attr($tax_status == 'none' ? 'selected' : ''); ?>>
-											<?php esc_html_e('None', 'wpcarrently-car-rental-manager'); ?>
+											<?php esc_html_e('None', 'wpcarrently'); ?>
 										</option>
 									</select>
 								</label>
@@ -52,13 +52,13 @@
 							<section>
 								<label class="label">
 									<div>
-										<h6><?php esc_html_e('Tax class', 'wpcarrently-car-rental-manager'); ?></h6>
-										<span class="desc"><?php esc_html_e('Select tax class.', 'wpcarrently-car-rental-manager'); ?></span>
+										<h6><?php esc_html_e('Tax class', 'wpcarrently'); ?></h6>
+										<span class="desc"><?php esc_html_e('Select tax class.', 'wpcarrently'); ?></span>
 									</div>
 									<select class="formControl max_300" name="_tax_class">
-										<option disabled selected><?php esc_html_e('Please Select', 'bus-ticket-booking-with-seat-reservation');  ?></option>
+										<option disabled selected><?php esc_html_e('Please Select', 'wpcarrently');  ?></option>
 										<option value="standard" <?php echo esc_attr($tax_class == 'standard' ? 'selected' : ''); ?>>
-											<?php esc_html_e('Standard', 'wpcarrently-car-rental-manager'); ?>
+											<?php esc_html_e('Standard', 'wpcarrently'); ?>
 										</option>
 										<?php if (sizeof($all_tax_class) > 0) { ?>
 											<?php foreach ($all_tax_class as $key => $class) { ?>
@@ -73,7 +73,7 @@
 						</div>
 					<?php }else{ ?>
 						<div class="_dLayout_dFlex_justifyCenter">
-							<?php MPTBM_Layout::msg(esc_html__('Tax not active. Please add Tax settings from woocommerce.', 'wpcarrently-car-rental-manager')); ?>
+							<?php MPTBM_Layout::msg(esc_html__('Tax not active. Please add Tax settings from woocommerce.', 'wpcarrently')); ?>
 						</div>
 					<?php } ?>
 				</div>

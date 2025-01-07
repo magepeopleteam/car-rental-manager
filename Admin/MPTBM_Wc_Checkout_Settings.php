@@ -61,7 +61,7 @@
 			}
 			public function mptbm_save_checkout_fields_settings() {
 				if (!current_user_can('administrator')) {
-					wp_die(esc_html__('You do not have sufficient permissions to access this page.'));
+					wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'wpcarrently'));
 				}
 				$action = isset($_POST['action']) ? sanitize_text_field($_POST['action']) : null;
 				if (isset($action) && $action == 'mptbm_wc_checkout_settings') {
