@@ -102,11 +102,11 @@ if (sizeof($all_dates) > 0) {
 				<input type="hidden" id="mptbm_km_or_mile" name="mptbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
 				<input type="hidden" name="mptbm_price_based" value="<?php echo esc_attr($price_based); ?>" />
 				<input type="hidden" name="mptbm_post_id" value="" />
-				<input type='hidden' id="mptbm_enable_view_search_result_page" name="mptbm_enable_view_search_result_page" value="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page') ?>" />
+				<input type="hidden" id="mptbm_enable_view_search_result_page" name="mptbm_enable_view_search_result_page" value="<?php echo esc_attr( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_search_result_page' ) ); ?>" />
 				<input type='hidden' id="mptbm_enable_return_in_different_date" name="mptbm_enable_return_in_different_date" value="yes" />
-				<input type='hidden' id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') ?>" />
-				<input type='hidden' id="mptbm_buffer_end_minutes" name="mptbm_buffer_end_minutes" value="<?php echo $buffer_end_minutes; ?>" />
-				<input type='hidden' id="mptbm_first_calendar_date" name="mptbm_first_calendar_date" value="<?php echo $all_dates[0]; ?>" />
+				<input type="hidden" id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo esc_attr( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
+				<input type="hidden" id="mptbm_buffer_end_minutes" name="mptbm_buffer_end_minutes" value="<?php echo esc_attr( $buffer_end_minutes ); ?>" />
+				<input type="hidden" id="mptbm_first_calendar_date" name="mptbm_first_calendar_date" value="<?php echo esc_attr( $all_dates[0] ); ?>" />
 
 				<div class="inputList">
 					<label class="fdColumn">
@@ -188,7 +188,7 @@ if (sizeof($all_dates) > 0) {
 				<?php
 				if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'wpcarrently'); ?></a>
+					<a href="<?php echo esc_url( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'wpcarrently' ); ?></a>
 					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently'); ?>
 				<?php
 				}
@@ -208,7 +208,7 @@ if (sizeof($all_dates) > 0) {
 				<?php
 				if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'wpcarrently'); ?></a>
+					<a href="<?php echo esc_url( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'wpcarrently' ); ?></a>
 					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently'); ?>
 				<?php
 				}

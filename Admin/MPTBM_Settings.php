@@ -21,7 +21,7 @@ if (!class_exists('MPTBM_Settings')) {
 				MPTBM_PLUGIN_VERSION
 			);
 			$cpt = MPTBM_Function::get_cpt();
-			aadd_meta_box('mp_meta_box_panel', $label, array($this, 'settings'), $cpt, 'normal', 'high');
+			add_meta_box('mp_meta_box_panel', $label, array($this, 'settings'), $cpt, 'normal', 'high');
 		}
 		//******************************//
 		public function settings()
