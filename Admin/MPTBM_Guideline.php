@@ -27,7 +27,7 @@
 							<tbody>
 							<tr>
 								<td>Shortcode:</td>
-								<td colspan="2"><code>[mptbm_booking price_based='manual' form='horizontal' progressbar='yes']</code></td>
+								<td colspan="2"><code>[wpcb_booking form='horizontal' progressbar='yes']</code></td>
 							</tr>
 							
 							<tr>

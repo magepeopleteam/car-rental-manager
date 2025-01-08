@@ -183,7 +183,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				$price = $values['mptbm_tp'] ?? '';
 
 				$item->add_meta_data(esc_html__('Pickup Location ', 'wpcarrently'), $start_location);
-				$item->add_meta_data(esc_html__('Drop-Off Location ', 'wpcarrently'), $end_location);
+				$item->add_meta_data(esc_html__('Return Location ', 'wpcarrently'), $end_location);
 				$price_type = MP_Global_Function::get_post_info($post_id, 'mptbm_price_based');
 				if ($price_type !== 'manual') {
 					$item->add_meta_data(esc_html__('Approximate Distance ', 'wpcarrently'), $distance_text);
@@ -492,7 +492,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 						</li>
 						<li>
 							<span class="fas fa-map-marker-alt"></span>
-							<h6 class="_mR_xs"><?php esc_html_e('Drop-Off Location', 'wpcarrently'); ?> :</h6>
+							<h6 class="_mR_xs"><?php esc_html_e('Return Location', 'wpcarrently'); ?> :</h6>
 							<span><?php echo esc_html($end_location); ?></span>
 						</li>
 						<?php

@@ -195,13 +195,13 @@ if (sizeof($all_dates) > 0) {
 				?>
 				<div class="inputList">
 					<label class="fdColumn mptbm_manual_end_place">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Drop-Off Location', 'wpcarrently'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'wpcarrently'); ?></span>
 						<?php if ($price_based == 'manual') { ?>
 							<select class="formControl mptbm_map_end_place" id="mptbm_manual_end_place">
-								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Destination Location', 'wpcarrently'); ?></option>
+								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Return Location', 'wpcarrently'); ?></option>
 							</select>
 						<?php } else { ?>
-							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Drop-Off Location', 'wpcarrently'); ?>" value="" />
+							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Return Location', 'wpcarrently'); ?>" value="" />
 						<?php } ?>
 					</label>
 				</div>

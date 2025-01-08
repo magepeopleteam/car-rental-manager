@@ -35,7 +35,7 @@
 						<p class="_textLight_1 mptbm_manual_start_place"><?php echo esc_html($start_place); ?></p>
 					<?php } ?>
 					<div class="dividerL"></div>
-					<h6 class="_mB_xs"><?php esc_html_e('Drop-Off Location', 'wpcarrently'); ?></h6>
+					<h6 class="_mB_xs"><?php esc_html_e('Return Location', 'wpcarrently'); ?></h6>
 					<?php if($price_based == 'manual'){ ?>
 						<p class="_textLight_1 mptbm_map_end_place"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug( $end_place,'locations' )); ?></p>
 					<?php }else{ ?>
