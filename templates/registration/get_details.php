@@ -197,8 +197,13 @@ if (sizeof($all_dates) > 0) {
 					<label class="fdColumn mptbm_manual_end_place">
 						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'wpcarrently'); ?></span>
 						<?php if ($price_based == 'manual') { ?>
-							<select class="formControl mptbm_map_end_place" id="mptbm_manual_end_place">
-								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Return Location', 'wpcarrently'); ?></option>
+							<select id="mptbm_manual_end_place" class="mptbm_manual_start_place formControl">
+								<option selected disabled><?php esc_html_e(' Select Return Location', 'wpcarrently'); ?></option>
+								<?php if (sizeof($all_start_locations) > 0) { ?>
+									<?php foreach ($all_start_locations as $start_location) { ?>
+										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+									<?php } ?>
+								<?php } ?>
 							</select>
 						<?php } else { ?>
 							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Return Location', 'wpcarrently'); ?>" value="" />
