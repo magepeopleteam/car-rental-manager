@@ -158,50 +158,50 @@ function load_sortable_datepicker(parent, item) {
     "use strict";
     //=================select icon=========================//
     $(document).on("click", ".mp_add_icon_image_area button.mp_icon_add", function () {
-            let target_popup = $(".mp_add_icon_popup");
-            target_popup.find(".iconItem").click(function () {
-                let parent = $("[data-active-popup]").closest(".mp_add_icon_image_area");
-                let icon_class = $(this).data("icon-class");
-                if (icon_class) {
-                    parent.find('input[type="hidden"]').val(icon_class);
-                    parent.find(".mp_add_icon_image_button_area").slideUp("fast");
-                    parent.find(".mp_image_item").slideUp("fast");
-                    parent.find(".mp_icon_item").slideDown("fast");
-                    parent.find("[data-add-icon]").removeAttr("class").addClass(icon_class);
-                    target_popup.find(".iconItem").removeClass("active");
-                    target_popup.find(".popupClose").trigger("click");
-                }
-            });
-            target_popup.find("[data-icon-menu]").click(function () {
-                if (!$(this).hasClass("active")) {
-                    let target = $(this);
-                    let tabsTarget = target.data("icon-menu");
-                    target_popup.find("[data-icon-menu]").removeClass("active");
-                    target.addClass("active");
-                    target_popup.find("[data-icon-list]").each(function () {
-                        let targetItem = $(this).data("icon-list");
-                        if (tabsTarget === "all_item" || targetItem === tabsTarget) {
-                            $(this).slideDown(250);
-                        } else {
-                            $(this).slideUp(250);
-                        }
-                    });
-                }
-                return false;
-            });
-            target_popup.find(".popupClose").click(function () {
-                target_popup.find('[data-icon-menu="all_item"]').trigger("click");
+        let target_popup = $(".mp_add_icon_popup");
+        target_popup.find(".iconItem").click(function () {
+            let parent = $("[data-active-popup]").closest(".mp_add_icon_image_area");
+            let icon_class = $(this).data("icon-class");
+            if (icon_class) {
+                parent.find('input[type="hidden"]').val(icon_class);
+                parent.find(".mp_add_icon_image_button_area").slideUp("fast");
+                parent.find(".mp_image_item").slideUp("fast");
+                parent.find(".mp_icon_item").slideDown("fast");
+                parent.find("[data-add-icon]").removeAttr("class").addClass(icon_class);
                 target_popup.find(".iconItem").removeClass("active");
-            });
-        }
+                target_popup.find(".popupClose").trigger("click");
+            }
+        });
+        target_popup.find("[data-icon-menu]").click(function () {
+            if (!$(this).hasClass("active")) {
+                let target = $(this);
+                let tabsTarget = target.data("icon-menu");
+                target_popup.find("[data-icon-menu]").removeClass("active");
+                target.addClass("active");
+                target_popup.find("[data-icon-list]").each(function () {
+                    let targetItem = $(this).data("icon-list");
+                    if (tabsTarget === "all_item" || targetItem === tabsTarget) {
+                        $(this).slideDown(250);
+                    } else {
+                        $(this).slideUp(250);
+                    }
+                });
+            }
+            return false;
+        });
+        target_popup.find(".popupClose").click(function () {
+            target_popup.find('[data-icon-menu="all_item"]').trigger("click");
+            target_popup.find(".iconItem").removeClass("active");
+        });
+    }
     );
     $(document).on("click", ".mp_add_icon_image_area .mp_icon_remove", function () {
-            let parent = $(this).closest(".mp_add_icon_image_area");
-            parent.find('input[type="hidden"]').val("");
-            parent.find("[data-add-icon]").removeAttr("class");
-            parent.find(".mp_icon_item").slideUp("fast");
-            parent.find(".mp_add_icon_image_button_area").slideDown("fast");
-        }
+        let parent = $(this).closest(".mp_add_icon_image_area");
+        parent.find('input[type="hidden"]').val("");
+        parent.find("[data-add-icon]").removeAttr("class");
+        parent.find(".mp_icon_item").slideUp("fast");
+        parent.find(".mp_add_icon_image_button_area").slideDown("fast");
+    }
     );
     //=================select Single image=========================//
     $(document).on("click", "button.mp_image_add", function () {
@@ -220,11 +220,28 @@ function load_sortable_datepicker(parent, item) {
         return false;
     });
     $(document).on("click", ".mp_add_icon_image_area .mp_image_remove", function () {
-            let parent = $(this).closest(".mp_add_icon_image_area");
-            parent.find('input[type="hidden"]').val("");
-            parent.find("img").attr("src", "");
-            parent.find(".mp_image_item").slideUp("fast");
-            parent.find(".mp_add_icon_image_button_area").slideDown("fast");
-        }
+        let parent = $(this).closest(".mp_add_icon_image_area");
+        parent.find('input[type="hidden"]').val("");
+        parent.find("img").attr("src", "");
+        parent.find(".mp_image_item").slideUp("fast");
+        parent.find(".mp_add_icon_image_button_area").slideDown("fast");
+    }
     );
+    $(document).ready(function () {
+        $('#operation_area_select').on('change', function () {
+            console.log('hello');
+            // Loop through all options
+            $(this).find('option').each(function () {
+                // Add or remove the 'selected' class based on the selected state
+                if ($(this).is(':selected')) {
+                    $(this).addClass('operation_area_selected');
+                } else {
+                    $(this).removeClass('operation_area_selected');
+                }
+            });
+        });
+
+        // Trigger change on page load to apply the correct styles for pre-selected options
+        $('#operation_area_select').trigger('change');
+    });
 })(jQuery);

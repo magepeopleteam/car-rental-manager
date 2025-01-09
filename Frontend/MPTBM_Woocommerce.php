@@ -781,25 +781,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 			WC()->cart->empty_cart();
 			ob_start();
 			if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
-				$checkout_system = MP_Global_Function::get_settings('mptbm_general_settings', 'single_page_checkout', 'no');
-				if ($checkout_system == 'yes') {
-					echo esc_url(wc_get_checkout_url());
-				} else {
-			?>
-					<div class="dLayout woocommerce-page">
-						<?php echo do_shortcode('[woocommerce_checkout]'); ?>
-						<?php //do_action('woocommerce_ajax_checkout');
-						?>
-					</div>
-					<!-- <div class="divider"></div>
-                    <div class="justifyBetween">
-                        <button type="button" class="_themeButton_min_200 mptbm_summary_prev">
-                            <span>&larr; &nbsp;<?php esc_html_e('Previous', 'wpcarrently'); ?></span>
-                        </button>
-                        <div></div>
-                    </div> -->
-<?php
-				}
+				echo esc_url(wc_get_checkout_url());
 			}
 			echo wp_kses_post(ob_get_clean());
 			die();

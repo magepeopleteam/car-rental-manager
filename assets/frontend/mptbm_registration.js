@@ -518,43 +518,7 @@ function mptbmCreateMarker(place) {
         mptbm_content_refresh(parent);
         parent.find("#mptbm_map_start_place").focus();
     });
-    $(document).on("change", "#mptbm_manual_start_place", function () {
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
-        let start_place = $(this).val();
-        let target = parent.find(".mptbm_manual_end_place");
-        if (start_place) {
-            let end_place = "";
-            let price_based = parent.find('[name="mptbm_price_based"]').val();
-            if (price_based === "manual") {
-                let post_id = parent.find('[name="mptbm_post_id"]').val();
-                $.ajax({
-                    type: "POST",
-                    url: mp_ajax_url,
-                    data: {
-                        action: "get_mptbm_end_place",
-                        start_place: start_place,
-                        price_based: price_based,
-                        post_id: post_id,
-                    },
-                    beforeSend: function () {
-                        dLoader(target.closest(".mptbm_search_area"));
-                    },
-                    success: function (data) {
-                        target
-                            .html(data)
-                            .promise()
-                            .done(function () {
-                                dLoaderRemove(target.closest(".mptbm_search_area"));
-                            });
-                    },
-                    error: function (response) {
-                        console.log(response);
-                    },
-                });
-            }
-        }
-    });
+   
     $(document).on("change", "#mptbm_manual_end_place", function () {
         let parent = $(this).closest(".mptbm_transport_search_area");
         mptbm_content_refresh(parent);

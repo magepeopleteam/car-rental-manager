@@ -136,3 +136,8 @@
 /********Info Text******************/
 div.mpStyle .info_text {display: block;font-weight: normal;font-size: var(--fs_small);color: #666;}
 div.mpStyle .info_text span {margin: 0 5px 0 0;}
+
+option.operation_area_selected{
+	background-color: var(--mptbm-primary) !important; 
+	color: white !important; 
+}

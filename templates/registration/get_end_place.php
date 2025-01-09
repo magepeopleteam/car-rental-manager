@@ -9,9 +9,9 @@
 	$start_place = sanitize_text_field( $_POST['start_place']);
     $price_based = sanitize_text_field($_POST['price_based']);
     $post_id = absint($_POST['post_id']);
+    
     $end_locations = MPTBM_Function::get_end_location($start_place, $post_id);
     if (sizeof($end_locations) > 0) {
-        
         ?>
 	    <span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'wpcarrently'); ?></span>
         <select class="formControl mptbm_map_end_place" id="mptbm_manual_end_place">
