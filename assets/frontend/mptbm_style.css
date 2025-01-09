@@ -24,5 +24,7 @@
 .mptbm_manual_start_place , .mptbm_map_end_place{
   text-transform: capitalize;
 }
-
+.wp-block-post-title{
+  text-align: center;
+}
 

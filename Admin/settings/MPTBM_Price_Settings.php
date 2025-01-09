@@ -23,36 +23,36 @@ if (!class_exists('MPTBM_Price_Settings')) {
 
 ?>
 			<div class="tabsItem" data-tabs="#mptbm_settings_pricing">
-				<h2><?php esc_html_e('Price Settings', 'wpcarrently-car-rental-manager'); ?></h2>
-				<p><?php esc_html_e('here you can set initial price, Waiting Time price, price calculation model', 'wpcarrently-car-rental-manager'); ?></p>
+				<h2><?php esc_html_e('Price Settings', 'wpcarrently'); ?></h2>
+				<p><?php esc_html_e('here you can set initial price, Waiting Time price, price calculation model', 'wpcarrently'); ?></p>
 
 				<section class="bg-light" >
-					<h6><?php esc_html_e('Price Settings', 'wpcarrently-car-rental-manager'); ?></h6>
-					<span><?php esc_html_e('Here you can set price', 'wpcarrently-car-rental-manager'); ?></span>
+					<h6><?php esc_html_e('Price Settings', 'wpcarrently'); ?></h6>
+					<span><?php esc_html_e('Here you can set price', 'wpcarrently'); ?></span>
 				</section>
 				<section>
 					<label class="label">
 						<div>
-							<h6><?php esc_html_e('Price/Day', 'wpcarrently-car-rental-manager'); ?></h6>
+							<h6><?php esc_html_e('Price/Day', 'wpcarrently'); ?></h6>
 							<span class="desc"><?php MPTBM_Settings::info_text('mptbm_day_price'); ?></span>
 						</div>
-						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'wpcarrently-car-rental-manager'); ?>" />
+						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'wpcarrently'); ?>" />
 					</label>
 				</section>
 				
 				<!-- Manual price -->
 				<section class="bg-light" style="margin-top: 20px;" data-collapse="#mp_manual">
-					<h6><?php esc_html_e('Manual Price Settings', 'wpcarrently-car-rental-manager'); ?></h6>
-					<span><?php esc_html_e('Manual Price Settings', 'wpcarrently-car-rental-manager'); ?></span>
+					<h6><?php esc_html_e('Manual Price Settings', 'wpcarrently'); ?></h6>
+					<span><?php esc_html_e('Manual Price Settings', 'wpcarrently'); ?></span>
 				</section>
 				<section>
 					<div class="mp_settings_area">
 						<table>
 							<thead>
 								<tr>
-									<th><?php esc_html_e('Start Location', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></th>
-									<th><?php esc_html_e('End Location', 'wpcarrently-car-rental-manager'); ?><span class="textRequired">&nbsp;*</span></th>
-									<th class="_w_100"><?php esc_html_e('Action', 'wpcarrently-car-rental-manager'); ?></th>
+									<th><?php esc_html_e('Start Location', 'wpcarrently'); ?><span class="textRequired">&nbsp;*</span></th>
+									<th><?php esc_html_e('End Location', 'wpcarrently'); ?><span class="textRequired">&nbsp;*</span></th>
+									<th class="_w_100"><?php esc_html_e('Action', 'wpcarrently'); ?></th>
 								</tr>
 							</thead>
 							<tbody class="mp_sortable_area mp_item_insert">
@@ -73,7 +73,7 @@ if (!class_exists('MPTBM_Price_Settings')) {
 							</tbody>
 						</table>
 						<div class="my-2"></div>
-						<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Item', 'wpcarrently-car-rental-manager')); ?>
+						<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Item', 'wpcarrently')); ?>
 						<?php $this->hidden_manual_price_item($location_terms); ?>
 					</div>
 				</section>
@@ -104,12 +104,12 @@ if (!class_exists('MPTBM_Price_Settings')) {
 			<tr class="mp_remove_area">
 				<td>
 					<label>
-						<input type="text" name="mptbm_manual_start_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($start_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'wpcarrently-car-rental-manager'); ?>" />
+						<input type="text" name="mptbm_manual_start_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($start_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'wpcarrently'); ?>" />
 					</label>
 				</td>
 				<td>
 					<label>
-						<input type="text" name="mptbm_manual_end_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($end_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'wpcarrently-car-rental-manager'); ?>" />
+						<input type="text" name="mptbm_manual_end_location[]" class="formControl mp_name_validation" value="<?php echo esc_attr($end_location); ?>" placeholder="<?php esc_attr_e('EX:Dhaka', 'wpcarrently'); ?>" />
 					</label>
 				</td>
 				

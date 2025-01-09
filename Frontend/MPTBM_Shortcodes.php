@@ -9,7 +9,7 @@
 	if (!class_exists('MPTBM_Shortcodes')) {
 		class MPTBM_Shortcodes {
 			public function __construct() {
-				add_shortcode('mptbm_booking', array($this, 'mptbm_booking'));
+				add_shortcode('wpcb_booking', array($this, 'mptbm_booking'));
 			}
 			public function mptbm_booking($attribute) {
 				$defaults = $this->default_attribute();
@@ -31,7 +31,7 @@
 					'status' => '',
 					"pagination-style" => "load_more",
 					"column" => 3,
-					"price_based" => 'dynamic',
+					"price_based" => 'manual',
 					'progressbar'=>'yes',
 					'map'=>'yes',
 					'form'=>'horizontal',

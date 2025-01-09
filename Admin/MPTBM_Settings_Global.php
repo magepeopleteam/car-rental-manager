@@ -22,14 +22,14 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		public function global_settings_menu()
 		{
 			$cpt = MPTBM_Function::get_cpt();
-			add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Global Settings', 'wpcarrently-car-rental-manager'), esc_html__('Global Settings', 'wpcarrently-car-rental-manager'), 'manage_options', 'mptbm_settings_page', array($this, 'settings_page'));
+			add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Global Settings', 'wpcarrently'), esc_html__('Global Settings', 'wpcarrently'), 'manage_options', 'mptbm_settings_page', array($this, 'settings_page'));
 		}
 		public function settings_page()
 		{
 ?>
 			<div class="mpStyle mp_global_settings">
 				<div class="mpPanel">
-					<div class="mpPanelHeader"><?php echo esc_html(esc_html__(' Global Settings', 'wpcarrently-car-rental-manager')); ?></div>
+					<div class="mpPanelHeader"><?php echo esc_html(esc_html__(' Global Settings', 'wpcarrently')); ?></div>
 					<div class="mpPanelBody mp_zero">
 						<div class="mpTabs leftTabs">
 							<?php $this->settings_api->show_navigation(); ?>
@@ -66,7 +66,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 				array(
 					'id' => 'mptbm_general_settings',
 					'icon' => 'fas fa-sliders-h',
-					'title' => $label . ' ' . esc_html__('Settings', 'wpcarrently-car-rental-manager')
+					'title' => $label . ' ' . esc_html__('Settings', 'wpcarrently')
 				)
 			);
 			return array_merge($default_sec, $sections);
@@ -76,166 +76,168 @@ if (!class_exists('MPTBM_Settings_Global')) {
 			$gm_api_url = 'https://developers.google.com/maps/documentation/javascript/get-api-key';
 			$label = MPTBM_Function::get_name();
 
-			
-			
+
+
 
 			$settings_fields = array(
 				'mptbm_general_settings' => apply_filters('filter_mptbm_general_settings', array(
 					array(
 						'name' => 'payment_system',
-						'label' => esc_html__('Payment System', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Please Select Payment System.', 'wpcarrently-car-rental-manager'),
+						'label' => esc_html__('Payment System', 'wpcarrently'),
+						'desc' => esc_html__('Please Select Payment System.', 'wpcarrently'),
 						'type' => 'multicheck',
 						'default' => array(
 							'direct_order' => 'direct_order',
 							'woocommerce' => 'woocommerce'
 						),
 						'options' => array(
-							'direct_order' => esc_html__('Pay on service', 'wpcarrently-car-rental-manager'),
-							'woocommerce' => esc_html__('woocommerce Payment', 'wpcarrently-car-rental-manager'),
+							'direct_order' => esc_html__('Pay on service', 'wpcarrently'),
+							'woocommerce' => esc_html__('woocommerce Payment', 'wpcarrently'),
 						)
 					),
 					array(
 						'name' => 'direct_book_status',
-						'label' => esc_html__('Pay on service Booked Status', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Please Select when and which order status service Will be Booked/Reduced in Pay on service.', 'wpcarrently-car-rental-manager'),
+						'label' => esc_html__('Pay on service Booked Status', 'wpcarrently'),
+						'desc' => esc_html__('Please Select when and which order status service Will be Booked/Reduced in Pay on service.', 'wpcarrently'),
 						'type' => 'select',
 						'default' => 'completed',
 						'options' => array(
-							'pending' => esc_html__('Pending', 'wpcarrently-car-rental-manager'),
-							'completed' => esc_html__('completed', 'wpcarrently-car-rental-manager')
+							'pending' => esc_html__('Pending', 'wpcarrently'),
+							'completed' => esc_html__('completed', 'wpcarrently')
 						)
 					),
 					array(
 						'name' => 'label',
-						'label' => $label . ' ' . esc_html__('Label', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('If you like to change the label in the dashboard menu, you can change it here.', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Label', 'wpcarrently'),
+						'desc' => esc_html__('If you like to change the label in the dashboard menu, you can change it here.', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'Transportation'
 					),
 					array(
 						'name' => 'slug',
-						'label' => $label . ' ' . esc_html__('Slug', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently-car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Slug', 'wpcarrently'),
+						'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'wpcarrently') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'transportation'
 					),
 					array(
 						'name' => 'icon',
-						'label' => $label . ' ' . esc_html__('Icon', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to ', 'wpcarrently-car-rental-manager') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'wpcarrently-car-rental-manager') . '</a>' . esc_html__('and copy your icon code and paste it here.', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Icon', 'wpcarrently'),
+						'desc' => esc_html__('If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to ', 'wpcarrently') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'wpcarrently') . '</a>' . esc_html__('and copy your icon code and paste it here.', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'dashicons-car'
 					),
 					array(
 						'name' => 'category_label',
-						'label' => $label . ' ' . esc_html__('Category Label', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('If you want to change the  category label in the dashboard menu, you can change it here.', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Category Label', 'wpcarrently'),
+						'desc' => esc_html__('If you want to change the  category label in the dashboard menu, you can change it here.', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'Category'
 					),
 					array(
 						'name' => 'category_slug',
-						'label' => $label . ' ' . esc_html__('Category Slug', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Please enter the slug name you want for category. Remember after change this slug you need to flush permalink, Just go to  ', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently-car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Category Slug', 'wpcarrently'),
+						'desc' => esc_html__('Please enter the slug name you want for category. Remember after change this slug you need to flush permalink, Just go to  ', 'wpcarrently') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'transportation-category'
 					),
 					array(
 						'name' => 'organizer_label',
-						'label' => $label . ' ' . esc_html__('Organizer Label', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('If you want to change the  category label in the dashboard menu you can change here', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Organizer Label', 'wpcarrently'),
+						'desc' => esc_html__('If you want to change the  category label in the dashboard menu you can change here', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'Organizer'
 					),
 					array(
 						'name' => 'organizer_slug',
-						'label' => $label . ' ' . esc_html__('Organizer Slug', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Please enter the slug name you want for the  organizer. Remember, after changing this slug, you need to flush the permalinks. Just go to ', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently-car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently-car-rental-manager'),
+						'label' => $label . ' ' . esc_html__('Organizer Slug', 'wpcarrently'),
+						'desc' => esc_html__('Please enter the slug name you want for the  organizer. Remember, after changing this slug, you need to flush the permalinks. Just go to ', 'wpcarrently') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently'),
 						'type' => 'text',
 						'default' => 'transportation-organizer'
 					),
 					array(
 						'name' => 'expire',
-						'label' => $label . ' ' . esc_html__('Expired  Visibility', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('If you want to visible expired  ?, please select ', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('Yes', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('. Default is', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Expired  Visibility', 'wpcarrently'),
+						'desc' => esc_html__('If you want to visible expired  ?, please select ', 'wpcarrently') . '<strong> ' . esc_html__('Yes', 'wpcarrently') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently') . '<strong> ' . esc_html__('No', 'wpcarrently') . '</strong>' . esc_html__('. Default is', 'wpcarrently') . '<strong>' . esc_html__('No', 'wpcarrently') . '</strong>',
 						'type' => 'select',
 						'default' => 'no',
 						'options' => array(
-							'yes' => esc_html__('Yes', 'wpcarrently-car-rental-manager'),
-							'no' => esc_html__('No', 'wpcarrently-car-rental-manager')
+							'yes' => esc_html__('Yes', 'wpcarrently'),
+							'no' => esc_html__('No', 'wpcarrently')
 						)
 					),
 					array(
 						'name' => 'enable_view_search_result_page',
-						'label' => $label . ' ' . esc_html__('Show Search Result In A Different Page', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Enter page slug. Leave blank if you dont want to enable this setting', 'wpcarrently-car-rental-manager'),
-						'wpcarrently-car-rental-manager' . '<strong> ' . esc_html__('Yes', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('. Default is', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Show Search Result In A Different Page', 'wpcarrently'),
+						'desc' => esc_html__('Enter page slug. Leave blank if you dont want to enable this setting', 'wpcarrently'),
+						'wpcarrently' . '<strong> ' . esc_html__('Yes', 'wpcarrently') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently') . '<strong> ' . esc_html__('No', 'wpcarrently') . '</strong>' . esc_html__('. Default is', 'wpcarrently') . '<strong>' . esc_html__('No', 'wpcarrently') . '</strong>',
 						'type' => 'text',
 						'placeholder' => 'transport-result'
 					),
 					array(
 						'name' => 'enable_view_find_location_page',
-						'label' => $label . ' ' . esc_html__('Take user to another page if location can not be found', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Enter page url. Leave blank if you dont want to enable this setting', 'wpcarrently-car-rental-manager'),
-						'wpcarrently-car-rental-manager' . '<strong> ' . esc_html__('Yes', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('. Default is', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Take user to another page if location can not be found', 'wpcarrently'),
+						'desc' => esc_html__('Enter page url. Leave blank if you dont want to enable this setting', 'wpcarrently'),
+						'wpcarrently' . '<strong> ' . esc_html__('Yes', 'wpcarrently') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently') . '<strong> ' . esc_html__('No', 'wpcarrently') . '</strong>' . esc_html__('. Default is', 'wpcarrently') . '<strong>' . esc_html__('No', 'wpcarrently') . '</strong>',
 						'type' => 'text',
 						'placeholder' => 'https://mysite.com/taxi'
 					),
 					array(
 						'name' => 'enable_buffer_time',
-						'label' => $label . ' ' . esc_html__('Buffer Time', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Enter buffer time per minutes. Also you have to change the timezone from') . '<strong style="color: red;">' . esc_html__('Settings --> General --> Timezone', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Buffer Time', 'wpcarrently'),
+						'desc' => esc_html__('Enter buffer time per minutes. Also you have to change the timezone from', 'wpcarrently') .
+							'<strong style="color: red;">' . esc_html__('Settings --> General --> Timezone', 'wpcarrently') . '</strong>',
+
 						'type' => 'text',
 						'placeholder' => 'Ex:10'
-						),
+					),
 					array(
 						'name' => 'mptbm_pickup_interval_time',
-						'label' => $label . ' ' . esc_html__('Interval of pickup/return time in frontend', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Select frontend interval pickup and return time', 'wpcarrently-car-rental-manager'),
-						'wpcarrently-car-rental-manager' . '<strong> ' . esc_html__('Yes', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('. Default is', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Interval of pickup/return time in frontend', 'wpcarrently'),
+						'desc' => esc_html__('Select frontend interval pickup and return time', 'wpcarrently'),
+						'wpcarrently' . '<strong> ' . esc_html__('Yes', 'wpcarrently') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently') . '<strong> ' . esc_html__('No', 'wpcarrently') . '</strong>' . esc_html__('. Default is', 'wpcarrently') . '<strong>' . esc_html__('No', 'wpcarrently') . '</strong>',
 						'type' => 'select',
 						'default' => 30,
 						'options' => array(
-							30 => esc_html__('30', 'wpcarrently-car-rental-manager'),
-							15 => esc_html__('15', 'wpcarrently-car-rental-manager'),
-							10 => esc_html__('10', 'wpcarrently-car-rental-manager'),
-							5 => esc_html__('5', 'wpcarrently-car-rental-manager'),
+							30 => esc_html__('30', 'wpcarrently'),
+							15 => esc_html__('15', 'wpcarrently'),
+							10 => esc_html__('10', 'wpcarrently'),
+							5 => esc_html__('5', 'wpcarrently'),
 						)
 					),
 					array(
 						'name' => 'enable_return_in_different_date',
-						'label' => $label . ' ' . esc_html__('Enable return in different date', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Select yes if you want to enable different date return field', 'wpcarrently-car-rental-manager'),
-						'wpcarrently-car-rental-manager' . '<strong> ' . esc_html__('Yes', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('. Default is', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Enable return in different date', 'wpcarrently'),
+						'desc' => esc_html__('Select yes if you want to enable different date return field', 'wpcarrently'),
+						'wpcarrently' . '<strong> ' . esc_html__('Yes', 'wpcarrently') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently') . '<strong> ' . esc_html__('No', 'wpcarrently') . '</strong>' . esc_html__('. Default is', 'wpcarrently') . '<strong>' . esc_html__('No', 'wpcarrently') . '</strong>',
 						'type' => 'select',
 						'default' => 'no',
 						'options' => array(
-							'yes' => esc_html__('Yes', 'wpcarrently-car-rental-manager'),
-							'no' => esc_html__('No', 'wpcarrently-car-rental-manager')
+							'yes' => esc_html__('Yes', 'wpcarrently'),
+							'no' => esc_html__('No', 'wpcarrently')
 						)
 					),
 					array(
 						'name' => 'enable_filter_via_features',
-						'label' => $label . ' ' . esc_html__('Enable filter via features', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('Select yes if you want to enable filter via passenger and bags', 'wpcarrently-car-rental-manager'),
-						'wpcarrently-car-rental-manager' . '<strong> ' . esc_html__('Yes', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently-car-rental-manager') . '<strong> ' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>' . esc_html__('. Default is', 'wpcarrently-car-rental-manager') . '<strong>' . esc_html__('No', 'wpcarrently-car-rental-manager') . '</strong>',
+						'label' => $label . ' ' . esc_html__('Enable filter via features', 'wpcarrently'),
+						'desc' => esc_html__('Select yes if you want to enable filter via passenger and bags', 'wpcarrently'),
+						'wpcarrently' . '<strong> ' . esc_html__('Yes', 'wpcarrently') . '</strong>' . esc_html__('or to make it hidden, select', 'wpcarrently') . '<strong> ' . esc_html__('No', 'wpcarrently') . '</strong>' . esc_html__('. Default is', 'wpcarrently') . '<strong>' . esc_html__('No', 'wpcarrently') . '</strong>',
 						'type' => 'select',
 						'default' => 'no',
 						'options' => array(
-							'yes' => esc_html__('Yes', 'wpcarrently-car-rental-manager'),
-							'no' => esc_html__('No', 'wpcarrently-car-rental-manager')
+							'yes' => esc_html__('Yes', 'wpcarrently'),
+							'no' => esc_html__('No', 'wpcarrently')
 						)
 					),
 					array(
 						'name' => 'single_page_checkout',
-						'label' => esc_html__('Disable single page checkout', 'wpcarrently-car-rental-manager'),
-						'desc' => esc_html__('If you want to disable single page checkout, please select Yes.That means active woocommerce checkout page active', 'wpcarrently-car-rental-manager'),
+						'label' => esc_html__('Disable single page checkout', 'wpcarrently'),
+						'desc' => esc_html__('If you want to disable single page checkout, please select Yes.That means active woocommerce checkout page active', 'wpcarrently'),
 						'type' => 'select',
 						'default' => 'no',
 						'options' => array(
-							'yes' => esc_html__('Yes', 'wpcarrently-car-rental-manager'),
-							'no' => esc_html__('No', 'wpcarrently-car-rental-manager')
+							'yes' => esc_html__('Yes', 'wpcarrently'),
+							'no' => esc_html__('No', 'wpcarrently')
 						)
 					)
 				))
@@ -249,18 +251,18 @@ if (!class_exists('MPTBM_Settings_Global')) {
 			$sections = array(
 				array(
 					'name' => 'set_book_status',
-					'label' => $label . ' ' . esc_html__('Seat Booked Status', 'wpcarrently-car-rental-manager'),
-					'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'wpcarrently-car-rental-manager'),
+					'label' => $label . ' ' . esc_html__('Seat Booked Status', 'wpcarrently'),
+					'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'wpcarrently'),
 					'type' => 'multicheck',
 					'default' => array(
 						'processing' => 'processing',
 						'completed' => 'completed'
 					),
 					'options' => array(
-						'on-hold' => esc_html__('On Hold', 'wpcarrently-car-rental-manager'),
-						'pending' => esc_html__('Pending', 'wpcarrently-car-rental-manager'),
-						'processing' => esc_html__('Processing', 'wpcarrently-car-rental-manager'),
-						'completed' => esc_html__('Completed', 'wpcarrently-car-rental-manager'),
+						'on-hold' => esc_html__('On Hold', 'wpcarrently'),
+						'pending' => esc_html__('Pending', 'wpcarrently'),
+						'processing' => esc_html__('Processing', 'wpcarrently'),
+						'completed' => esc_html__('Completed', 'wpcarrently'),
 					)
 				)
 			);

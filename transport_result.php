@@ -18,7 +18,7 @@ unset($_SESSION['custom_content']);
 get_header();
 ?>
 <script type="text/javascript">
-    var httpReferrer = "<?php echo isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ''; ?>";
+    var httpReferrer = "<?php echo esc_url( isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : '' ); ?>";
     document.cookie = "httpReferrer=" + httpReferrer + ";path=/";
 </script>
 <main role="main" id="maincontent" class="middle-align mptbm-show-search-result">
@@ -32,25 +32,25 @@ get_header();
                                 <span class="mp_zero" data-icon></span>
                                 <span class="mp_zero" data-text>1</span>
                             </h4>
-                            <h6 class="circleTitle" data-class><?php esc_html_e('Enter Ride Details', 'wpcarrently-car-rental-manager'); ?></h6>
+                            <h6 class="circleTitle" data-class><?php esc_html_e('Enter Ride Details', 'wpcarrently'); ?></h6>
                         </div>
                         <div data-tabs-target-next="#mptbm_search_result" class="tabItemNext active" data-open-text="2" data-close-text="" data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                             <h4 class="circleIcon" data-class>
                                 <span class="mp_zero" data-icon></span>
                                 <span class="mp_zero" data-text>2</span>
                             </h4>
-                            <h6 class="circleTitle" data-class><?php esc_html_e('Choose a vehicle', 'wpcarrently-car-rental-manager'); ?></h6>
+                            <h6 class="circleTitle" data-class><?php esc_html_e('Choose a vehicle', 'wpcarrently'); ?></h6>
                         </div>
                         <div data-tabs-target-next="#mptbm_order_summary" class="tabItemNext step-place-order" data-open-text="3" data-close-text="" data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                             <h4 class="circleIcon" data-class>
                                 <span class="mp_zero" data-icon></span>
                                 <span class="mp_zero" data-text>3</span>
                             </h4>
-                            <h6 class="circleTitle" data-class><?php esc_html_e('Place Order', 'wpcarrently-car-rental-manager'); ?></h6>
+                            <h6 class="circleTitle" data-class><?php esc_html_e('Place Order', 'wpcarrently'); ?></h6>
                         </div>
                     </div>
                     <div>
-                        <?php echo $content; ?>
+                        <?php echo wp_kses_post( $content ); ?>
                     </div>
 
                 </div>

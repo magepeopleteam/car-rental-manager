@@ -36,7 +36,8 @@
 	div.mptbm_transport_search_area .mptbm_search_area label .formControl {
 		height: 47px;background-color: #F5F6F8;color: #222222;font-weight: 400;
 		padding: var(--dmp_xs) 35px var(--dmp_xs) var(--dmp_xs);border-color: #EBECEE;
-		background-image: url('../../mp_global/assets/images/arrow_down.png'); background-repeat: no-repeat; background-position: calc(100% - var(--dmp_xs)); background-size: auto;
+		background-image: url('../../mp_global/assets/images/arrow_down.png'); 
+		background-repeat: no-repeat; background-position: calc(100% - var(--dmp_xs)); background-size: auto;
 		-webkit-appearance: none;
 	}
 	div.mptbm_transport_search_area .mptbm_map_area {max-width: calc(65% - 30px);width: 65%;}

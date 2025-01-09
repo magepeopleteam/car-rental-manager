@@ -7,14 +7,11 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly
 delete_transient('original_price_based');
-$restrict_search_country = MP_Global_Function::get_settings('mptbm_map_api_settings', 'mp_country_restriction', 'no');
 
-$country = MP_Global_Function::get_settings('mptbm_map_api_settings', 'mp_country', 'no');
+
 $km_or_mile = MP_Global_Function::get_settings('mp_global_settings', 'km_or_mile', 'km');
 $price_based = $price_based ?? '';
 set_transient('original_price_based', $price_based);
-
-$map = $map ?? 'yes';
 $all_dates = MPTBM_Function::get_all_dates($price_based);
 $form_style = $form_style ?? 'horizontal';
 $form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
@@ -105,19 +102,17 @@ if (sizeof($all_dates) > 0) {
 				<input type="hidden" id="mptbm_km_or_mile" name="mptbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
 				<input type="hidden" name="mptbm_price_based" value="<?php echo esc_attr($price_based); ?>" />
 				<input type="hidden" name="mptbm_post_id" value="" />
-				<input type='hidden' id="mptbm_enable_view_search_result_page" name="mptbm_enable_view_search_result_page" value="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page') ?>" />
+				<input type="hidden" id="mptbm_enable_view_search_result_page" name="mptbm_enable_view_search_result_page" value="<?php echo esc_attr( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_search_result_page' ) ); ?>" />
 				<input type='hidden' id="mptbm_enable_return_in_different_date" name="mptbm_enable_return_in_different_date" value="yes" />
-				<input type='hidden' id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') ?>" />
-				<input type='hidden' id="mptbm_buffer_end_minutes" name="mptbm_buffer_end_minutes" value="<?php echo $buffer_end_minutes; ?>" />
-				<input type='hidden' id="mptbm_first_calendar_date" name="mptbm_first_calendar_date" value="<?php echo $all_dates[0]; ?>" />
-				<input type='hidden' id="mptbm_country" name="mptbm_country" value="<?php echo $country; ?>" />
-				<input type='hidden' id="mptbm_restrict_search_country" name="mptbm_restrict_search_country" value="<?php echo $restrict_search_country; ?>" />
+				<input type="hidden" id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo esc_attr( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
+				<input type="hidden" id="mptbm_buffer_end_minutes" name="mptbm_buffer_end_minutes" value="<?php echo esc_attr( $buffer_end_minutes ); ?>" />
+				<input type="hidden" id="mptbm_first_calendar_date" name="mptbm_first_calendar_date" value="<?php echo esc_attr( $all_dates[0] ); ?>" />
 
 				<div class="inputList">
 					<label class="fdColumn">
 						<input type="hidden" id="mptbm_map_start_date" value="" />
-						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Date', 'wpcarrently-car-rental-manager'); ?></span>
-						<input type="text" id="mptbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
+						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Date', 'wpcarrently'); ?></span>
+						<input type="text" id="mptbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently'); ?>" value="" readonly />
 						<span class="far fa-calendar-alt mptbm_left_icon allCenter"></span>
 					</label>
 				</div>
@@ -125,8 +120,8 @@ if (sizeof($all_dates) > 0) {
 				<div class="inputList mp_input_select">
 					<input type="hidden" id="mptbm_map_start_time" value="" />
 					<label class="fdColumn">
-						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Pickup Time', 'wpcarrently-car-rental-manager'); ?></span>
-						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently-car-rental-manager'); ?>" value="" readonly />
+						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Pickup Time', 'wpcarrently'); ?></span>
+						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently'); ?>" value="" readonly />
 						<span class="far fa-clock mptbm_left_icon allCenter"></span>
 					</label>
 
@@ -173,12 +168,12 @@ if (sizeof($all_dates) > 0) {
 				</div>
 				<div class="inputList">
 					<label class="fdColumn ">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'wpcarrently-car-rental-manager'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'wpcarrently'); ?></span>
 						<?php if ($price_based == 'manual') {
 						?>
 							<?php $all_start_locations = MPTBM_Function::get_all_start_location(); ?>
 							<select id="mptbm_manual_start_place" class="mptbm_manual_start_place formControl">
-								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'wpcarrently-car-rental-manager'); ?></option>
+								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'wpcarrently'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
 										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
@@ -186,35 +181,35 @@ if (sizeof($all_dates) > 0) {
 								<?php } ?>
 							</select>
 						<?php } else { ?>
-							<input type="text" id="mptbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'wpcarrently-car-rental-manager'); ?>" value="" />
+							<input type="text" id="mptbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'wpcarrently'); ?>" value="" />
 						<?php } ?>
 					</label>
 				</div>
 				<?php
 				if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'wpcarrently-car-rental-manager'); ?></a>
-					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently-car-rental-manager'); ?>
+					<a href="<?php echo esc_url( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'wpcarrently' ); ?></a>
+					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently'); ?>
 				<?php
 				}
 				?>
 				<div class="inputList">
 					<label class="fdColumn mptbm_manual_end_place">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Drop-Off Location', 'wpcarrently-car-rental-manager'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'wpcarrently'); ?></span>
 						<?php if ($price_based == 'manual') { ?>
 							<select class="formControl mptbm_map_end_place" id="mptbm_manual_end_place">
-								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Destination Location', 'wpcarrently-car-rental-manager'); ?></option>
+								<option class="textCapitalize" selected disabled><?php esc_html_e(' Select Return Location', 'wpcarrently'); ?></option>
 							</select>
 						<?php } else { ?>
-							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Drop-Off Location', 'wpcarrently-car-rental-manager'); ?>" value="" />
+							<input class="formControl textCapitalize" type="text" id="mptbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Return Location', 'wpcarrently'); ?>" value="" />
 						<?php } ?>
 					</label>
 				</div>
 				<?php
 				if (MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo MP_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page') ?>" class="mptbm_find_location_btn"><?php esc_html_e('Click here', 'wpcarrently-car-rental-manager'); ?></a>
-					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently-car-rental-manager'); ?>
+					<a href="<?php echo esc_url( MP_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'wpcarrently' ); ?></a>
+					<?php esc_html_e('If you are not able to find your desired location', 'wpcarrently'); ?>
 				<?php
 				}
 				?>
@@ -223,16 +218,16 @@ if (sizeof($all_dates) > 0) {
 				<div class="inputList" >
 					<label class="fdColumn">
 						<input type="hidden" id="mptbm_map_return_date" value="" />
-						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Date', 'wpcarrently-car-rental-manager'); ?></span>
-						<input type="text" id="mptbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently-car-rental-manager'); ?>" value="" readonly name="return_date"/>
+						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Date', 'wpcarrently'); ?></span>
+						<input type="text" id="mptbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'wpcarrently'); ?>" value="" readonly name="return_date"/>
 						<span class="far fa-calendar-alt mptbm_left_icon allCenter"></span>
 					</label>
 				</div>
 				<div class="inputList mp_input_select">
 					<input type="hidden" id="mptbm_map_return_time" value="" />
 					<label class="fdColumn">
-						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Return Time', 'wpcarrently-car-rental-manager'); ?></span>
-						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently-car-rental-manager'); ?>" value="" readonly name="return_time" />
+						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Return Time', 'wpcarrently'); ?></span>
+						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'wpcarrently'); ?>" value="" readonly name="return_time" />
 						<span class="far fa-clock mptbm_left_icon allCenter"></span>
 					</label>
 					<ul class="return_time_list-no-dsiplay" style="display:none">
@@ -280,7 +275,7 @@ if (sizeof($all_dates) > 0) {
 					<span>&nbsp;</span>
 					<button type="button" class="_themeButton_fullWidth" id="mptbm_get_vehicle">
 						<span class="fas fa-search-location mR_xs"></span>
-						<?php esc_html_e('Search', 'wpcarrently-car-rental-manager'); ?>
+						<?php esc_html_e('Search', 'wpcarrently'); ?>
 					</button>
 				</div>
 				<?php if ($form_style != 'horizontal') { ?>
@@ -302,11 +297,11 @@ if (sizeof($all_dates) > 0) {
 		<div class="divider"></div>
 		<div class="justifyBetween">
 			<button type="button" class="mpBtn nextTab_prev">
-				<span>&larr; &nbsp;<?php esc_html_e('Previous', 'wpcarrently-car-rental-manager'); ?></span>
+				<span>&larr; &nbsp;<?php esc_html_e('Previous', 'wpcarrently'); ?></span>
 			</button>
 			<div></div>
 			<button type="button" class="_themeButton_min_200 nextTab_next">
-				<span><?php esc_html_e('Next', 'wpcarrently-car-rental-manager'); ?>&nbsp; &rarr;</span>
+				<span><?php esc_html_e('Next', 'wpcarrently'); ?>&nbsp; &rarr;</span>
 			</button>
 		</div>
 	</div>
@@ -315,13 +310,12 @@ if (sizeof($all_dates) > 0) {
 <?php } else { ?>
 	<div class="dLayout">
 		<h3 class="_textDanger_textCenter">
-
 			<?php
 			$transportaion_label = MPTBM_Function::get_name();
 
 			// Translators comment to explain the placeholder
 			/* translators: %s: transportation label */
-			$translated_string = __("No %s configured for this price setting", 'wpcarrently-car-rental-manager');
+			$translated_string = __("No %s configured for this price setting", 'wpcarrently');
 
 			$formatted_string = sprintf($translated_string, $transportaion_label);
 			echo esc_html($formatted_string);

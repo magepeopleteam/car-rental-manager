@@ -134,7 +134,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_name()
 		{
-			return self::get_general_settings('label', esc_html__('Transportation', 'wpcarrently-car-rental-manager'));
+			return self::get_general_settings('label', esc_html__('Transportation', 'wpcarrently'));
 		}
 		public static function get_slug()
 		{
@@ -146,7 +146,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_category_label()
 		{
-			return self::get_general_settings('category_label', esc_html__('Category', 'wpcarrently-car-rental-manager'));
+			return self::get_general_settings('category_label', esc_html__('Category', 'wpcarrently'));
 		}
 		public static function get_category_slug()
 		{
@@ -154,7 +154,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_organizer_label()
 		{
-			return self::get_general_settings('organizer_label', esc_html__('Organizer', 'wpcarrently-car-rental-manager'));
+			return self::get_general_settings('organizer_label', esc_html__('Organizer', 'wpcarrently'));
 		}
 		public static function get_organizer_slug()
 		{

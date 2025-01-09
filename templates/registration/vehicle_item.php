@@ -33,13 +33,12 @@ if ($mptbm_enable_view_search_result_page == '') {
     $hidden_class = '';
 }
 if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
-    $distance = $distance ?? (isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '');
-    $duration = $duration ?? (isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '');
+    
     $label = $label ?? MPTBM_Function::get_name();
     $start_place = $start_place ?? isset($_POST['start_place']) ? sanitize_text_field($_POST['start_place']) : '';
     $end_place = $end_place ?? isset($_POST['end_place']) ? sanitize_text_field($_POST['end_place']) : '';
     $two_way = $two_way ?? 1;
-    $waiting_time = $waiting_time ?? 0;
+    
     $location_exit = MPTBM_Function::location_exit($post_id, $start_place, $end_place);
     if ($location_exit && $post_id) {
         //$product_id = MP_Global_Function::get_post_info($post_id, 'link_wc_product');
@@ -53,7 +52,7 @@ if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
         $display_features = MP_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
         $all_features = MP_Global_Function::get_post_info($post_id, 'mptbm_features');
 ?>
-        <div class="_dLayout_dFlex mptbm_booking_item  <?php echo 'mptbm_booking_item_' . $post_id; ?> <?php echo $hidden_class; ?> <?php echo $feature_class; ?>" data-placeholder>
+        <div class="_dLayout_dFlex mptbm_booking_item <?php echo esc_attr( 'mptbm_booking_item_' . $post_id ); ?> <?php echo esc_attr( $hidden_class ); ?> <?php echo esc_attr( $feature_class ); ?>" data-placeholder>
             <div class="_max_200_mR">
                 <div class="bg_image_area"  data-placeholder>
                     <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
@@ -84,9 +83,9 @@ if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
                     <?php } ?>
                     <div class="_min_150_mL_xs">
                         <h4 class="textCenter"> <?php echo wp_kses_post(wc_price($raw_price)); ?></h4>
-                        <button type="button" class="_mpBtn_xs_w_150 mptbm_transport_select" data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" data-transport-price="<?php echo esc_attr($raw_price); ?>" data-post-id="<?php echo esc_attr($post_id); ?>" data-open-text="<?php esc_attr_e('Select Car', 'wpcarrently-car-rental-manager'); ?>" data-close-text="<?php esc_html_e('Selected', 'wpcarrently-car-rental-manager'); ?>" data-open-icon="" data-close-icon="fas fa-check mR_xs">
+                        <button type="button" class="_mpBtn_xs_w_150 mptbm_transport_select" data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" data-transport-price="<?php echo esc_attr($raw_price); ?>" data-post-id="<?php echo esc_attr($post_id); ?>" data-open-text="<?php esc_attr_e('Select Car', 'wpcarrently'); ?>" data-close-text="<?php esc_html_e('Selected', 'wpcarrently'); ?>" data-open-icon="" data-close-icon="fas fa-check mR_xs">
                             <span class="" data-icon></span>
-                            <span data-text><?php esc_html_e('Select Car', 'wpcarrently-car-rental-manager'); ?></span>
+                            <span data-text><?php esc_html_e('Select Car', 'wpcarrently'); ?></span>
                         </button>
                     </div>
                 </div>
