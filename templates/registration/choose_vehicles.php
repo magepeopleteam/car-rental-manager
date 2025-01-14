@@ -14,6 +14,43 @@ $schedule = [];
 
 
 
+function wptbm_check_operation_area($post_id, $start_place, $end_place) {
+    // Retrieve saved locations from post meta
+    $saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
+
+    // Ensure $saved_locations is an array
+    if (!is_array($saved_locations) || empty($saved_locations)) {
+        return false; // No locations to check against
+    }
+
+    // Flags to track if start_place and end_place are found
+    $start_found = false;
+    $end_found = false;
+
+    // Iterate through saved locations to check for matches
+    foreach ($saved_locations as $location) {
+        if (
+            isset($location['start_location']) && $location['start_location'] === $start_place ||
+            isset($location['end_location']) && $location['end_location'] === $start_place
+        ) {
+            $start_found = true;
+        }
+        if (
+            isset($location['start_location']) && $location['start_location'] === $end_place ||
+            isset($location['end_location']) && $location['end_location'] === $end_place
+        ) {
+            $end_found = true;
+        }
+
+        // Break and return true once both are found
+        if ($start_found && $end_found) {
+            return true;
+        }
+    }
+
+    // Return false if either place is not found
+    return false;
+}
 
 
 function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
@@ -181,12 +218,11 @@ if ($two_way > 1) {
 
     // Combine date and time if both are available
     $return_date_time = $return_date ? gmdate("Y-m-d", strtotime($return_date)) : "";
-    error_log('return date  ' . $return_date);
-    error_log('return date time ' . $return_date_time);
+
     if ($return_date_time && $return_time !== "") {
         $return_date_time .= " " . $return_time_formatted;
     }
-    error_log('return date time final' . $return_date_time);
+
 }
 if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field($_POST["feature_passenger_number"]) : "";
@@ -257,15 +293,19 @@ $mptbm_passengers = max($mptbm_passengers);
                     <?php
 
                     $all_posts = MPTBM_Query::query_transport_list($price_based);
-
+                    
                     if ($all_posts->found_posts > 0) {
                         $posts = $all_posts->posts;
                         $vehicle_item_count = 0;
 
                         foreach ($posts as $post) {
+                            
                             $post_id = $post->ID;
                             $check_schedule = wptbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
-                            if ($check_schedule) {
+                            $check_operation_area = wptbm_check_operation_area($post_id, $start_place, $end_place);
+                            
+                            if ($check_schedule && $check_operation_area) {
+                                
                                 $vehicle_item_count = $vehicle_item_count + 1;
                                 include MPTBM_Function::template_path("registration/vehicle_item.php");
                             }

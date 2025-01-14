@@ -197,7 +197,7 @@ if (sizeof($all_dates) > 0) {
 					<label class="fdColumn mptbm_manual_end_place">
 						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'wpcarrently'); ?></span>
 						<?php if ($price_based == 'manual') { ?>
-							<select id="mptbm_manual_end_place" class="mptbm_manual_start_place formControl">
+							<select id="mptbm_manual_end_place" class="mptbm_map_end_place formControl">
 								<option selected disabled><?php esc_html_e(' Select Return Location', 'wpcarrently'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>

@@ -6,6 +6,7 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly
+
 $date = $date ?? '';
 $start_date_time = $date;
 $return_date_time = $return_date_time ?? '';
@@ -33,17 +34,19 @@ if ($mptbm_enable_view_search_result_page == '') {
     $hidden_class = '';
 }
 if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
-    
+   
     $label = $label ?? MPTBM_Function::get_name();
     $start_place = $start_place ?? isset($_POST['start_place']) ? sanitize_text_field($_POST['start_place']) : '';
     $end_place = $end_place ?? isset($_POST['end_place']) ? sanitize_text_field($_POST['end_place']) : '';
     $two_way = $two_way ?? 1;
     
-    $location_exit = MPTBM_Function::location_exit($post_id, $start_place, $end_place);
-    if ($location_exit && $post_id) {
+   
+    if ( $post_id) {
+        
         //$product_id = MP_Global_Function::get_post_info($post_id, 'link_wc_product');
         $thumbnail = MP_Global_Function::get_image_url($post_id);
         $price = MPTBM_Function::get_price($post_id,  $start_place, $end_place , $start_date_time,$return_date_time);
+       
         if(!$price || $price == 0){
             return false;
         }
@@ -51,6 +54,7 @@ if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
         $raw_price = MP_Global_Function::price_convert_raw($wc_price);
         $display_features = MP_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
         $all_features = MP_Global_Function::get_post_info($post_id, 'mptbm_features');
+        
 ?>
         <div class="_dLayout_dFlex mptbm_booking_item <?php echo esc_attr( 'mptbm_booking_item_' . $post_id ); ?> <?php echo esc_attr( $hidden_class ); ?> <?php echo esc_attr( $feature_class ); ?>" data-placeholder>
             <div class="_max_200_mR">

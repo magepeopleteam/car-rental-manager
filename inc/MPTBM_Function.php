@@ -223,32 +223,33 @@ if (!class_exists('MPTBM_Function')) {
 		//*************Price*********************************//
 		public static function get_price($post_id,  $start_place = '', $destination_place = '', $start_date_time = '', $return_date_time = '')
 		{
+
 			if (session_status() !== PHP_SESSION_ACTIVE) {
 				session_start();
 			}
-
+			
+			
 			// Create DateTime objects from the input strings
 			$startDate = new DateTime($start_date_time);
 			$returnDate = new DateTime($return_date_time);
 			// Calculate the difference
 			$interval = $startDate->diff($returnDate);
-		
+			
 			// Convert the difference to total minutes
 			$minutes = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i;
 			$minutes_to_day = ceil($minutes/1440);
 			
 
 			$manual_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
-
+			
 			if (sizeof($manual_prices) > 0) {
 				foreach ($manual_prices as $manual_price) {
-					$start_location = array_key_exists('start_location', $manual_price) ? $manual_price['start_location'] : '';
-					$end_location = array_key_exists('end_location', $manual_price) ? $manual_price['end_location'] : '';
-					if ($start_place == $start_location && $destination_place == $end_location) {
+					
+						
 						$price_per_day = MP_Global_Function::get_post_info($post_id, 'mptbm_day_price', 0);
 						
 						$price = $price_per_day * $minutes_to_day;
-					}
+					
 				}
 			}
 			if (class_exists('MPTBM_Datewise_Discount_Addon')) {
@@ -337,30 +338,7 @@ if (!class_exists('MPTBM_Function')) {
 			}
 			return $price;
 		}
-		//************Location*******************//
-		public static function location_exit($post_id, $start_place, $destination_place)
-		{
-			$price_based = MP_Global_Function::get_post_info($post_id, 'mptbm_price_based');
-
-			if ($price_based == 'manual') {
-				$manual_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
-				$terms_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
-				$manual_prices = array_merge($manual_prices, $terms_prices);
-				if (sizeof($manual_prices) > 0) {
-					$exit = 0;
-					foreach ($manual_prices as $manual_price) {
-						$start_location = array_key_exists('start_location', $manual_price) ? $manual_price['start_location'] : '';
-						$end_location = array_key_exists('end_location', $manual_price) ? $manual_price['end_location'] : '';
-						if ($start_place == $start_location && $destination_place == $end_location) {
-							$exit = 1;
-						}
-					}
-					return $exit > 0;
-				}
-				return false;
-			}
-			return true;
-		}
+		
 		public static function get_all_start_location($post_id = '')
 		{
 			$all_location = [];
