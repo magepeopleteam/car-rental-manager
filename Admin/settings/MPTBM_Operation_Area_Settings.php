@@ -24,7 +24,11 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 			// Retrieve saved data from post meta
 			$saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
-			$saved_locations_array = array_column($saved_locations, 'start_location'); // Extract saved start locations into an array
+			
+			if($saved_locations){
+				$saved_locations_array = array_column($saved_locations, 'start_location'); // Extract saved start locations into an array
+			}
+			
 
 ?>
 			<div class="tabsItem" data-tabs="#mptbm_setting_operation_area">
@@ -34,6 +38,11 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 				<label for="operation_area_select">
 					<select name="mptbm_terms_start_location[]" id="operation_area_select" class="formControl" multiple>
 						<?php
+						if (!empty($saved_locations_array) && !is_array($saved_locations_array)) {
+							$saved_locations_array = [$saved_locations_array]; // Convert single value to array
+						} elseif (empty($saved_locations_array)) {
+							$saved_locations_array = []; // Initialize as an empty array
+						}
 						if (!empty($location_terms) && !is_wp_error($location_terms)) {
 							foreach ($location_terms as $term) {
 								// Check if the term is saved and mark it as selected
@@ -61,8 +70,8 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 		public function save_operation_area_settings($post_id)
 		{
 			$terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', $_POST['mptbm_terms_start_location']) : [];
-
-			if (sizeof($terms_location) > 1) {
+			
+			if (sizeof($terms_location) > 0) {
 				$count = 0;
 				foreach ($terms_location as $key => $location) {
 					if ($location) {
@@ -72,6 +81,7 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 					}
 				}
 			}
+			
 			update_post_meta($post_id, 'mptbm_terms_price_info', $terms_price_infos);
 		}
 	}
