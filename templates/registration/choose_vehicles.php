@@ -57,7 +57,7 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
 {
     $timestamp = strtotime($selected_day);
 
-    $selected_day = date('l', $timestamp);
+    $selected_day = gmdate('l', $timestamp);
 
 
     //Schedule array
@@ -139,10 +139,10 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
     }
     return false;
 }
-$start_date = isset($_POST["start_date"]) ? sanitize_text_field($_POST["start_date"]) : "";
+$start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";
 
-$start_time_schedule = isset($_POST["start_time"]) ? sanitize_text_field($_POST["start_time"]) : "";
-$start_time = isset($_POST["start_time"]) ? sanitize_text_field($_POST["start_time"]) : "";
+$start_time_schedule = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
+$start_time = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
 
 if ($start_time !== "") {
     if ($start_time !== "0") {
@@ -178,21 +178,21 @@ if ($date && $start_time !== "") {
     $date .= " " . $start_time_formatted;
 }
 
-$start_place = isset($_POST["start_place"]) ? sanitize_text_field($_POST["start_place"]) : "";
-$start_place_coordinates = $_POST["start_place_coordinates"];
-$end_place_coordinates = $_POST["end_place_coordinates"];
-$end_place = isset($_POST["end_place"]) ? sanitize_text_field($_POST["end_place"]) : "";
+$start_place = isset($_POST["start_place"]) ? sanitize_text_field(wp_unslash($_POST["start_place"])) : "";
+$start_place_coordinates = sanitize_text_field(wp_unslash($_POST["start_place_coordinates"]));
+$end_place_coordinates = sanitize_text_field(wp_unslash($_POST["end_place_coordinates"]));
+$end_place = isset($_POST["end_place"]) ? sanitize_text_field(wp_unslash($_POST["end_place"])) : "";
 $two_way = 2;
-$waiting_time = isset($_POST["waiting_time"]) ? sanitize_text_field($_POST["waiting_time"]) : 0;
-$fixed_time = isset($_POST["fixed_time"]) ? sanitize_text_field($_POST["fixed_time"]) : "";
+$waiting_time = isset($_POST["waiting_time"]) ? sanitize_text_field(wp_unslash($_POST["waiting_time"])) : 0;
+$fixed_time = isset($_POST["fixed_time"]) ? sanitize_text_field(wp_unslash($_POST["fixed_time"])) : "";
 $return_time_schedule = null;
 
-$price_based = sanitize_text_field($_POST["price_based"]);
+$price_based = sanitize_text_field(wp_unslash($_POST["price_based"]));
 
 if ($two_way > 1) {
-    $return_date = isset($_POST["return_date"]) ? sanitize_text_field($_POST["return_date"]) : "";
-    $return_time = isset($_POST["return_time"]) ? sanitize_text_field($_POST["return_time"]) : "";
-    $return_time_schedule = isset($_POST["return_time"]) ? sanitize_text_field($_POST["return_time"]) : "";
+    $return_date = isset($_POST["return_date"]) ? sanitize_text_field(wp_unslash($_POST["return_date"])) : "";
+    $return_time = isset($_POST["return_time"]) ? sanitize_text_field(wp_unslash($_POST["return_time"])) : "";
+    $return_time_schedule = isset($_POST["return_time"]) ? sanitize_text_field(wp_unslash($_POST["return_time"])) : "";
 
     if ($return_time !== "") {
         if ($return_time !== "0") {
@@ -225,8 +225,8 @@ if ($two_way > 1) {
 
 }
 if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
-    $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field($_POST["feature_passenger_number"]) : "";
-    $feature_bag_number = isset($_POST["feature_bag_number"]) ? sanitize_text_field($_POST["feature_bag_number"]) : "";
+    $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_passenger_number"])) : "";
+    $feature_bag_number = isset($_POST["feature_bag_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_bag_number"])) : "";
 }
 $mptbm_bags = [];
 $mptbm_passengers = [];

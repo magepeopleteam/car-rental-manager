@@ -142,16 +142,16 @@
 				}
 				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
 					$all_features = [];
-					$max_passenger = isset($_POST['mptbm_maximum_passenger']) ? sanitize_text_field($_POST['mptbm_maximum_passenger']) : '';
-					$max_bag = isset($_POST['mptbm_maximum_bag']) ? sanitize_text_field($_POST['mptbm_maximum_bag']) : '';
+					$max_passenger = isset($_POST['mptbm_maximum_passenger']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_passenger'])) : '';
+					$max_bag = isset($_POST['mptbm_maximum_bag']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_bag'])) : '';
 					update_post_meta($post_id, 'mptbm_maximum_passenger', $max_passenger);
 					update_post_meta($post_id, 'mptbm_maximum_bag', $max_bag);
-					$display_features = isset($_POST['display_mptbm_features']) && sanitize_text_field($_POST['display_mptbm_features'])? 'on' : 'off';
+					$display_features = isset($_POST['display_mptbm_features']) && sanitize_text_field(wp_unslash($_POST['display_mptbm_features']))? 'on' : 'off';
 					update_post_meta($post_id, 'display_mptbm_features', $display_features);
-					$features_label = isset($_POST['mptbm_features_label']) ? array_map('sanitize_text_field',$_POST['mptbm_features_label']) : [];
+					$features_label = isset($_POST['mptbm_features_label']) ? array_map('sanitize_text_field',wp_unslash($_POST['mptbm_features_label'])) : [];
 					if (sizeof($features_label) > 0) {
-						$features_text = isset($_POST['mptbm_features_text']) ? array_map('sanitize_text_field',$_POST['mptbm_features_text']) : [];
-						$features_icon = isset($_POST['mptbm_features_icon_image']) ? array_map('sanitize_text_field',$_POST['mptbm_features_icon_image']) : [];
+						$features_text = isset($_POST['mptbm_features_text']) ? array_map('sanitize_text_field',wp_unslash($_POST['mptbm_features_text'])) : [];
+						$features_icon = isset($_POST['mptbm_features_icon_image']) ? array_map('sanitize_text_field',wp_unslash($_POST['mptbm_features_icon_image'])) : [];
 						$count = 0;
 						foreach ($features_label as $label) {
 							if ($label) {

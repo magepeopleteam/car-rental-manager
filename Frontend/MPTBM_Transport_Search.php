@@ -66,7 +66,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			$_SESSION['custom_content'] = $content;
 
 			session_write_close(); // Close the session to release the lock
-			$redirect_url = isset($_POST['mptbm_enable_view_search_result_page']) ? sanitize_text_field($_POST['mptbm_enable_view_search_result_page']) : '';
+			$redirect_url = isset($_POST['mptbm_enable_view_search_result_page']) ? sanitize_text_field(wp_unslash($_POST['mptbm_enable_view_search_result_page'])) : '';
 			if ($redirect_url == '') {
 				$redirect_url = 'transport-result';
 			}

@@ -28,9 +28,9 @@
 			public function mptbm_disable_field() {
 				
 				$response = 'failed';
-				$key = isset($_POST['key']) ? sanitize_text_field($_POST['key']) : null;
-				$name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : null;
-				$isChecked = isset($_POST['isChecked']) ? sanitize_text_field($_POST['isChecked']) : null;
+				$key = isset($_POST['key']) ? sanitize_text_field(wp_unslash($_POST['key'])) : null;
+				$name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : null;
+				$isChecked = isset($_POST['isChecked']) ? sanitize_text_field(wp_unslash($_POST['isChecked'])) : null;
 				$checkout_fields = MPTBM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list();
 				$custom_checkout_fields = array();
 				$custom_checkout_fields = get_option('mptbm_custom_checkout_fields');

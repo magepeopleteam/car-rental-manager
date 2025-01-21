@@ -67,23 +67,28 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 		}
 
 
-		public function save_operation_area_settings($post_id)
-		{
-			$terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', $_POST['mptbm_terms_start_location']) : [];
-			
-			if (sizeof($terms_location) > 0) {
-				$count = 0;
-				foreach ($terms_location as $key => $location) {
-					if ($location) {
-						$terms_price_infos[$count]['start_location'] = $location;
-						$terms_price_infos[$count]['end_location'] = $location;
-						$count++;
-					}
-				}
-			}
-			
-			update_post_meta($post_id, 'mptbm_terms_price_info', $terms_price_infos);
-		}
-	}
+        public function save_operation_area_settings($post_id)
+        {
+            // Initialize the variable to avoid undefined warnings
+            $terms_price_infos = [];
+
+            $terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_start_location'])) : [];
+
+            if (sizeof($terms_location) > 0) {
+                $count = 0;
+                foreach ($terms_location as $key => $location) {
+                    if ($location) {
+                        $terms_price_infos[$count]['start_location'] = $location;
+                        $terms_price_infos[$count]['end_location'] = $location;
+                        $count++;
+                    }
+                }
+            }
+
+            // Safely update the meta value
+            update_post_meta($post_id, 'mptbm_terms_price_info', $terms_price_infos);
+        }
+
+    }
 	new MPTBM_Operation_Area_Settings();
 }
