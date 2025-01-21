@@ -461,26 +461,36 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			<?php
 			}
 		}
-		function save_custom_checkout_fields_to_order($order_id, $data)
-		{
-			$checkout_key_fields = $this->get_checkout_fields_for_checkout();
-			foreach ($checkout_key_fields as $key => $checkout_fields) {
-				if (is_array($checkout_fields) && count($checkout_fields)) {
-					$checkout_other_fields = array_filter($checkout_fields, array($this, 'get_other_fields'));
-					foreach ($checkout_other_fields as $key => $file_fields) {
-						update_post_meta($order_id, sanitize_text_field('_' . $key), sanitize_text_field($_POST[$key]));
-					}
-					if (in_array('file', array_column($checkout_fields, 'type'))) {
-						$checkout_file_fields = array_filter($checkout_fields, array($this, 'get_file_fields'));
-						foreach ($checkout_file_fields as $key => $file_fields) {
-							$image_url = $this->get_uploaded_image_link($key . '_file');
-							update_post_meta($order_id, '_' . $key, esc_url($image_url));
-						}
-					}
-				}
-			}
-		}
-		function get_post($order_id)
+        function save_custom_checkout_fields_to_order($order_id, $data)
+        {
+            $checkout_key_fields = $this->get_checkout_fields_for_checkout();
+            foreach ($checkout_key_fields as $key => $checkout_fields) {
+                if (is_array($checkout_fields) && count($checkout_fields)) {
+                    // Handle other fields
+                    $checkout_other_fields = array_filter($checkout_fields, array($this, 'get_other_fields'));
+                    foreach ($checkout_other_fields as $key => $file_fields) {
+                        if (isset($_POST[$key])) { // Check if the key exists in $_POST
+                            $meta_key = sanitize_text_field('_' . $key);
+                            $meta_value = sanitize_text_field(wp_unslash($_POST[$key])); // Unslash and sanitize the input
+                            update_post_meta($order_id, $meta_key, $meta_value);
+                        }
+                    }
+
+                    // Handle file fields
+                    if (in_array('file', array_column($checkout_fields, 'type'))) {
+                        $checkout_file_fields = array_filter($checkout_fields, array($this, 'get_file_fields'));
+                        foreach ($checkout_file_fields as $key => $file_fields) {
+                            $image_url = $this->get_uploaded_image_link($key . '_file');
+                            if ($image_url) { // Ensure a valid image URL is retrieved
+                                update_post_meta($order_id, '_' . $key, esc_url($image_url));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function get_post($order_id)
 		{
 			$args = array(
 				'post_type' => 'mptbm_booking',
@@ -516,10 +526,18 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 				$file_type = wp_check_filetype($file_name, $this->allowed_mime_types);
 				if (in_array($file_extension, $this->allowed_extensions) && $file_type['type']) {
 					$path = $upload_dir['path'] . '/' . $file_name;
-					if (move_uploaded_file($file['tmp_name'], $path)) {
-						$image_url = $upload_dir['url'] . '/' . $file_name;
-					}
-				}
+                    if (isset($file['tmp_name']) && !empty($file['tmp_name'])) {
+                        $upload_overrides = array('test_form' => false);
+                        $uploaded_file = wp_handle_upload($file, $upload_overrides);
+                        if ($uploaded_file && !isset($uploaded_file['error'])) {
+                            $image_url = $uploaded_file['url']; // Get the URL of the uploaded file
+                            $path = $uploaded_file['file']; // Get the file path if needed
+                        } else {
+                            $error_message = $uploaded_file['error'];
+                        }
+                    }
+
+                }
 			}
 			if ($image_url) {
 				return $image_url;

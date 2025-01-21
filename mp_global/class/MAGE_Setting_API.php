@@ -36,12 +36,7 @@
 					if (false == get_option($section['id'])) {
 						add_option($section['id']);
 					}
-					if (isset($section['desc']) && !empty($section['desc'])) {
-						$section['desc'] = '<div class="inside">' . $section['desc'] . '</div>';
-						$callback = function () use ($section) {
-							echo str_replace('"', '\"', $section['desc']);
-						};
-					}
+                    if (isset($section['desc']) && !empty($section['desc'])) { $section['desc'] = '<div class="inside">' . esc_html($section['desc']) . '</div>'; $callback = function () use ($section) { echo esc_html(str_replace('"', '\"', $section['desc'])); }; }
 					else if (isset($section['callback'])) {
 						$callback = $section['callback'];
 					}
@@ -106,7 +101,7 @@
 				$date_format = MP_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 				$date = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
-				$hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -275,14 +270,14 @@
 				</div>
 				<?php
 			}
-			function callback_file($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
-				$name = $args['section'] . '[' . $args['id'] . ']';
-				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
-				$label = $args['options']['button_label'] ?? esc_html__('Choose File');
-				do_action('mp_add_single_image',$name,$value);
-			}
-			function callback_password($args) {
+            function callback_file($args) {
+                $value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+                $name = $args['section'] . '[' . $args['id'] . ']';
+                $placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
+                $label = $args['options']['button_label'] ?? esc_html__('Choose File', 'wpcarrently');
+                do_action('mp_add_single_image', $name, $value);
+            }
+            function callback_password($args) {
 				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];

@@ -23,63 +23,67 @@
 				</div>
 				<?php
 			}
-			public function pagination($params, $total_item, $active_page = 0) {
-				ob_start();
-				$per_page = $params['show'] > 1 ? $params['show'] : $total_item;
-				?>
-				<input type="hidden" name="pagination_per_page" value="<?php echo esc_attr($per_page); ?>"/>
-				<input type="hidden" name="pagination_style" value="<?php echo esc_attr($params['pagination-style']); ?>"/>
-				<input type="hidden" name="mp_total_item" value="<?php echo esc_attr($total_item); ?>"/>
-				<?php if ($total_item > $per_page) { ?>
-					<div class="allCenter pagination_area" data-placeholder>
-						<?php
-							if ($params['pagination-style'] == 'load_more') {
-								?>
-								<button type="button" class="_mpBtn_xs_min_200 pagination_load_more" data-load-more="0">
-									<?php esc_html_e('Load More', 'wpcarrently'); ?>
-								</button>
-								<?php
-							}
-							else {
-								$page_mod = $total_item % $per_page;
-								$total_page = (int)($total_item / $per_page) + ($page_mod > 0 ? 1 : 0);
-								$current_page=$active_page<3?0:$active_page-2;
-								$last_page=$active_page<3?5:$active_page+3;
-								?>
-								<div class="buttonGroup">
-									<?php if ($total_page > 2) { ?>
-										<button class="_mpBtn_xs page_prev" type="button" title="<?php esc_html_e('GoTO Previous Page', 'wpcarrently'); ?>" disabled>
-											<span class="fas fa-chevron-left mp_zero"></span>
-										</button>
-									<?php } ?>
-									<?php if ($total_page > 5) { ?>
-										<button class="_mpBtn_xs ellipse_left" type="button" disabled>
-											<span class="fas fa-ellipsis-h mp_zero"></span>
-										</button>
-									<?php } ?>
-									<?php for ($i = $current_page; $i < $last_page; $i++) { ?>
-										<button class="_mpBtn_xs <?php echo esc_html($i) == $active_page ? 'active_pagination' : ''; ?>" type="button" data-pagination="<?php echo esc_html($i); ?>"><?php echo esc_html($i + 1); ?></button>
-									<?php } ?>
-									
-									<?php if ($total_page > 5) { ?>
-										<button class="_mpBtn_xs ellipse_right" type="button" disabled>
-											<span class="fas fa-ellipsis-h mp_zero"></span>
-										</button>
-									<?php } ?>
-									
-									<?php if ($total_page > 2) { ?>
-										<button class="_mpBtn_xs page_next" type="button" title="<?php esc_html_e('GoTO Next Page', 'wpcarrently'); ?>">
-											<span class="fas fa-chevron-right mp_zero"></span>
-										</button>
-									<?php } ?>
-								</div>
-							<?php } ?>
-					</div>
-					<?php
-				}
-				echo ob_get_clean();
-			}
-			/*****************************/
+            public function pagination($params, $total_item, $active_page = 0) {
+                ob_start();
+                $per_page = intval($params['show']) > 1 ? intval($params['show']) : intval($total_item);
+                ?>
+                <input type="hidden" name="pagination_per_page" value="<?php echo esc_attr($per_page); ?>"/>
+                <input type="hidden" name="pagination_style" value="<?php echo esc_attr($params['pagination-style']); ?>"/>
+                <input type="hidden" name="mp_total_item" value="<?php echo esc_attr($total_item); ?>"/>
+                <?php if ($total_item > $per_page) { ?>
+                    <div class="allCenter pagination_area" data-placeholder>
+                        <?php
+                        if ($params['pagination-style'] === 'load_more') {
+                            ?>
+                            <button type="button" class="_mpBtn_xs_min_200 pagination_load_more" data-load-more="0">
+                                <?php esc_html_e('Load More', 'wpcarrently'); ?>
+                            </button>
+                            <?php
+                        } else {
+                            $page_mod = $total_item % $per_page;
+                            $total_page = (int)($total_item / $per_page) + ($page_mod > 0 ? 1 : 0);
+                            $current_page = max(0, $active_page - 2);
+                            $last_page = min($total_page, $active_page + 3);
+                            ?>
+                            <div class="buttonGroup">
+                                <?php if ($total_page > 2) { ?>
+                                    <button class="_mpBtn_xs page_prev" type="button" title="<?php echo esc_attr__('Go To Previous Page', 'wpcarrently'); ?>" disabled>
+                                        <span class="fas fa-chevron-left mp_zero"></span>
+                                    </button>
+                                <?php } ?>
+                                <?php if ($total_page > 5) { ?>
+                                    <button class="_mpBtn_xs ellipse_left" type="button" disabled>
+                                        <span class="fas fa-ellipsis-h mp_zero"></span>
+                                    </button>
+                                <?php } ?>
+                                <?php for ($i = $current_page; $i < $last_page; $i++) { ?>
+                                    <button class="_mpBtn_xs <?php echo ($i === $active_page) ? esc_attr('active_pagination') : ''; ?>"
+                                            type="button"
+                                            data-pagination="<?php echo esc_attr($i); ?>">
+                                        <?php echo esc_html($i + 1); ?>
+                                    </button>
+                                <?php } ?>
+                                <?php if ($total_page > 5) { ?>
+                                    <button class="_mpBtn_xs ellipse_right" type="button" disabled>
+                                        <span class="fas fa-ellipsis-h mp_zero"></span>
+                                    </button>
+                                <?php } ?>
+                                <?php if ($total_page > 2) { ?>
+                                    <button class="_mpBtn_xs page_next" type="button" title="<?php echo esc_attr__('Go To Next Page', 'wpcarrently'); ?>">
+                                        <span class="fas fa-chevron-right mp_zero"></span>
+                                    </button>
+                                <?php } ?>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                    </div>
+                    <?php
+                }
+                echo wp_kses_post(ob_get_clean());
+            }
+
+            /*****************************/
 			public static function switch_button($name, $checked = '') {
 				?>
 				<label class="roundSwitchLabel">
@@ -109,7 +113,7 @@
 				?>
 				<button class="<?php echo esc_attr($button_class . ' ' . $class); ?>" type="button">
 					<span class="<?php echo esc_attr($icon_class); ?>"></span>
-					<span class="mL_xs"><?php echo MP_Global_Function::esc_html($button_text); ?></span>
+                    <span class="mL_xs"><?php echo esc_html($button_text); ?></span>
 				</button>
 				<?php
 			}
@@ -220,13 +224,13 @@
 						?>
 						<label>
 							<select name="<?php echo esc_attr($input_name); ?>" data-price="<?php echo esc_attr($price); ?>" class="formControl">
-								<option selected value="0"><?php echo esc_html__('Please select', 'wpcarrently').' '.$text; ?></option>
+                                <option selected value="0"> <?php echo esc_html__('Please select', 'wpcarrently') . ' ' . esc_html($text); ?> </option>
 								<?php
 									$max_total = $max_qty > 0 ? $max_qty : $available_seat;
 									$min_value=max(1,$min_qty);
 									for ($i = $min_value; $i <= $max_total; $i++) {
 										?>
-										<option value="<?php echo esc_html($i); ?>"> <?php echo esc_html($i).' '.$text; ; ?> </option>
+                                        <option value="<?php echo esc_attr($i); ?>"> <?php echo esc_html($i) . ' ' . esc_html($text); ?> </option>
 									<?php } ?>
 							</select>
 						</label>

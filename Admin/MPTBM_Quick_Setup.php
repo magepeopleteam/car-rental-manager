@@ -97,8 +97,8 @@
 						<?php
 					}
 					if (isset($_POST['finish_quick_setup'])) {
-						$label = isset($_POST['mptbm_label']) ? sanitize_text_field($_POST['mptbm_label']) : 'Transportation';
-						$slug = isset($_POST['mptbm_slug']) ? sanitize_text_field($_POST['mptbm_slug']) : 'transportation';
+						$label = isset($_POST['mptbm_label']) ? sanitize_text_field(wp_unslash($_POST['mptbm_label'])) : 'Transportation';
+						$slug = isset($_POST['mptbm_slug']) ? sanitize_text_field(wp_unslash($_POST['mptbm_slug'])) : 'transportation';
 						$general_settings_data = get_option('mptbm_general_settings');
 						$update_general_settings_arr = [
 							'mptbm_rent_label' => $label,
