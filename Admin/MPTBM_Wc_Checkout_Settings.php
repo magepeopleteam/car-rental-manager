@@ -63,8 +63,8 @@
 				if (!current_user_can('administrator')) {
 					wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'wpcarrently'));
 				}
-                $action = isset($_POST['action']) ? sanitize_text_field( wp_unslash( $_POST['action'] ) ) : null;
-                if (isset($action) && $action == 'mptbm_wc_checkout_settings') {
+				$action = isset($_POST['action']) ? sanitize_text_field(wp_unslash($_POST['action'])) : null;
+				if (isset($action) && $action == 'mptbm_wc_checkout_settings') {
 					if (check_admin_referer('mptbm_wc_checkout_settings', 'mptbm_wc_checkout_settings_nonce')) {
 						$hide_checkout_order_additional_information = isset($_POST['hide_checkout_order_additional_information']) ? sanitize_text_field(wp_unslash($_POST['hide_checkout_order_additional_information'])) : null;
 						$hide_checkout_order_review = isset($_POST['hide_checkout_order_review']) ? sanitize_text_field(wp_unslash($_POST['hide_checkout_order_review'])) : null;

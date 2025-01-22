@@ -57,7 +57,7 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
 {
     $timestamp = strtotime($selected_day);
 
-    $selected_day = gmdate('l', $timestamp);
+    $selected_day = date('l', $timestamp);
 
 
     //Schedule array

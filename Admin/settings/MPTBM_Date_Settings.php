@@ -58,6 +58,13 @@
 				<?php
 			}
 			/*************************************/
+//			public function get_mptbm_end_time_slot() {
+//				$post_id = isset($_REQUEST['post_id']) ? MP_Global_Function::data_sanitize($_REQUEST['post_id']) : '';
+//				$day = isset($_REQUEST['day_name']) ? MP_Global_Function::data_sanitize($_REQUEST['day_name']) : '';
+//				$start_time = isset($_REQUEST['start_time']) ? MP_Global_Function::data_sanitize($_REQUEST['start_time']) : '';
+//				$this->end_time_slot($post_id, $day, $start_time);
+//				die();
+//			}
 			public function time_slot_tr($post_id, $day) {
 				$start_name = 'mptbm_' . $day . '_start_time';
 				$default_start_time = $day == 'default' ? 0.5 : '';
@@ -321,135 +328,99 @@
 				<?php
 			}
 			/*************************************/
-            public function save_date_time_settings($post_id) {
-                // Verify nonce and user permissions
-                if (
-                    !isset($_POST['mptbm_transportation_type_nonce']) ||
-                    !wp_verify_nonce(
-                        sanitize_text_field( wp_unslash( $_POST['mptbm_transportation_type_nonce'] ) ),
-                        'mptbm_transportation_type_nonce'
-                    ) ||
-                    ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) ||
-                    !current_user_can('edit_post', $post_id)
-                ) {
-                    return;
-                }
+			public function save_date_time_settings($post_id) {
+				if (!isset($_POST['mptbm_transportation_type_nonce']) || !wp_verify_nonce(sanitize_text_field( wp_unslash ($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
+					return;
+				}
+				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+					//************************************//
+					$mptbm_date_type = isset($_POST['mptbm_date_type']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date_type'])) : '';
+					update_post_meta($post_id, 'mptbm_date_type', $mptbm_date_type);
+					//**********************//
+					
 
-                if (get_post_type($post_id) === MPTBM_Function::get_cpt()) {
-                    //************************************//
-                    // Sanitizing 'mptbm_date_type'
-                    $mptbm_date_type = isset($_POST['mptbm_date_type'])
-                        ? sanitize_text_field( wp_unslash( $_POST['mptbm_date_type'] ) )
-                        : '';
-                    update_post_meta($post_id, 'mptbm_date_type', $mptbm_date_type);
-                    //**********************//
 
-                    //************************************//
-                    // Sanitizing 'mptbm_particular_dates'
-                    $particular_dates = isset($_POST['mptbm_particular_dates'])
-                        ? array_map('sanitize_text_field', wp_unslash( $_POST['mptbm_particular_dates'] ) )
-                        : [];
-                    $particular = [];
-                    if (!empty($particular_dates)) {
-                        foreach ($particular_dates as $particular_date) {
-                            if ($particular_date) {
-                                $particular[] = gmdate('Y-m-d', strtotime($particular_date));
-                            }
-                        }
-                    }
-                    update_post_meta($post_id, 'mptbm_particular_dates', $particular);
-                    //**********************//
+					$particular_dates = isset($_POST['mptbm_particular_dates']) ? array_map('sanitize_text_field',$_POST['mptbm_particular_dates']) : [];
+					$particular = array();
+					if (sizeof($particular_dates) > 0) {
+						foreach ($particular_dates as $particular_date) {
+							if ($particular_date) {
+								$particular[] = gmdate('Y-m-d', strtotime($particular_date));
+							}
+						}
+					}
+					
+					$mptbm_available_for_all_time = isset($_POST['mptbm_available_for_all_time']) && sanitize_text_field(wp_unslash($_POST['mptbm_available_for_all_time']))? 'on' : 'off';
+					update_post_meta($post_id, 'mptbm_available_for_all_time', $mptbm_available_for_all_time);
 
-                    //************************************//
-                    // Sanitizing 'mptbm_available_for_all_time'
-                    $mptbm_available_for_all_time = isset($_POST['mptbm_available_for_all_time'])
-                        ? ( sanitize_text_field( wp_unslash( $_POST['mptbm_available_for_all_time'] ) ) ? 'on' : 'off' )
-                        : 'off';
-                    update_post_meta($post_id, 'mptbm_available_for_all_time', $mptbm_available_for_all_time );
-                    //*************************//
+					update_post_meta($post_id, 'mptbm_particular_dates', $particular);
+					//*************************//
+					$repeated_start_date =  isset($_POST['mptbm_repeated_start_date']) ? sanitize_text_field(wp_unslash($_POST['mptbm_repeated_start_date'])) : '';
+					$repeated_start_date = $repeated_start_date ? gmdate('Y-m-d', strtotime($repeated_start_date)) : '';
+					update_post_meta($post_id, 'mptbm_repeated_start_date', $repeated_start_date);
+					$repeated_after = isset($_POST['mptbm_repeated_after']) ? sanitize_text_field(wp_unslash($_POST['mptbm_repeated_after'])) : '';
+					update_post_meta($post_id, 'mptbm_repeated_after', $repeated_after);
+					$active_days = isset($_POST['mptbm_active_days']) ? sanitize_text_field(wp_unslash($_POST['mptbm_active_days'])) : '';
+					update_post_meta($post_id, 'mptbm_active_days', $active_days);
+					//**********************//
+					if(isset($_POST['mptbm_off_days'])){
+						$off_days_arr = explode(',', $_POST['mptbm_off_days']);
+						$off_days = is_array($off_days_arr) ? array_map('sanitize_text_field',$off_days_arr) : [];
+						$off_days = implode(',', $off_days);
+						
+						update_post_meta($post_id, 'mptbm_off_days', $off_days);
+					}
+					
+					//**********************//
+					$off_dates = isset($_POST['mptbm_off_dates']) && is_array($_POST['mptbm_off_dates']) ? array_map('sanitize_text_field',$_POST['mptbm_off_dates']) : [];
+					$_off_dates = array();
+					if (sizeof($off_dates) > 0) {
+						foreach ($off_dates as $off_date) {
+							if ($off_date) {
+								$_off_dates[] = gmdate('Y-m-d', strtotime($off_date));
+							}
+						}
+					}
+					update_post_meta($post_id, 'mptbm_off_dates', $_off_dates);
+					$this->save_schedule($post_id, 'default');
+					$days = MP_Global_Function::week_day();
+					foreach ($days as $key => $day) {
+						$this->save_schedule($post_id, $key);
+					}
+					
+				}
+			}
+			public  function get_submit_info($key, $default = '') {
+				return $this->data_sanitize($_POST[$key] ?? $default);
+			}
+			public function data_sanitize($data) {
+				$data = maybe_unserialize($data);
+				if (is_string($data)) {
+					$data = maybe_unserialize($data);
+					if (is_array($data)) {
+						$data = $this->data_sanitize($data);
+					}
+					else {
 
-                    //************************************//
-                    // Sanitizing 'mptbm_repeated_start_date'
-                    $repeated_start_date = isset($_POST['mptbm_repeated_start_date'])
-                        ? sanitize_text_field( wp_unslash( $_POST['mptbm_repeated_start_date'] ) )
-                        : '';
-                    $repeated_start_date = $repeated_start_date ? gmdate('Y-m-d', strtotime($repeated_start_date)) : '';
-                    update_post_meta($post_id, 'mptbm_repeated_start_date', $repeated_start_date );
+						$data = sanitize_text_field(stripslashes(wp_strip_all_tags($data)));
 
-                    // Sanitizing 'mptbm_repeated_after'
-                    $repeated_after = isset($_POST['mptbm_repeated_after'])
-                        ? sanitize_text_field( wp_unslash( $_POST['mptbm_repeated_after'] ) )
-                        : '';
-                    update_post_meta($post_id, 'mptbm_repeated_after', $repeated_after );
+					}
+				}
+				elseif (is_array($data)) {
+					foreach ($data as &$value) {
+						if (is_array($value)) {
+							$value = $this->data_sanitize($value);
+						}
+						else {
+							$value = sanitize_text_field(stripslashes(wp_strip_all_tags($value)));
 
-                    // Sanitizing 'mptbm_active_days'
-                    $active_days = isset($_POST['mptbm_active_days'])
-                        ? sanitize_text_field( wp_unslash( $_POST['mptbm_active_days'] ) )
-                        : '';
-                    update_post_meta($post_id, 'mptbm_active_days', $active_days );
-                    //**********************//
 
-                    //************************************//
-                    // Sanitizing 'mptbm_off_days'
-                    if ( isset( $_POST['mptbm_off_days'] ) ) {
-                        $off_days_arr = isset($_POST['mptbm_off_days']) ? sanitize_text_field(wp_unslash($_POST['mptbm_off_days'])) : '';
-                        $off_days = is_array( $off_days_arr )
-                            ? array_map( 'sanitize_text_field', $off_days_arr )
-                            : [];
-                        $off_days = implode( ',', $off_days );
-                        update_post_meta( $post_id, 'mptbm_off_days', $off_days );
-                    }
-                    // Sanitizing 'mptbm_off_dates'
-                    $off_dates = ( isset( $_POST['mptbm_off_dates'] ) && is_array( $_POST['mptbm_off_dates'] ) )
-                        ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mptbm_off_dates'] ) )
-                        : [];
-                    $_off_dates = [];
-                    if ( !empty( $off_dates ) ) {
-                        foreach ( $off_dates as $off_date ) {
-                            if ( $off_date ) {
-                                $_off_dates[] = gmdate( 'Y-m-d', strtotime( $off_date ) );
-                            }
-                        }
-                    }
-                    update_post_meta( $post_id, 'mptbm_off_dates', $_off_dates );
-                    //**********************//
-
-                    // Save schedules
-                    $this->save_schedule( $post_id, 'default' );
-                    $days = MP_Global_Function::week_day();
-                    foreach ( $days as $key => $day ) {
-                        $this->save_schedule( $post_id, $key );
-                    }
-                }
-            }
-
-            public function get_submit_info($key, $default = '') {
-                $value = isset($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : $default;
-                return $this->data_sanitize( $value );
-            }
-
-            public function data_sanitize($data) {
-                $data = maybe_unserialize($data);
-                if (is_string($data)) {
-                    $data = maybe_unserialize($data);
-                    if (is_array($data)) {
-                        $data = $this->data_sanitize($data);
-                    } else {
-                        $data = sanitize_text_field(stripslashes(wp_strip_all_tags($data)));
-                    }
-                } elseif (is_array($data)) {
-                    foreach ($data as &$value) {
-                        if (is_array($value)) {
-                            $value = $this->data_sanitize($value);
-                        } else {
-                            $value = sanitize_text_field(stripslashes(wp_strip_all_tags($value)));
-                        }
-                    }
-                }
-                return $data;
-            }
-
-            public function save_schedule($post_id, $day) {
+						}
+					}
+				}
+				return $data;
+			}
+			public function save_schedule($post_id, $day) {
 				$start_name = 'mptbm_' . $day . '_start_time';
 				$start_time = $this->get_submit_info($start_name);
 				update_post_meta($post_id, $start_name, $start_time);

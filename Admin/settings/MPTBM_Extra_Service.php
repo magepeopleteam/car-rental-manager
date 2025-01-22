@@ -20,27 +20,11 @@
 				add_action( 'wp_ajax_get_mptbm_ex_service', array( $this, 'get_mptbm_ex_service' ) );
 				add_action( 'wp_ajax_nopriv_get_mptbm_ex_service', array( $this, 'get_mptbm_ex_service' ) );
 			}
-            public function mptbm_extra_service_meta() {
-                $plugin_version = sprintf(
-                // translators: %s is the plugin version number.
-                    '<span class="version"> V%s</span>',
-                    MPTBM_PLUGIN_VERSION
-                );
-
-                // translators: %s is the plugin name.
-                $label = MPTBM_Function::get_name() . sprintf(__(' > Extra Services Settings %s', 'wpcarrently'), $plugin_version);
-
-                add_meta_box(
-                    'mp_meta_box_panel',
-                    $label,
-                    array($this, 'mptbm_extra_service'),
-                    'mptbm_extra_services',
-                    'normal',
-                    'high'
-                );
-            }
-
-            public function mptbm_extra_service() {
+			public function mptbm_extra_service_meta() {
+				$label = MPTBM_Function::get_name();
+				add_meta_box( 'mp_meta_box_panel', $label . __( ' > Extra Services Settings' . '<span class="version"> V'.MPTBM_PLUGIN_VERSION.'</span>', 'wpcarrently' ), array( $this, 'mptbm_extra_service' ), 'mptbm_extra_services', 'normal', 'high' );
+			}
+			public function mptbm_extra_service() {
 				$post_id        = get_the_id();
 				$extra_services = MP_Global_Function::get_post_info( $post_id, 'mptbm_extra_service_infos', array() );
 				wp_nonce_field( 'mptbm_extra_service_nonce', 'mptbm_extra_service_nonce' );
@@ -230,9 +214,9 @@
 					return;
 				}
 				if ( get_post_type( $post_id ) == MPTBM_Function::get_cpt() ) {
-					$display = isset($_POST['display_mptbm_extra_services']) && sanitize_text_field( wp_unslash($_POST['display_mptbm_extra_services']))? 'on' : 'off';
+					$display = isset($_POST['display_mptbm_extra_services']) && sanitize_text_field(wp_unslash($_POST['display_mptbm_extra_services']))? 'on' : 'off';
 					update_post_meta( $post_id, 'display_mptbm_extra_services', $display );
-					$ex_id = isset($_POST['mptbm_extra_services_id']) ? sanitize_text_field( wp_unslash($_POST['mptbm_extra_services_id'])) : $post_id;
+					$ex_id = isset($_POST['mptbm_extra_services_id']) ? sanitize_text_field(wp_unslash($_POST['mptbm_extra_services_id'])) : $post_id;
 					update_post_meta( $post_id, 'mptbm_extra_services_id', $ex_id );
 					if ( $ex_id == $post_id ) {
 						$extra_service_data = $this->ex_service_data( $post_id );
@@ -242,11 +226,11 @@
 			}
 			public function ex_service_data( $post_id ) {
 				$new_extra_service         = array();
-				$extra_icon                =  isset($_POST['service_icon']) ? array_map('sanitize_text_field',wp_unslash($_POST['service_icon'])) : [];
-                $extra_names = isset($_POST['service_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_name'])) : [];
-				$extra_price               =  isset($_POST['service_price']) ? array_map('sanitize_text_field',wp_unslash($_POST['service_price'])) : [];
-				$extra_qty_type            =  isset($_POST['service_qty_type']) ? array_map('sanitize_text_field',wp_unslash($_POST['service_qty_type'])) : [];
-				$extra_service_description =  isset($_POST['extra_service_description']) ? array_map('sanitize_textarea_field',wp_unslash($_POST['extra_service_description'])) : [];
+				$extra_icon                =  isset($_POST['service_icon']) ? array_map('sanitize_text_field',$_POST['service_icon']) : [];
+				$extra_names               =  isset($_POST['service_name']) ? array_map('sanitize_text_field',$_POST['service_name']) : [];
+				$extra_price               =  isset($_POST['service_price']) ? array_map('sanitize_text_field',$_POST['service_price']) : [];
+				$extra_qty_type            =  isset($_POST['service_qty_type']) ? array_map('sanitize_text_field',$_POST['service_qty_type']) : [];
+				$extra_service_description =  isset($_POST['extra_service_description']) ? array_map('sanitize_textarea_field',$_POST['extra_service_description']) : [];
 				$extra_count               = count( $extra_names );
 				for ( $i = 0; $i < $extra_count; $i ++ ) {
 					if ( $extra_names[ $i ] && $extra_price[ $i ] >= 0 ) {

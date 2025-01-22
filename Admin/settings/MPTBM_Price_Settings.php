@@ -62,12 +62,12 @@ if (!class_exists('MPTBM_Price_Settings')) {
 				$price_based = "manual";
 				update_post_meta($post_id, 'mptbm_price_based', $price_based);
 
-				$hour_price = isset($_POST['mptbm_day_price']) ? sanitize_text_field(wp_unslash($_POST['mptbm_day_price'])) : 0;
+				$hour_price = isset($_POST['mptbm_day_price']) ? sanitize_text_field($_POST['mptbm_day_price']) : 0;
 				update_post_meta($post_id, 'mptbm_day_price', $hour_price);
 				$manual_price_infos = array();
-				$start_location = isset($_POST['mptbm_manual_start_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_manual_start_location'])) : [];
-				$end_location = isset($_POST['mptbm_manual_end_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_manual_end_location'])) : [];
-				$manual_price = isset($_POST['mptbm_manual_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_manual_price'])) : [];
+				$start_location = isset($_POST['mptbm_manual_start_location']) ? array_map('sanitize_text_field', $_POST['mptbm_manual_start_location']) : [];
+				$end_location = isset($_POST['mptbm_manual_end_location']) ? array_map('sanitize_text_field', $_POST['mptbm_manual_end_location']) : [];
+				$manual_price = isset($_POST['mptbm_manual_price']) ? array_map('sanitize_text_field', $_POST['mptbm_manual_price']) : [];
 
 				if (sizeof($start_location) > 1 && sizeof($end_location) > 1) {
 					$count = 0;
@@ -82,8 +82,8 @@ if (!class_exists('MPTBM_Price_Settings')) {
 
 				update_post_meta($post_id, 'mptbm_manual_price_info', $manual_price_infos);
 				$terms_price_infos = array();
-				$start_terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_start_location'])) : [];
-				$end_terms_location = isset($_POST['mptbm_terms_end_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_end_location'])) : [];
+				$start_terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', $_POST['mptbm_terms_start_location']) : [];
+				$end_terms_location = isset($_POST['mptbm_terms_end_location']) ? array_map('sanitize_text_field', $_POST['mptbm_terms_end_location']) : [];
 				
 				if (sizeof($start_terms_location) > 1 && sizeof($end_terms_location) > 1) {
 					$count = 0;
