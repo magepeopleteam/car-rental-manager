@@ -57,9 +57,7 @@ if (!class_exists('MPTBM_Plugin')) {
         {
             $mptbm_quick_setup_done = get_option('mptbm_quick_setup_done');
             if ($plugin == plugin_basename(__FILE__) && $mptbm_quick_setup_done != 'yes') {
-                $redirect_url = esc_url(admin_url('edit.php?post_type=mptbm_rent&page=mptbm_quick_setup'));
-                wp_safe_redirect($redirect_url);
-                exit;
+                exit(wp_safe_redirect(esc_url(admin_url('edit.php?post_type=mptbm_rent&page=mptbm_quick_setup'))));
             }
         }
 
@@ -67,9 +65,7 @@ if (!class_exists('MPTBM_Plugin')) {
         {
             $mptbm_quick_setup_done = get_option('mptbm_quick_setup_done');
             if ($plugin == plugin_basename(__FILE__) && $mptbm_quick_setup_done != 'yes') {
-                $redirect_url = esc_url(admin_url( 'admin.php?post_type=mptbm_rent&page=mptbm_quick_setup' ) ) ;
-                wp_safe_redirect($redirect_url);
-                exit;
+                exit( wp_safe_redirect( esc_url(admin_url( 'admin.php?post_type=mptbm_rent&page=mptbm_quick_setup' ) )) );
             }
         }
 

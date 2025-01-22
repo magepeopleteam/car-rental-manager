@@ -8,7 +8,7 @@
 	} // Cannot access pages directly
 	$start_place = sanitize_text_field( wp_unslash($_POST['start_place']));
     $price_based = sanitize_text_field(wp_unslash($_POST['price_based']));
-    $post_id = absint(wp_unslash($_POST['post_id']));
+    $post_id = absint($_POST['post_id']);
     
     $end_locations = MPTBM_Function::get_end_location($start_place, $post_id);
     if (sizeof($end_locations) > 0) {

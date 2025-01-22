@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../addon-bus--ticket-booking-with-seat-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../booking-and-rental-manager-for-woocommerce" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../booking-and-rental-manager-for-woocommerce-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../bus-marketplace-addon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../bus-ticket-booking-with-seat-reservation" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ecab-taxi-booking-manager" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ecab-taxi-booking-manager-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../mage-partial-payment-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../service-booking-manager" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../service-booking-manager-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../taxi-peak-hour-pricing-addon" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../tour-booking-manager" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../tour-booking-manager-pro" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../ttbm-addon-group-pricing" vcs="Git" />
   </component>
 </project>
