@@ -340,7 +340,7 @@
 					
 
 
-					$particular_dates = isset($_POST['mptbm_particular_dates']) ? array_map('sanitize_text_field',$_POST['mptbm_particular_dates']) : [];
+					$particular_dates = isset($_POST['mptbm_particular_dates']) ? array_map('sanitize_text_field',wp_unslash($_POST['mptbm_particular_dates'])) : [];
 					$particular = array();
 					if (sizeof($particular_dates) > 0) {
 						foreach ($particular_dates as $particular_date) {
@@ -364,7 +364,7 @@
 					update_post_meta($post_id, 'mptbm_active_days', $active_days);
 					//**********************//
 					if(isset($_POST['mptbm_off_days'])){
-						$off_days_arr = explode(',', $_POST['mptbm_off_days']);
+						$off_days_arr = explode(',', sanitize_text_field(wp_unslash($_POST['mptbm_off_days'])));
 						$off_days = is_array($off_days_arr) ? array_map('sanitize_text_field',$off_days_arr) : [];
 						$off_days = implode(',', $off_days);
 						
@@ -372,7 +372,7 @@
 					}
 					
 					//**********************//
-					$off_dates = isset($_POST['mptbm_off_dates']) && is_array($_POST['mptbm_off_dates']) ? array_map('sanitize_text_field',$_POST['mptbm_off_dates']) : [];
+					$off_dates = isset($_POST['mptbm_off_dates']) && is_array($_POST['mptbm_off_dates']) ? array_map('sanitize_text_field',wp_unslash($_POST['mptbm_off_dates'])) : [];
 					$_off_dates = array();
 					if (sizeof($off_dates) > 0) {
 						foreach ($off_dates as $off_date) {
@@ -390,10 +390,11 @@
 					
 				}
 			}
-			public  function get_submit_info($key, $default = '') {
-				return $this->data_sanitize($_POST[$key] ?? $default);
-			}
-			public function data_sanitize($data) {
+            public function get_submit_info($key, $default = '') {
+                $value = isset($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : $default;
+                return $this->data_sanitize($value);
+            }
+            public function data_sanitize($data) {
 				$data = maybe_unserialize($data);
 				if (is_string($data)) {
 					$data = maybe_unserialize($data);

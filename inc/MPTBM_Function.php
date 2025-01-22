@@ -26,25 +26,25 @@ if (!class_exists('MPTBM_Function')) {
 			return $post_id;
 		}
 		//***********Template********************//
-		public static function all_details_template()
-		{
-			$template_path = get_stylesheet_directory() . '/mptbm_templates/themes/';
-			$default_path = MPTBM_PLUGIN_DIR . '/templates/themes/';
-			$dir = is_dir($template_path) ? glob($template_path . "*") : glob($default_path . "*");
-			$names = array();
-			foreach ($dir as $filename) {
-				if (is_file($filename)) {
-					$file = basename($filename);
-					$name = str_replace("?>", "", strip_tags(file_get_contents($filename, false, null, 24, 16)));
-					$names[$file] = $name;
-				}
-			}
-			$name = [];
-			foreach ($names as $key => $value) {
-				$name[$key] = $value;
-			}
-			return apply_filters('filter_mptbm_details_template', $name);
-		}
+//		public static function all_details_template()
+//		{
+//			$template_path = get_stylesheet_directory() . '/mptbm_templates/themes/';
+//			$default_path = MPTBM_PLUGIN_DIR . '/templates/themes/';
+//			$dir = is_dir($template_path) ? glob($template_path . "*") : glob($default_path . "*");
+//			$names = array();
+//			foreach ($dir as $filename) {
+//				if (is_file($filename)) {
+//					$file = basename($filename);
+/*					$name = str_replace("?>", "", strip_tags(file_get_contents($filename, false, null, 24, 16)));*/
+//					$names[$file] = $name;
+//				}
+//			}
+//			$name = [];
+//			foreach ($names as $key => $value) {
+//				$name[$key] = $value;
+//			}
+//			return apply_filters('filter_mptbm_details_template', $name);
+//		}
 
 		public static function get_feature_bag($post_id)
 		{
