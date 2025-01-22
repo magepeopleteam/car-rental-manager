@@ -69,7 +69,7 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 		public function save_operation_area_settings($post_id)
 		{
-			$terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', $_POST['mptbm_terms_start_location']) : [];
+			$terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_start_location'])) : [];
 			
 			if (sizeof($terms_location) > 0) {
 				$count = 0;
