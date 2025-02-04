@@ -13,17 +13,7 @@ A comprehensive car rental booking solution, integrated with WooCommerce, offeri
 
 == Description ==
 
-[Taxi and Chauffeur Booking service Manager](https://mage-people.com/product/wordpress-taxi-cab-booking-plugin-for-woocommerce/) is a dynamic WordPress taxi and Chauffeur booking plugin that enhances your website functionality to leverage your taxi booking business potential. It allows you to create a fully functional taxi booking system, providing a convenient way for customers to book rides online. Whether you run a taxi service or need to integrate booking capabilities for transportation services, this plugin has got you covered.
-
-## Make Yourself Comfortable With:
-🧶 [View Live Taxi Booking Demo](https://taxi.mage-people.com/)
-👉 [Plugin Documentation](https://docs.mage-people.com/wpcarrently/)
-
-## Taxi and Chauffeur Booking Solution that Changes the Game
-Since the taxi business has evolved in different shapes with time, online taxi booking has become increasingly popular. Ecab has taken your taxi booking hassle creating the taxi booking manager plugin solution for your WordPress website. It is powered by WooCommerce and known by WordPress users as a taxi booking manager for WooCommerce.
- 
-As a result of our efforts, we have successfully replaced a large number of manual taxi booking systems with the digital data-driven, fastest, most effective, and [easy-to-use for Chauffeur booking solution](https://mage-people.com/product/wordpress-taxi-cab-booking-plugin-for-woocommerce/). That's why it is one of the best taxi booking plugins in WordPress.
-
+WpCarRently car rental manager is an easy-to-use car rental booking management system that simplifies and streamlines car rental operations.
 
 Let's look at the key features that make the plugin more acceptable in its category.
 
@@ -36,82 +26,22 @@ Enjoy a user-friendly interface that simplifies taxi booking management for admi
 Provide customers with the flexibility to choose immediate pickups or pre-scheduled rides according to their preferences.
 
 **💵 Fare Calculation** 
-Automatic fare calculation based on distance, time, or any custom criteria you define.
-
-**📰 Customizable Rates**
-Set up custom rate plans, allowing you to tailor pricing based on different zones, distances, or other factors.
+Automatic fare calculation based on booking duration, distance, and other customizable parameters.
 
 **💰 Multiple Payment Gateways**
 Easily integrate with popular payment gateways to offer secure and diverse payment options for customers.
 
 **🤹 Booking Management**
-Efficiently manage all taxi bookings from your WordPress dashboard, with the ability to view, modify, or cancel bookings as needed.
-
-**🗺 Google Maps API** 
-Google Maps API is integrated for route mapping, enhancing the navigation experience for both customers and drivers.
+Efficiently manage all car bookings from your WordPress dashboard, with the ability to view, modify, or cancel bookings as needed.
 
 **💦 Responsive Design** 
 The plugin is designed to be fully responsive, offering a smooth booking experience across various devices.
 
-
 **📧 Email Customization**
 Receive order confirmations and deliver PDF receipts easily after successful payments with dual email functions.
 
-
-**🛒 Customize Checkout**
-Transform your checkout page effortlessly, collecting rider details and departure information while enhancing functionality and appearance.
-Most of your basic business needs will be covered with the action of the above features but when your business requires more dynamic solutions in terms of meeting the business need and functionality then the pro features will be handy for you.
-
-**⏳ Wait Time Option With Extra Payment**
-Offer extra waiting time for users with convenient pricing, ensuring a smooth traveling journey.
-
-**📍 API For Autocomplete Of Google Addresses**
-Enhance the booking experience with auto-suggestive address suggestions for customers during the booking process.
-
 **⌚ Establish Operating Hours**
 Define the operational schedule for transportation services, or opt for 24-hour availability.
-
-## Pro Features (Available in Pro Version):
-
-**🛒 Customizable Checkout Field**
-Add, edit, or delete necessary fields for personal information collection before boarding a car or taxi cab, ensuring all needed data is securely stored.
-
-**🛒 WooCommerce Custom Checkout Integration** 
-Create unique checkout experiences for customers, offering payment methods, order notes, discounts, and special deals without coding.
-
-**🎟️ Ticket Confirmation In PDF Format** 
-Automatically generate PDF tickets or invoices after bookings, providing customers with convenient and secure invoices for accounting purposes.
-
-**🚩 Designating Transport Operation Areas**
-Set a fixed area for transport by using  Google map
-
-**🏬 Establish GEO FENCE Boundaries and Pricing**
-Utilize Google Maps to delineate both intercity and intracity zones, along with corresponding pricing
-
-**🧢 Driver Panel to track service status**
-Driver panel feature enables administrators to assign vehicles to drivers. Additionally, email notifications are automatically sent to relevant parties whenever there is a change in the service status of an order 
-
-## Available Addons:
-
-**📆 [Google Calendar Addon](https://mage-people.com/product/google-calendar-for-ecab-taxi-booking-addon/)**
-Get Google Calendar event creation on every new order and customers can set their event also in Google Calendar 
-
-**≣ Comprehensive Order List Section
-View and manage all bookings in a detailed order list
-
-**Third-Party Service:**
-This plugin relies on the Google Maps API, a service provided by Google, Inc. It is used for displaying Google Maps and finding distance. Please note that your usage of this plugin constitutes acceptance of Google's terms and policies.
-
-**Link to Google Maps API:**
-For more information about the Google Maps API, visit: [Google Maps API Link](https://developers.google.com/maps/documentation/javascript/get-api-key)
-
-**Terms of Use:**
-Review the Google Maps API terms of use: [Google Maps API Terms of Use Link](https://developers.google.com/maps/terms-20180207)
-
-**Privacy Policy:**
-Understand how Google handles your data through the Maps API: [Google Privacy Policy Link](https://policies.google.com/privacy)
-
-
 
 == Installation ==
 Download the wpcarrently.zip file from the WordPress plugin repository.
@@ -121,47 +51,13 @@ Click the "Upload Plugin" button at the top of the page.
 Choose the wpcarrently.zip file and click "Install Now."
 Once installed, click "Activate" to enable the Ecab Taxi Booking Manager WordPress plugin.
 
-
 == Frequently Asked Questions ==
 
-= Is an API key required? =
-Yes, you need to obtain a Google Maps API key. Follow the instructions in the plugin settings to set up and enter your API key.
+= How the calculation works? =
+If caustomer book for less then 24 hours then it would calculate the rent as one day if more than 24 hour but less than 48 it would count as two days and vice versa
 
-= How do I get a Google Maps API key? =
-Visit the [Google Cloud Console](https://console.cloud.google.com/), create a project, enable the Google Maps JavaScript API, and generate an API key.
+= Can I add extra feature of a transport? =
+Yes you can add extra feature like seat number. Car model etc 
 
-= Is Ecab Taxi Manager for WooCommerce Free? =
-A. Yes! Ecab Taxi Manager for WooCommerce is free.
-
-You can check the demo of this plugin from here:
-[View Live PRO Version Demo For Business](https://taxi.mage-people.com/)
-
-= Q.Any Documentation? =
-A. Yes! Here is the [Online Documentation](https://docs.mage-people.com/wpcarrently/).
- 
-= Q.I installed correctly but 404 error what can I do?  =
-A. You need to Re-save permalink settings it will solve the 404. if still does not work that means your permalink not working, or you may have an access problem or you have a server permission problem. 
-
-= Q.How its work? =
-A. Woocommerce Events Manager is one of the simple event plugins for WordPress which is based on Woocommerce. It works as an individual event and its payment functionality is handled with WooCommerce so there are no worries about the payment gateway you can use every payment gateway that supports WooCommerce. The interesting part is the event post type is completely different there is no connection with WooCommerce products so you can sell anything from WooCommerce products. 
-
-
-== Legal Protection ==
-
-This transparency is crucial for legal protection. By using this plugin, you acknowledge and accept the reliance on the Google Maps API. Review the terms of use and privacy policy for both this plugin and the Google Maps API to ensure a comprehensive understanding of the services and how your data is handled.
-
-
-== Changelog ==
-= 1.4.6 =
-1. Manual Pricing Slug is fixed
-2. Fixed Hourly Responsive issue Fixed
-3. KM to mile feature added
-= 1.4.5 =
-1. Geo Fence fixed and intercity with extra pricing added for pro version 
-2. Return Time and date added
-3. Filter by bag and passenger added
-4. Transport Schedule added
-5. Initial Price added 
-6. Location taxonomy added for manual pricing 
-7. Manual Pricing Slug issue fixed
-8. Fixed Hourly Responsive issue Fixed
+= Can I offer extra service.
+Yes you can offer extra services along with the car 
