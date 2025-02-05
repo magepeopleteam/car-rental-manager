@@ -1,7 +1,7 @@
 === Car Rental Manager - WordPress plugin ===
 Contributors: magepeopleteam, hamidxazad, aamahin
 Author URI : https://mage-people.com
-Tags: Taxi Service, Car Rental, Ride Booking, Cab Booking, Car
+Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.3
 Stable tag: trunk
 Tested up to: 6.7.1
