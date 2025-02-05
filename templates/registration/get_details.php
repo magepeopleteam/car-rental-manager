@@ -319,7 +319,7 @@ if (sizeof($all_dates) > 0) {
 			$transportaion_label = MPTBM_Function::get_name();
 
 			// Translators comment to explain the placeholder
-			/* translators: %s: transportation label */
+			/* translators: %s: Car label */
 			$translated_string = __("No %s configured for this price setting", 'wpcarrently');
 
 			$formatted_string = sprintf($translated_string, $transportaion_label);

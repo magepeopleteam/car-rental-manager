@@ -134,11 +134,11 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_name()
 		{
-			return self::get_general_settings('label', esc_html__('Transportation', 'wpcarrently'));
+			return self::get_general_settings('label', esc_html__('Car', 'wpcarrently'));
 		}
 		public static function get_slug()
 		{
-			return self::get_general_settings('slug', 'transportation');
+			return self::get_general_settings('slug', 'Car');
 		}
 		public static function get_icon()
 		{
@@ -150,7 +150,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_category_slug()
 		{
-			return self::get_general_settings('category_slug', 'transportation-category');
+			return self::get_general_settings('category_slug', 'Car-category');
 		}
 		public static function get_organizer_label()
 		{
@@ -158,7 +158,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_organizer_slug()
 		{
-			return self::get_general_settings('organizer_slug', 'transportation-organizer');
+			return self::get_general_settings('organizer_slug', 'Car-organizer');
 		}
 		//*************************************************************Full Custom Function******************************//
 		//*************Date*********************************//

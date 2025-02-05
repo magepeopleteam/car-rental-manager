@@ -1,7 +1,7 @@
 === WpCarRently Car Rental Manager - WordPress plugin | WpCarRently ===
 Contributors: magepeopleteam, hamidxazad, aamahin
 Author URI : https://mage-people.com
-Tags: Taxi Service, Car Rental, Ride Booking, Cab Booking, Transportation
+Tags: Taxi Service, Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.3
 Stable tag: trunk
 Tested up to: 6.7.1
@@ -41,7 +41,7 @@ The plugin is designed to be fully responsive, offering a smooth booking experie
 Receive order confirmations and deliver PDF receipts easily after successful payments with dual email functions.
 
 **⌚ Establish Operating Hours**
-Define the operational schedule for transportation services, or opt for 24-hour availability.
+Define the operational schedule for Car services, or opt for 24-hour availability.
 
 == Installation ==
 Download the wpcarrently.zip file from the WordPress plugin repository.

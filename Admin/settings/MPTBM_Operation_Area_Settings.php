@@ -24,11 +24,11 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 			// Retrieve saved data from post meta
 			$saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
-			
-			if($saved_locations){
+
+			if ($saved_locations) {
 				$saved_locations_array = array_column($saved_locations, 'start_location'); // Extract saved start locations into an array
 			}
-			
+
 
 ?>
 			<div class="tabsItem" data-tabs="#mptbm_setting_operation_area">
@@ -69,20 +69,24 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 		public function save_operation_area_settings($post_id)
 		{
-			$terms_location = isset($_POST['mptbm_terms_start_location']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_start_location'])) : [];
-			
-			if (sizeof($terms_location) > 0) {
-				$count = 0;
-				foreach ($terms_location as $key => $location) {
+			$terms_location = isset($_POST['mptbm_terms_start_location'])
+				? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_start_location']))
+				: [];
+
+			if (!empty($terms_location)) {
+				$terms_price_infos = [];
+				foreach ($terms_location as $index => $location) {
 					if ($location) {
-						$terms_price_infos[$count]['start_location'] = $location;
-						$terms_price_infos[$count]['end_location'] = $location;
-						$count++;
+						$terms_price_infos[$index] = [
+							'start_location' => $location,
+							'end_location' => $location, // Or modify this if end_location differs
+						];
 					}
 				}
+				if (!empty($terms_price_infos)) {
+					update_post_meta($post_id, 'mptbm_terms_price_info', $terms_price_infos);
+				}
 			}
-			
-			update_post_meta($post_id, 'mptbm_terms_price_info', $terms_price_infos);
 		}
 	}
 	new MPTBM_Operation_Area_Settings();

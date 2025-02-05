@@ -12,16 +12,18 @@
 				add_action('admin_menu', array($this, 'quick_setup_menu'));
 			}
 			public function quick_setup_menu() {
+				
 				$status = MP_Global_Function::check_woocommerce();
 				if ($status == 1) {
 					add_submenu_page('edit.php?post_type=mptbm_rent', esc_html__('Quick Setup', 'wpcarrently'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 					add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'wpcarrently'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 				} else {
-					add_menu_page(esc_html__('Transportation', 'wpcarrently'), esc_html__('Transportation', 'wpcarrently'), 'manage_options', 'mptbm_rent', array($this, 'quick_setup'), 'dashicons-admin-site-alt2', 6);
+					add_menu_page(esc_html__('Car', 'wpcarrently'), esc_html__('Car', 'wpcarrently'), 'manage_options', 'mptbm_rent', array($this, 'quick_setup'), 'dashicons-admin-site-alt2', 6);
 					add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'wpcarrently'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'wpcarrently') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 				}
 			}
 			public function quick_setup() {
+				
 				$status = MP_Global_Function::check_woocommerce();
 				//if (isset($_POST['mptbm_transportation_quick_setup_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_quick_setup_nonce'])), 'mptbm_transportation_quick_setup_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) {
 					if (isset($_POST['active_woo_btn'])) {
@@ -97,8 +99,8 @@
 						<?php
 					}
 					if (isset($_POST['finish_quick_setup'])) {
-						$label = isset($_POST['mptbm_label']) ? sanitize_text_field(wp_unslash($_POST['mptbm_label'])) : 'Transportation';
-						$slug = isset($_POST['mptbm_slug']) ? sanitize_text_field(wp_unslash($_POST['mptbm_slug'])) : 'transportation';
+						$label = isset($_POST['mptbm_label']) ? sanitize_text_field(wp_unslash($_POST['mptbm_label'])) : 'Car';
+						$slug = isset($_POST['mptbm_slug']) ? sanitize_text_field(wp_unslash($_POST['mptbm_slug'])) : 'Car';
 						$general_settings_data = get_option('mptbm_general_settings');
 						$update_general_settings_arr = [
 							'mptbm_rent_label' => $label,
@@ -114,7 +116,7 @@
 				wp_nonce_field('mptbm_transportation_quick_setup_nonce', 'mptbm_transportation_quick_setup_nonce');
 				?>
 				<div class="mpStyle">
-					<div class=_dShadow_6_adminLayout">
+					<div class="_dShadow_6_adminLayout">
 						<form method="post" action="">
 							<div class="mpTabsNext">
 								<div class="tabListsNext _max_700_mAuto">
@@ -168,8 +170,8 @@
 				$status = MP_Global_Function::check_woocommerce();
 				?>
 				<div data-tabs-next="#mptbm_qs_welcome">
-					<h2><?php esc_html_e('Transportation Booking Manager For Woocommerce Plugin', 'wpcarrently'); ?></h2>
-					<p class="mTB_xs"><?php esc_html_e('Thanks for choosing Transportation Booking Manager Plugin for WooCommerce for your site, Please go step by step and choose some options to get started.', 'wpcarrently'); ?></p>
+					<h2><?php esc_html_e('Car Booking Manager For Woocommerce Plugin', 'wpcarrently'); ?></h2>
+					<p class="mTB_xs"><?php esc_html_e('Thanks for choosing Car Booking Manager Plugin for WooCommerce for your site, Please go step by step and choose some options to get started.', 'wpcarrently'); ?></p>
 					<div class="_dLayout_mT_alignCenter justifyBetween">
 						<h5>
 							<?php if ($status == 1) {
@@ -194,8 +196,8 @@
 				<?php
 			}
 			public function setup_general_content() {
-				$label = MP_Global_Function::get_settings('mptbm_general_settings', 'label', 'Transportation');
-				$slug = MP_Global_Function::get_settings('mptbm_general_settings', 'slug', 'transportation');
+				$label = MP_Global_Function::get_settings('mptbm_general_settings', 'label', 'Car');
+				$slug = MP_Global_Function::get_settings('mptbm_general_settings', 'slug', 'Car');
 				?>
 				<div data-tabs-next="#mptbm_qs_general">
 					<div class="section">
@@ -203,21 +205,21 @@
 						<p class="mTB_xs"><?php esc_html_e('Choose some general option.', 'wpcarrently'); ?></p>
 						<div class="_dLayout_mT">
 							<label class="_fullWidth">
-								<span class="min_200"><?php esc_html_e('Transportation Label:', 'wpcarrently'); ?></span>
+								<span class="min_200"><?php esc_html_e('Car Label:', 'wpcarrently'); ?></span>
 								<input type="text" class="formControl" name="mptbm_label" value='<?php echo esc_attr($label); ?>'/>
 							</label>
 							<i class="info_text">
 								<span class="fas fa-info-circle"></span>
-								<?php esc_html_e('It will change the Transportation post type label on the entire plugin.', 'wpcarrently'); ?>
+								<?php esc_html_e('It will change the Car post type label on the entire plugin.', 'wpcarrently'); ?>
 							</i>
 							<div class="divider"></div>
 							<label class="_fullWidth">
-								<span class="min_200"><?php esc_html_e('Transportation Slug:', 'wpcarrently'); ?></span>
+								<span class="min_200"><?php esc_html_e('Car Slug:', 'wpcarrently'); ?></span>
 								<input type="text" class="formControl" name="mptbm_slug" value='<?php echo esc_attr($slug); ?>'/>
 							</label>
 							<i class="info_text">
 								<span class="fas fa-info-circle"></span>
-								<?php esc_html_e('It will change the Transportation slug on the entire plugin. Remember after changing this slug you need to flush permalinks. Just go to Settings->Permalinks hit the Save Settings button', 'wpcarrently'); ?>
+								<?php esc_html_e('It will change the Car slug on the entire plugin. Remember after changing this slug you need to flush permalinks. Just go to Settings->Permalinks hit the Save Settings button', 'wpcarrently'); ?>
 							</i>
 						</div>
 					</div>
@@ -228,7 +230,7 @@
 				?>
 				<div data-tabs-next="#mptbm_qs_done">
 					<h2><?php esc_html_e('Finalize Setup', 'wpcarrently'); ?></h2>
-					<p class="mTB_xs"><?php esc_html_e('You are about to Finish & Save Transportation Booking Manager For Woocommerce Plugin setup process', 'wpcarrently'); ?></p>
+					<p class="mTB_xs"><?php esc_html_e('You are about to Finish & Save Car Booking Manager For Woocommerce Plugin setup process', 'wpcarrently'); ?></p>
 					<div class="mT allCenter">
 						<button type="submit" name="finish_quick_setup" class="_themeButton_dBR"><?php esc_html_e('Finish & Save', 'wpcarrently'); ?></button>
 					</div>

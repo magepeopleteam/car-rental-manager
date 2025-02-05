@@ -111,14 +111,14 @@ if (!class_exists('MPTBM_Settings_Global')) {
 						'label' => $label . ' ' . esc_html__('Label', 'wpcarrently'),
 						'desc' => esc_html__('If you like to change the label in the dashboard menu, you can change it here.', 'wpcarrently'),
 						'type' => 'text',
-						'default' => 'Transportation'
+						'default' => 'Car'
 					),
 					array(
 						'name' => 'slug',
 						'label' => $label . ' ' . esc_html__('Slug', 'wpcarrently'),
 						'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'wpcarrently') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently'),
 						'type' => 'text',
-						'default' => 'transportation'
+						'default' => 'Car'
 					),
 					array(
 						'name' => 'icon',
@@ -139,7 +139,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 						'label' => $label . ' ' . esc_html__('Category Slug', 'wpcarrently'),
 						'desc' => esc_html__('Please enter the slug name you want for category. Remember after change this slug you need to flush permalink, Just go to  ', 'wpcarrently') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently'),
 						'type' => 'text',
-						'default' => 'transportation-category'
+						'default' => 'Car-category'
 					),
 					array(
 						'name' => 'organizer_label',
@@ -153,7 +153,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 						'label' => $label . ' ' . esc_html__('Organizer Slug', 'wpcarrently'),
 						'desc' => esc_html__('Please enter the slug name you want for the  organizer. Remember, after changing this slug, you need to flush the permalinks. Just go to ', 'wpcarrently') . '<strong>' . esc_html__('Settings-> Permalinks', 'wpcarrently') . '</strong> ' . esc_html__('hit the Save Settings button.', 'wpcarrently'),
 						'type' => 'text',
-						'default' => 'transportation-organizer'
+						'default' => 'Car-organizer'
 					),
 					array(
 						'name' => 'expire',

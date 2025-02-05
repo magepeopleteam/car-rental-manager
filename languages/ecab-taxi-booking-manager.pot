@@ -167,7 +167,7 @@ msgid "</span>"
 msgstr ""
 
 #. Description of the plugin
-msgid "A Complete Transportation Solution for WordPress by MagePeople."
+msgid "A Complete Car Solution for WordPress by MagePeople."
 msgstr ""
 
 #: Admin/settings/MPTBM_Price_Settings.php:132
@@ -854,12 +854,12 @@ msgid "Interval of pickup/return time in frontend"
 msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:211
-msgid "It will change the Transportation post type label on the entire plugin."
+msgid "It will change the Car post type label on the entire plugin."
 msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:220
 msgid ""
-"It will change the Transportation slug on the entire plugin. Remember after "
+"It will change the Car slug on the entire plugin. Remember after "
 "changing this slug you need to flush permalinks. Just go to Settings->"
 "Permalinks hit the Save Settings button"
 msgstr ""
@@ -1512,7 +1512,7 @@ msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:172
 msgid ""
-"Thanks for choosing Transportation Booking Manager Plugin for WooCommerce "
+"Thanks for choosing Car Booking Manager Plugin for WooCommerce "
 "for your site, Please go step by step and choose some options to get started."
 msgstr ""
 
@@ -1576,19 +1576,19 @@ msgstr ""
 
 #: inc/MPTBM_Function.php:133 Admin/MPTBM_Quick_Setup.php:20
 #: Admin/MPTBM_Quick_Setup.php:20
-msgid "Transportation"
+msgid "Car"
 msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:171
-msgid "Transportation Booking Manager For Woocommerce Plugin"
+msgid "Car Booking Manager For Woocommerce Plugin"
 msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:206
-msgid "Transportation Label:"
+msgid "Car Label:"
 msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:215
-msgid "Transportation Slug:"
+msgid "Car Slug:"
 msgstr ""
 
 #: Admin/settings/MPTBM_Operation_Areas.php:183
@@ -1676,7 +1676,7 @@ msgstr ""
 
 #: Admin/MPTBM_Quick_Setup.php:231
 msgid ""
-"You are about to Finish & Save Transportation Booking Manager For "
+"You are about to Finish & Save Car Booking Manager For "
 "Woocommerce Plugin setup process"
 msgstr ""
 

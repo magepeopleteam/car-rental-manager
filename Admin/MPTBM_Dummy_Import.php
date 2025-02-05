@@ -174,6 +174,17 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
+								
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -256,6 +267,16 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -338,6 +359,16 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -420,6 +451,16 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
 								//Extra Services
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -502,6 +543,16 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
 								//extra_settings
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -584,6 +635,16 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
 								//extra_settings
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
@@ -666,6 +727,16 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 								//price_settings
 								'mptbm_price_based' => 'manual',
 								'mptbm_day_price' => 10,
+								'mptbm_terms_price_info' => [
+									[
+										'start_location' => 'chittagong',
+										'end_location' => 'chittagong'
+									],
+									[
+										'start_location' => 'rajshahi',
+										'end_location' => 'rajshahi'
+									]
+								],
 								//extra_settings
 								'display_mptbm_extra_services' => 'on',
 								'mptbm_extra_services_id' => '',
