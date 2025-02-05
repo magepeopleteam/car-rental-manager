@@ -261,7 +261,7 @@ $mptbm_passengers = max($mptbm_passengers);
                     <?php if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
-                                <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "wpcarrently"); ?></span>
+                                <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
                                 <label>
                                     <select id="mptbm_passenger_number" class="formControl" name="mptbm_passenger_number">
                                         <?php
@@ -274,7 +274,7 @@ $mptbm_passengers = max($mptbm_passengers);
                                 </label>
                             </div>
                             <div class="mptbm-filter-feature-input">
-                                <span><i class="fa  fa-shopping-bag _textTheme_mR_xs"></i><?php esc_html_e("Number Of Bags", "wpcarrently"); ?></span>
+                                <span><i class="fa  fa-shopping-bag _textTheme_mR_xs"></i><?php esc_html_e("Number Of Bags", "car-rental-manager"); ?></span>
                                 <label>
                                     <select id="mptbm_shopping_number" class="formControl" name="mptbm_shopping_number">
                                         <?php
@@ -313,7 +313,7 @@ $mptbm_passengers = max($mptbm_passengers);
                     } else {
                     ?>
                         <div class="_dLayout_mT_bgWarning">
-                            <h3><?php esc_html_e("No Transport Available !", "wpcarrently"); ?></h3>
+                            <h3><?php esc_html_e("No Transport Available !", "car-rental-manager"); ?></h3>
                         </div>
                     <?php
                     }
@@ -335,7 +335,7 @@ $mptbm_passengers = max($mptbm_passengers);
                         });
                     </script>
                     <div class="_dLayout_mT_bgWarning geo-fence-no-transport">
-                        <h3><?php esc_html_e("No Transport Available !!", "wpcarrently"); ?></h3>
+                        <h3><?php esc_html_e("No Transport Available !!", "car-rental-manager"); ?></h3>
                     </div>
                     <div class="mptbm_extra_service"></div>
                 </div>

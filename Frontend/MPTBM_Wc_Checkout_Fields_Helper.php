@@ -28,7 +28,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			return array(
 				"billing" => array(
 					"billing_first_name" => array(
-						"label" => __("First name", 'wpcarrently'),
+						"label" => __("First name", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-first"
@@ -37,7 +37,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "10",
 					),
 					"billing_last_name" => array(
-						"label" => __("Last name", 'wpcarrently'),
+						"label" => __("Last name", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-last"
@@ -46,7 +46,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "20",
 					),
 					"billing_company" => array(
-						"label" => __("Company name", 'wpcarrently'),
+						"label" => __("Company name", 'car-rental-manager'),
 						"class" => array(
 							"0" => "form-row-wide",
 						),
@@ -56,7 +56,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 					),
 					"billing_country" => array(
 						"type" => "country",
-						"label" => __("Country / Region", 'wpcarrently'),
+						"label" => __("Country / Region", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -67,8 +67,8 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "40",
 					),
 					"billing_address_1" => array(
-						"label" => __("Street address", 'wpcarrently'),
-						"placeholder" => __("House number and street name", 'wpcarrently'),
+						"label" => __("Street address", 'car-rental-manager'),
+						"placeholder" => __("House number and street name", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -78,11 +78,11 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "50"
 					),
 					"billing_address_2" => array(
-						"label" => __("Apartment, suite, unit, etc.", 'wpcarrently'),
+						"label" => __("Apartment, suite, unit, etc.", 'car-rental-manager'),
 						"label_class" => array(
 							"0" => "screen-reader-text",
 						),
-						"placeholder" => __("Apartment, suite, unit, etc. (optional)", 'wpcarrently'),
+						"placeholder" => __("Apartment, suite, unit, etc. (optional)", 'car-rental-manager'),
 						"class" => array(
 							"0" => "form-row-wide",
 							"1" => "address-field"
@@ -92,7 +92,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"required" => "",
 					),
 					"billing_city" => array(
-						"label" => __("Town / City", 'wpcarrently'),
+						"label" => __("Town / City", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -103,7 +103,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 					),
 					"billing_state" => array(
 						"type" => "state",
-						"label" => __("State / County", 'wpcarrently'),
+						"label" => __("State / County", 'car-rental-manager'),
 						"required" => "",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -118,7 +118,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"country" => "AF"
 					),
 					"billing_postcode" => array(
-						"label" => __("Postcode / ZIP", 'wpcarrently'),
+						"label" => __("Postcode / ZIP", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -131,7 +131,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "90"
 					),
 					"billing_phone" => array(
-						"label" => __("Phone", 'wpcarrently'),
+						"label" => __("Phone", 'car-rental-manager'),
 						"required" => "1",
 						"type" => "tel",
 						"class" => array(
@@ -144,7 +144,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "100"
 					),
 					'billing_email' => array(
-						"label" => __("Email address", 'wpcarrently'),
+						"label" => __("Email address", 'car-rental-manager'),
 						"required" => "1",
 						"type" => "email",
 						"class" => array(
@@ -159,7 +159,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 				),
 				'shipping' => array(
 					'shipping_first_name' => array(
-						"label" => __("First name", 'wpcarrently'),
+						"label" => __("First name", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-first",
@@ -168,7 +168,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "10",
 					),
 					"shipping_last_name" => array(
-						"label" => __("Last name", 'wpcarrently'),
+						"label" => __("Last name", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-last",
@@ -177,7 +177,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "20",
 					),
 					"shipping_company" => array(
-						"label" => __("Company name", 'wpcarrently'),
+						"label" => __("Company name", 'car-rental-manager'),
 						"class" => array(
 							"0" => "form-row-wide",
 						),
@@ -187,7 +187,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 					),
 					"shipping_country" => array(
 						"type" => "country",
-						"label" => __("Country / Region", 'wpcarrently'),
+						"label" => __("Country / Region", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -198,8 +198,8 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "40",
 					),
 					"shipping_address_1" => array(
-						"label" => __("Street address", 'wpcarrently'),
-						"placeholder" => __("House number and street name", 'wpcarrently'),
+						"label" => __("Street address", 'car-rental-manager'),
+						"placeholder" => __("House number and street name", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -209,11 +209,11 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"priority" => "50",
 					),
 					"shipping_address_2" => array(
-						"label" => __("Apartment, suite, unit, etc.", 'wpcarrently'),
+						"label" => __("Apartment, suite, unit, etc.", 'car-rental-manager'),
 						"label_class" => array(
 							"0" => "screen-reader-text",
 						),
-						"placeholder" => __("Apartment, suite, unit, etc. (optional)", 'wpcarrently'),
+						"placeholder" => __("Apartment, suite, unit, etc. (optional)", 'car-rental-manager'),
 						"class" => array(
 							"0" => "form-row-wide",
 							"1" => "address-field",
@@ -223,7 +223,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"required" => "",
 					),
 					"shipping_city" => array(
-						"label" => __("Town / City", 'wpcarrently'),
+						"label" => __("Town / City", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -234,7 +234,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 					),
 					"shipping_state" => array(
 						"type" => "state",
-						"label" => __("State / County", 'wpcarrently'),
+						"label" => __("State / County", 'car-rental-manager'),
 						"required" => "",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -249,7 +249,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"country" => "AF",
 					),
 					"shipping_postcode" => array(
-						"label" => __("Postcode / ZIP", 'wpcarrently'),
+						"label" => __("Postcode / ZIP", 'car-rental-manager'),
 						"required" => "1",
 						"class" => array(
 							"0" => "form-row-wide",
@@ -268,8 +268,8 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						"class" => array(
 							"0" => "notes",
 						),
-						"label" => __("Order notes", 'wpcarrently'),
-						"placeholder" => __("Notes about your order, e.g. special notes for delivery.", 'wpcarrently'),
+						"label" => __("Order notes", 'car-rental-manager'),
+						"placeholder" => __("Notes about your order, e.g. special notes for delivery.", 'car-rental-manager'),
 					)
 				),
 			);

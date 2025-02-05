@@ -22,7 +22,7 @@
 			}
 			public function mptbm_extra_service_meta() {
 				$label = MPTBM_Function::get_name();
-				add_meta_box( 'mp_meta_box_panel', $label . __( ' > Extra Services Settings' . '<span class="version"> V'.MPTBM_PLUGIN_VERSION.'</span>', 'wpcarrently' ), array( $this, 'mptbm_extra_service' ), 'mptbm_extra_services', 'normal', 'high' );
+				add_meta_box( 'mp_meta_box_panel', $label . __( ' > Extra Services Settings' . '<span class="version"> V'.MPTBM_PLUGIN_VERSION.'</span>', 'car-rental-manager' ), array( $this, 'mptbm_extra_service' ), 'mptbm_extra_services', 'normal', 'high' );
 			}
 			public function mptbm_extra_service() {
 				$post_id        = get_the_id();
@@ -32,11 +32,11 @@
 				<div class="mpStyle mptbm_settings">
 					<div class="tabsContent" style="width: 100%;">	
 						<div class="mptbm_extra_service_settings tabsItem">
-							<h5><?php esc_html_e( 'Global Extra Service Settings', 'wpcarrently' ); ?></h5>
+							<h5><?php esc_html_e( 'Global Extra Service Settings', 'car-rental-manager' ); ?></h5>
 							<p><?php MPTBM_Settings::info_text( 'mptbm_extra_services_global' ); ?></p>
 							<section class="bg-light" >
-								<h6><?php esc_html_e('Extra Service Settings', 'wpcarrently'); ?></h6>
-								<span><?php esc_html_e('Here you can set price', 'wpcarrently'); ?></span>
+								<h6><?php esc_html_e('Extra Service Settings', 'car-rental-manager'); ?></h6>
+								<span><?php esc_html_e('Here you can set price', 'car-rental-manager'); ?></span>
 							</section>
 							<section>
 							<div class="mp_settings_area">
@@ -44,12 +44,12 @@
 									<table>
 										<thead>
 										<tr>
-											<th><span><?php esc_html_e( 'Service Icon', 'wpcarrently' ); ?></span></th>
-											<th><span><?php esc_html_e( 'Service Name', 'wpcarrently' ); ?></span></th>
-											<th><span><?php esc_html_e( 'Short description', 'wpcarrently' ); ?></span></th>
-											<th><span><?php esc_html_e( 'Service Price', 'wpcarrently' ); ?></span></th>
-											<th><span><?php esc_html_e( 'Qty Box Type', 'wpcarrently' ); ?></span></th>
-											<th><span><?php esc_html_e( 'Action', 'wpcarrently' ); ?></span></th>
+											<th><span><?php esc_html_e( 'Service Icon', 'car-rental-manager' ); ?></span></th>
+											<th><span><?php esc_html_e( 'Service Name', 'car-rental-manager' ); ?></span></th>
+											<th><span><?php esc_html_e( 'Short description', 'car-rental-manager' ); ?></span></th>
+											<th><span><?php esc_html_e( 'Service Price', 'car-rental-manager' ); ?></span></th>
+											<th><span><?php esc_html_e( 'Qty Box Type', 'car-rental-manager' ); ?></span></th>
+											<th><span><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></span></th>
 										</tr>
 										</thead>
 										<tbody class="mp_sortable_area mp_item_insert">
@@ -63,7 +63,7 @@
 										</tbody>
 									</table>
 								</div>
-								<?php MP_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'wpcarrently' ) ); ?>
+								<?php MP_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'car-rental-manager' ) ); ?>
 								<?php do_action( 'add_mp_hidden_table', 'mptbm_extra_service_item' ); ?>
 							</div>
 							</section>
@@ -93,20 +93,20 @@
 						<?php do_action( 'mp_add_icon_image', 'service_icon[]', $icon, $image ); ?>
 					</td>
 					<td class="text-center">
-						<input type="text" class="small mp_name_validation" name="service_name[]" placeholder="<?php esc_attr_e( 'EX: Driver', 'wpcarrently' ); ?>" value="<?php echo esc_attr( $service_name ); ?>"/>
+						<input type="text" class="small mp_name_validation" name="service_name[]" placeholder="<?php esc_attr_e( 'EX: Driver', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_name ); ?>"/>
 					</td>
 					<td>
 						<label>
-							<textarea rows="1" cols="5" class="" name="extra_service_description[]" placeholder="<?php esc_attr_e( 'EX: Description', 'wpcarrently' ); ?>"><?php echo esc_html( $description ); ?></textarea>
+							<textarea rows="1" cols="5" class="" name="extra_service_description[]" placeholder="<?php esc_attr_e( 'EX: Description', 'car-rental-manager' ); ?>"><?php echo esc_html( $description ); ?></textarea>
 						</label>
 					</td>
 					<td class="text-center">
-						<input type="number" pattern="[0-9]*" step="0.01" class="small mp_price_validation" name="service_price[]" placeholder="<?php esc_attr_e( 'EX: 10', 'wpcarrently' ); ?>" value="<?php echo esc_attr( $service_price ); ?>"/>
+						<input type="number" pattern="[0-9]*" step="0.01" class="small mp_price_validation" name="service_price[]" placeholder="<?php esc_attr_e( 'EX: 10', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_price ); ?>"/>
 					</td>
 					<td>
 						<select name="service_qty_type[]" class='mideum'>
-							<option value="inputbox" <?php echo esc_attr( $input_type == 'inputbox' ? 'selected' : '' ); ?>><?php esc_html_e( 'Input Box', 'wpcarrently' ); ?></option>
-							<option value="dropdown" <?php echo esc_attr( $input_type == 'dropdown' ? 'selected' : '' ); ?>><?php esc_html_e( 'Dropdown List', 'wpcarrently' ); ?></option>
+							<option value="inputbox" <?php echo esc_attr( $input_type == 'inputbox' ? 'selected' : '' ); ?>><?php esc_html_e( 'Input Box', 'car-rental-manager' ); ?></option>
+							<option value="dropdown" <?php echo esc_attr( $input_type == 'dropdown' ? 'selected' : '' ); ?>><?php esc_html_e( 'Dropdown List', 'car-rental-manager' ); ?></option>
 						</select>
 					</td>
 					<td><?php MP_Custom_Layout::move_remove_button(); ?></td>
@@ -137,17 +137,17 @@
 				$all_ex_services_id = MPTBM_Query::query_post_id( 'mptbm_extra_services' );
 				?>
 				<div class="tabsItem mptbm_extra_services_setting" data-tabs="#mptbm_settings_ex_service">
-					<h2 ><?php esc_html_e( 'On/Off Extra Service Settings', 'wpcarrently' ); ?></h2>
-					<p ><?php esc_html_e( 'On/Off Extra Service Settings', 'wpcarrently' ); ?></p>
+					<h2 ><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></h2>
+					<p ><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></p>
 					
 					<section class="bg-light">
-						<h6><?php esc_html_e( 'On/Off Extra Service Settings', 'wpcarrently' ); ?></h6>
-						<span><?php esc_html_e( 'On/Off Extra Service Settings', 'wpcarrently' ); ?></span>
+						<h6><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></h6>
+						<span><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></span>
 					</section>
 					<section>
                         <label class="label">
 							<div>
-								<h6><?php esc_html_e( 'On/Off Extra Service Settings', 'wpcarrently' ); ?></h6>
+								<h6><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></h6>
 								<span class="desc"><?php MPTBM_Settings::info_text( 'display_mptbm_extra_services' ); ?></span>
 							</div>
 							<?php MP_Custom_Layout::switch_button( 'display_mptbm_extra_services', $checked ); ?>
@@ -157,12 +157,12 @@
 						<section>
 							<label class="label">
 								<div>
-									<h6><?php esc_html_e( 'Select extra option :', 'wpcarrently' ); ?></h6>
+									<h6><?php esc_html_e( 'Select extra option :', 'car-rental-manager' ); ?></h6>
 									<span class="desc"><?php MPTBM_Settings::info_text( 'mptbm_extra_services_id' ); ?></span>
 								</div>
 								<select class="formControl" name="mptbm_extra_services_id">
-									<option value="" selected><?php esc_html_e( 'Select extra option', 'wpcarrently' ); ?></option>
-									<option value="<?php echo esc_attr( $post_id ); ?>" <?php echo esc_attr( $service_id == $post_id ? 'selected' : '' ); ?>><?php esc_html_e( 'Custom', 'wpcarrently' ); ?></option>
+									<option value="" selected><?php esc_html_e( 'Select extra option', 'car-rental-manager' ); ?></option>
+									<option value="<?php echo esc_attr( $post_id ); ?>" <?php echo esc_attr( $service_id == $post_id ? 'selected' : '' ); ?>><?php esc_html_e( 'Custom', 'car-rental-manager' ); ?></option>
 									<?php if ( sizeof( $all_ex_services_id ) > 0 ) { ?>
 										<?php foreach ( $all_ex_services_id as $ex_services_id ) { ?>
 											<option value="<?php echo esc_attr( $ex_services_id ); ?>" <?php echo esc_attr( $service_id == $ex_services_id ? 'selected' : '' ); ?>><?php echo esc_html(get_the_title( $ex_services_id )); ?></option>
@@ -187,12 +187,12 @@
 							<table class="mb-1">
 								<thead>
 								<tr>
-									<th><span><?php esc_html_e( 'Icon', 'wpcarrently' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Name', 'wpcarrently' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Description', 'wpcarrently' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Price', 'wpcarrently' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Qty Box Type', 'wpcarrently' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Action', 'wpcarrently' ); ?></span></th>
+									<th><span><?php esc_html_e( 'Icon', 'car-rental-manager' ); ?></span></th>
+									<th><span><?php esc_html_e( 'Name', 'car-rental-manager' ); ?></span></th>
+									<th><span><?php esc_html_e( 'Description', 'car-rental-manager' ); ?></span></th>
+									<th><span><?php esc_html_e( 'Price', 'car-rental-manager' ); ?></span></th>
+									<th><span><?php esc_html_e( 'Qty Box Type', 'car-rental-manager' ); ?></span></th>
+									<th><span><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></span></th>
 								</tr>
 								</thead>
 								<tbody class="mp_sortable_area mp_item_insert">
@@ -207,7 +207,7 @@
 							</table>
 							<?php
 								if ( $service_id == $post_id ) {
-									MP_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'wpcarrently' ) );
+									MP_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'car-rental-manager' ) );
 									do_action( 'add_mp_hidden_table', 'mptbm_extra_service_item' );
 								}?>
 						</div>

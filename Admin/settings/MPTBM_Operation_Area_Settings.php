@@ -32,8 +32,8 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 ?>
 			<div class="tabsItem" data-tabs="#mptbm_setting_operation_area">
-				<h2><?php esc_html_e('Operation Area', 'wpcarrently'); ?></h2>
-				<p><?php esc_html_e('You can choose multiple regions as your operational area', 'wpcarrently'); ?></p>
+				<h2><?php esc_html_e('Operation Area', 'car-rental-manager'); ?></h2>
+				<p><?php esc_html_e('You can choose multiple regions as your operational area', 'car-rental-manager'); ?></p>
 
 				<label for="operation_area_select">
 					<select name="mptbm_terms_start_location[]" id="operation_area_select" class="formControl" multiple>
@@ -55,13 +55,13 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 							}
 						} else {
 							?>
-							<option value=""><?php esc_html_e('No locations found', 'wpcarrently'); ?></option>
+							<option value=""><?php esc_html_e('No locations found', 'car-rental-manager'); ?></option>
 						<?php
 						}
 						?>
 					</select>
 				</label>
-				<p class="description"><?php esc_html_e('Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'wpcarrently'); ?></p>
+				<p class="description"><?php esc_html_e('Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager'); ?></p>
 			</div>
 <?php
 		}

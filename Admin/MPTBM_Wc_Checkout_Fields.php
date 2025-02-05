@@ -77,11 +77,11 @@
 			}
 			public function checkout_menu() {
 				$cpt = MPTBM_Function::get_cpt();
-				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Checkout Fields', 'wpcarrently'), esc_html__('Checkout Fields', 'wpcarrently'), 'manage_options', 'mptbm_wc_checkout_fields', array($this, 'wc_checkout_fields'));
+				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Checkout Fields', 'car-rental-manager'), esc_html__('Checkout Fields', 'car-rental-manager'), 'manage_options', 'mptbm_wc_checkout_fields', array($this, 'wc_checkout_fields'));
 			}
 			public function wc_checkout_fields() {
 				if (!current_user_can('administrator')) {
-					wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'wpcarrently'));
+					wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'car-rental-manager'));
 				}
 				do_action('mptbm_save_checkout_fields_settings');
 				do_action('mptbm_wc_checkout_fields');

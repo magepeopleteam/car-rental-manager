@@ -23,25 +23,25 @@
 				if (!$all_features) {
 					$all_features = array(
 						array(
-							'label' => esc_html__('Name', 'wpcarrently'),
+							'label' => esc_html__('Name', 'car-rental-manager'),
 							'icon' => 'fas fa-car-side',
 							'image' => '',
 							'text' => ''
 						),
 						array(
-							'label' => esc_html__('Model', 'wpcarrently'),
+							'label' => esc_html__('Model', 'car-rental-manager'),
 							'icon' => 'fas fa-car',
 							'image' => '',
 							'text' => ''
 						),
 						array(
-							'label' => esc_html__('Engine', 'wpcarrently'),
+							'label' => esc_html__('Engine', 'car-rental-manager'),
 							'icon' => 'fas fa-cogs',
 							'image' => '',
 							'text' => ''
 						),
 						array(
-							'label' => esc_html__('Fuel Type', 'wpcarrently'),
+							'label' => esc_html__('Fuel Type', 'car-rental-manager'),
 							'icon' => 'fas fa-gas-pump',
 							'image' => '',
 							'text' => ''
@@ -50,35 +50,35 @@
 				}
 				?>
                 <div class="tabsItem" data-tabs="#mptbm_general_info">
-                    <h2 ><?php esc_html_e('General Information Settings', 'wpcarrently'); ?></h2>
-					<p><?php esc_html_e('Basic Configuration', 'wpcarrently'); ?></p>
+                    <h2 ><?php esc_html_e('General Information Settings', 'car-rental-manager'); ?></h2>
+					<p><?php esc_html_e('Basic Configuration', 'car-rental-manager'); ?></p>
                     <div class="mp_settings_area">
 						<section class="bg-light">
-							<h6><?php esc_html_e('Feature Configuration', 'wpcarrently'); ?></h6>
-							<span ><?php esc_html_e('Here you can On/Off feature list and create new feature.', 'wpcarrently'); ?></span>
+							<h6><?php esc_html_e('Feature Configuration', 'car-rental-manager'); ?></h6>
+							<span ><?php esc_html_e('Here you can On/Off feature list and create new feature.', 'car-rental-manager'); ?></span>
 						</section>
 						<section>
 							<label class="label">
 								<div>
-									<h6><?php esc_html_e('Maximum Passenger', 'wpcarrently'); ?></h6>
+									<h6><?php esc_html_e('Maximum Passenger', 'car-rental-manager'); ?></h6>
 									<span class="desc"><?php MPTBM_Settings::info_text('mptbm_maximum_passenger'); ?></span>
 								</div>
-								<input class="formControl mp_price_validation" name="mptbm_maximum_passenger" value="<?php echo esc_attr($max_passenger); ?>" type="text" placeholder="<?php esc_html_e('EX:4', 'wpcarrently'); ?>" />
+								<input class="formControl mp_price_validation" name="mptbm_maximum_passenger" value="<?php echo esc_attr($max_passenger); ?>" type="text" placeholder="<?php esc_html_e('EX:4', 'car-rental-manager'); ?>" />
 							</label>
 						</section>
 						<section>
 							<label class="label">
 								<div>
-									<h6><?php esc_html_e('Maximum Bag', 'wpcarrently'); ?></h6>
+									<h6><?php esc_html_e('Maximum Bag', 'car-rental-manager'); ?></h6>
 									<span class="desc"><?php MPTBM_Settings::info_text('mptbm_maximum_bag'); ?></span>
 								</div>
-								<input class="formControl mp_price_validation" name="mptbm_maximum_bag" value="<?php echo esc_attr($max_bag); ?>" type="text" placeholder="<?php esc_html_e('EX:4', 'wpcarrently'); ?>" />
+								<input class="formControl mp_price_validation" name="mptbm_maximum_bag" value="<?php echo esc_attr($max_bag); ?>" type="text" placeholder="<?php esc_html_e('EX:4', 'car-rental-manager'); ?>" />
 							</label>
 						</section>
 						<section >
 							<label class="label">
 								<div>
-									<h6><?php esc_html_e('On/Off Feature Extra feature', 'wpcarrently'); ?></h6>
+									<h6><?php esc_html_e('On/Off Feature Extra feature', 'car-rental-manager'); ?></h6>
 									<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
 								</div>
 								<?php MP_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
@@ -88,10 +88,10 @@
 								<table>
 									<thead>
 									<tr class="bg-dark">
-										<th class="_w_150"><?php esc_html_e('Icon/Image', 'wpcarrently'); ?></th>
-										<th><?php esc_html_e('Label', 'wpcarrently'); ?></th>
-										<th><?php esc_html_e('Text', 'wpcarrently'); ?></th>
-										<th class="_w_125"><?php esc_html_e('Action', 'wpcarrently'); ?></th>
+										<th class="_w_150"><?php esc_html_e('Icon/Image', 'car-rental-manager'); ?></th>
+										<th><?php esc_html_e('Label', 'car-rental-manager'); ?></th>
+										<th><?php esc_html_e('Text', 'car-rental-manager'); ?></th>
+										<th class="_w_125"><?php esc_html_e('Action', 'car-rental-manager'); ?></th>
 									</tr>
 									</thead>
 									<tbody class="mp_sortable_area mp_item_insert">
@@ -107,7 +107,7 @@
 									</tbody>
 								</table>
 								<div class="my-2"></div>
-								<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Item', 'wpcarrently')); ?>
+								<?php MP_Custom_Layout::add_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
 								<?php do_action('add_mp_hidden_table', 'add_hidden_mptbm_features_item'); ?>
 						</section >
                     </div>

@@ -1,4 +1,4 @@
-=== WpCarRently Car Rental Manager - WordPress plugin | WpCarRently ===
+=== Car Rental Manager - WordPress plugin ===
 Contributors: magepeopleteam, hamidxazad, aamahin
 Author URI : https://mage-people.com
 Tags: Taxi Service, Car Rental, Ride Booking, Cab Booking, Car
@@ -13,7 +13,7 @@ A comprehensive car rental booking solution, integrated with WooCommerce, offeri
 
 == Description ==
 
-WpCarRently car rental manager is an easy-to-use car rental booking management system that simplifies and streamlines car rental operations.
+Car rental manager is an easy-to-use car rental booking management system that simplifies and streamlines car rental operations.
 
 Let's look at the key features that make the plugin more acceptable in its category.
 
@@ -44,11 +44,11 @@ Receive order confirmations and deliver PDF receipts easily after successful pay
 Define the operational schedule for Car services, or opt for 24-hour availability.
 
 == Installation ==
-Download the wpcarrently.zip file from the WordPress plugin repository.
+Download the car-rental-manager.zip file from the WordPress plugin repository.
 Log in to your WordPress admin dashboard.
 Navigate to "Plugins" > "Add New."
 Click the "Upload Plugin" button at the top of the page.
-Choose the wpcarrently.zip file and click "Install Now."
+Choose the car-rental-manager.zip file and click "Install Now."
 Once installed, click "Activate" to enable the Ecab Taxi Booking Manager WordPress plugin.
 
 == Frequently Asked Questions ==

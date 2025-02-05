@@ -57,7 +57,7 @@
 									?>
 									<div class="abTopLeft">
 										<button type="button" class="_dButton_bgWhite_textDefault" data-target-popup="superSlider" data-slide-index="1">
-											<?php echo esc_html__( 'View All', 'wpcarrently' ) . ' ' . sizeof( $image_ids ) . ' ' . esc_html__( 'Images', 'wpcarrently' ); ?>
+											<?php echo esc_html__( 'View All', 'car-rental-manager' ) . ' ' . sizeof( $image_ids ) . ' ' . esc_html__( 'Images', 'car-rental-manager' ); ?>
 										</button>
 									</div>
 									<?php

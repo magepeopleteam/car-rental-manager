@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: WpCarRently Car Rental Manager
+ * Plugin Name: Car Rental Manager
  * Plugin URI: http://mage-people.com
  * Description: A Complete Car rental Solution for WordPress by MagePeople.
  * Version: 1.0.0
@@ -8,7 +8,7 @@
  * Author URI: http://www.mage-people.com/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wpcarrently
+ * Text Domain: car-rental-manager
  * Domain Path: /languages/
  */
 if (!defined('ABSPATH')) {

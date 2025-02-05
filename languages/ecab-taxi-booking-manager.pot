@@ -14,7 +14,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.6.11; wp-6.6.1\n"
-"X-Domain: wpcarrently"
+"X-Domain: car-rental-manager"
 
 #: templates/registration/get_details.php:297
 msgid " 0 KM"

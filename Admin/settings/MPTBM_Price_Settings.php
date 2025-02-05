@@ -23,27 +23,27 @@ if (!class_exists('MPTBM_Price_Settings')) {
 
 ?>
 			<div class="tabsItem" data-tabs="#mptbm_settings_pricing">
-				<h2><?php esc_html_e('Price Settings', 'wpcarrently'); ?></h2>
-				<p><?php esc_html_e('here you can set initial price, Waiting Time price, price calculation model', 'wpcarrently'); ?></p>
+				<h2><?php esc_html_e('Price Settings', 'car-rental-manager'); ?></h2>
+				<p><?php esc_html_e('here you can set initial price, Waiting Time price, price calculation model', 'car-rental-manager'); ?></p>
 
 				<section class="bg-light" >
-					<h6><?php esc_html_e('Price Settings', 'wpcarrently'); ?></h6>
-					<span><?php esc_html_e('Here you can set price', 'wpcarrently'); ?></span>
+					<h6><?php esc_html_e('Price Settings', 'car-rental-manager'); ?></h6>
+					<span><?php esc_html_e('Here you can set price', 'car-rental-manager'); ?></span>
 				</section>
 				<section>
 					<label class="label">
 						<div>
-							<h6><?php esc_html_e('Price/Day', 'wpcarrently'); ?></h6>
+							<h6><?php esc_html_e('Price/Day', 'car-rental-manager'); ?></h6>
 							<span class="desc"><?php MPTBM_Settings::info_text('mptbm_day_price'); ?></span>
 						</div>
-						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'wpcarrently'); ?>" />
+						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'car-rental-manager'); ?>" />
 					</label>
 				</section>
 				
 				<!-- Manual price -->
 				<section class="bg-light" style="margin-top: 20px;" data-collapse="#mp_manual">
-					<h6><?php esc_html_e('Manual Price Settings', 'wpcarrently'); ?></h6>
-					<span><?php esc_html_e('Manual Price Settings', 'wpcarrently'); ?></span>
+					<h6><?php esc_html_e('Manual Price Settings', 'car-rental-manager'); ?></h6>
+					<span><?php esc_html_e('Manual Price Settings', 'car-rental-manager'); ?></span>
 				</section>
 				
 				
