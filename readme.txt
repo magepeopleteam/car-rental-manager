@@ -20,7 +20,7 @@ Let's look at the key features that make the plugin more acceptable in its categ
 ## Key Features:
 
 **🤝 User-Friendly Interface**
-Enjoy a user-friendly interface that simplifies taxi booking management for administrators and customers.
+Enjoy a user-friendly interface that simplifies Car Rental Solution for administrators and customers.
 
 **⏱ Flexible Booking Options** 
 Provide customers with the flexibility to choose immediate pickups or pre-scheduled rides according to their preferences.
