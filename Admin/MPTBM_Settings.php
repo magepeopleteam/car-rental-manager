@@ -16,7 +16,9 @@ if (!class_exists('MPTBM_Settings')) {
 		//************************//
 		public function settings_meta()
 		{
+			
 			$label = sprintf(
+				/* translators: %s: plugin version */ 
 				__('Information Settings <span class="version">V%s</span>', 'car-rental-manager'),
 				MPTBM_PLUGIN_VERSION
 			);
@@ -59,7 +61,7 @@ if (!class_exists('MPTBM_Settings')) {
 							<span class="fas fa-hand-holding-usd"></span><?php esc_html_e('Tax Configure', 'car-rental-manager'); ?>
 						</li>
 						<li data-tabs-target="#mptbm_setting_operation_area">
-							<span class="pe-1 fas fa-map-marker-alt"></span><?php esc_html_e('Operation Area', 'ecab-taxi-booking-manager'); ?>
+							<span class="pe-1 fas fa-map-marker-alt"></span><?php esc_html_e('Operation Area', 'car-rental-manager'); ?>
 						</li>
 					</ul>
 					<div class="tabsContent">

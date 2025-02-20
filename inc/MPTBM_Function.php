@@ -172,7 +172,7 @@ if (!class_exists('MPTBM_Function')) {
 			$all_off_dates = MP_Global_Function::get_post_info($post_id, 'mptbm_off_dates', array());
 			$off_dates = [];
 			foreach ($all_off_dates as $off_date) {
-				$off_dates[] = date('Y-m-d', strtotime($off_date));
+				$off_dates[] = gmdate('Y-m-d', strtotime($off_date));
 			}
 			if ($date_type == 'repeated') {
 				$start_date = MP_Global_Function::get_post_info($post_id, 'mptbm_repeated_start_date', $now);
@@ -181,11 +181,11 @@ if (!class_exists('MPTBM_Function')) {
 				}
 				$repeated_after = MP_Global_Function::get_post_info($post_id, 'mptbm_repeated_after', 1);
 				$active_days = MP_Global_Function::get_post_info($post_id, 'mptbm_active_days', 10) - 1;
-				$end_date = date('Y-m-d', strtotime($start_date . ' +' . $active_days . ' day'));
+				$end_date = gmdate('Y-m-d', strtotime($start_date . ' +' . $active_days . ' day'));
 				$dates = MP_Global_Function::date_separate_period($start_date, $end_date, $repeated_after);
 				foreach ($dates as $date) {
 					$date = $date->format('Y-m-d');
-					$day = strtolower(date('l', strtotime($date)));
+					$day = strtolower(gmdate('l', strtotime($date)));
 					if (!in_array($date, $off_dates) && !in_array($day, $all_off_days)) {
 						$all_dates[] = $date;
 					}
@@ -253,6 +253,10 @@ if (!class_exists('MPTBM_Function')) {
 				}
 			}
 			if (class_exists('MPTBM_Datewise_Discount_Addon')) {
+				if (!isset($_POST['mptbm_transportation_type_nonce']) || !wp_verify_nonce(sanitize_text_field( wp_unslash ($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')) {
+					return;
+				}
+				
 				$selected_start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";
 				$selected_start_time = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
 
@@ -260,19 +264,19 @@ if (!class_exists('MPTBM_Function')) {
 					$selected_start_time .= ":00"; // Convert '17' to '17:00'
 				}
 
-				$selected_start_date = date('Y-m-d', strtotime($selected_start_date));
-				$selected_start_time = date('H:i', strtotime($selected_start_time));
+				$selected_start_date = gmdate('Y-m-d', strtotime($selected_start_date));
+				$selected_start_time = gmdate('H:i', strtotime($selected_start_time));
 
 				$discounts = MP_Global_Function::get_post_info($post_id, 'mptbm_discounts', []);
 				if (!empty($discounts)) {
 					foreach ($discounts as $discount) {
-						$start_date = isset($discount['start_date']) ? date('Y-m-d', strtotime($discount['start_date'])) : '';
-						$end_date = isset($discount['end_date']) ? date('Y-m-d', strtotime($discount['end_date'])) : '';
+						$start_date = isset($discount['start_date']) ? gmdate('Y-m-d', strtotime($discount['start_date'])) : '';
+						$end_date = isset($discount['end_date']) ? gmdate('Y-m-d', strtotime($discount['end_date'])) : '';
 						$time_slots = $discount['time_slots'] ?? [];
 						if ($selected_start_date >= $start_date && $selected_start_date <= $end_date) {
 							foreach ($time_slots as $slot) {
-								$start_time = isset($slot['start_time']) ? date('H:i', strtotime($slot['start_time'])) : '';
-								$end_time = isset($slot['end_time']) ? date('H:i', strtotime($slot['end_time'])) : '';
+								$start_time = isset($slot['start_time']) ? gmdate('H:i', strtotime($slot['start_time'])) : '';
+								$end_time = isset($slot['end_time']) ? gmdate('H:i', strtotime($slot['end_time'])) : '';
 								$percentage = floatval(rtrim($slot['percentage'], '%'));
 								$type = $slot['type'] ?? 'increase'; // Use default if not set
 								if ($selected_start_time >= $start_time && $selected_start_time <= $end_time) {
@@ -292,7 +296,7 @@ if (!class_exists('MPTBM_Function')) {
 
 			// Check if session key exists for the specific post_id
 			if (isset($_SESSION['geo_fence_post_' . $post_id])) {
-				$session_data = $_SESSION['geo_fence_post_' . $post_id];
+				$session_data = sanitize_text_field( $_SESSION['geo_fence_post_' . $post_id] );
 				if (isset($session_data[0])) {
 					if (isset($session_data[1]) && $session_data[1] == 'geo-fence-fixed-price') {
 						$price += (float) $session_data[0];

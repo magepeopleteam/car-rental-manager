@@ -99,6 +99,7 @@ if (sizeof($all_dates) > 0) {
 	<div class="<?php echo esc_attr($area_class); ?> ">
 		<div class="_dLayout mptbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
 			<div class="mpForm">
+				<?php wp_nonce_field('mptbm_transportation_type_nonce', 'mptbm_transportation_type_nonce'); ?>
 				<input type="hidden" id="mptbm_km_or_mile" name="mptbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
 				<input type="hidden" name="mptbm_price_based" value="<?php echo esc_attr($price_based); ?>" />
 				<input type="hidden" name="mptbm_post_id" value="" />

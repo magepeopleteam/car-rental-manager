@@ -54,7 +54,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		public function get_mptbm_map_search_result_redirect()
 		{
 			ob_start(); // Start output buffering
-
+			
 			$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
 			$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
 			// if ($distance && $duration) {

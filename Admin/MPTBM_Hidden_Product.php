@@ -38,8 +38,9 @@
 				}
 			}
 			public function run_link_product_on_save($post_id) {
-				if (!isset($_POST['mptbm_transportation_type_nonce']) || !wp_verify_nonce(sanitize_text_field( wp_unslash ($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
-					return;
+				if (!isset($_POST['tax_settings_nonce']) || 
+					!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['tax_settings_nonce'])), 'save_tax_settings')) {
+					return; // Stop execution if nonce is invalid
 				}
 				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
 					$title = get_the_title($post_id);

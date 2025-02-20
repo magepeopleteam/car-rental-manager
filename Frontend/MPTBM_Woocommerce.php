@@ -37,8 +37,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
 			}
 		}
 		public function add_cart_item_data($cart_item_data, $product_id)
-		{
-
+		{	
+			
 			$linked_id = MP_Global_Function::get_post_info($product_id, 'link_mptbm_id', $product_id);
 
 			$post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
@@ -116,7 +116,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
 					$total_price = $value['mptbm_tp'];
 					if (isset($_SESSION['geo_fence_post_' . $post_id])) {
 						// Extract amount from session
-						$session_data = $_SESSION['geo_fence_post_' . $post_id];
+						$session_key = 'geo_fence_post_' . intval( $post_id ); // Ensure $post_id is an integer
+						$session_data = isset( $_SESSION[$session_key] ) ? sanitize_text_field( $_SESSION[$session_key] ) : '';
 						// Check if session data contains the amount
 						if (isset($session_data[0])) {
 							// Add the amount to the price
@@ -673,6 +674,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		//**********************//
 		public static function cart_extra_service_info($post_id): array
 		{
+			
 			$start_date = isset($_POST['mptbm_date']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date'])) : '';
 			$service_name = isset($_POST['mptbm_extra_service']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_extra_service'])) : [];
 			$service_quantity = isset($_POST['mptbm_extra_service_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_extra_service_qty'])) : [];
@@ -694,7 +696,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function get_cart_total_price($post_id)
 		{
-
+			
 			$start_place = isset($_POST['mptbm_start_place']) ? sanitize_text_field(wp_unslash($_POST['mptbm_start_place'])) : '';
 
 			$end_place = isset($_POST['mptbm_end_place']) ? sanitize_text_field(wp_unslash($_POST['mptbm_end_place'])) : '';
@@ -773,7 +775,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		/****************************/
 		public function mptbm_add_to_cart()
 		{
-			$link_id = absint($_POST['link_id']);
+			
+			$link_id = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
 			$product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
 			$quantity = 1;
 			$passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);

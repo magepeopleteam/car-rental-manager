@@ -39,7 +39,7 @@
 					if (isset($section['desc']) && !empty($section['desc'])) {
 						$section['desc'] = '<div class="inside">' . $section['desc'] . '</div>';
 						$callback = function () use ($section) {
-							echo str_replace('"', '\"', $section['desc']);
+							echo esc_html(str_replace('"', '\"', $section['desc']));
 						};
 					}
 					else if (isset($section['callback'])) {
@@ -106,7 +106,7 @@
 				$date_format = MP_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 				$date = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
-				$hidden_date = $date ? date('Y-m-d', strtotime($date)) : '';
+				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -279,7 +279,7 @@
 				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
-				$label = $args['options']['button_label'] ?? esc_html__('Choose File');
+				$label = $args['options']['button_label'] ?? esc_html__('Choose File', 'car-rental-manager');
 				do_action('mp_add_single_image',$name,$value);
 			}
 			function callback_password($args) {
@@ -308,7 +308,7 @@
 					'id' => $args['section'] . '[' . $args['id'] . ']',
 					'echo' => 0
 				);
-				echo wp_dropdown_pages($dropdown_args);
+				echo wp_kses_post(wp_dropdown_pages($dropdown_args));
 			}
 			function sanitize_options($options) {
 				if (!$options) {

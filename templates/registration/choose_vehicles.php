@@ -57,7 +57,7 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
 {
     $timestamp = strtotime($selected_day);
 
-    $selected_day = date('l', $timestamp);
+    $selected_day = gmdate('l', $timestamp);
 
 
     //Schedule array
@@ -139,6 +139,7 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
     }
     return false;
 }
+
 $start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";
 
 $start_time_schedule = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
@@ -179,8 +180,12 @@ if ($date && $start_time !== "") {
 }
 
 $start_place = isset($_POST["start_place"]) ? sanitize_text_field(wp_unslash($_POST["start_place"])) : "";
-$start_place_coordinates = sanitize_text_field(wp_unslash($_POST["start_place_coordinates"]));
-$end_place_coordinates = sanitize_text_field(wp_unslash($_POST["end_place_coordinates"]));
+$start_place_coordinates = isset( $_POST["start_place_coordinates"] ) 
+? sanitize_text_field( wp_unslash( $_POST["start_place_coordinates"] ) ) 
+: '';
+$end_place_coordinates = $end_place_coordinates = isset( $_POST["end_place_coordinates"] ) 
+? sanitize_text_field( wp_unslash( $_POST["end_place_coordinates"] ) ) 
+: '';
 $end_place = isset($_POST["end_place"]) ? sanitize_text_field(wp_unslash($_POST["end_place"])) : "";
 $two_way = 2;
 $waiting_time = isset($_POST["waiting_time"]) ? sanitize_text_field(wp_unslash($_POST["waiting_time"])) : 0;

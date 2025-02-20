@@ -463,12 +463,19 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 		}
 		function save_custom_checkout_fields_to_order($order_id, $data)
 		{
+			
 			$checkout_key_fields = $this->get_checkout_fields_for_checkout();
 			foreach ($checkout_key_fields as $key => $checkout_fields) {
 				if (is_array($checkout_fields) && count($checkout_fields)) {
 					$checkout_other_fields = array_filter($checkout_fields, array($this, 'get_other_fields'));
 					foreach ($checkout_other_fields as $key => $file_fields) {
-						update_post_meta($order_id, sanitize_text_field('_' . $key), sanitize_text_field(wp_unslash($_POST[$key])));
+						if ( isset( $_POST[$key] ) ) {
+							update_post_meta(
+								$order_id, 
+								sanitize_text_field( '_' . $key ), 
+								sanitize_text_field( wp_unslash( $_POST[$key] ) )
+							);
+						}						
 					}
 					if (in_array('file', array_column($checkout_fields, 'type'))) {
 						$checkout_file_fields = array_filter($checkout_fields, array($this, 'get_file_fields'));
@@ -505,6 +512,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			return $post_ids;
 		}
         function get_uploaded_image_link($file_field_name) {
+			
             $file_field_name = sanitize_key($file_field_name);
             $image_url = '';
             if (isset($_FILES[$file_field_name]) && !empty($_FILES[$file_field_name]['name'])) {

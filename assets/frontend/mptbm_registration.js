@@ -257,6 +257,7 @@ function mptbmCreateMarker(place) {
                         let actionValue;
                         if (!mptbm_enable_view_search_result_page) {
                             actionValue = "get_mptbm_map_search_result";
+                            
                             $.ajax({
                                 type: "POST",
                                 url: mp_ajax_url,
@@ -332,6 +333,7 @@ function mptbmCreateMarker(place) {
                     let actionValue;
                     if (!mptbm_enable_view_search_result_page) {
                         actionValue = "get_mptbm_map_search_result";
+                       
                         $.ajax({
                             type: "POST",
                             url: mp_ajax_url,
@@ -347,6 +349,7 @@ function mptbmCreateMarker(place) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
+                                mptbm_transportation_type_nonce: mptbm_ajax.nonce
                             },
                             beforeSend: function () {
                                 //dLoader(target);

@@ -6,6 +6,7 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly
+	
 	$post_id = absint($_POST['post_id']);
 	if ($post_id && $post_id > 0) {
 		$display_extra_services = MP_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');

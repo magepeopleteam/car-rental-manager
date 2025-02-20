@@ -54,10 +54,12 @@
 			}
 			//***********************************//
 			public static function get_submit_info($key, $default = '') {
-				return self::data_sanitize($_POST[$key] ?? $default);
+				
+				return sanitize_text_field( wp_unslash( $_POST[$key] ?? $default ) );
 			}
 			public static function get_submit_info_get_method($key, $default = '') {
-				return self::data_sanitize($_GET[$key] ?? $default);
+				
+				return sanitize_text_field( wp_unslash( $_GET[$key] ?? $default ) );
 			}
 			public static function data_sanitize($data) {
 				$data = maybe_unserialize($data);
@@ -67,7 +69,7 @@
 						$data = self::data_sanitize($data);
 					}
 					else {
-						$data = sanitize_text_field(stripslashes(strip_tags($data)));
+						$data = sanitize_text_field(stripslashes(wp_strip_all_tags($data)));
 					}
 				}
 				elseif (is_array($data)) {
@@ -76,7 +78,7 @@
 							$value = self::data_sanitize($value);
 						}
 						else {
-							$value = sanitize_text_field(stripslashes(strip_tags($value)));
+							$value = sanitize_text_field(stripslashes(wp_strip_all_tags($value)));
 						}
 					}
 				}
@@ -114,21 +116,31 @@
 				return $format == 'D M d , yy' ? 'D M  j, Y' : $date_format;
 			}
 			public function date_picker_js($selector, $dates) {
-				$start_date = $dates[0];
-				$start_year = date('Y', strtotime($start_date));
-				$start_month = (date('n', strtotime($start_date)) - 1);
-				$start_day = date('j', strtotime($start_date));
-				$end_date = end($dates);
-				$end_year = date('Y', strtotime($end_date));
-				$end_month = (date('n', strtotime($end_date)) - 1);
-				$end_day = date('j', strtotime($end_date));
-				$all_date = [];
-				foreach ($dates as $date) {
-					$all_date[] = '"' . date('j-n-Y', strtotime($date)) . '"';
+				if (empty($dates)) {
+					return;
 				}
+			
+				// Get the start and end dates
+				$start_date = $dates[0];
+				$start_year = gmdate('Y', strtotime($start_date));
+				$start_month = gmdate('n', strtotime($start_date)) - 1;
+				$start_day = gmdate('j', strtotime($start_date));
+			
+				$end_date = end($dates);
+				$end_year = gmdate('Y', strtotime($end_date));
+				$end_month = gmdate('n', strtotime($end_date)) - 1;
+				$end_day = gmdate('j', strtotime($end_date));
+			
+				// Format available dates
+				$all_date = array_map(function($date) {
+					return gmdate('j-n-Y', strtotime($date));
+				}, $dates);
+			
 				?>
 				<script>
 					jQuery(document).ready(function () {
+						let availableDates = <?php echo wp_json_encode($all_date); ?>;
+			
 						jQuery("<?php echo esc_attr($selector); ?>").datepicker({
 							dateFormat: mp_date_format,
 							minDate: new Date(<?php echo esc_attr($start_year); ?>, <?php echo esc_attr($start_month); ?>, <?php echo esc_attr($start_day); ?>),
@@ -136,25 +148,20 @@
 							autoSize: true,
 							changeMonth: true,
 							changeYear: true,
-							beforeShowDay: WorkingDates,
+							beforeShowDay: function (date) {
+								let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
+								return [availableDates.includes(dmy), "", availableDates.includes(dmy) ? "Available" : "Unavailable"];
+							},
 							onSelect: function (dateString, data) {
 								let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay)).slice(-2);
 								jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
 							}
 						});
-						function WorkingDates(date) {
-							let availableDates = [<?php echo implode(',', $all_date); ?>];
-							let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-							if (jQuery.inArray(dmy, availableDates) !== -1) {
-								return [true, "", "Available"];
-							} else {
-								return [false, "", "unAvailable"];
-							}
-						}
 					});
 				</script>
 				<?php
 			}
+			
 			public static function date_format($date, $format = 'date') {
 				$date_format = get_option('date_format');
 				$time_format = get_option('time_format');
@@ -187,7 +194,7 @@
 			public static function date_separate_period($start_date, $end_date, $repeat = 1): DatePeriod {
 				$repeat = max($repeat, 1);
 				$_interval = "P" . $repeat . "D";
-				$end_date = date('Y-m-d', strtotime($end_date . ' +1 day'));
+				$end_date = gmdate('Y-m-d', strtotime($end_date . ' +1 day'));
 				return new DatePeriod(new DateTime($start_date), new DateInterval($_interval), new DateTime($end_date));
 			}
 			public static function check_time_exit_date($date) {
@@ -204,7 +211,7 @@
 					if ($date == 'lifetime') {
 						return esc_html__('Lifetime', 'car-rental-manager');
 					}
-					else if (strtotime(current_time('Y-m-d H:i')) < strtotime(date('Y-m-d H:i', strtotime($date)))) {
+					else if (strtotime(current_time('Y-m-d H:i')) < strtotime(gmdate('Y-m-d H:i', strtotime($date)))) {
 						return MP_Global_Function::date_format($date, 'full');
 					}
 					else {
@@ -404,6 +411,7 @@
 				}
 			}
 			public static function get_order_item_meta($item_id, $key): string {
+				
 				global $wpdb;
 				$table_name = $wpdb->prefix . "woocommerce_order_itemmeta";
 				$results = $wpdb->get_results($wpdb->prepare("SELECT meta_value FROM $table_name WHERE order_item_id = %d AND meta_key = %s", $item_id, $key));
@@ -597,7 +605,9 @@
 					if (false === $license_data->success) {
 						switch ($license_data->error) {
 							case 'expired':
-								$message = esc_html__('Your license key expired on ') . ' ' . date_i18n(get_option('date_format'), strtotime($license_data->expires, current_time('timestamp')));
+								$message = esc_html__('Your license key expired on', 'car-rental-manager') . ' ' . 
+    							date_i18n(get_option('date_format'), strtotime($license_data->expires, current_time('timestamp')));
+
 								break;
 							case 'revoked':
 								$message = esc_html__('Your license key has been disabled.', 'car-rental-manager');
