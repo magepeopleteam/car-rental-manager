@@ -44,9 +44,10 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function mptbm_extra_service()
 		{
+			
 			$post_id        = get_the_id();
 			$extra_services = MP_Global_Function::get_post_info($post_id, 'mptbm_extra_service_infos', array());
-			wp_nonce_field('mptbm_extra_service_nonce', 'mptbm_extra_service_nonce');
+			
 ?>
 			<div class="mpStyle mptbm_settings">
 				<div class="tabsContent" style="width: 100%;">
@@ -135,12 +136,14 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function save_ex_service_settings($post_id)
 		{
-			if (
-				!isset($_POST['mptbm_extra_service_nonce']) ||
-				!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_extra_service_nonce'])), 'mptbm_extra_service_nonce') ||
-				(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) ||
-				!current_user_can('edit_post', $post_id)
-			) {
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_ex_service_nonce'])) {
+				return;
+			}
+			
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_ex_service_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_save_extra_service_nonce')) {
 				return;
 			}
 
@@ -152,6 +155,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		//**************************************//
 		public function ex_service_settings($post_id)
 		{
+			wp_nonce_field('mptbm_save_extra_service_nonce', 'mptbm_ex_service_nonce');
 			$display            = MP_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
 			$service_id         = MP_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
 			$active             = $display == 'off' ? '' : 'mActive';
@@ -240,6 +244,18 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function save_ex_service($post_id)
 		{
+			wp_nonce_field('mptbm_save_extra_service_nonce', 'mptbm_ex_service_nonce');
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_ex_service_nonce'])) {
+				return;
+			}
+			
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_ex_service_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_save_extra_service_nonce')) {
+				return;
+			}
+			
 			
 			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
 				$display = isset($_POST['display_mptbm_extra_services']) && sanitize_text_field(wp_unslash($_POST['display_mptbm_extra_services'])) ? 'on' : 'off';
@@ -254,6 +270,16 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function ex_service_data($post_id)
 		{
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_ex_service_nonce'])) {
+				return;
+			}
+			
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_ex_service_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_save_extra_service_nonce')) {
+				return;
+			}
 			
 			$new_extra_service         = array();
 			$extra_icon                =  isset($_POST['service_icon']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_icon'])) : [];
@@ -275,7 +301,10 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function get_mptbm_ex_service()
 		{
-			
+			if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'mptbm_extra_service')) {
+				wp_send_json_error(array('message' => 'Invalid nonce'));
+				wp_die();
+			}
 			$post_id    = isset($_REQUEST['post_id']) ? absint($_REQUEST['post_id']) : '';
 			$service_id = isset($_REQUEST['ex_id']) ? absint($_REQUEST['ex_id']) : '';
 			$this->ex_service_table($service_id, $post_id);

@@ -311,7 +311,8 @@ function mptbmCreateMarker(place) {
                                     fixed_time: fixed_time,
                                     return_date: return_date,
                                     return_time: return_time,
-                                    mptbm_enable_view_search_result_page: mptbm_enable_view_search_result_page
+                                    mptbm_enable_view_search_result_page: mptbm_enable_view_search_result_page,
+                                    mptbm_transportation_type_nonce: mptbm_ajax.nonce
                                 },
                                 beforeSend: function () {
                                     dLoader(target);
@@ -384,7 +385,8 @@ function mptbmCreateMarker(place) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
-                                mptbm_enable_view_search_result_page: mptbm_enable_view_search_result_page
+                                mptbm_enable_view_search_result_page: mptbm_enable_view_search_result_page,
+                                mptbm_transportation_type_nonce: mptbm_ajax.nonce
                             },
                             beforeSend: function () {
                                 dLoader(target);
@@ -834,6 +836,7 @@ function mptbm_price_calculation(parent) {
                     mptbm_return_time: return_target_time,
                     mptbm_extra_service: extra_service_name,
                     mptbm_extra_service_qty: extra_service_qty,
+                    mptbm_transportation_type_nonce: mptbm_ajax.nonce
                 },
                 beforeSend: function () {
                     dLoader(parent.find('.tabsContentNext'));

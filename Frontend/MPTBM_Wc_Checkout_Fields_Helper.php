@@ -463,7 +463,16 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 		}
 		function save_custom_checkout_fields_to_order($order_id, $data)
 		{
-			
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return;
+			}
+
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return;
+			}
 			$checkout_key_fields = $this->get_checkout_fields_for_checkout();
 			foreach ($checkout_key_fields as $key => $checkout_fields) {
 				if (is_array($checkout_fields) && count($checkout_fields)) {
@@ -512,7 +521,17 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			return $post_ids;
 		}
         function get_uploaded_image_link($file_field_name) {
-			
+		 
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return;
+			}
+
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return;
+			}
             $file_field_name = sanitize_key($file_field_name);
             $image_url = '';
             if (isset($_FILES[$file_field_name]) && !empty($_FILES[$file_field_name]['name'])) {

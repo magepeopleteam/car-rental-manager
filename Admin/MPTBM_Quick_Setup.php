@@ -48,14 +48,16 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 			<?php
 
 			// Handle form submission
-			if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quick_setup'])) {
-				if (!isset($_POST['mptbm_quick_setup_nonce']) || !wp_verify_nonce($_POST['mptbm_quick_setup_nonce'], 'mptbm_quick_setup_nonce')) {
+			if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mptbm_quick_setup_nonce'])) {
+				if (
+					! isset($_POST['mptbm_quick_setup_nonce']) ||
+					! wp_verify_nonce(wp_unslash($_POST['mptbm_quick_setup_nonce']), 'mptbm_quick_setup_nonce')
+				) {
 					return;
 				}
 			}
 
 			$status = MP_Global_Function::check_woocommerce();
-			error_log('Quick Setup Form Submission: ' . print_r($_POST, true));
 
 			if (isset($_POST['active_woo_btn'])) {
 			?>

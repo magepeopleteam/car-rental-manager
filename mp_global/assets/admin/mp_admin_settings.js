@@ -229,7 +229,6 @@ function load_sortable_datepicker(parent, item) {
     );
     $(document).ready(function () {
         $('#operation_area_select').on('change', function () {
-            console.log('hello');
             // Loop through all options
             $(this).find('option').each(function () {
                 // Add or remove the 'selected' class based on the selected state

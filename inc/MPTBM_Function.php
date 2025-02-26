@@ -253,15 +253,18 @@ if (!class_exists('MPTBM_Function')) {
 				}
 			}
 			if (class_exists('MPTBM_Datewise_Discount_Addon')) {
-				if (!isset($_POST['mptbm_transportation_type_nonce']) || !wp_verify_nonce(sanitize_text_field( wp_unslash ($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')) {
-					return;
-				}
+				if ( isset($_POST['mptbm_transportation_type_nonce']) ) {
+					$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']); // Only unslash
 				
+					if ( ! wp_verify_nonce( $nonce, 'mptbm_transportation_type_nonce' ) ) {
+						wp_die( 'Nonce verification failed' );
+					}
+				}
 				$selected_start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";
 				$selected_start_time = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
 
 				if (strlen($selected_start_time) == 2) {
-					$selected_start_time .= ":00"; // Convert '17' to '17:00'
+					$selected_start_time .= ":00"; 
 				}
 
 				$selected_start_date = gmdate('Y-m-d', strtotime($selected_start_date));

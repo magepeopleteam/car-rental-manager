@@ -37,8 +37,18 @@ if (!class_exists('MPTBM_Woocommerce')) {
 			}
 		}
 		public function add_cart_item_data($cart_item_data, $product_id)
-		{	
-			
+		{
+			 
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return;
+			}
+
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return;
+			}
+
 			$linked_id = MP_Global_Function::get_post_info($product_id, 'link_mptbm_id', $product_id);
 
 			$post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
@@ -51,33 +61,33 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				$return_time = isset($_POST['mptbm_return_time']) ? sanitize_text_field(wp_unslash($_POST['mptbm_return_time'])) : '';
 				$return_date_time = $return_date ? gmdate("Y-m-d", strtotime($return_date)) : "";
 
-			if ($return_date && $return_time !== "") {
-				if ($return_time !== "") {
-					if ($return_time !== "0") {
-						// Convert start time to hours and minutes
-						list($hours, $decimal_part) = explode('.', $return_time);
-						$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
-						if ($interval_time == "5" || $interval_time == "15") {
-							$minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
+				if ($return_date && $return_time !== "") {
+					if ($return_time !== "") {
+						if ($return_time !== "0") {
+							// Convert start time to hours and minutes
+							list($hours, $decimal_part) = explode('.', $return_time);
+							$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+							if ($interval_time == "5" || $interval_time == "15") {
+								$minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
+							} else {
+								$minutes = isset($decimal_part) ? (int) $decimal_part * 10 : 0; // Multiply by 10 to convert to minutes
+							}
 						} else {
-							$minutes = isset($decimal_part) ? (int) $decimal_part * 10 : 0; // Multiply by 10 to convert to minutes
+							$hours = 0;
+							$minutes = 0;
 						}
 					} else {
 						$hours = 0;
 						$minutes = 0;
 					}
-				} else {
-					$hours = 0;
-					$minutes = 0;
+					$return_time_formatted = sprintf('%02d:%02d', $hours, $minutes);
+					$return_date_time .= " " . $return_time_formatted;
 				}
-				$return_time_formatted = sprintf('%02d:%02d', $hours, $minutes);
-				$return_date_time .= " " . $return_time_formatted;
-			}
-				
-				
+
+
 				$total_price = $this->get_cart_total_price($post_id);
 
-				
+
 				$price = MPTBM_Function::get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
 				$wc_price = MP_Global_Function::wc_price($post_id, $price);
 				$raw_price = MP_Global_Function::price_convert_raw($wc_price);
@@ -116,8 +126,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
 					$total_price = $value['mptbm_tp'];
 					if (isset($_SESSION['geo_fence_post_' . $post_id])) {
 						// Extract amount from session
-						$session_key = 'geo_fence_post_' . intval( $post_id ); // Ensure $post_id is an integer
-						$session_data = isset( $_SESSION[$session_key] ) ? sanitize_text_field( $_SESSION[$session_key] ) : '';
+						$session_key = 'geo_fence_post_' . intval($post_id); // Ensure $post_id is an integer
+						$session_data = isset($_SESSION[$session_key]) ? sanitize_text_field($_SESSION[$session_key]) : '';
 						// Check if session data contains the amount
 						if (isset($session_data[0])) {
 							// Add the amount to the price
@@ -618,7 +628,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				<?php } ?>
 				<?php do_action('mptbm_after_cart_item_display', $cart_item, $post_id); ?>
 			</div>
-			<?php
+<?php
 		}
 		public function wc_order_status_change($order_status, $post_id, $order_id)
 		{
@@ -674,7 +684,15 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		//**********************//
 		public static function cart_extra_service_info($post_id): array
 		{
-			
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return false;
+			}
+
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return false;
+			}
 			$start_date = isset($_POST['mptbm_date']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date'])) : '';
 			$service_name = isset($_POST['mptbm_extra_service']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_extra_service'])) : [];
 			$service_quantity = isset($_POST['mptbm_extra_service_qty']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_extra_service_qty'])) : [];
@@ -696,7 +714,16 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function get_cart_total_price($post_id)
 		{
-			
+			//Validate nonce before processing
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return;
+			}
+
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return;
+			}
 			$start_place = isset($_POST['mptbm_start_place']) ? sanitize_text_field(wp_unslash($_POST['mptbm_start_place'])) : '';
 
 			$end_place = isset($_POST['mptbm_end_place']) ? sanitize_text_field(wp_unslash($_POST['mptbm_end_place'])) : '';
@@ -775,8 +802,16 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		/****************************/
 		public function mptbm_add_to_cart()
 		{
-			
-			$link_id = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return;
+			}
+
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return;
+			}
+			$link_id = isset($_POST['link_id']) ? absint($_POST['link_id']) : 0;
 			$product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
 			$quantity = 1;
 			$passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
