@@ -39,7 +39,7 @@
 				wp_enqueue_script('jquery-ui-core');
 				wp_enqueue_script('jquery-ui-datepicker');
 				wp_enqueue_style('mp_jquery_ui', MP_GLOBAL_PLUGIN_URL . '/assets/jquery-ui.min.css', array(), '1.13.2');
-				wp_enqueue_style('mp_font_awesome', '//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css', array(), '5.15.4');
+				wp_enqueue_style('mp_font_awesome', MP_GLOBAL_PLUGIN_URL . '/assets/font_awesome/all.min.css', array(), '5.15.4');
 				wp_enqueue_style('mp_select_2', MP_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.css', array(), '4.0.13');
 				wp_enqueue_script('mp_select_2', MP_GLOBAL_PLUGIN_URL . '/assets/select_2/select2.min.js', array(), '4.0.13');
 				wp_enqueue_style('mp_owl_carousel', MP_GLOBAL_PLUGIN_URL . '/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4');
@@ -60,8 +60,8 @@
 				wp_enqueue_script('wp-codemirror');
 				//wp_enqueue_script('jquery-ui-accordion');
 				//loading Time picker
-				wp_enqueue_style('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css');
-				wp_enqueue_script('jquery.timepicker.min', 'https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js', array('jquery'), 1, true);
+				wp_enqueue_style('jquery.timepicker.min', MP_GLOBAL_PLUGIN_URL . '/assets/admin/jquery.timepicker.min.css', array(), time());
+				wp_enqueue_script('jquery-timepicker', MP_GLOBAL_PLUGIN_URL . '/assets/admin/jquery.timepicker.min.js', array('jquery'), time(), true);
 				//=====================//
 				wp_enqueue_script('form-field-dependency', MP_GLOBAL_PLUGIN_URL . '/assets/admin/form-field-dependency.js', array('jquery'), null, false);
 				// admin setting global

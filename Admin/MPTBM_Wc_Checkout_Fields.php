@@ -90,7 +90,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			//wp_enqueue_script('mptbm_checkout_common', MPTBM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-styles.js', array('jquery'), time(), true);
 			wp_enqueue_style('mptbm_checkout', MPTBM_PLUGIN_URL . '/assets/checkout/css/mptbm-pro-checkout.css', array(), time());
 			wp_enqueue_script('mptbm_checkout', MPTBM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-checkout.js', array('jquery'), time(), true);
-			wp_enqueue_script('mptbm_checkout_custom_script', 'https://code.jquery.com/ui/1.12.1/jquery-ui.js', array('jquery', 'jquery-ui-core', 'jquery-ui-sortable'), time(), true);
+			wp_enqueue_script('mptbm_checkout_custom_script', '', array('jquery', 'jquery-ui-sortable'), null, true);
 			$nonce = wp_create_nonce('mptbm_disable_field_nonce'); 
 			wp_localize_script('mptbm_checkout', 'mptbmCheckout', array(
 				'nonce' => $nonce
