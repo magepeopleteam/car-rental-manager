@@ -21,8 +21,11 @@ if (!class_exists('MPTBM_Woocommerce')) {
 			//************//
 			add_action('woocommerce_after_checkout_validation', array($this, 'after_checkout_validation'));
 			add_action('woocommerce_checkout_create_order_line_item', array($this, 'checkout_create_order_line_item'), 90, 4);
-			add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'));
-			add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'));
+
+           // add_action('woocommerce_checkout_order_processed', array($this, 'checkout_order_processed'));
+            add_action('woocommerce_before_thankyou', array($this, 'checkout_order_processed'));
+
+            add_filter('woocommerce_order_status_changed', array($this, 'order_status_changed'));
 			/*****************************/
 			add_action('wp_ajax_mptbm_add_to_cart', [$this, 'mptbm_add_to_cart']);
 			add_action('wp_ajax_nopriv_mptbm_add_to_cart', [$this, 'mptbm_add_to_cart']);
@@ -325,6 +328,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		}
 		public function checkout_order_processed($order_id)
 		{
+
 
 			if ($order_id) {
 
