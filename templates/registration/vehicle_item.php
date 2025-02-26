@@ -6,7 +6,15 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly
+if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+	return;
+}
 
+// Unslash and verify the nonce
+$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+	return;
+}
 $date = $date ?? '';
 $start_date_time = $date;
 $return_date_time = $return_date_time ?? '';

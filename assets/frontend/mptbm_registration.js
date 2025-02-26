@@ -664,6 +664,7 @@ function mptbm_price_calculation(parent) {
                     data: {
                         "action": "get_mptbm_extra_service",
                         "post_id": post_id,
+                        mptbm_transportation_type_nonce: mptbm_ajax.nonce
                     },
                     beforeSend: function () {
                         dLoader(parent.find('.tabsContentNext'));
@@ -682,6 +683,7 @@ function mptbm_price_calculation(parent) {
                         data: {
                             "action": "get_mptbm_extra_service_summary",
                             "post_id": post_id,
+                            mptbm_transportation_type_nonce: mptbm_ajax.nonce
                         },
                         success: function (data) {
                             target_extra_service_summary.html(data).promise().done(function () {

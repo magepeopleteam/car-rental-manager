@@ -6,10 +6,19 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly
-    
-	$start_place = sanitize_text_field( wp_unslash($_POST['start_place']));
-    $price_based = sanitize_text_field(wp_unslash($_POST['price_based']));
-    $post_id = absint($_POST['post_id']);
+    if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+		return;
+	}
+	
+	// Unslash and verify the nonce
+	$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+	if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+		return;
+	}
+	$start_place = isset($_POST['start_place']) ? sanitize_text_field(wp_unslash($_POST['start_place'])) : '';
+    $price_based = isset($_POST['price_based']) ? sanitize_text_field(wp_unslash($_POST['price_based'])) : '';
+    $post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
+
     
     $end_locations = MPTBM_Function::get_end_location($start_place, $post_id);
     if (sizeof($end_locations) > 0) {

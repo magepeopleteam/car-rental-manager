@@ -6,8 +6,16 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly
+	if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+		return;
+	}
 	
-	$post_id = absint($_POST['post_id']);
+	// Unslash and verify the nonce
+	$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+	if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+		return;
+	}
+	$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
 	if ($post_id && $post_id > 0) {
 		$display_extra_services = MP_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
 		$service_id = MP_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);

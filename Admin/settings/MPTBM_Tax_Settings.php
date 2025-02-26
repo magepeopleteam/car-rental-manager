@@ -83,10 +83,14 @@
 				<?php
 			}
 			public function settings_save($post_id) {
-				
 				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
-					$tax_status = MP_Global_Function::get_submit_info('_tax_status','none');
+					// Create and store nonce
+					$nonce = wp_create_nonce('settings_save_action');
+					update_post_meta($post_id, '_settings_save_nonce', $nonce);
+			
+					$tax_status = MP_Global_Function::get_submit_info('_tax_status', 'none');
 					$tax_class = MP_Global_Function::get_submit_info('_tax_class');
+			
 					update_post_meta($post_id, '_tax_status', $tax_status);
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}

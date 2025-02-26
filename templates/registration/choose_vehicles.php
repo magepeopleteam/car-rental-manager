@@ -14,7 +14,8 @@ $schedule = [];
 
 
 
-function wptbm_check_operation_area($post_id, $start_place, $end_place) {
+function wptbm_check_operation_area($post_id, $start_place, $end_place)
+{
     // Retrieve saved locations from post meta
     $saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
 
@@ -55,6 +56,16 @@ function wptbm_check_operation_area($post_id, $start_place, $end_place) {
 
 function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
 {
+    // Check if nonce is set
+    if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+        return;
+    }
+
+    // Unslash and verify the nonce
+    $nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+    if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+        return;
+    }
     $timestamp = strtotime($selected_day);
 
     $selected_day = gmdate('l', $timestamp);
@@ -139,7 +150,16 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
     }
     return false;
 }
+// Check if nonce is set
+if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+    return;
+}
 
+// Unslash and verify the nonce
+$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+    return;
+}
 $start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";
 
 $start_time_schedule = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
@@ -180,19 +200,20 @@ if ($date && $start_time !== "") {
 }
 
 $start_place = isset($_POST["start_place"]) ? sanitize_text_field(wp_unslash($_POST["start_place"])) : "";
-$start_place_coordinates = isset( $_POST["start_place_coordinates"] ) 
-? sanitize_text_field( wp_unslash( $_POST["start_place_coordinates"] ) ) 
-: '';
-$end_place_coordinates = $end_place_coordinates = isset( $_POST["end_place_coordinates"] ) 
-? sanitize_text_field( wp_unslash( $_POST["end_place_coordinates"] ) ) 
-: '';
+$start_place_coordinates = isset($_POST["start_place_coordinates"])
+    ? sanitize_text_field(wp_unslash($_POST["start_place_coordinates"]))
+    : '';
+$end_place_coordinates = $end_place_coordinates = isset($_POST["end_place_coordinates"])
+    ? sanitize_text_field(wp_unslash($_POST["end_place_coordinates"]))
+    : '';
 $end_place = isset($_POST["end_place"]) ? sanitize_text_field(wp_unslash($_POST["end_place"])) : "";
 $two_way = 2;
 $waiting_time = isset($_POST["waiting_time"]) ? sanitize_text_field(wp_unslash($_POST["waiting_time"])) : 0;
 $fixed_time = isset($_POST["fixed_time"]) ? sanitize_text_field(wp_unslash($_POST["fixed_time"])) : "";
 $return_time_schedule = null;
 
-$price_based = sanitize_text_field(wp_unslash($_POST["price_based"]));
+$price_based = isset($_POST["price_based"]) ? sanitize_text_field(wp_unslash($_POST["price_based"])) : '';
+
 
 if ($two_way > 1) {
     $return_date = isset($_POST["return_date"]) ? sanitize_text_field(wp_unslash($_POST["return_date"])) : "";
@@ -227,7 +248,6 @@ if ($two_way > 1) {
     if ($return_date_time && $return_time !== "") {
         $return_date_time .= " " . $return_time_formatted;
     }
-
 }
 if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_passenger_number"])) : "";
@@ -255,7 +275,7 @@ $mptbm_passengers = max($mptbm_passengers);
 
     <?php
     } ?>
-    
+
     <div class="mp_sticky_section">
         <div class="flexWrap">
 
@@ -298,19 +318,19 @@ $mptbm_passengers = max($mptbm_passengers);
                     <?php
 
                     $all_posts = MPTBM_Query::query_transport_list($price_based);
-                    
+
                     if ($all_posts->found_posts > 0) {
                         $posts = $all_posts->posts;
                         $vehicle_item_count = 0;
 
                         foreach ($posts as $post) {
-                            
+
                             $post_id = $post->ID;
                             $check_schedule = wptbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
                             $check_operation_area = wptbm_check_operation_area($post_id, $start_place, $end_place);
-                            
+
                             if ($check_schedule && $check_operation_area) {
-                                
+
                                 $vehicle_item_count = $vehicle_item_count + 1;
                                 include MPTBM_Function::template_path("registration/vehicle_item.php");
                             }
