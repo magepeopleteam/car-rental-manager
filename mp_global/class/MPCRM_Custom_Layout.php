@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MP_Custom_Layout')) {
-	class MP_Custom_Layout
+if (!class_exists('MPCRM_Custom_Layout')) {
+	class MPCRM_Custom_Layout
 	{
 		public function __construct()
 		{
@@ -175,7 +175,7 @@ if (!class_exists('MP_Custom_Layout')) {
 		/*****************************/
 		public static function bg_image($post_id = '', $url = '')
 		{
-			$thumbnail = $post_id > 0 ? MP_Global_Function::get_image_url($post_id) : $url;
+			$thumbnail = $post_id > 0 ? MPCRM_Global_Function::get_image_url($post_id) : $url;
 			$post_url = $post_id > 0 ? get_the_permalink($post_id) : '';
 		?>
 			<div class="bg_image_area" data-href="<?php echo esc_attr($post_url); ?>" data-placeholder>
@@ -251,5 +251,5 @@ if (!class_exists('MP_Custom_Layout')) {
 			}
 		}
 	}
-	new MP_Custom_Layout();
+	new MPCRM_Custom_Layout();
 }

@@ -93,7 +93,7 @@
 				return $desc;
 			}
 			function callback_text($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -103,9 +103,9 @@
 				<?php
 			}
 			function callback_datepicker($args) {
-				$date_format = MP_Global_Function::date_picker_format();
+				$date_format = MPCRM_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
-				$date = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$date = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				$name = $args['section'] . '[' . $args['id'] . ']';
@@ -117,7 +117,7 @@
 				<?php
 			}
 			function callback_mp_select2($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 
 				?>
@@ -132,7 +132,7 @@
 			}
 			function callback_mp_select2_role($args) {
 				global $wp_roles;
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . '][]';
                 $value=is_array($value)?$value:[$value];
 				?>
@@ -149,7 +149,7 @@
 				$this->callback_text($args);
 			}
 			function callback_number($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -163,7 +163,7 @@
 				<?php
 			}
 			function callback_checkbox($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$checked = checked($value, 'on', false);
 				?>
@@ -177,7 +177,7 @@
 				<?php
 			}
 			function callback_switch_button($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$checked = checked($value, 'on', false);
 				?>
@@ -190,7 +190,7 @@
 				<?php
 			}
 			function callback_multicheck($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<fieldset>
@@ -210,7 +210,7 @@
 				<?php
 			}
 			function callback_radio($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<fieldset>
@@ -225,7 +225,7 @@
 				<?php
 			}
 			function callback_select($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<label>
@@ -238,7 +238,7 @@
 				<?php
 			}
 			function callback_textarea($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -258,7 +258,7 @@
 				}
 			}
 			function callback_wysiwyg($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				?>
 				<div>
 					<?php
@@ -276,14 +276,14 @@
 				<?php
 			}
 			function callback_file($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				$label = $args['options']['button_label'] ?? esc_html__('Choose File', 'car-rental-manager');
 				do_action('mp_add_single_image',$name,$value);
 			}
 			function callback_password($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -293,7 +293,7 @@
 				<?php
 			}
 			function callback_color($args) {
-				$value = MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<label>
@@ -303,7 +303,7 @@
 			}
 			function callback_pages($args) {
 				$dropdown_args = array(
-					'selected' => MP_Global_Function::get_settings($args['section'], $args['id'], $args['std']),
+					'selected' => MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']),
 					'name' => $args['section'] . '[' . $args['id'] . ']',
 					'id' => $args['section'] . '[' . $args['id'] . ']',
 					'echo' => 0

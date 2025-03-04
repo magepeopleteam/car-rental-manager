@@ -30,7 +30,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		}
 		public function transport_search($params)
 		{
-			$display_map = MP_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
+			$display_map = MPCRM_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
 			$price_based = $params['price_based'] ?: 'dynamic';
 			$price_based = $display_map == 'disable' ? 'manual' : $price_based;
 			$progressbar = $params['progressbar'] ?: 'yes';
