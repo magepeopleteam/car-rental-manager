@@ -3,13 +3,13 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
 /**
- * Class MPTBM_Wc_Checkout_Fields_Helper
+ * Class MPCRM_Wc_Checkout_Fields_Helper
  *
  * @since 1.0
  *
  * */
-if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
-	class MPTBM_Wc_Checkout_Fields_Helper
+if (!class_exists('MPCRM_Wc_Checkout_Fields_Helper')) {
+	class MPCRM_Wc_Checkout_Fields_Helper
 	{
 		private $error;
 		public static $settings_options;
@@ -639,5 +639,5 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 <?php
 		}
 	}
-	new MPTBM_Wc_Checkout_Fields_Helper();
+	new MPCRM_Wc_Checkout_Fields_Helper();
 }

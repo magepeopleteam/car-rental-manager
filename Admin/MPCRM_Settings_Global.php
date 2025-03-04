@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Settings_Global')) {
-	class MPTBM_Settings_Global
+if (!class_exists('MPCRM_Settings_Global')) {
+	class MPCRM_Settings_Global
 	{
 		protected $settings_api;
 		public function __construct()
@@ -21,7 +21,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function global_settings_menu()
 		{
-			$cpt = MPTBM_Function::get_cpt();
+			$cpt = MPCRM_Function::get_cpt();
 			add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Global Settings', 'car-rental-manager'), esc_html__('Global Settings', 'car-rental-manager'), 'manage_options', 'mptbm_settings_page', array($this, 'settings_page'));
 		}
 		public function settings_page()
@@ -61,7 +61,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function settings_sec_reg($default_sec): array
 		{
-			$label = MPTBM_Function::get_name();
+			$label = MPCRM_Function::get_name();
 			$sections = array(
 				array(
 					'id' => 'mptbm_general_settings',
@@ -74,7 +74,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		public function settings_sec_fields($default_fields): array
 		{
 			$gm_api_url = 'https://developers.google.com/maps/documentation/javascript/get-api-key';
-			$label = MPTBM_Function::get_name();
+			$label = MPCRM_Function::get_name();
 
 
 
@@ -247,7 +247,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function global_taxi($default_sec)
 		{
-			$label = MPTBM_Function::get_name();
+			$label = MPCRM_Function::get_name();
 			$sections = array(
 				array(
 					'name' => 'set_book_status',
@@ -269,5 +269,5 @@ if (!class_exists('MPTBM_Settings_Global')) {
 			return array_merge($default_sec, $sections);
 		}
 	}
-	new  MPTBM_Settings_Global();
+	new  MPCRM_Settings_Global();
 }

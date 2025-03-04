@@ -3,25 +3,25 @@
 		die;
 	} // Cannot access pages directly.
 	/**
-	 * Class MPTBM_Wc_Checkout_Order
+	 * Class MPCRM_Wc_Checkout_Shipping
 	 *
 	 * @since 1.0
 	 *
 	 * */
-	if (!class_exists('MPTBM_Wc_Checkout_Order')) {
-		class MPTBM_Wc_Checkout_Order {
+	if (!class_exists('MPCRM_Wc_Checkout_Shipping')) {
+		class MPCRM_Wc_Checkout_Shipping {
 			private $error;
 			public function __construct() {
 				$this->error = new WP_Error();
 				add_action('mptbm_wc_checkout_tab_content', array($this, 'tab_content'), 10, 1);
-				add_action('admin_init', [$this, 'save_mptbm_wc_other_field_settings']);
+				add_action('admin_init', [$this, 'save_mptbm_wc_shipping_field_settings']);
 				add_action('admin_notices', array($this, 'mp_admin_notice'));
 			}
 			public function tab_content($contents) {
 				?>
-                <div class="tab-content" id="mptbm_wc_order_field_settings">
-                    <h2>Woocommerce Order Fields</h2>
-					<?php do_action('mptbm_wc_checkout_add', 'order'); ?>
+                <div class="tab-content" id="mptbm_wc_shipping_field_settings">
+                    <h2>Woocommerce Shipping Fields</h2>
+					<?php do_action('mptbm_wc_checkout_add', 'shipping'); ?>
                     <!-- <table class="wc_gateways wp-list-table widefat striped"> -->
                     <div>
                         <table class="wc_gateways widefat striped">
@@ -38,7 +38,7 @@
                             </tr>
                             </thead>
                             <tbody>
-							<?php foreach ($contents['order'] as $key => $checkout_field) : ?>
+							<?php foreach ($contents['shipping'] as $key => $checkout_field) : ?>
 								<?php $status = '';
 								$status = (isset($checkout_field['disabled']) && $checkout_field['disabled'] == '1') ? '' : 'checked'; ?>
                                 <tr>
@@ -51,10 +51,10 @@
                                     <td><span class="<?php echo esc_attr(esc_html((isset($checkout_field['required']) && $checkout_field['required'] == '1') ? 'dashicons dashicons-yes tips' : '')); ?>"></span></td>
                                     <td><span class="checkout-disabled <?php echo esc_attr(esc_html((isset($checkout_field['disabled']) && $checkout_field['disabled'] == '1') ? 'dashicons dashicons-yes tips' : '')); ?>"></span></td>
                                     <td>
-										<?php if (is_plugin_active('service-booking-manager-pro/MPTBM_Plugin_Pro.php')): ?>
-											<?php do_action('mptbm_wc_checkout_action', 'order', $key, $checkout_field); ?>
+										<?php if (is_plugin_active('service-booking-manager-pro/MPCRM_Plugin_Pro.php')): ?>
+											<?php do_action('mptbm_wc_checkout_action', 'shipping', $key, $checkout_field); ?>
 										<?php else: ?>
-											<?php MPTBM_Wc_Checkout_Fields::switch_button($key, 'checkoutSwitchButton', $key, $status, array('key' => 'order', 'name' => $key)); ?>
+											<?php MPCRM_Wc_Checkout_Fields::switch_button($key, 'checkoutSwitchButton', $key, $status, array('key' => 'shipping', 'name' => $key)); ?>
 										<?php endif; ?>
                                     </td>
                                 </tr>
@@ -65,12 +65,12 @@
                 </div>
 				<?php
 			}
-			public function save_mptbm_wc_other_field_settings() {
+			public function save_mptbm_wc_shipping_field_settings() {
 				// Save the
 			}
 			public function mp_admin_notice() {
-				MPTBM_Wc_Checkout_Fields::mp_error_notice($this->error);
+				MPCRM_Wc_Checkout_Fields::mp_error_notice($this->error);
 			}
 		}
-		new MPTBM_Wc_Checkout_Order();
+		new MPCRM_Wc_Checkout_Shipping();
 	}

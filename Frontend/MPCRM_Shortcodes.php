@@ -6,8 +6,8 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPTBM_Shortcodes')) {
-		class MPTBM_Shortcodes {
+	if (!class_exists('MPCRM_Shortcodes')) {
+		class MPCRM_Shortcodes {
 			public function __construct() {
 				add_shortcode('wpcb_booking', array($this, 'mptbm_booking'));
 			}
@@ -38,5 +38,5 @@
 				);
 			}
 		}
-		new MPTBM_Shortcodes();
+		new MPCRM_Shortcodes();
 	}

@@ -3,13 +3,13 @@
 		die;
 	} // Cannot access pages directly.
 	/**
-	 * Class MPTBM_Wc_Checkout_Default
+	 * Class MPCRM_Wc_Checkout_Default
 	 *
 	 * @since 1.0
 	 *
 	 * */
-	if (!class_exists('MPTBM_Wc_Checkout_Default')) {
-		class MPTBM_Wc_Checkout_Default {
+	if (!class_exists('MPCRM_Wc_Checkout_Default')) {
+		class MPCRM_Wc_Checkout_Default {
 			private $error;
 			public function __construct() {
 				$this->error = new WP_Error();
@@ -23,10 +23,10 @@
 			public function tab_content($contents) {
 				$check_order_additional_information_section='';
 				$check_order_review_section='';
-				if (MPTBM_Wc_Checkout_Fields_Helper::hide_checkout_order_additional_information_section()) {
+				if (MPCRM_Wc_Checkout_Fields_Helper::hide_checkout_order_additional_information_section()) {
 					$check_order_additional_information_section = 'checked';
 				}
-				if (MPTBM_Wc_Checkout_Fields_Helper::hide_checkout_order_review_section()) {
+				if (MPCRM_Wc_Checkout_Fields_Helper::hide_checkout_order_review_section()) {
 					$check_order_review_section = 'checked';
 				}
 				?>
@@ -40,11 +40,11 @@
                                 <tbody>
                                 <tr>
                                     <td><label for="hide_checkout_order_additional_information"><span class="span-checkout-setting">Hide Order Additional Information Section</span></label></td>
-                                    <td><?php MPTBM_Wc_Checkout_Fields::switch_button('hide_checkout_order_additional_information', 'checkoutSettingsSwitchButton', 'hide_checkout_order_additional_information', $check_order_additional_information_section, null); ?></td>
+                                    <td><?php MPCRM_Wc_Checkout_Fields::switch_button('hide_checkout_order_additional_information', 'checkoutSettingsSwitchButton', 'hide_checkout_order_additional_information', $check_order_additional_information_section, null); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="hide_checkout_order_review"><span class="span-checkout-setting">Hide Order Review Section</span></label></td>
-                                    <td><?php MPTBM_Wc_Checkout_Fields::switch_button('hide_checkout_order_review', 'checkoutSettingsSwitchButton', 'hide_checkout_order_review', $check_order_review_section, null); ?></td>
+                                    <td><?php MPCRM_Wc_Checkout_Fields::switch_button('hide_checkout_order_review', 'checkoutSettingsSwitchButton', 'hide_checkout_order_review', $check_order_review_section, null); ?></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -76,12 +76,12 @@
 						$options['hide_checkout_order_review'] = $hide_checkout_order_review;
 						update_option('mptbm_custom_checkout_fields', $options);
 					}
-					wp_redirect(admin_url('edit.php?post_type=' . MPTBM_Function::get_cpt() . '&page=mptbm_wc_checkout_fields'));
+					wp_redirect(admin_url('edit.php?post_type=' . MPCRM_Function::get_cpt() . '&page=mptbm_wc_checkout_fields'));
 				}
 			}
 			public function mp_admin_notice() {
-				MPTBM_Wc_Checkout_Fields::mp_error_notice($this->error);
+				MPCRM_Wc_Checkout_Fields::mp_error_notice($this->error);
 			}
 		}
-		new MPTBM_Wc_Checkout_Default();
+		new MPCRM_Wc_Checkout_Default();
 	}

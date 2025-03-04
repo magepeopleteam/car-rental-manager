@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Dependencies')) {
-    class MPTBM_Dependencies
+if (!class_exists('MPCRM_Dependencies')) {
+    class MPCRM_Dependencies
     {
         public function __construct()
         {
@@ -25,11 +25,11 @@ if (!class_exists('MPTBM_Dependencies')) {
         }
         private function load_file(): void
         {
-            require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Function.php';
-            require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Query.php';
-            require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Layout.php';
-            require_once MPTBM_PLUGIN_DIR . '/Admin/MPTBM_Admin.php';
-            require_once MPTBM_PLUGIN_DIR . '/Frontend/MPTBM_Frontend.php';
+            require_once MPCRM_PLUGIN_DIR . '/inc/MPCRM_Function.php';
+            require_once MPCRM_PLUGIN_DIR . '/inc/MPCRM_Query.php';
+            require_once MPCRM_PLUGIN_DIR . '/inc/MPCRM_Layout.php';
+            require_once MPCRM_PLUGIN_DIR . '/Admin/MPCRM_Admin.php';
+            require_once MPCRM_PLUGIN_DIR . '/Frontend/MPCRM_Frontend.php';
         }
         public function global_enqueue()
         {
@@ -41,10 +41,10 @@ if (!class_exists('MPTBM_Dependencies')) {
         {
             $this->global_enqueue();
             // custom
-            wp_enqueue_style('mptbm_admin', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_admin.css', array(), time());
-            wp_enqueue_style('admin_style', MPTBM_PLUGIN_URL . '/assets/admin/admin_style.css', array(), time());
-            wp_enqueue_script('mptbm_admin', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_admin.js', array('jquery'), time(), true);
-            wp_enqueue_script('mptbm_admin_quick_setup', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_admin_quick_setup.js', array('jquery'), time(), true);
+            wp_enqueue_style('mptbm_admin', MPCRM_PLUGIN_URL . '/assets/admin/mptbm_admin.css', array(), time());
+            wp_enqueue_style('admin_style', MPCRM_PLUGIN_URL . '/assets/admin/admin_style.css', array(), time());
+            wp_enqueue_script('mptbm_admin', MPCRM_PLUGIN_URL . '/assets/admin/mptbm_admin.js', array('jquery'), time(), true);
+            wp_enqueue_script('mptbm_admin_quick_setup', MPCRM_PLUGIN_URL . '/assets/admin/mptbm_admin_quick_setup.js', array('jquery'), time(), true);
             $nonce = wp_create_nonce('mptbm_extra_service');
             wp_localize_script('mptbm_admin', 'mptbmAdmin', array(
                 'nonce' => $nonce
@@ -58,10 +58,10 @@ if (!class_exists('MPTBM_Dependencies')) {
             $this->global_enqueue();
             wp_enqueue_script('wc-checkout');
             //
-            wp_enqueue_style('mptbm_style', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_style.css', array(), time());
-            wp_enqueue_script('mptbm_script', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_script.js', array('jquery'), time(), true);
-            wp_enqueue_script('mptbm_registration', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_registration.js', array('jquery'), time(), true);
-            wp_enqueue_style('mptbm_registration', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_registration.css', array(), time());
+            wp_enqueue_style('mptbm_style', MPCRM_PLUGIN_URL . '/assets/frontend/mptbm_style.css', array(), time());
+            wp_enqueue_script('mptbm_script', MPCRM_PLUGIN_URL . '/assets/frontend/mptbm_script.js', array('jquery'), time(), true);
+            wp_enqueue_script('mptbm_registration', MPCRM_PLUGIN_URL . '/assets/frontend/mptbm_registration.js', array('jquery'), time(), true);
+            wp_enqueue_style('mptbm_registration', MPCRM_PLUGIN_URL . '/assets/frontend/mptbm_registration.css', array(), time());
             
             // Localize the mptbm_registration script with nonce
             wp_localize_script('mptbm_registration', 'mptbm_ajax', array(
@@ -91,5 +91,5 @@ if (!class_exists('MPTBM_Dependencies')) {
         }
         
     }
-    new MPTBM_Dependencies();
+    new MPCRM_Dependencies();
 }

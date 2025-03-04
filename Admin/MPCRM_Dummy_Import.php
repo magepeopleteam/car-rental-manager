@@ -7,8 +7,8 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
 //echo '<pre>';print_r();echo '</pre>';y.
-if (!class_exists('MPTBM_Dummy_Import')) {
-	class MPTBM_Dummy_Import
+if (!class_exists('MPCRM_Dummy_Import')) {
+	class MPCRM_Dummy_Import
 	{
 		public function __construct()
 		{
@@ -18,7 +18,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		{
 			$dummy_post_inserted = get_option('mptbm_dummy_already_inserted', 'no');
 			$count_existing_event = wp_count_posts('mptbm_rent')->publish;
-			$plugin_active = MPCRM_Global_Function::check_plugin('car-rental-manager', 'MPTBM_Plugin.php');
+			$plugin_active = MPCRM_Global_Function::check_plugin('car-rental-manager', 'MPCRM_Plugin.php');
 			if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				$this->add_post($this->dummy_cpt());
 				$this->location_taxonomy();
@@ -790,5 +790,5 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 			];
 		}
 	}
-	new MPTBM_Dummy_Import();
+	new MPCRM_Dummy_Import();
 }

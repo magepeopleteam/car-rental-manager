@@ -7,8 +7,8 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
 
-if (!class_exists('MPTBM_Date_Settings')) {
-	class MPTBM_Date_Settings
+if (!class_exists('MPCRM_Date_Settings')) {
+	class MPCRM_Date_Settings
 	{
 		public function __construct()
 		{
@@ -218,7 +218,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e('Make Transport Available For 24 Hours', 'car-rental-manager'); ?></h6>
-							<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
+							<span class="desc"><?php MPCRM_Settings::info_text('display_mptbm_features'); ?></span>
 						</div>
 						<?php MPCRM_Custom_Layout::switch_button('mptbm_available_for_all_time', $checked); ?>
 					</label>
@@ -350,7 +350,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 			if (!wp_verify_nonce($nonce, 'mptbm_save_date_time_settings')) {
 				return;
 			}
-			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+			if (get_post_type($post_id) == MPCRM_Function::get_cpt()) {
 				//************************************//
 				$mptbm_date_type = isset($_POST['mptbm_date_type']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date_type'])) : '';
 				update_post_meta($post_id, 'mptbm_date_type', $mptbm_date_type);
@@ -454,5 +454,5 @@ if (!class_exists('MPTBM_Date_Settings')) {
 			update_post_meta($post_id, $end_name, $end_time);
 		}
 	}
-	new MPTBM_Date_Settings();
+	new MPCRM_Date_Settings();
 }

@@ -6,8 +6,8 @@
 if (! defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (! class_exists('MPTBM_Extra_Service')) {
-	class MPTBM_Extra_Service
+if (! class_exists('MPCRM_Extra_Service')) {
+	class MPCRM_Extra_Service
 	{
 		public function __construct()
 		{
@@ -24,13 +24,13 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function mptbm_extra_service_meta()
 		{
-			$label = MPTBM_Function::get_name();
+			$label = MPCRM_Function::get_name();
 
 			
 			$extra_services_label = sprintf(
 				// translators: %s represents the plugin version.
 				__('> Extra Services Settings <span class="version"> V%s</span>', 'car-rental-manager'),
-				MPTBM_PLUGIN_VERSION
+				MPCRM_PLUGIN_VERSION
 			);
 
 			add_meta_box(
@@ -53,7 +53,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 				<div class="tabsContent" style="width: 100%;">
 					<div class="mptbm_extra_service_settings tabsItem">
 						<h5><?php esc_html_e('Global Extra Service Settings', 'car-rental-manager'); ?></h5>
-						<p><?php MPTBM_Settings::info_text('mptbm_extra_services_global'); ?></p>
+						<p><?php MPCRM_Settings::info_text('mptbm_extra_services_global'); ?></p>
 						<section class="bg-light">
 							<h6><?php esc_html_e('Extra Service Settings', 'car-rental-manager'); ?></h6>
 							<span><?php esc_html_e('Here you can set price', 'car-rental-manager'); ?></span>
@@ -160,7 +160,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			$service_id         = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
 			$active             = $display == 'off' ? '' : 'mActive';
 			$checked            = $display == 'off' ? '' : 'checked';
-			$all_ex_services_id = MPTBM_Query::query_post_id('mptbm_extra_services');
+			$all_ex_services_id = MPCRM_Query::query_post_id('mptbm_extra_services');
 		?>
 			<div class="tabsItem mptbm_extra_services_setting" data-tabs="#mptbm_settings_ex_service">
 				<h2><?php esc_html_e('On/Off Extra Service Settings', 'car-rental-manager'); ?></h2>
@@ -174,7 +174,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e('On/Off Extra Service Settings', 'car-rental-manager'); ?></h6>
-							<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_extra_services'); ?></span>
+							<span class="desc"><?php MPCRM_Settings::info_text('display_mptbm_extra_services'); ?></span>
 						</div>
 						<?php MPCRM_Custom_Layout::switch_button('display_mptbm_extra_services', $checked); ?>
 					</label>
@@ -184,7 +184,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 						<label class="label">
 							<div>
 								<h6><?php esc_html_e('Select extra option :', 'car-rental-manager'); ?></h6>
-								<span class="desc"><?php MPTBM_Settings::info_text('mptbm_extra_services_id'); ?></span>
+								<span class="desc"><?php MPCRM_Settings::info_text('mptbm_extra_services_id'); ?></span>
 							</div>
 							<select class="formControl" name="mptbm_extra_services_id">
 								<option value="" selected><?php esc_html_e('Select extra option', 'car-rental-manager'); ?></option>
@@ -257,7 +257,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			}
 			
 			
-			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+			if (get_post_type($post_id) == MPCRM_Function::get_cpt()) {
 				$display = isset($_POST['display_mptbm_extra_services']) && sanitize_text_field(wp_unslash($_POST['display_mptbm_extra_services'])) ? 'on' : 'off';
 				update_post_meta($post_id, 'display_mptbm_extra_services', $display);
 				$ex_id = isset($_POST['mptbm_extra_services_id']) ? sanitize_text_field(wp_unslash($_POST['mptbm_extra_services_id'])) : $post_id;
@@ -311,5 +311,5 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			die();
 		}
 	}
-	new MPTBM_Extra_Service();
+	new MPCRM_Extra_Service();
 }

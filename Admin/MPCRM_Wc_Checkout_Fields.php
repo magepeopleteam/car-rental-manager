@@ -3,13 +3,13 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
 /**
- * Class MPTBM_Wc_Checkout_Fields
+ * Class MPCRM_Wc_Checkout_Fields
  *
  * @since 1.0
  *
  * */
-if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
-	class MPTBM_Wc_Checkout_Fields
+if (!class_exists('MPCRM_Wc_Checkout_Fields')) {
+	class MPCRM_Wc_Checkout_Fields
 	{
 		private $error;
 		private $settings_options;
@@ -49,7 +49,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			$key = isset($_POST['key']) ? sanitize_text_field(wp_unslash($_POST['key'])) : null;
 			$name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : null;
 			$isChecked = isset($_POST['isChecked']) ? sanitize_text_field(wp_unslash($_POST['isChecked'])) : null;
-			$checkout_fields = MPTBM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list();
+			$checkout_fields = MPCRM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list();
 			$custom_checkout_fields = array();
 			$custom_checkout_fields = get_option('mptbm_custom_checkout_fields');
 			if (isset($checkout_fields[$key][$name])) {
@@ -86,10 +86,10 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 		}
 		public function admin_enqueue()
 		{
-			//wp_enqueue_style('mptbm_checkout_common', MPTBM_PLUGIN_URL . '/assets/checkout/css/mptbm-pro-styles.css', array(), time());
-			//wp_enqueue_script('mptbm_checkout_common', MPTBM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-styles.js', array('jquery'), time(), true);
-			wp_enqueue_style('mptbm_checkout', MPTBM_PLUGIN_URL . '/assets/checkout/css/mptbm-pro-checkout.css', array(), time());
-			wp_enqueue_script('mptbm_checkout', MPTBM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-checkout.js', array('jquery'), time(), true);
+			//wp_enqueue_style('mptbm_checkout_common', MPCRM_PLUGIN_URL . '/assets/checkout/css/mptbm-pro-styles.css', array(), time());
+			//wp_enqueue_script('mptbm_checkout_common', MPCRM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-styles.js', array('jquery'), time(), true);
+			wp_enqueue_style('mptbm_checkout', MPCRM_PLUGIN_URL . '/assets/checkout/css/mptbm-pro-checkout.css', array(), time());
+			wp_enqueue_script('mptbm_checkout', MPCRM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-checkout.js', array('jquery'), time(), true);
 			wp_enqueue_script('mptbm_checkout_custom_script', '', array('jquery', 'jquery-ui-sortable'), null, true);
 			$nonce = wp_create_nonce('mptbm_disable_field_nonce'); 
 			wp_localize_script('mptbm_checkout', 'mptbmCheckout', array(
@@ -98,12 +98,12 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 		}
 		public function frontend_enqueue()
 		{
-			wp_enqueue_style('mptbm_checkout_front_style', MPTBM_PLUGIN_URL . '/assets/checkout/front/css/mptbm-pro-checkout-front-style.css', array(), time());
-			wp_enqueue_script('mptbm_checkout_front_script', MPTBM_PLUGIN_URL . '/assets/checkout/front/js/mptbm-pro-checkout-front-script.js', array('jquery'), time(), true);
+			wp_enqueue_style('mptbm_checkout_front_style', MPCRM_PLUGIN_URL . '/assets/checkout/front/css/mptbm-pro-checkout-front-style.css', array(), time());
+			wp_enqueue_script('mptbm_checkout_front_script', MPCRM_PLUGIN_URL . '/assets/checkout/front/js/mptbm-pro-checkout-front-script.js', array('jquery'), time(), true);
 		}
 		public function checkout_menu()
 		{
-			$cpt = MPTBM_Function::get_cpt();
+			$cpt = MPCRM_Function::get_cpt();
 			add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Checkout Fields', 'car-rental-manager'), esc_html__('Checkout Fields', 'car-rental-manager'), 'manage_options', 'mptbm_wc_checkout_fields', array($this, 'wc_checkout_fields'));
 		}
 		public function wc_checkout_fields()
@@ -178,7 +178,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
                                 <li class="tab-item" data-tabs-target="#mptbm_wc_order_field_settings"><i class="dashicons dashicons-format-status text-primary"></i> Order Fields <i class="i i-chevron-right dashicons dashicons-arrow-right-alt2"></i></li> -->
 						</ul>
 						<div class="tab-content-container">
-							<?php do_action('mptbm_wc_checkout_tab_content', MPTBM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list()); ?>
+							<?php do_action('mptbm_wc_checkout_tab_content', MPCRM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list()); ?>
 						</div>
 					</div>
 				</div>
@@ -199,5 +199,5 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			}
 		}
 	}
-	new MPTBM_Wc_Checkout_Fields();
+	new MPCRM_Wc_Checkout_Fields();
 }

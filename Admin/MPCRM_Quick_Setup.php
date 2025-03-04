@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Quick_Setup')) {
-	class MPTBM_Quick_Setup
+if (!class_exists('MPCRM_Quick_Setup')) {
+	class MPCRM_Quick_Setup
 	{
 		public function __construct()
 		{
@@ -66,7 +66,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 				</script>
 				<?php
 				activate_plugin('woocommerce/woocommerce.php');
-				MPTBM_Plugin::on_activation_page_create();
+				MPCRM_Plugin::on_activation_page_create();
 				?>
 				<script>
 					(function($) {
@@ -114,7 +114,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 					$woocommerce_plugin = new Plugin_Upgrader(new Plugin_Installer_Skin(compact('title', 'url', 'nonce', 'plugin', 'api')));
 					$woocommerce_plugin->install($api->download_link);
 					activate_plugin('woocommerce/woocommerce.php');
-					MPTBM_Plugin::on_activation_page_create();
+					MPCRM_Plugin::on_activation_page_create();
 					?>
 				</div>
 			<?php
@@ -262,5 +262,5 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 <?php
 		}
 	}
-	new MPTBM_Quick_Setup();
+	new MPCRM_Quick_Setup();
 }

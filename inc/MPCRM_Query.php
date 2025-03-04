@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly
-if (!class_exists('MPTBM_Query')) {
-	class MPTBM_Query
+if (!class_exists('MPCRM_Query')) {
+	class MPCRM_Query
 	{
 		public function __construct() {}
 		public static function query_post_id($post_type): array
@@ -35,7 +35,7 @@ if (!class_exists('MPTBM_Query')) {
 
 			// Main query args
 			$args = array(
-				'post_type' => array(MPTBM_Function::get_cpt()),
+				'post_type' => array(MPCRM_Function::get_cpt()),
 				'posts_per_page' => -1,
 				'post_status' => 'publish',
 				'meta_query' => array(
@@ -53,7 +53,7 @@ if (!class_exists('MPTBM_Query')) {
 
 			// Return a new WP_Query object with merged posts
 			return new WP_Query(array(
-				'post_type' => array(MPTBM_Function::get_cpt()),
+				'post_type' => array(MPCRM_Function::get_cpt()),
 				'posts_per_page' => -1,
 				'post_status' => 'publish',
 				'post__in' => wp_list_pluck($main_query->posts, 'ID') // Include all post IDs from merged result
@@ -120,5 +120,5 @@ if (!class_exists('MPTBM_Query')) {
 			return new WP_Query($args);
 		}
 	}
-	new MPTBM_Query();
+	new MPCRM_Query();
 }

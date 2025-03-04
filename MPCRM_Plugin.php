@@ -14,8 +14,8 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Plugin')) {
-    class MPTBM_Plugin
+if (!class_exists('MPCRM_Plugin')) {
+    class MPCRM_Plugin
     {
         public function __construct()
         {
@@ -29,25 +29,25 @@ if (!class_exists('MPTBM_Plugin')) {
         private function load_plugin(): void
 		{
 			include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-			if (!defined('MPTBM_PLUGIN_DIR')) {
-				define('MPTBM_PLUGIN_DIR', dirname(__FILE__));
+			if (!defined('MPCRM_PLUGIN_DIR')) {
+				define('MPCRM_PLUGIN_DIR', dirname(__FILE__));
 			}
-			if (!defined('MPTBM_PLUGIN_URL')) {
-				define('MPTBM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
+			if (!defined('MPCRM_PLUGIN_URL')) {
+				define('MPCRM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
 			}
-			if (!defined('MPTBM_PLUGIN_DATA')) {
-				// define('MPTBM_PLUGIN_DATA', get_plugin_data(__FILE__));
+			if (!defined('MPCRM_PLUGIN_DATA')) {
+				// define('MPCRM_PLUGIN_DATA', get_plugin_data(__FILE__));
 			}
-			if (!defined('MPTBM_PLUGIN_VERSION')) {
-				define('MPTBM_PLUGIN_VERSION', '1.0.7');
+			if (!defined('MPCRM_PLUGIN_VERSION')) {
+				define('MPCRM_PLUGIN_VERSION', '1.0.7');
 			}
-			require_once MPTBM_PLUGIN_DIR . '/mp_global/MPCRM_Global_File_Load.php';
+			require_once MPCRM_PLUGIN_DIR . '/mp_global/MPCRM_Global_File_Load.php';
 			if (MPCRM_Global_Function::check_woocommerce() == 1) {
 				add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
 				self::on_activation_page_create();
-				require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Dependencies.php';
+				require_once MPCRM_PLUGIN_DIR . '/inc/MPCRM_Dependencies.php';
 			} else {
-				require_once MPTBM_PLUGIN_DIR . '/Admin/MPTBM_Quick_Setup.php';
+				require_once MPCRM_PLUGIN_DIR . '/Admin/MPCRM_Quick_Setup.php';
 				//add_action('admin_notices', [$this, 'woocommerce_not_active']);
 				add_action('activated_plugin', array($this, 'activation_redirect_setup'), 90, 1);
 			}
@@ -142,5 +142,5 @@ if (!class_exists('MPTBM_Plugin')) {
         }
     }
 
-    new MPTBM_Plugin();
+    new MPCRM_Plugin();
 }

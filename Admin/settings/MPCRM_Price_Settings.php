@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Price_Settings')) {
-	class MPTBM_Price_Settings
+if (!class_exists('MPCRM_Price_Settings')) {
+	class MPCRM_Price_Settings
 	{
 		public function __construct()
 		{
@@ -34,7 +34,7 @@ if (!class_exists('MPTBM_Price_Settings')) {
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e('Price/Day', 'car-rental-manager'); ?></h6>
-							<span class="desc"><?php MPTBM_Settings::info_text('mptbm_day_price'); ?></span>
+							<span class="desc"><?php MPCRM_Settings::info_text('mptbm_day_price'); ?></span>
 						</div>
 						<input class="formControl mp_price_validation" name="mptbm_day_price" value="<?php echo esc_attr($time_price); ?>" type="text" placeholder="<?php esc_html_e('EX:10', 'car-rental-manager'); ?>" />
 					</label>
@@ -62,7 +62,7 @@ if (!class_exists('MPTBM_Price_Settings')) {
             ) {
                 return;
             }
-            if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+            if (get_post_type($post_id) == MPCRM_Function::get_cpt()) {
 
 				$price_based = "manual";
 				update_post_meta($post_id, 'mptbm_price_based', $price_based);
@@ -106,5 +106,5 @@ if (!class_exists('MPTBM_Price_Settings')) {
 			}
 		}
 	}
-	new MPTBM_Price_Settings();
+	new MPCRM_Price_Settings();
 }

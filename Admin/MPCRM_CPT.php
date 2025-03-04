@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_CPT')) {
-	class MPTBM_CPT
+if (!class_exists('MPCRM_CPT')) {
+	class MPCRM_CPT
 	{
 		public function __construct()
 		{
@@ -58,10 +58,10 @@ if (!class_exists('MPTBM_CPT')) {
 
 		public function add_cpt(): void
 		{
-			$cpt = MPTBM_Function::get_cpt();
-			$label = MPTBM_Function::get_name();
-			$slug = MPTBM_Function::get_slug();
-			$icon = MPTBM_Function::get_icon();
+			$cpt = MPCRM_Function::get_cpt();
+			$label = MPCRM_Function::get_name();
+			$slug = MPCRM_Function::get_slug();
+			$icon = MPCRM_Function::get_icon();
 			$labels = [
 				'name' => $label,
 				'singular_name' => $label,
@@ -160,10 +160,10 @@ if (!class_exists('MPTBM_CPT')) {
 			
 			register_taxonomy('locations', $cpt, $taxonomy_args);
 			register_post_type('mptbm_extra_services', $ex_args);
-			if (class_exists('MPTBM_Plugin_Pro')) {
+			if (class_exists('MPCRM_Plugin_Pro')) {
 				register_post_type('mptbm_operate_areas', $dx_args);
 			}
 		}
 	}
-	new MPTBM_CPT();
+	new MPCRM_CPT();
 }

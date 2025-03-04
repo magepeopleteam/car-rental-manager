@@ -6,8 +6,8 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPTBM_Tax_Settings')) {
-		class MPTBM_Tax_Settings {
+	if (!class_exists('MPCRM_Tax_Settings')) {
+		class MPCRM_Tax_Settings {
 			public function __construct() {
 				add_action('add_mptbm_settings_tab_content', [$this, 'tab_content']);
 				add_action('save_post', [$this, 'settings_save']);
@@ -76,14 +76,14 @@
 						</div>
 					<?php }else{ ?>
 						<div class="_dLayout_dFlex_justifyCenter">
-							<?php MPTBM_Layout::msg(esc_html__('Tax not active. Please add Tax settings from woocommerce.', 'car-rental-manager')); ?>
+							<?php MPCRM_Layout::msg(esc_html__('Tax not active. Please add Tax settings from woocommerce.', 'car-rental-manager')); ?>
 						</div>
 					<?php } ?>
 				</div>
 				<?php
 			}
 			public function settings_save($post_id) {
-				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+				if (get_post_type($post_id) == MPCRM_Function::get_cpt()) {
 					// Create and store nonce
 					$nonce = wp_create_nonce('settings_save_action');
 					update_post_meta($post_id, '_settings_save_nonce', $nonce);
@@ -96,5 +96,5 @@
 				}
 			}
 		}
-		new MPTBM_Tax_Settings();
+		new MPCRM_Tax_Settings();
 	}

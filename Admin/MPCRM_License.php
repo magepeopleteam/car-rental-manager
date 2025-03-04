@@ -6,8 +6,8 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPTBM_License')) {
-		class MPTBM_License {
+	if (!class_exists('MPCRM_License')) {
+		class MPCRM_License {
 			public function __construct() {
 				add_action('mp_license_page_plugin_list', [$this, 'tour_licence'], 50);
 			}
@@ -26,5 +26,5 @@
 				do_action('mptbm_addon_list');
 			}
 		}
-		new MPTBM_License();
+		new MPCRM_License();
 	}

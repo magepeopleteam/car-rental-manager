@@ -12,7 +12,7 @@ delete_transient('original_price_based');
 $km_or_mile = MPCRM_Global_Function::get_settings('mp_global_settings', 'km_or_mile', 'km');
 $price_based = $price_based ?? '';
 set_transient('original_price_based', $price_based);
-$all_dates = MPTBM_Function::get_all_dates($price_based);
+$all_dates = MPCRM_Function::get_all_dates($price_based);
 $form_style = $form_style ?? 'horizontal';
 $form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
 $area_class = $price_based == 'manual' ? ' ' : 'justifyBetween';
@@ -33,7 +33,7 @@ foreach ($mptbm_all_transport_id as $key => $value) {
 if ($mptbm_available_for_all_time == false) {
 
 	foreach ($mptbm_all_transport_id as $key => $value) {
-		array_push($mptbm_schedule, MPTBM_Function::get_schedule($value));
+		array_push($mptbm_schedule, MPCRM_Function::get_schedule($value));
 	}
 	foreach ($mptbm_schedule as $dayArray) {
 		foreach ($dayArray as $times) {
@@ -91,10 +91,10 @@ while ($buffer_end_minutes > 1440) {
 	$buffer_end_minutes -= 1440;
 }
 if (sizeof($all_dates) > 0) {
-	$taxi_return = MPTBM_Function::get_general_settings('taxi_return', 'enable');
-	$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time', '30');
+	$taxi_return = MPCRM_Function::get_general_settings('taxi_return', 'enable');
+	$interval_time = MPCRM_Function::get_general_settings('mptbm_pickup_interval_time', '30');
 	$interval_hours = $interval_time / 60;
-	$waiting_time_check = MPTBM_Function::get_general_settings('taxi_waiting_time', 'enable');
+	$waiting_time_check = MPCRM_Function::get_general_settings('taxi_waiting_time', 'enable');
 ?>
 	<div class="<?php echo esc_attr($area_class); ?> ">
 		<div class="_dLayout mptbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
@@ -172,12 +172,12 @@ if (sizeof($all_dates) > 0) {
 						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
 						<?php if ($price_based == 'manual') {
 						?>
-							<?php $all_start_locations = MPTBM_Function::get_all_start_location(); ?>
+							<?php $all_start_locations = MPCRM_Function::get_all_start_location(); ?>
 							<select id="mptbm_manual_start_place" class="mptbm_manual_start_place formControl">
 								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
@@ -202,7 +202,7 @@ if (sizeof($all_dates) > 0) {
 								<option selected disabled><?php esc_html_e(' Select Return Location', 'car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
@@ -317,7 +317,7 @@ if (sizeof($all_dates) > 0) {
 	<div class="dLayout">
 		<h3 class="_textDanger_textCenter">
 			<?php
-			$transportaion_label = MPTBM_Function::get_name();
+			$transportaion_label = MPCRM_Function::get_name();
 
 			// Translators comment to explain the placeholder
 			/* translators: %s: Car label */

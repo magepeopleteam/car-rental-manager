@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_General_Settings')) {
-	class MPTBM_General_Settings
+if (!class_exists('MPCRM_General_Settings')) {
+	class MPCRM_General_Settings
 	{
 		public function __construct()
 		{
@@ -65,7 +65,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 						<label class="label">
 							<div>
 								<h6><?php esc_html_e('Maximum Passenger', 'car-rental-manager'); ?></h6>
-								<span class="desc"><?php MPTBM_Settings::info_text('mptbm_maximum_passenger'); ?></span>
+								<span class="desc"><?php MPCRM_Settings::info_text('mptbm_maximum_passenger'); ?></span>
 							</div>
 							<input class="formControl mp_price_validation" name="mptbm_maximum_passenger" value="<?php echo esc_attr($max_passenger); ?>" type="text" placeholder="<?php esc_html_e('EX:4', 'car-rental-manager'); ?>" />
 						</label>
@@ -74,7 +74,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 						<label class="label">
 							<div>
 								<h6><?php esc_html_e('Maximum Bag', 'car-rental-manager'); ?></h6>
-								<span class="desc"><?php MPTBM_Settings::info_text('mptbm_maximum_bag'); ?></span>
+								<span class="desc"><?php MPCRM_Settings::info_text('mptbm_maximum_bag'); ?></span>
 							</div>
 							<input class="formControl mp_price_validation" name="mptbm_maximum_bag" value="<?php echo esc_attr($max_bag); ?>" type="text" placeholder="<?php esc_html_e('EX:4', 'car-rental-manager'); ?>" />
 						</label>
@@ -83,7 +83,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 						<label class="label">
 							<div>
 								<h6><?php esc_html_e('On/Off Feature Extra feature', 'car-rental-manager'); ?></h6>
-								<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
+								<span class="desc"><?php MPCRM_Settings::info_text('display_mptbm_features'); ?></span>
 							</div>
 							<?php MPCRM_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
 						</label>
@@ -153,7 +153,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 			if (!wp_verify_nonce($nonce, 'mptbm_save_general_settings')) {
 				return;
 			};
-			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+			if (get_post_type($post_id) == MPCRM_Function::get_cpt()) {
 				$all_features = [];
 				$max_passenger = isset($_POST['mptbm_maximum_passenger']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_passenger'])) : '';
 				$max_bag = isset($_POST['mptbm_maximum_bag']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_bag'])) : '';
@@ -188,5 +188,5 @@ if (!class_exists('MPTBM_General_Settings')) {
 			}
 		}
 	}
-	new MPTBM_General_Settings();
+	new MPCRM_General_Settings();
 }

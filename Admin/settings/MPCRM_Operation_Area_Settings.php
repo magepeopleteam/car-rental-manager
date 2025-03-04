@@ -7,8 +7,8 @@ if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
 
-if (!class_exists('MPTBM_Operation_Area_Settings')) {
-	class MPTBM_Operation_Area_Settings
+if (!class_exists('MPCRM_Operation_Area_Settings')) {
+	class MPCRM_Operation_Area_Settings
 	{
 		public function __construct()
 		{
@@ -101,5 +101,5 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 			}
 		}
 	}
-	new MPTBM_Operation_Area_Settings();
+	new MPCRM_Operation_Area_Settings();
 }

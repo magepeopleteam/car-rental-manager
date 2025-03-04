@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Transport_Search')) {
-	class MPTBM_Transport_Search
+if (!class_exists('MPCRM_Transport_Search')) {
+	class MPCRM_Transport_Search
 	{
 		public function __construct()
 		{
@@ -41,12 +41,12 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			do_shortcode('[shop_messages]');
 			echo wp_kses_post(ob_get_clean());
 			//echo '<pre>';print_r($params);echo '</pre>';
-			include(MPTBM_Function::template_path('registration/registration_layout.php'));
+			include(MPCRM_Function::template_path('registration/registration_layout.php'));
 		}
 		public function get_mptbm_map_search_result()
 		{
 
-			include(MPTBM_Function::template_path('registration/choose_vehicles.php'));
+			include(MPCRM_Function::template_path('registration/choose_vehicles.php'));
 
 
 			die(); // Ensure further execution stops after outputting the JavaScript
@@ -68,7 +68,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
 			$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
 			// if ($distance && $duration) {
-			include(MPTBM_Function::template_path('registration/choose_vehicles.php'));
+			include(MPCRM_Function::template_path('registration/choose_vehicles.php'));
 			// }
 			$content = ob_get_clean(); // Get the buffered content and clean the buffer
 			// Store the content in a session variable
@@ -86,19 +86,19 @@ if (!class_exists('MPTBM_Transport_Search')) {
 
 		public function get_mptbm_end_place()
 		{
-			include(MPTBM_Function::template_path('registration/get_end_place.php'));
+			include(MPCRM_Function::template_path('registration/get_end_place.php'));
 			die();
 		}
 		public function get_mptbm_extra_service()
 		{
-			include(MPTBM_Function::template_path('registration/extra_service.php'));
+			include(MPCRM_Function::template_path('registration/extra_service.php'));
 			die();
 		}
 		public function get_mptbm_extra_service_summary()
 		{
-			include(MPTBM_Function::template_path('registration/extra_service_summary.php'));
+			include(MPCRM_Function::template_path('registration/extra_service_summary.php'));
 			die();
 		}
 	}
-	new MPTBM_Transport_Search();
+	new MPCRM_Transport_Search();
 }

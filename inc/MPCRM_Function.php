@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Function')) {
-	class MPTBM_Function
+if (!class_exists('MPCRM_Function')) {
+	class MPCRM_Function
 	{
 
 		//**************Support multi Language*********************//
@@ -16,7 +16,7 @@ if (!class_exists('MPTBM_Function')) {
 			if (function_exists('wpml_loaded')) {
 				global $sitepress;
 				$default_language = function_exists('wpml_loaded') ? $sitepress->get_default_language() : get_locale();
-				return apply_filters('wpml_object_id', $post_id, MPTBM_Function::get_cpt(), TRUE, $default_language);
+				return apply_filters('wpml_object_id', $post_id, MPCRM_Function::get_cpt(), TRUE, $default_language);
 			}
 			if (function_exists('pll_get_post_translations')) {
 				$defaultLanguage = function_exists('pll_default_language') ? pll_default_language() : get_locale();
@@ -29,7 +29,7 @@ if (!class_exists('MPTBM_Function')) {
 //		public static function all_details_template()
 //		{
 //			$template_path = get_stylesheet_directory() . '/mptbm_templates/themes/';
-//			$default_path = MPTBM_PLUGIN_DIR . '/templates/themes/';
+//			$default_path = MPCRM_PLUGIN_DIR . '/templates/themes/';
 //			$dir = is_dir($template_path) ? glob($template_path . "*") : glob($default_path . "*");
 //			$names = array();
 //			foreach ($dir as $filename) {
@@ -88,7 +88,7 @@ if (!class_exists('MPTBM_Function')) {
 			$tour_id = get_the_id();
 			$template_name = MPCRM_Global_Function::get_post_info($tour_id, 'mptbm_theme_file', 'default.php');
 			$file_name = 'themes/' . $template_name;
-			$dir = MPTBM_PLUGIN_DIR . '/templates/' . $file_name;
+			$dir = MPCRM_PLUGIN_DIR . '/templates/' . $file_name;
 			if (!file_exists($dir)) {
 				$file_name = 'themes/default.php';
 			}
@@ -118,7 +118,7 @@ if (!class_exists('MPTBM_Function')) {
 		public static function template_path($file_name): string
 		{
 			$template_path = get_stylesheet_directory() . '/mptbm_templates/';
-			$default_dir = MPTBM_PLUGIN_DIR . '/templates/';
+			$default_dir = MPCRM_PLUGIN_DIR . '/templates/';
 			$dir = is_dir($template_path) ? $template_path : $default_dir;
 			$file_path = $dir . $file_name;
 			return locate_template(array('mptbm_templates/' . $file_name)) ? $file_path : $default_dir . $file_name;
@@ -204,13 +204,13 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function get_all_dates($price_based = 'dynamic', $expire = false)
 		{
-			$all_posts = MPTBM_Query::query_transport_list($price_based);
+			$all_posts = MPCRM_Query::query_transport_list($price_based);
 			$all_dates = [];
 			if ($all_posts->found_posts > 0) {
 				$posts = $all_posts->posts;
 				foreach ($posts as $post) {
 					$post_id = $post->ID;
-					$dates = MPTBM_Function::get_date($post_id, $expire);
+					$dates = MPCRM_Function::get_date($post_id, $expire);
 					$all_dates = array_merge($all_dates, $dates);
 				}
 			}
@@ -252,7 +252,7 @@ if (!class_exists('MPTBM_Function')) {
 					
 				}
 			}
-			if (class_exists('MPTBM_Datewise_Discount_Addon')) {
+			if (class_exists('MPCRM_Datewise_Discount_Addon')) {
 				if ( isset($_POST['mptbm_transportation_type_nonce']) ) {
 					$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']); // Only unslash
 				
@@ -361,7 +361,7 @@ if (!class_exists('MPTBM_Function')) {
 					}
 				}
 			} else {
-				$all_posts = MPTBM_Query::query_transport_list('manual');
+				$all_posts = MPCRM_Query::query_transport_list('manual');
 				if ($all_posts->found_posts > 0) {
 					$posts = $all_posts->posts;
 					foreach ($posts as $post) {
@@ -404,7 +404,7 @@ if (!class_exists('MPTBM_Function')) {
 					}
 				}
 			} else {
-				$all_posts = MPTBM_Query::query_transport_list('manual');
+				$all_posts = MPCRM_Query::query_transport_list('manual');
 				if ($all_posts->found_posts > 0) {
 					$posts = $all_posts->posts;
 					foreach ($posts as $post) {
@@ -435,5 +435,5 @@ if (!class_exists('MPTBM_Function')) {
 			return array_unique($all_location);
 		}
 	}
-	new MPTBM_Function();
+	new MPCRM_Function();
 }

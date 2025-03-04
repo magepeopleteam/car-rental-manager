@@ -13,7 +13,7 @@
 		$post_id                   = get_the_id();
 		$template_name = MPCRM_Global_Function::get_post_info( $post_id, 'mptbm_theme_file', 'default.php' );
 		$price_based    = MPCRM_Global_Function::get_post_info( $post_id, 'mptbm_price_based' );
-		include_once( MPTBM_Function::details_template_path() );
+		include_once( MPCRM_Function::details_template_path() );
 	}
 	do_action( 'mptbm_single_page_after_wrapper' );
 	get_footer();
