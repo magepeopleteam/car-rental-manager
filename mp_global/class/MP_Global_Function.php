@@ -143,47 +143,43 @@ if (!class_exists('MP_Global_Function')) {
 				return;
 			}
 
-			// Get the start and end dates
+			// Extract dates
 			$start_date = $dates[0];
-			$start_year = gmdate('Y', strtotime($start_date));
-			$start_month = gmdate('n', strtotime($start_date)) - 1;
-			$start_day = gmdate('j', strtotime($start_date));
-
 			$end_date = end($dates);
-			$end_year = gmdate('Y', strtotime($end_date));
-			$end_month = gmdate('n', strtotime($end_date)) - 1;
-			$end_day = gmdate('j', strtotime($end_date));
 
-			// Format available dates
 			$all_date = array_map(function ($date) {
 				return gmdate('j-n-Y', strtotime($date));
 			}, $dates);
 
-?>
-			<script>
-				jQuery(document).ready(function() {
-					let availableDates = <?php echo wp_json_encode($all_date); ?>;
+			// Register and enqueue script
+			wp_register_script(
+				'date-picker',
+				plugin_dir_url(__FILE__) . '../assets/date-picker/date-picker.js', // Corrected path
+    ['jquery', 'jquery-ui-datepicker'],
+				null,
+				true
+			);
 
-					jQuery("<?php echo esc_attr($selector); ?>").datepicker({
-						dateFormat: mp_date_format,
-						minDate: new Date(<?php echo esc_attr($start_year); ?>, <?php echo esc_attr($start_month); ?>, <?php echo esc_attr($start_day); ?>),
-						maxDate: new Date(<?php echo esc_attr($end_year); ?>, <?php echo esc_attr($end_month); ?>, <?php echo esc_attr($end_day); ?>),
-						autoSize: true,
-						changeMonth: true,
-						changeYear: true,
-						beforeShowDay: function(date) {
-							let dmy = date.getDate() + "-" + (date.getMonth() + 1) + "-" + date.getFullYear();
-							return [availableDates.includes(dmy), "", availableDates.includes(dmy) ? "Available" : "Unavailable"];
-						},
-						onSelect: function(dateString, data) {
-							let date = data.selectedYear + '-' + ('0' + (parseInt(data.selectedMonth) + 1)).slice(-2) + '-' + ('0' + parseInt(data.selectedDay)).slice(-2);
-							jQuery(this).closest('label').find('input[type="hidden"]').val(date).trigger('change');
-						}
-					});
-				});
-			</script>
-<?php
+			wp_enqueue_script('date-picker');
+			// Localize script for passing PHP data to JS
+			wp_add_inline_script('date-picker', 'var datePickerData = ' . wp_json_encode([
+				'availableDates' => $all_date,
+				'startDate' => [
+					'year' => gmdate('Y', strtotime($start_date)),
+					'month' => gmdate('n', strtotime($start_date)) - 1,
+					'day' => gmdate('j', strtotime($start_date)),
+				],
+				'endDate' => [
+					'year' => gmdate('Y', strtotime($end_date)),
+					'month' => gmdate('n', strtotime($end_date)) - 1,
+					'day' => gmdate('j', strtotime($end_date)),
+				],
+			]), 'before');
+
+			
+			
 		}
+
 
 		public static function date_format($date, $format = 'date')
 		{

@@ -12,8 +12,6 @@ $days_name = array_keys($days);
 $schedule = [];
 
 
-
-
 function wptbm_check_operation_area($post_id, $start_place, $end_place)
 {
     // Retrieve saved locations from post meta
@@ -73,16 +71,8 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
 
     //Schedule array
     $schedule = [];
-
 ?>
-    <script>
-        var post_id = <?php echo wp_json_encode($post_id); ?>;
-        var selectorClass = `.mptbm_booking_item_${post_id}`;
-        jQuery(selectorClass).removeClass('mptbm_booking_item_hidden');
-        var vehicaleItemClass = `.mptbm_booking_item_${post_id}`;
-
-        document.cookie = vehicaleItemClass + '=' + vehicaleItemClass + ";path=/";
-    </script>
+    
 <?php
 
 
@@ -322,13 +312,14 @@ $mptbm_passengers = max($mptbm_passengers);
                     if ($all_posts->found_posts > 0) {
                         $posts = $all_posts->posts;
                         $vehicle_item_count = 0;
-
+                        $remove_class_item_post_id = [];
                         foreach ($posts as $post) {
 
                             $post_id = $post->ID;
                             $check_schedule = wptbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
                             $check_operation_area = wptbm_check_operation_area($post_id, $start_place, $end_place);
-
+                            
+                           
                             if ($check_schedule && $check_operation_area) {
 
                                 $vehicle_item_count = $vehicle_item_count + 1;
@@ -343,22 +334,6 @@ $mptbm_passengers = max($mptbm_passengers);
                     <?php
                     }
                     ?>
-                    <script>
-                        jQuery(document).ready(function() {
-                            var allHidden = true;
-                            jQuery(".mptbm_booking_item").each(function() {
-                                if (!jQuery(this).hasClass("mptbm_booking_item_hidden")) {
-                                    allHidden = false;
-                                    return false; // Exit the loop early if any item is not hidden
-                                }
-                            });
-
-                            // If all items have the hidden class, log them
-                            if (allHidden) {
-                                jQuery('.geo-fence-no-transport').show(300);
-                            }
-                        });
-                    </script>
                     <div class="_dLayout_mT_bgWarning geo-fence-no-transport">
                         <h3><?php esc_html_e("No Transport Available !!", "car-rental-manager"); ?></h3>
                     </div>

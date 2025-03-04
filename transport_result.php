@@ -17,6 +17,17 @@ if (empty($content)) {
 unset($_SESSION['custom_content']);
 get_header();
 ?>
+<?php 
+function mpcrm_enqueue_redirect_if_manual_referer_inline_script() {
+    $http_referrer = isset($_SERVER['HTTP_REFERER']) ? esc_url_raw(wp_unslash($_SERVER['HTTP_REFERER'])) : '';
+
+    $inline_script = "var httpReferrer = \"{$http_referrer}\"; document.cookie = \"httpReferrer=\" + httpReferrer + \";path=/\";";
+
+    wp_add_inline_script('jquery', $inline_script, 'after'); 
+}
+add_action('wp_enqueue_scripts', 'mpcrm_enqueue_redirect_if_manual_referer_inline_script');
+
+?>
 <script type="text/javascript">
     var httpReferrer = "<?php echo esc_url( isset($_SERVER['HTTP_REFERER']) ? wp_unslash($_SERVER['HTTP_REFERER']) : '' ); ?>";
     document.cookie = "httpReferrer=" + httpReferrer + ";path=/";
