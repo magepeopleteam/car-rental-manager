@@ -21,9 +21,9 @@ $return_date_time = $return_date_time ?? '';
 
 $post_id = $post_id ?? '';
 $original_price_based = $price_based ?? '';
-if (MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') == 'yes') {
-    $max_passenger = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
-    $max_bag = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
+if (MPCR_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') == 'yes') {
+    $max_passenger = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
+    $max_bag = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
     if ($max_passenger != '' && $max_bag != '') {
         $feature_class = 'feature_passenger_'.$max_passenger.'_feature_bag_'.$max_bag.'_post_id_'.$post_id;
     }else{
@@ -35,7 +35,7 @@ $fixed_time = $fixed_time ?? 0;
 $start_date = isset($_POST['start_date']) ? sanitize_text_field(wp_unslash($_POST['start_date'])) : '';
 $start_date = $start_date ? gmdate('Y-m-d', strtotime($start_date)) : '';
 $all_dates = MPTBM_Function::get_date($post_id);
-$mptbm_enable_view_search_result_page  = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page');
+$mptbm_enable_view_search_result_page  = MPCR_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page');
 if ($mptbm_enable_view_search_result_page == '') {
     $hidden_class = '';
 } else {
@@ -51,17 +51,17 @@ if (sizeof($all_dates) > 0 && in_array($start_date, $all_dates)) {
    
     if ( $post_id) {
         
-        //$product_id = MPCRM_Global_Function::get_post_info($post_id, 'link_wc_product');
-        $thumbnail = MPCRM_Global_Function::get_image_url($post_id);
+        //$product_id = MPCR_Global_Function::get_post_info($post_id, 'link_wc_product');
+        $thumbnail = MPCR_Global_Function::get_image_url($post_id);
         $price = MPTBM_Function::get_price($post_id,  $start_place, $end_place , $start_date_time,$return_date_time);
        
         if(!$price || $price == 0){
             return false;
         }
-        $wc_price = MPCRM_Global_Function::wc_price($post_id, $price);
-        $raw_price = MPCRM_Global_Function::price_convert_raw($wc_price);
-        $display_features = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
-        $all_features = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_features');
+        $wc_price = MPCR_Global_Function::wc_price($post_id, $price);
+        $raw_price = MPCR_Global_Function::price_convert_raw($wc_price);
+        $display_features = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
+        $all_features = MPCR_Global_Function::get_post_info($post_id, 'mptbm_features');
         
 ?>
         <div class="_dLayout_dFlex mptbm_booking_item <?php echo esc_attr( 'mptbm_booking_item_' . $post_id ); ?> <?php echo esc_attr( $hidden_class ); ?> <?php echo esc_attr( $feature_class ); ?>" data-placeholder>

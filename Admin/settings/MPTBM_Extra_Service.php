@@ -46,7 +46,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		{
 			
 			$post_id        = get_the_id();
-			$extra_services = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_service_infos', array());
+			$extra_services = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_service_infos', array());
 			
 ?>
 			<div class="mpStyle mptbm_settings">
@@ -83,7 +83,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 										</tbody>
 									</table>
 								</div>
-								<?php MPCRM_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'car-rental-manager')); ?>
+								<?php MPCR_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'car-rental-manager')); ?>
 								<?php do_action('add_mp_hidden_table', 'mptbm_extra_service_item'); ?>
 							</div>
 						</section>
@@ -130,7 +130,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 						<option value="dropdown" <?php echo esc_attr($input_type == 'dropdown' ? 'selected' : ''); ?>><?php esc_html_e('Dropdown List', 'car-rental-manager'); ?></option>
 					</select>
 				</td>
-				<td><?php MPCRM_Custom_Layout::move_remove_button(); ?></td>
+				<td><?php MPCR_Custom_Layout::move_remove_button(); ?></td>
 			</tr>
 		<?php
 		}
@@ -156,8 +156,8 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		public function ex_service_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_extra_service_nonce', 'mptbm_ex_service_nonce');
-			$display            = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-			$service_id         = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+			$display            = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+			$service_id         = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
 			$active             = $display == 'off' ? '' : 'mActive';
 			$checked            = $display == 'off' ? '' : 'checked';
 			$all_ex_services_id = MPTBM_Query::query_post_id('mptbm_extra_services');
@@ -176,7 +176,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 							<h6><?php esc_html_e('On/Off Extra Service Settings', 'car-rental-manager'); ?></h6>
 							<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_extra_services'); ?></span>
 						</div>
-						<?php MPCRM_Custom_Layout::switch_button('display_mptbm_extra_services', $checked); ?>
+						<?php MPCR_Custom_Layout::switch_button('display_mptbm_extra_services', $checked); ?>
 					</label>
 				</section>
 				<div data-collapse="#display_mptbm_extra_services" class="mp_settings_area <?php echo esc_attr($active); ?>">
@@ -207,7 +207,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		public function ex_service_table($service_id, $post_id)
 		{
 			if ($service_id && $post_id) {
-				$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+				$extra_services = MPCR_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
 			?>
 				<section>
 					<div>
@@ -234,7 +234,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 						</table>
 						<?php
 						if ($service_id == $post_id) {
-							MPCRM_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'car-rental-manager'));
+							MPCR_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'car-rental-manager'));
 							do_action('add_mp_hidden_table', 'mptbm_extra_service_item');
 						} ?>
 					</div>

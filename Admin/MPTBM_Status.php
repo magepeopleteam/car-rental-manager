@@ -17,7 +17,7 @@
 			}
 			public function status_page() {
 				$label = MPTBM_Function::get_name();
-				$wc_i = MPCRM_Global_Function::check_woocommerce();
+				$wc_i = MPCR_Global_Function::check_woocommerce();
 				$wc_i_text = $wc_i == 1 ? esc_html__('Yes', 'car-rental-manager') : esc_html__('No', 'car-rental-manager');
 				$wp_v = get_bloginfo('version');
 				$wc_v = WC()->version;

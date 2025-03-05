@@ -17,16 +17,16 @@
 	}
 	$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
 	if ($post_id && $post_id > 0) {
-		$display_extra_services = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-		$service_id = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-		$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+		$display_extra_services = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+		$service_id = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+		$extra_services = MPCR_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
 		if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 			foreach ($extra_services as $service) { ?><?php
 				$service_name = array_key_exists('service_name', $service) ? $service['service_name'] : '';
 				if ($service_name) {
 					$service_price = array_key_exists('service_price', $service) ? $service['service_price'] : 0;
-					$wc_price = MPCRM_Global_Function::wc_price($post_id, $service_price);
-					$service_price = MPCRM_Global_Function::price_convert_raw($wc_price);
+					$wc_price = MPCR_Global_Function::wc_price($post_id, $service_price);
+					$service_price = MPCR_Global_Function::price_convert_raw($wc_price);
 					?>
 					<div data-extra-service="<?php echo esc_attr($service_name); ?>">
 						<div class="_textLight_1_dFlex_flexWrap_justifyBetween">

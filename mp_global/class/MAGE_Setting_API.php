@@ -93,7 +93,7 @@
 				return $desc;
 			}
 			function callback_text($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -103,9 +103,9 @@
 				<?php
 			}
 			function callback_datepicker($args) {
-				$date_format = MPCRM_Global_Function::date_picker_format();
+				$date_format = MPCR_Global_Function::date_picker_format();
 				$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
-				$date = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$date = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 				$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
 				$name = $args['section'] . '[' . $args['id'] . ']';
@@ -117,7 +117,7 @@
 				<?php
 			}
 			function callback_mp_select2($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 
 				?>
@@ -132,7 +132,7 @@
 			}
 			function callback_mp_select2_role($args) {
 				global $wp_roles;
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . '][]';
                 $value=is_array($value)?$value:[$value];
 				?>
@@ -149,7 +149,7 @@
 				$this->callback_text($args);
 			}
 			function callback_number($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -163,7 +163,7 @@
 				<?php
 			}
 			function callback_checkbox($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$checked = checked($value, 'on', false);
 				?>
@@ -177,7 +177,7 @@
 				<?php
 			}
 			function callback_switch_button($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$checked = checked($value, 'on', false);
 				?>
@@ -190,7 +190,7 @@
 				<?php
 			}
 			function callback_multicheck($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<fieldset>
@@ -210,7 +210,7 @@
 				<?php
 			}
 			function callback_radio($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<fieldset>
@@ -225,7 +225,7 @@
 				<?php
 			}
 			function callback_select($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<label>
@@ -238,7 +238,7 @@
 				<?php
 			}
 			function callback_textarea($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -258,7 +258,7 @@
 				}
 			}
 			function callback_wysiwyg($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				?>
 				<div>
 					<?php
@@ -276,14 +276,14 @@
 				<?php
 			}
 			function callback_file($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				$label = $args['options']['button_label'] ?? esc_html__('Choose File', 'car-rental-manager');
 				do_action('mp_add_single_image',$name,$value);
 			}
 			function callback_password($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty($args['placeholder']) ? '' : $args['placeholder'];
 				?>
@@ -293,7 +293,7 @@
 				<?php
 			}
 			function callback_color($args) {
-				$value = MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
+				$value = MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']);
 				$name = $args['section'] . '[' . $args['id'] . ']';
 				?>
 				<label>
@@ -303,7 +303,7 @@
 			}
 			function callback_pages($args) {
 				$dropdown_args = array(
-					'selected' => MPCRM_Global_Function::get_settings($args['section'], $args['id'], $args['std']),
+					'selected' => MPCR_Global_Function::get_settings($args['section'], $args['id'], $args['std']),
 					'name' => $args['section'] . '[' . $args['id'] . ']',
 					'id' => $args['section'] . '[' . $args['id'] . ']',
 					'echo' => 0
@@ -365,45 +365,53 @@
 								do_settings_sections($form['id']);
 								do_action('wsa_form_bottom_' . $form['id'], $form);
 								if (isset($this->settings_fields[$form['id']])):
-									?>
-									<div class="justifyBetween _mT">
-										<div></div>
-										<?php submit_button(); ?>
-									</div>
-								<?php endif; ?>
+								?>
+								<div class="justifyBetween _mT">
+									<div></div>
+									<?php submit_button(); ?>
+								</div>
+							<?php endif; ?>
 						</form>
 					</div>
 				<?php } ?>
 				<?php
-				$this->script();
+				$this->enqueue_scripts();
 			}
-			function script() {
-				?>
-				<script>
-					jQuery(document).ready(function ($) {
-						//Initiate Color Picker
-						$('.wp-color-picker-field').wpColorPicker();
-						$('.wpsa-browse').on('click', function (event) {
+			
+			function enqueue_scripts() {
+				// Register the JS file
+				wp_register_script(
+					'mage-settings-admin-script', 
+					plugin_dir_url(__FILE__) . '../assets/mage-settings-admin-script.js', 
+					array('jquery', 'wp-color-picker'), 
+					'1.0.0', 
+					true
+				);
+				wp_enqueue_script('mage-settings-admin-script');  
+				// Enqueue WordPress color picker styles
+				wp_enqueue_style('wp-color-picker');
+			
+				// Add inline JS if needed
+				wp_add_inline_script('my-plugin-admin-script', '
+					jQuery(document).ready(function($) {
+						$(".wpsa-browse").on("click", function(event) {
 							event.preventDefault();
 							var self = $(this);
-							// Create the media frame.
 							var file_frame = wp.media.frames.file_frame = wp.media({
-								title: self.data('uploader_title'),
+								title: self.data("uploader_title"),
 								button: {
-									text: self.data('uploader_button_text'),
+									text: self.data("uploader_button_text"),
 								},
 								multiple: false
 							});
-							file_frame.on('select', function () {
-								attachment = file_frame.state().get('selection').first().toJSON();
-								self.prev('.wpsa-url').val(attachment.url).change();
+							file_frame.on("select", function() {
+								var attachment = file_frame.state().get("selection").first().toJSON();
+								self.prev(".wpsa-url").val(attachment.url).change();
 							});
-							// Finally, open the modal
 							file_frame.open();
 						});
 					});
-				</script>
-				<?php
+				');
 			}
 		}
 	}

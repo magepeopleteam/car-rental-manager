@@ -3,7 +3,7 @@
  * Plugin Name: Car Rental Manager
  * Plugin URI: http://mage-people.com
  * Description: A Complete Car rental Solution for WordPress by MagePeople.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: MagePeople Team
  * Author URI: http://www.mage-people.com/
  * License: GPL v2 or later
@@ -41,8 +41,8 @@ if (!class_exists('MPTBM_Plugin')) {
 			if (!defined('MPTBM_PLUGIN_VERSION')) {
 				define('MPTBM_PLUGIN_VERSION', '1.0.7');
 			}
-			require_once MPTBM_PLUGIN_DIR . '/mp_global/MPCRM_Global_File_Load.php';
-			if (MPCRM_Global_Function::check_woocommerce() == 1) {
+			require_once MPTBM_PLUGIN_DIR . '/mp_global/MPCR_Global_File_Load.php';
+			if (MPCR_Global_Function::check_woocommerce() == 1) {
 				add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
 				self::on_activation_page_create();
 				require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Dependencies.php';
@@ -83,7 +83,7 @@ if (!class_exists('MPTBM_Plugin')) {
         public static function create_pages(): void
         {
             
-            if (!MPCRM_Global_Function::get_page_by_slug('transport_booking')) {
+            if (!MPCR_Global_Function::get_page_by_slug('transport_booking')) {
                 $transport_booking_manual = array(
                     'post_type' => 'page',
                     'post_name' => 'transport_booking',
@@ -94,7 +94,7 @@ if (!class_exists('MPTBM_Plugin')) {
                 wp_insert_post($transport_booking_manual);
             }
             
-            if (!MPCRM_Global_Function::get_page_by_slug('transport-result')) {
+            if (!MPCR_Global_Function::get_page_by_slug('transport-result')) {
                 $transport_result = array(
                     'post_type' => 'page',
                     'post_name' => 'transport-result',

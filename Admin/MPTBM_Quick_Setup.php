@@ -16,7 +16,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 		public function quick_setup_menu()
 		{
 
-			$status = MPCRM_Global_Function::check_woocommerce();
+			$status = MPCR_Global_Function::check_woocommerce();
 			if ($status == 1) {
 				add_submenu_page('edit.php?post_type=mptbm_rent', esc_html__('Quick Setup', 'car-rental-manager'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 				add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'car-rental-manager'), '<span style="color:#10dd10">' . esc_html__('Quick Setup', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
@@ -25,17 +25,23 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 				add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'car-rental-manager'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 			}
 		}
+
+		public function inline_script() {
+			$js_code = 'dLoaderBody();'; 
+			wp_add_inline_script('jquery', $js_code); 
+		}
+
 		public function quick_setup()
 		{
 
 			// Check WooCommerce status
-			$status = MPCRM_Global_Function::check_woocommerce();
+			$status = MPCR_Global_Function::check_woocommerce();
 
 			// Generate a nonce field
 			$nonce = wp_create_nonce('mptbm_quick_setup_nonce');
 
 			// Check WooCommerce status
-			$status = MPCRM_Global_Function::check_woocommerce();
+			$status = MPCR_Global_Function::check_woocommerce();
 
 			// Generate a nonce
 			$nonce = wp_create_nonce('mptbm_quick_setup_nonce');
@@ -57,13 +63,11 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 				}
 			}
 
-			$status = MPCRM_Global_Function::check_woocommerce();
+			$status = MPCR_Global_Function::check_woocommerce();
 
 			if (isset($_POST['active_woo_btn'])) {
+				add_action('wp_enqueue_scripts', [$this, 'inline_script']);
 			?>
-				<script>
-					dLoaderBody();
-				</script>
 				<?php
 				activate_plugin('woocommerce/woocommerce.php');
 				MPTBM_Plugin::on_activation_page_create();
@@ -189,7 +193,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 		}
 		public function setup_welcome_content()
 		{
-			$status = MPCRM_Global_Function::check_woocommerce();
+			$status = MPCR_Global_Function::check_woocommerce();
 		?>
 			<div data-tabs-next="#mptbm_qs_welcome">
 				<h2><?php esc_html_e('Car Booking Manager For Woocommerce Plugin', 'car-rental-manager'); ?></h2>
@@ -219,8 +223,8 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 		}
 		public function setup_general_content()
 		{
-			$label = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'label', 'Car');
-			$slug = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'slug', 'Car');
+			$label = MPCR_Global_Function::get_settings('mptbm_general_settings', 'label', 'Car');
+			$slug = MPCR_Global_Function::get_settings('mptbm_general_settings', 'slug', 'Car');
 		?>
 			<div data-tabs-next="#mptbm_qs_general">
 				<div class="section">

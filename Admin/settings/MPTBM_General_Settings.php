@@ -18,12 +18,12 @@ if (!class_exists('MPTBM_General_Settings')) {
 		public function general_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_general_settings', 'mptbm_nonce');
-			$max_passenger = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
-			$max_bag = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
-			$display_features = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
+			$max_passenger = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
+			$max_bag = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
+			$display_features = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
 			$active = $display_features == 'off' ? '' : 'mActive';
 			$checked = $display_features == 'off' ? '' : 'checked';
-			$all_features = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_features');
+			$all_features = MPCR_Global_Function::get_post_info($post_id, 'mptbm_features');
 			if (!$all_features) {
 				$all_features = array(
 					array(
@@ -85,7 +85,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 								<h6><?php esc_html_e('On/Off Feature Extra feature', 'car-rental-manager'); ?></h6>
 								<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
 							</div>
-							<?php MPCRM_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
+							<?php MPCR_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
 						</label>
 					</section>
 					<section data-collapse="#display_mptbm_features" class="<?php echo esc_attr($active); ?>">
@@ -111,7 +111,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 							</tbody>
 						</table>
 						<div class="my-2"></div>
-						<?php MPCRM_Custom_Layout::add_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
+						<?php MPCR_Custom_Layout::add_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
 						<?php do_action('add_mp_hidden_table', 'add_hidden_mptbm_features_item'); ?>
 					</section>
 				</div>
@@ -137,7 +137,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 						<input class="formControl mp_name_validation" name="mptbm_features_text[]" value="<?php echo esc_attr($text); ?>" />
 					</label>
 				</td>
-				<td valign="middle"><?php MPCRM_Custom_Layout::move_remove_button(); ?></td>
+				<td valign="middle"><?php MPCR_Custom_Layout::move_remove_button(); ?></td>
 			</tr>
 <?php
 		}

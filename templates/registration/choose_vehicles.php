@@ -7,7 +7,7 @@ if (!defined("ABSPATH")) {
     die();
 } // Cannot access pages directly
 $label = MPTBM_Function::get_name();
-$days = MPCRM_Global_Function::week_day();
+$days = MPCR_Global_Function::week_day();
 $days_name = array_keys($days);
 $schedule = [];
 
@@ -239,13 +239,13 @@ if ($two_way > 1) {
         $return_date_time .= " " . $return_time_formatted;
     }
 }
-if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
+if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_passenger_number"])) : "";
     $feature_bag_number = isset($_POST["feature_bag_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_bag_number"])) : "";
 }
 $mptbm_bags = [];
 $mptbm_passengers = [];
-$mptbm_all_transport_id = MPCRM_Global_Function::get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCR_Global_Function::get_all_post_id('mptbm_rent');
 foreach ($mptbm_all_transport_id as $key => $value) {
     array_push($mptbm_bags, MPTBM_Function::get_feature_bag($value));
     array_push($mptbm_passengers, MPTBM_Function::get_feature_passenger($value));
@@ -259,7 +259,7 @@ $mptbm_passengers = max($mptbm_passengers);
     <input type="hidden" name="mptbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
     <input type="hidden" name="mptbm_date" value="<?php echo esc_attr($date); ?>" />
     <input type="hidden" name="mptbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
-    <?php if ($two_way > 1 && MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
+    <?php if ($two_way > 1 && MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
         <input type="hidden" name="mptbm_map_return_date" id="mptbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
         <input type="hidden" name="mptbm_map_return_time" id="mptbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
@@ -273,7 +273,7 @@ $mptbm_passengers = max($mptbm_passengers);
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn">
                     <!-- Filter area start -->
-                    <?php if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
+                    <?php if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
