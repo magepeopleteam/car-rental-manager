@@ -25,6 +25,12 @@ if (!class_exists('MPCRM_Quick_Setup')) {
 				add_submenu_page('mptbm_rent', esc_html__('Quick Setup', 'car-rental-manager'), '<span style="color:#10dd17">' . esc_html__('Quick Setup', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_quick_setup', array($this, 'quick_setup'));
 			}
 		}
+
+		public function inline_script() {
+			$js_code = 'dLoaderBody();'; 
+			wp_add_inline_script('jquery', $js_code); 
+		}
+
 		public function quick_setup()
 		{
 
@@ -60,10 +66,8 @@ if (!class_exists('MPCRM_Quick_Setup')) {
 			$status = MPCRM_Global_Function::check_woocommerce();
 
 			if (isset($_POST['active_woo_btn'])) {
+				add_action('wp_enqueue_scripts', [$this, 'inline_script']);
 			?>
-				<script>
-					dLoaderBody();
-				</script>
 				<?php
 				activate_plugin('woocommerce/woocommerce.php');
 				MPCRM_Plugin::on_activation_page_create();
