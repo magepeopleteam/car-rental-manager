@@ -6,8 +6,8 @@
 if (!defined("ABSPATH")) {
     die();
 } // Cannot access pages directly
-$label = MPTBM_Function::get_name();
-$days = MP_Global_Function::week_day();
+$label = MPCRM_Function::get_name();
+$days = MPCRM_Global_Function::week_day();
 $days_name = array_keys($days);
 $schedule = [];
 
@@ -160,7 +160,7 @@ if ($start_time !== "") {
 
         // Convert start time to hours and minutes
         list($hours, $decimal_part) = explode('.', $start_time);
-        $interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+        $interval_time = MPCRM_Function::get_general_settings('mptbm_pickup_interval_time');
 
         if ($interval_time == "5" || $interval_time == "15") {
             if ($decimal_part != 3) {
@@ -214,7 +214,7 @@ if ($two_way > 1) {
         if ($return_time !== "0") {
             // Convert start time to hours and minutes
             list($hours, $decimal_part) = explode('.', $return_time);
-            $interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+            $interval_time = MPCRM_Function::get_general_settings('mptbm_pickup_interval_time');
             if ($interval_time == "5" || $interval_time == "15") {
                 $minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
             } else {
@@ -239,16 +239,16 @@ if ($two_way > 1) {
         $return_date_time .= " " . $return_time_formatted;
     }
 }
-if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
+if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_passenger_number"])) : "";
     $feature_bag_number = isset($_POST["feature_bag_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_bag_number"])) : "";
 }
 $mptbm_bags = [];
 $mptbm_passengers = [];
-$mptbm_all_transport_id = MP_Global_Function::get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCRM_Global_Function::get_all_post_id('mptbm_rent');
 foreach ($mptbm_all_transport_id as $key => $value) {
-    array_push($mptbm_bags, MPTBM_Function::get_feature_bag($value));
-    array_push($mptbm_passengers, MPTBM_Function::get_feature_passenger($value));
+    array_push($mptbm_bags, MPCRM_Function::get_feature_bag($value));
+    array_push($mptbm_passengers, MPCRM_Function::get_feature_passenger($value));
 }
 $mptbm_bags =  max($mptbm_bags);
 $mptbm_passengers = max($mptbm_passengers);
@@ -259,7 +259,7 @@ $mptbm_passengers = max($mptbm_passengers);
     <input type="hidden" name="mptbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
     <input type="hidden" name="mptbm_date" value="<?php echo esc_attr($date); ?>" />
     <input type="hidden" name="mptbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
-    <?php if ($two_way > 1 && MP_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
+    <?php if ($two_way > 1 && MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
         <input type="hidden" name="mptbm_map_return_date" id="mptbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
         <input type="hidden" name="mptbm_map_return_time" id="mptbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
@@ -269,11 +269,11 @@ $mptbm_passengers = max($mptbm_passengers);
     <div class="mp_sticky_section">
         <div class="flexWrap">
 
-            <?php include MPTBM_Function::template_path("registration/summary.php"); ?>
+            <?php include MPCRM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn">
                     <!-- Filter area start -->
-                    <?php if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
+                    <?php if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
@@ -307,7 +307,7 @@ $mptbm_passengers = max($mptbm_passengers);
                     <!-- Filter area end -->
                     <?php
 
-                    $all_posts = MPTBM_Query::query_transport_list($price_based);
+                    $all_posts = MPCRM_Query::query_transport_list($price_based);
 
                     if ($all_posts->found_posts > 0) {
                         $posts = $all_posts->posts;
@@ -323,7 +323,7 @@ $mptbm_passengers = max($mptbm_passengers);
                             if ($check_schedule && $check_operation_area) {
 
                                 $vehicle_item_count = $vehicle_item_count + 1;
-                                include MPTBM_Function::template_path("registration/vehicle_item.php");
+                                include MPCRM_Function::template_path("registration/vehicle_item.php");
                             }
                         }
                     } else {
@@ -346,7 +346,7 @@ $mptbm_passengers = max($mptbm_passengers);
 <div data-tabs-next="#mptbm_order_summary" class="mptbm_order_summary">
     <div class="mp_sticky_section">
         <div class="flexWrap">
-            <?php include MPTBM_Function::template_path("registration/summary.php"); ?>
+            <?php include MPCRM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn mptbm_checkout_area">
                 </div>

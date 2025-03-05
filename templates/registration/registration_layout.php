@@ -36,8 +36,8 @@
 			</div>
 			<div class="tabsContentNext">
 				<div data-tabs-next="#mptbm_pick_up_details" class="active mptbm_pick_up_details">
-                    <?php //echo MPTBM_Function::template_path('registration/get_details.php'); ?>
-					<?php include MPTBM_Function::template_path('registration/get_details.php'); ?>
+                    <?php //echo MPCRM_Function::template_path('registration/get_details.php'); ?>
+					<?php include MPCRM_Function::template_path('registration/get_details.php'); ?>
 				</div>
 			</div>
 		</div>
