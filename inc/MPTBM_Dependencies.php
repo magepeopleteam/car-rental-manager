@@ -15,8 +15,7 @@ if (!class_exists('MPTBM_Dependencies')) {
             $this->load_file();
             add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
             add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue'), 80);
-            add_action('admin_head', array($this, 'js_constant'), 5);
-            add_action('wp_head', array($this, 'js_constant'), 5);
+            
         }
         public function language_load(): void
         {
@@ -71,24 +70,7 @@ if (!class_exists('MPTBM_Dependencies')) {
 
             do_action('add_mptbm_frontend_script');
         }
-        public function js_constant()
-        {
-?>
-            <script type="text/javascript">
-                let mp_lat_lng = {
-                    lat: <?php echo esc_js(MPCR_Global_Function::get_settings('mptbm_map_api_settings', 'mp_latitude', '23.81234828905659')); ?>,
-                    lng: <?php echo esc_js(MPCR_Global_Function::get_settings('mptbm_map_api_settings', 'mp_longitude', '90.41069652669002')); ?>
-                };
-                const mp_map_options = {
-                    componentRestrictions: {
-                        country: "<?php echo esc_js(MPCR_Global_Function::get_settings('mptbm_map_api_settings', 'mp_country', 'BD')); ?>"
-                    },
-                    fields: ["address_components", "geometry"],
-                    types: ["address"],
-                }
-            </script>
-            <?php
-        }
+        
         
     }
     new MPTBM_Dependencies();

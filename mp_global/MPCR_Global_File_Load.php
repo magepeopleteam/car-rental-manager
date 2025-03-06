@@ -12,7 +12,6 @@
 				$this->define_constants();
 				$this->load_global_file();
 				
-				add_action('wp_enqueue_scripts', 'js_constant');
 				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
 				add_action('transporter_panel_admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
 				add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue'), 80);
@@ -84,8 +83,8 @@
 			}
 			public function js_constant() {
 				// Register and enqueue your JavaScript file (if you have one)
-				wp_register_script('mpcr-custom-js', plugin_dir_url(__FILE__) . 'assets/js/custom.js', array('jquery'), '1.0', true);
-				wp_enqueue_script('mpcr-custom-js');
+				wp_register_script('mpcr-custom-js-constant', plugin_dir_url(__FILE__) . 'assets/mpcr-custom-js-constant.js', array('jquery'), '1.0', true);
+				wp_enqueue_script('mpcr-custom-js-constant');
 			
 				// Prepare inline JavaScript
 				$mp_js_constants = '
@@ -112,8 +111,9 @@
 				}
 			
 				// Add inline script after enqueuing main script
-				wp_add_inline_script('mpcr-custom-js', $mp_js_constants, 'before');
+				wp_add_inline_script('mpcr-custom-js-constant', $mp_js_constants, 'before');
 			}
+			
 			
 			public function custom_css() {
 				$custom_css = MPCR_Global_Function::get_settings('mp_add_custom_css', 'custom_css');

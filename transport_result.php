@@ -28,10 +28,18 @@ function mpcrm_enqueue_redirect_if_manual_referer_inline_script() {
 add_action('wp_enqueue_scripts', 'mpcrm_enqueue_redirect_if_manual_referer_inline_script');
 
 ?>
-<script type="text/javascript">
-    var httpReferrer = "<?php echo esc_url( isset($_SERVER['HTTP_REFERER']) ? wp_unslash($_SERVER['HTTP_REFERER']) : '' ); ?>";
-    document.cookie = "httpReferrer=" + httpReferrer + ";path=/";
-</script>
+<?php 
+function mpcrm_referer_cookie_script() {
+    $http_referrer = isset($_SERVER['HTTP_REFERER']) ? esc_url($_SERVER['HTTP_REFERER']) : '';
+    wp_register_script('my_custom_js', '', [], '', true);
+    wp_enqueue_script('my_custom_js');
+    wp_add_inline_script('my_custom_js', "
+        var httpReferrer = '$http_referrer';
+        document.cookie = 'httpReferrer=' + httpReferrer + ';path=/';
+    ");
+}
+add_action('wp_enqueue_scripts', 'mpcrm_referer_cookie_script');
+?>
 <main role="main" id="maincontent" class="middle-align mptbm-show-search-result">
     <div class="container">
         <div class="container background-img-skin">
