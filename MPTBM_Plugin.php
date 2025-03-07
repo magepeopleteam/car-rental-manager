@@ -3,7 +3,7 @@
  * Plugin Name: Car Rental Manager
  * Plugin URI: http://mage-people.com
  * Description: A Complete Car rental Solution for WordPress by MagePeople.
- * Version: 1.0.1
+ * Version: 1.0.0
  * Author: MagePeople Team
  * Author URI: http://www.mage-people.com/
  * License: GPL v2 or later
