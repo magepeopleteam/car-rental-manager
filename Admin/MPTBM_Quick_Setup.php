@@ -126,32 +126,21 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 					MPTBM_Plugin::on_activation_page_create();
 					?>
 				</div>
-				<script>
-					(function($) {
-						"use strict";
-						$(document).ready(function() {
-							let mptbm_admin_location = window.location.href;
-							mptbm_admin_location = mptbm_admin_location.replace('admin.php?post_type=mptbm_rent&page=mptbm_quick_setup', 'edit.php?post_type=mptbm_rent&page=mptbm_quick_setup');
-							mptbm_admin_location = mptbm_admin_location.replace('admin.php?page=mptbm_rent', 'edit.php?post_type=mptbm_rent&page=mptbm_quick_setup');
-							mptbm_admin_location = mptbm_admin_location.replace('admin.php?page=mptbm_quick_setup', 'edit.php?post_type=mptbm_rent&page=mptbm_quick_setup');
-							window.location.href = mptbm_admin_location;
-						});
-					}(jQuery));
-				</script>
+				
 			<?php
-				$quick_setup_script = <<<JS
-				(function($) {
-					"use strict";
-					$(document).ready(function() {
-						let mptbm_admin_location = window.location.href;
-						mptbm_admin_location = mptbm_admin_location.replace('admin.php?post_type=mptbm_rent&page=mptbm_quick_setup', 'edit.php?post_type=mptbm_rent&page=mptbm_quick_setup');
-						mptbm_admin_location = mptbm_admin_location.replace('admin.php?page=mptbm_rent', 'edit.php?post_type=mptbm_rent&page=mptbm_quick_setup');
-						mptbm_admin_location = mptbm_admin_location.replace('admin.php?page=mptbm_quick_setup', 'edit.php?post_type=mptbm_rent&page=mptbm_quick_setup');
-						window.location.href = mptbm_admin_location;
-					});
-				}(jQuery));
-				JS;
-				wp_add_inline_script('mptbm-admin-script', $quick_setup_script);
+				// Inline JavaScript (using concatenation instead of heredoc)
+				$quick_setup_script = '(function($) {';
+				$quick_setup_script .= '"use strict";';
+				$quick_setup_script .= '$(document).ready(function() {';
+				$quick_setup_script .= 'let mptbm_admin_location = window.location.href;';
+				$quick_setup_script .= 'mptbm_admin_location = mptbm_admin_location.replace("admin.php?post_type=mptbm_rent&page=mptbm_quick_setup", "edit.php?post_type=mptbm_rent&page=mptbm_quick_setup");';
+				$quick_setup_script .= 'mptbm_admin_location = mptbm_admin_location.replace("admin.php?page=mptbm_rent", "edit.php?post_type=mptbm_rent&page=mptbm_quick_setup");';
+				$quick_setup_script .= 'mptbm_admin_location = mptbm_admin_location.replace("admin.php?page=mptbm_quick_setup", "edit.php?post_type=mptbm_rent&page=mptbm_quick_setup");';
+				$quick_setup_script .= 'window.location.href = mptbm_admin_location;';
+				$quick_setup_script .= '});';
+				$quick_setup_script .= '})(jQuery);';
+		
+				wp_add_inline_script('mptbm-admin-dloader-script', $quick_setup_script);
 			}
 			if (isset($_POST['finish_quick_setup'])) {
 				$label = isset($_POST['mptbm_label']) ? sanitize_text_field(wp_unslash($_POST['mptbm_label'])) : 'Car';
