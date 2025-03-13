@@ -54,9 +54,9 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				$return_time = isset($_POST['mptbm_return_time']) ? sanitize_text_field(wp_unslash($_POST['mptbm_return_time'])) : '';
 				$return_date_time = $return_date ? gmdate("Y-m-d", strtotime($return_date)) : "";
 
-			if ($return_date && $return_time !== "") {
-				if ($return_time !== "") {
-					if ($return_time !== "0") {
+                if ($return_date && $return_time !== "") {
+                    if ($return_time !== "") {
+                        if ($return_time !== "0") {
 						// Convert start time to hours and minutes
 						list($hours, $decimal_part) = explode('.', $return_time);
 						$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
@@ -108,7 +108,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 				$cart_item_data = apply_filters('mptbm_add_cart_item', $cart_item_data, $post_id);
 			}
 			$cart_item_data['mptbm_id'] = $post_id;
-			// echo '<pre>';print_r($cart_item_data);echo '</pre>';
+			// echo '<pre>';print_r($cart_item_data);echo '</pre>';exit;
 			return $cart_item_data;
 		}
 		public function before_calculate_totals($cart_object)
@@ -426,7 +426,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 							$booking_data = apply_filters('add_mptbm_booking_data', $data, $post_id);
 
 
-							self::add_cpt_data('mptbm_booking', $booking_data['mptbm_billing_name'], $booking_data);
+							self::add_cpt_data('mpcrm_booking', $booking_data['mptbm_billing_name'], $booking_data);
 
 							if (sizeof($service_info) > 0) {
 								foreach ($service_info as $service) {
@@ -626,7 +626,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 		public function wc_order_status_change($order_status, $post_id, $order_id)
 		{
 			$args = array(
-				'post_type' => 'mptbm_booking',
+				'post_type' => 'mpcrm_booking',
 				'posts_per_page' => -1,
 				'meta_query' => array(
 					'relation' => 'AND',
