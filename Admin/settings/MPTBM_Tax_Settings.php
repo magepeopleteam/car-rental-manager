@@ -18,10 +18,13 @@
 					<h3><?php esc_html_e('Tax Configuration', 'car-rental-manager'); ?></h3>
 					<p><?php esc_html_e('Tax Configuration settings.', 'car-rental-manager'); ?></p>
 					<?php
-						$tax_status = MP_Global_Function::get_post_info($post_id, '_tax_status');
-						$tax_class = MP_Global_Function::get_post_info($post_id, '_tax_class');
-						$all_tax_class = MP_Global_Function::all_tax_list();
+						$tax_status = MPCR_Global_Function::get_post_info($post_id, '_tax_status');
+						$tax_class = MPCR_Global_Function::get_post_info($post_id, '_tax_class');
+						$all_tax_class = MPCR_Global_Function::all_tax_list();
+						
 					?>
+					<?php wp_nonce_field('save_tax_settings', 'tax_settings_nonce'); ?>
+					
 					<section class="bg-light">
 						<h6><?php esc_html_e('Tax Settings Information', 'car-rental-manager'); ?></h6>
 						<span ><?php esc_html_e('Configure and manage tax settings', 'car-rental-manager'); ?></span>
@@ -80,12 +83,14 @@
 				<?php
 			}
 			public function settings_save($post_id) {
-				if (!isset($_POST['mptbm_transportation_type_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce') && defined('DOING_AUTOSAVE') && DOING_AUTOSAVE && !current_user_can('edit_post', $post_id)) {
-					return;
-				}
 				if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
-					$tax_status = MP_Global_Function::get_submit_info('_tax_status','none');
-					$tax_class = MP_Global_Function::get_submit_info('_tax_class');
+					// Create and store nonce
+					$nonce = wp_create_nonce('settings_save_action');
+					update_post_meta($post_id, '_settings_save_nonce', $nonce);
+			
+					$tax_status = MPCR_Global_Function::get_submit_info('_tax_status', 'none');
+					$tax_class = MPCR_Global_Function::get_submit_info('_tax_class');
+			
 					update_post_meta($post_id, '_tax_status', $tax_status);
 					update_post_meta($post_id, '_tax_class', $tax_class);
 				}

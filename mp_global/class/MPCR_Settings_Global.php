@@ -6,8 +6,8 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MP_Settings_Global')) {
-		class MP_Settings_Global {
+	if (!class_exists('MPCR_Settings_Global')) {
+		class MPCR_Settings_Global {
 			public function __construct() {
 				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 10, 1);
 				add_filter('mp_settings_sec_reg', array($this, 'global_sec_reg'), 90, 1);
@@ -266,5 +266,5 @@
 				do_action('ecab_after_global_setting_page');
 			}
 		}
-		new MP_Settings_Global();
+		new MPCR_Settings_Global();
 	}

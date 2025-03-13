@@ -325,7 +325,8 @@
 						action: "mptbm_disable_field",
 						key: key,
 						name: name,
-						isChecked: isChecked 
+						isChecked: isChecked,
+						nonce: mptbmCheckout.nonce
 					},
 					success: function(response) {
 						var jsonResponse = response;

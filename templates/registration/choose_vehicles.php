@@ -7,14 +7,13 @@ if (!defined("ABSPATH")) {
     die();
 } // Cannot access pages directly
 $label = MPTBM_Function::get_name();
-$days = MP_Global_Function::week_day();
+$days = MPCR_Global_Function::week_day();
 $days_name = array_keys($days);
 $schedule = [];
 
 
-
-
-function wptbm_check_operation_area($post_id, $start_place, $end_place) {
+function wptbm_check_operation_area($post_id, $start_place, $end_place)
+{
     // Retrieve saved locations from post meta
     $saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
 
@@ -55,23 +54,25 @@ function wptbm_check_operation_area($post_id, $start_place, $end_place) {
 
 function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
 {
+    // Check if nonce is set
+    if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+        return;
+    }
+
+    // Unslash and verify the nonce
+    $nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+    if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+        return;
+    }
     $timestamp = strtotime($selected_day);
 
-    $selected_day = date('l', $timestamp);
+    $selected_day = gmdate('l', $timestamp);
 
 
     //Schedule array
     $schedule = [];
-
 ?>
-    <script>
-        var post_id = <?php echo wp_json_encode($post_id); ?>;
-        var selectorClass = `.mptbm_booking_item_${post_id}`;
-        jQuery(selectorClass).removeClass('mptbm_booking_item_hidden');
-        var vehicaleItemClass = `.mptbm_booking_item_${post_id}`;
-
-        document.cookie = vehicaleItemClass + '=' + vehicaleItemClass + ";path=/";
-    </script>
+    
 <?php
 
 
@@ -139,6 +140,16 @@ function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
     }
     return false;
 }
+// Check if nonce is set
+if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+    return;
+}
+
+// Unslash and verify the nonce
+$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+    return;
+}
 $start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";
 
 $start_time_schedule = isset($_POST["start_time"]) ? sanitize_text_field(wp_unslash($_POST["start_time"])) : "";
@@ -179,15 +190,20 @@ if ($date && $start_time !== "") {
 }
 
 $start_place = isset($_POST["start_place"]) ? sanitize_text_field(wp_unslash($_POST["start_place"])) : "";
-$start_place_coordinates = sanitize_text_field(wp_unslash($_POST["start_place_coordinates"]));
-$end_place_coordinates = sanitize_text_field(wp_unslash($_POST["end_place_coordinates"]));
+$start_place_coordinates = isset($_POST["start_place_coordinates"])
+    ? sanitize_text_field(wp_unslash($_POST["start_place_coordinates"]))
+    : '';
+$end_place_coordinates = $end_place_coordinates = isset($_POST["end_place_coordinates"])
+    ? sanitize_text_field(wp_unslash($_POST["end_place_coordinates"]))
+    : '';
 $end_place = isset($_POST["end_place"]) ? sanitize_text_field(wp_unslash($_POST["end_place"])) : "";
 $two_way = 2;
 $waiting_time = isset($_POST["waiting_time"]) ? sanitize_text_field(wp_unslash($_POST["waiting_time"])) : 0;
 $fixed_time = isset($_POST["fixed_time"]) ? sanitize_text_field(wp_unslash($_POST["fixed_time"])) : "";
 $return_time_schedule = null;
 
-$price_based = sanitize_text_field(wp_unslash($_POST["price_based"]));
+$price_based = isset($_POST["price_based"]) ? sanitize_text_field(wp_unslash($_POST["price_based"])) : '';
+
 
 if ($two_way > 1) {
     $return_date = isset($_POST["return_date"]) ? sanitize_text_field(wp_unslash($_POST["return_date"])) : "";
@@ -222,15 +238,14 @@ if ($two_way > 1) {
     if ($return_date_time && $return_time !== "") {
         $return_date_time .= " " . $return_time_formatted;
     }
-
 }
-if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
+if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_passenger_number"])) : "";
     $feature_bag_number = isset($_POST["feature_bag_number"]) ? sanitize_text_field(wp_unslash($_POST["feature_bag_number"])) : "";
 }
 $mptbm_bags = [];
 $mptbm_passengers = [];
-$mptbm_all_transport_id = MP_Global_Function::get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCR_Global_Function::get_all_post_id('mptbm_rent');
 foreach ($mptbm_all_transport_id as $key => $value) {
     array_push($mptbm_bags, MPTBM_Function::get_feature_bag($value));
     array_push($mptbm_passengers, MPTBM_Function::get_feature_passenger($value));
@@ -244,13 +259,13 @@ $mptbm_passengers = max($mptbm_passengers);
     <input type="hidden" name="mptbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
     <input type="hidden" name="mptbm_date" value="<?php echo esc_attr($date); ?>" />
     <input type="hidden" name="mptbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
-    <?php if ($two_way > 1 && MP_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
+    <?php if ($two_way > 1 && MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
         <input type="hidden" name="mptbm_map_return_date" id="mptbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
         <input type="hidden" name="mptbm_map_return_time" id="mptbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
     <?php
     } ?>
-    
+
     <div class="mp_sticky_section">
         <div class="flexWrap">
 
@@ -258,7 +273,7 @@ $mptbm_passengers = max($mptbm_passengers);
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn">
                     <!-- Filter area start -->
-                    <?php if (MP_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
+                    <?php if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
@@ -293,19 +308,20 @@ $mptbm_passengers = max($mptbm_passengers);
                     <?php
 
                     $all_posts = MPTBM_Query::query_transport_list($price_based);
-                    
+
                     if ($all_posts->found_posts > 0) {
                         $posts = $all_posts->posts;
                         $vehicle_item_count = 0;
-
+                        $remove_class_item_post_id = [];
                         foreach ($posts as $post) {
-                            
+
                             $post_id = $post->ID;
                             $check_schedule = wptbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
                             $check_operation_area = wptbm_check_operation_area($post_id, $start_place, $end_place);
                             
+                           
                             if ($check_schedule && $check_operation_area) {
-                                
+
                                 $vehicle_item_count = $vehicle_item_count + 1;
                                 include MPTBM_Function::template_path("registration/vehicle_item.php");
                             }
@@ -318,22 +334,6 @@ $mptbm_passengers = max($mptbm_passengers);
                     <?php
                     }
                     ?>
-                    <script>
-                        jQuery(document).ready(function() {
-                            var allHidden = true;
-                            jQuery(".mptbm_booking_item").each(function() {
-                                if (!jQuery(this).hasClass("mptbm_booking_item_hidden")) {
-                                    allHidden = false;
-                                    return false; // Exit the loop early if any item is not hidden
-                                }
-                            });
-
-                            // If all items have the hidden class, log them
-                            if (allHidden) {
-                                jQuery('.geo-fence-no-transport').show(300);
-                            }
-                        });
-                    </script>
                     <div class="_dLayout_mT_bgWarning geo-fence-no-transport">
                         <h3><?php esc_html_e("No Transport Available !!", "car-rental-manager"); ?></h3>
                     </div>

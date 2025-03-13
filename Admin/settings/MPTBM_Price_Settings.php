@@ -16,9 +16,9 @@ if (!class_exists('MPTBM_Price_Settings')) {
 		}
 		public function price_settings($post_id)
 		{	
-			$time_price = MP_Global_Function::get_post_info($post_id, 'mptbm_day_price');
-			$manual_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
-			$terms_location_prices = MP_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
+			$time_price = MPCR_Global_Function::get_post_info($post_id, 'mptbm_day_price');
+			$manual_prices = MPCR_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
+			$terms_location_prices = MPCR_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
 			$location_terms = get_terms(array('taxonomy' => 'locations', 'hide_empty' => false));
 
 ?>

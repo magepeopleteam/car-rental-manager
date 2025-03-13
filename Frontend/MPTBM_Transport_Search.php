@@ -30,7 +30,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		}
 		public function transport_search($params)
 		{
-			$display_map = MP_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
+			$display_map = MPCR_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
 			$price_based = $params['price_based'] ?: 'dynamic';
 			$price_based = $display_map == 'disable' ? 'manual' : $price_based;
 			$progressbar = $params['progressbar'] ?: 'yes';
@@ -53,8 +53,18 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		}
 		public function get_mptbm_map_search_result_redirect()
 		{
+			
 			ob_start(); // Start output buffering
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
+				return;
+			}
 
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
+				return;
+			}
 			$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
 			$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
 			// if ($distance && $duration) {

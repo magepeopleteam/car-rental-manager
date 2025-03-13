@@ -19,6 +19,7 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 		public function operation_area_settings($post_id)
 		{
+			wp_nonce_field('mptbm_save_operation_area_nonce', 'mptbm_operation_area');
 			// Fetch all terms in the 'locations' taxonomy
 			$location_terms = get_terms(array('taxonomy' => 'locations', 'hide_empty' => false));
 
@@ -69,6 +70,17 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 
 		public function save_operation_area_settings($post_id)
 		{
+			// Check if nonce is set
+			if (!isset($_POST['mptbm_operation_area'])) {
+				return;
+			}
+			
+			// Unslash and verify the nonce
+			$nonce = wp_unslash($_POST['mptbm_operation_area']);
+			if (!wp_verify_nonce($nonce, 'mptbm_save_operation_area_nonce')) {
+				return;
+			}
+			
 			$terms_location = isset($_POST['mptbm_terms_start_location'])
 				? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_terms_start_location']))
 				: [];

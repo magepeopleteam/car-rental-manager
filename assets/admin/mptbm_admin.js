@@ -8,7 +8,7 @@
 		if (ex_id && post_id) {
 			$.ajax({
 				type: 'POST', url: mp_ajax_url, data: {
-					"action": "get_mptbm_ex_service", "ex_id": ex_id, "post_id": post_id
+					"action": "get_mptbm_ex_service", "ex_id": ex_id, "post_id": post_id, 'nonce': mptbmAdmin.nonce
 				}, beforeSend: function () {
 					dLoader(target);
 				}, success: function (data) {
@@ -19,6 +19,6 @@
 			target.html('');
 		}
 	});
-	 
+
 }(jQuery));
 

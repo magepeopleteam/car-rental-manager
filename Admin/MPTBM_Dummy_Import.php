@@ -18,7 +18,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		{
 			$dummy_post_inserted = get_option('mptbm_dummy_already_inserted', 'no');
 			$count_existing_event = wp_count_posts('mptbm_rent')->publish;
-			$plugin_active = MP_Global_Function::check_plugin('car-rental-manager', 'MPTBM_Plugin.php');
+			$plugin_active = MPCR_Global_Function::check_plugin('car-rental-manager', 'MPTBM_Plugin.php');
 			if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				$this->add_post($this->dummy_cpt());
 				$this->location_taxonomy();

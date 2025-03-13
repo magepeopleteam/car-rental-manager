@@ -23,10 +23,10 @@
 					<div class="dividerL"></div>
 
 					<h6 class="_mB_xs"><?php esc_html_e('Pickup Date', 'car-rental-manager'); ?></h6>
-					<p class="_textLight_1"><?php echo esc_html(MP_Global_Function::date_format($date)); ?></p>
+					<p class="_textLight_1"><?php echo esc_html(MPCR_Global_Function::date_format($date)); ?></p>
 					<div class="dividerL"></div>
 					<h6 class="_mB_xs"><?php esc_html_e('Pickup Time', 'car-rental-manager'); ?></h6>
-					<p class="_textLight_1"><?php echo esc_html(MP_Global_Function::date_format($date, 'time')); ?></p>
+					<p class="_textLight_1"><?php echo esc_html(MPCR_Global_Function::date_format($date, 'time')); ?></p>
 					<div class="dividerL"></div>
 					<h6 class="_mB_xs"><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></h6>
 					<?php if($price_based == 'manual'){ ?>
@@ -47,10 +47,10 @@
 						<div class="dividerL"></div>
 						<?php if(!empty($return_date_time)){ ?>
                             <h6 class="_mB_xs"><?php esc_html_e('Return Date', 'car-rental-manager'); ?></h6>
-                            <p class="_textLight_1"><?php echo esc_html(MP_Global_Function::date_format($return_date_time)); ?></p>
+                            <p class="_textLight_1"><?php echo esc_html(MPCR_Global_Function::date_format($return_date_time)); ?></p>
                             <div class="dividerL"></div>
                             <h6 class="_mB_xs"><?php esc_html_e('Return Time', 'car-rental-manager'); ?></h6>
-                            <p class="_textLight_1"><?php echo esc_html(MP_Global_Function::date_format($return_date_time,'time')); ?></p>
+                            <p class="_textLight_1"><?php echo esc_html(MPCR_Global_Function::date_format($return_date_time,'time')); ?></p>
                         <?php } ?>
 					<?php } ?>
 					<div class="mptbm_transport_summary">
