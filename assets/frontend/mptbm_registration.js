@@ -803,6 +803,8 @@ function mptbm_price_calculation(parent) {
         let mptbm_taxi_return = parent.find('[name="mptbm_taxi_return"]').val();
         let return_target_date = parent.find("#mptbm_map_return_date").val();
         let return_target_time = parent.find("#mptbm_map_return_time").val();
+
+
         let mptbm_fixed_hours = parent.find('[name="mptbm_fixed_hours"]').val();
         let post_id = parent.find('[name="mptbm_post_id"]').val();
         let date = parent.find('[name="mptbm_date"]').val();

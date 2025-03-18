@@ -9,9 +9,9 @@
 	if (!class_exists('MPTBM_Shortcodes')) {
 		class MPTBM_Shortcodes {
 			public function __construct() {
-				add_shortcode('wpcb_booking', array($this, 'mptbm_booking'));
+				add_shortcode('wpcb_booking', array($this, 'mpcrm_booking'));
 			}
-			public function mptbm_booking($attribute) {
+			public function mpcrm_booking($attribute) {
 				$defaults = $this->default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
 				ob_start();
