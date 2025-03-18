@@ -916,6 +916,10 @@ if (!class_exists('MPCR_Global_Function')) {
 				'ZW' => 'Zimbabwe',
 			);
 		}
+
+        public static function hasDecimal($number) {
+            return fmod($number, 1) != 0;
+        }
 	}
 	new MPCR_Global_Function();
 }

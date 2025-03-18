@@ -259,12 +259,11 @@ $mptbm_passengers = max($mptbm_passengers);
     <input type="hidden" name="mptbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
     <input type="hidden" name="mptbm_date" value="<?php echo esc_attr($date); ?>" />
     <input type="hidden" name="mptbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
-    <?php if ($two_way > 1 && MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_return_in_different_date") == "yes") { ?>
-        <input type="hidden" name="mptbm_map_return_date" id="mptbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
-        <input type="hidden" name="mptbm_map_return_time" id="mptbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
-    <?php
-    } ?>
+    <input type="hidden" name="mptbm_map_return_date" id="mptbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
+    <input type="hidden" name="mptbm_map_return_time" id="mptbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
+
+
 
     <div class="mp_sticky_section">
         <div class="flexWrap">

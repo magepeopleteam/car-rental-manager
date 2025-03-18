@@ -499,7 +499,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 		function get_post($order_id)
 		{
 			$args = array(
-				'post_type' => 'mptbm_booking',
+				'post_type' => 'mpcrm_booking',
 				'posts_per_page' => -1,
 				'meta_query' => array(
 					array(
