@@ -262,7 +262,7 @@
 					<?php do_action('mp_license_page_plugin_list'); ?>
 					</tbody>
 				</table>
-				<?PHP
+				<?php
 				do_action('ecab_after_global_setting_page');
 			}
 		}

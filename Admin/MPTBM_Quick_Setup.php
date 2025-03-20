@@ -52,7 +52,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 
 			// Handle form submission
 			if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quick_setup'])) {
-				if (!isset($_POST['mptbm_quick_setup_nonce']) || !wp_verify_nonce($_POST['mptbm_quick_setup_nonce'], 'mptbm_quick_setup_nonce')) {
+				if (!isset($_POST['mptbm_quick_setup_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_quick_setup_nonce'])), 'mptbm_quick_setup_nonce')) {
 					return;
 				}
 			}
@@ -61,12 +61,12 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 			error_log('Quick Setup Form Submission: ' . print_r($_POST, true));
 
 			if (isset($_POST['active_woo_btn'])) {
-				
+
 				// Sanitize input
 				$active_woo_btn = sanitize_text_field($_POST['active_woo_btn']);
 
-				
-				// echo '<script> dLoaderBody(); </script>';
+
+
 
 				// Activate WooCommerce Plugin
 				activate_plugin('woocommerce/woocommerce.php');
@@ -95,10 +95,20 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 			?>
 				<div style="display:none">
 					<?php
-					include_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
-					include_once(ABSPATH . 'wp-admin/includes/file.php');
-					include_once(ABSPATH . 'wp-admin/includes/misc.php');
-					include_once(ABSPATH . 'wp-admin/includes/class-wp-upgrader.php');
+					if (is_admin()) { 
+						if (!function_exists('plugins_api')) {
+							require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+						}
+						if (!function_exists('WP_Filesystem')) {
+							require_once ABSPATH . 'wp-admin/includes/file.php';
+						}
+						if (!function_exists('wp_mkdir_p')) {
+							require_once ABSPATH . 'wp-admin/includes/misc.php';
+						}
+						if (!class_exists('WP_Upgrader')) {
+							require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+						}
+					}
 					$plugin = 'woocommerce';
 					$api = plugins_api('plugin_information', array(
 						'slug' => $plugin,
@@ -126,7 +136,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 					MPTBM_Plugin::on_activation_page_create();
 					?>
 				</div>
-				
+
 			<?php
 				// Inline JavaScript (using concatenation instead of heredoc)
 				$quick_setup_script = '(function($) {';
@@ -139,7 +149,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 				$quick_setup_script .= 'window.location.href = mptbm_admin_location;';
 				$quick_setup_script .= '});';
 				$quick_setup_script .= '})(jQuery);';
-		
+
 				wp_add_inline_script('mptbm-admin-dloader-script', $quick_setup_script);
 			}
 			if (isset($_POST['finish_quick_setup'])) {

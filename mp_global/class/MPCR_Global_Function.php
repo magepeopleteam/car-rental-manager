@@ -65,7 +65,7 @@ if (!class_exists('MPCR_Global_Function')) {
 			// Check if nonce exists in the request
 			if (
 				!isset($_POST['_settings_save_nonce']) ||
-				!wp_verify_nonce(wp_unslash($_POST['_settings_save_nonce']), 'settings_save_action')
+				!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_settings_save_nonce'])), 'settings_save_action')
 			) {
 				return ''; // Return empty if nonce validation fails
 			}

@@ -534,13 +534,29 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			}
             $file_field_name = sanitize_key($file_field_name);
             $image_url = '';
-            if (isset($_FILES[$file_field_name]) && !empty($_FILES[$file_field_name]['name'])) {
+            if (isset($_FILES[$file_field_name]) && $_FILES[$file_field_name]['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES[$file_field_name];
-                $file['name'] = sanitize_file_name($file['name']);
-                $upload_overrides = array('test_form' => false);
-                $uploaded_file = wp_handle_upload($file, $upload_overrides);
-                if (isset($uploaded_file['url']) && !isset($uploaded_file['error'])) {
-                    $image_url = $uploaded_file['url'];
+                $allowed_types = array('image/jpeg', 'image/png', 'image/gif', 'application/pdf');
+                $max_size = 5 * 1024 * 1024; // 5MB
+
+                // Validate file type
+                if (!in_array($file['type'], $allowed_types)) {
+                    return new WP_Error('invalid_file_type', __('Invalid file type. Only JPG, PNG, GIF and PDF files are allowed.', 'car-rental-manager'));
+                }
+
+                // Validate file size
+                if ($file['size'] > $max_size) {
+                    return new WP_Error('file_too_large', __('File is too large. Maximum size is 5MB.', 'car-rental-manager'));
+                }
+
+                // Sanitize filename
+                $filename = sanitize_file_name($file['name']);
+                $upload_dir = wp_upload_dir();
+                $upload_path = $upload_dir['path'] . '/' . $filename;
+                
+                // Move uploaded file
+                if (move_uploaded_file($file['tmp_name'], $upload_path)) {
+                    $image_url = $upload_dir['url'] . '/' . $filename;
                 }
             }
             return $image_url ? $image_url : false;

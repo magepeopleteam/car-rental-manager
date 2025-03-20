@@ -301,7 +301,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function get_mptbm_ex_service()
 		{
-			if (!isset($_POST['nonce']) || !wp_verify_nonce(wp_unslash($_POST['nonce']), 'mptbm_extra_service')) {
+			if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mptbm_extra_service')) {
 				wp_send_json_error(array('message' => 'Invalid nonce'));
 				wp_die();
 			}

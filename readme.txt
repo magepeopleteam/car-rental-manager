@@ -61,3 +61,44 @@ Yes you can add extra feature like seat number. Car model etc
 
 = Can I offer extra service.
 Yes you can offer extra services along with the car 
+
+== External Services ==
+
+This plugin utilizes several external services and libraries to provide its functionality. Here's a detailed breakdown of what services are used and how:
+
+= Google Maps =
+* Service: Google Maps JavaScript API
+* Purpose: Used for location-based features and map display functionality
+* Data transmitted: Location data when maps are loaded and used
+* When: Data is transmitted when map features are accessed
+* Service Provider: Google
+* Terms of Service: https://cloud.google.com/maps-platform/terms
+* Privacy Policy: https://policies.google.com/privacy
+
+= Owl Carousel =
+* Service: Owl Carousel JavaScript Library (Version 2.3.4)
+* Purpose: Used for creating responsive carousel/slider elements in the interface
+* Data transmitted: None (locally hosted JavaScript library)
+* Service Provider: Open source library maintained by Owl Carousel team
+* Repository: https://github.com/OwlCarousel2/OwlCarousel2
+* License: MIT License
+
+= Vimeo API =
+* Service: Vimeo API
+* Purpose: Used for loading video thumbnails when Vimeo videos are embedded
+* Data transmitted: Video IDs when loading video content
+* When: Only when Vimeo video content is displayed
+* Service Provider: Vimeo
+* Terms of Service: https://vimeo.com/terms
+* Privacy Policy: https://vimeo.com/privacy
+
+= Vzaar API =
+* Service: Vzaar Video API
+* Purpose: Used for loading video thumbnails when Vzaar videos are embedded
+* Data transmitted: Video IDs when loading video content
+* When: Only when Vzaar video content is displayed
+* Service Provider: Vzaar
+* Terms of Service: https://vzaar.com/terms
+* Privacy Policy: https://vzaar.com/privacy
+
+Note: All external services are used only when necessary for the functionality requested by the user. No personal data is transmitted without user consent, and all data transmissions are done securely over HTTPS connections.
