@@ -50,16 +50,16 @@
 				}
 				/*****Font size********/
 				:root {
-					--fs: {$default_fs};
+					--fs: " . esc_attr($default_fs) . ";
 					--fw: normal;
 					--fs_small: 10px;
-					--fs_label: {$fs_label};
-					--fs_h6: {$fs_h6};
-					--fs_h5: {$fs_h5};
-					--fs_h4: {$fs_h4};
-					--fs_h3: {$fs_h3};
-					--fs_h2: {$fs_h2};
-					--fs_h1: {$fs_h1};
+					--fs_label: " . esc_attr($fs_label) . ";
+					--fs_h6: " . esc_attr($fs_h6) . ";
+					--fs_h5: " . esc_attr($fs_h5) . ";
+					--fs_h4: " . esc_attr($fs_h4) . ";
+					--fs_h3: " . esc_attr($fs_h3) . ";
+					--fs_h2: " . esc_attr($fs_h2) . ";
+					--fs_h1: " . esc_attr($fs_h1) . ";
 					--fw-thin: 300; /*font weight medium*/
 					--fw-normal: 500; /*font weight medium*/
 					--fw-medium: 600; /*font weight medium*/
@@ -67,9 +67,9 @@
 				}
 				/*****Button********/
 				:root {
-					--button_bg: {$button_bg};
-					--color_button: {$button_color};
-					--button_fs: {$button_fs};
+					--button_bg: " . esc_attr($button_bg) . ";
+					--color_button: " . esc_attr($button_color) . ";
+					--button_fs: " . esc_attr($button_fs) . ";
 					--button_height: 40px;
 					--button_height_xs: 30px;
 					--button_width: 120px;
@@ -77,18 +77,18 @@
 				}
 				/*******Color***********/
 				:root {
-					--d_color: {$default_color};
+					--d_color: " . esc_attr($default_color) . ";
 					--color_border: #DDD;
 					--color_active: #0E6BB7;
-					--color_section: {$section_bg};
-					--color_theme: {$theme_color};
-					--color_theme_ee: {$theme_color_ee};
-					--color_theme_cc: {$theme_color_cc};
-					--color_theme_aa: {$theme_color_aa};
-					--color_theme_88: {$theme_color_88};
-					--color_theme_77: {$theme_color_77};
-					--color_theme_alter: {$alternate_color};
-					--color_warning: {$warning_color};
+					--color_section: " . esc_attr($section_bg) . ";
+					--color_theme: " . esc_attr($theme_color) . ";
+					--color_theme_ee: " . esc_attr($theme_color_ee) . ";
+					--color_theme_cc: " . esc_attr($theme_color_cc) . ";
+					--color_theme_aa: " . esc_attr($theme_color_aa) . ";
+					--color_theme_88: " . esc_attr($theme_color_88) . ";
+					--color_theme_77: " . esc_attr($theme_color_77) . ";
+					--color_theme_alter: " . esc_attr($alternate_color) . ";
+					--color_warning: " . esc_attr($warning_color) . ";
 					--color_black: #000;
 					--color_success: #00A656;
 					--color_danger: #C00;

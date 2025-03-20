@@ -57,8 +57,18 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 				}
 			}
 
+			// Only log specific fields that are relevant for debugging
+			if (isset($_POST['submit_quick_setup'])) {
+				$relevant_fields = array(
+					'mptbm_quick_setup_nonce' => isset($_POST['mptbm_quick_setup_nonce']) ? 'set' : 'not set',
+					'active_woo_btn' => isset($_POST['active_woo_btn']) ? 'set' : 'not set',
+					'install_and_active_woo_btn' => isset($_POST['install_and_active_woo_btn']) ? 'set' : 'not set',
+					'finish_quick_setup' => isset($_POST['finish_quick_setup']) ? 'set' : 'not set'
+				);
+				error_log('Quick Setup Form Submission - Relevant Fields: ' . print_r($relevant_fields, true));
+			}
+
 			$status = MPCR_Global_Function::check_woocommerce();
-			error_log('Quick Setup Form Submission: ' . print_r($_POST, true));
 
 			if (isset($_POST['active_woo_btn'])) {
 
