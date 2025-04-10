@@ -407,7 +407,7 @@ if (!class_exists('MPCR_Global_Function')) {
 		public static function check_plugin($plugin_dir_name, $plugin_file): int
 		{
 			include_once ABSPATH . 'wp-admin/includes/plugin.php';
-			$plugin_dir = ABSPATH . 'wp-content/plugins/' . $plugin_dir_name;
+			$plugin_dir = WP_PLUGIN_DIR . '/' . $plugin_dir_name;
 			if (is_plugin_active($plugin_dir_name . '/' . $plugin_file)) {
 				return 1;
 			} elseif (is_dir($plugin_dir)) {
@@ -419,7 +419,7 @@ if (!class_exists('MPCR_Global_Function')) {
 		public static function check_woocommerce(): int
 		{
 			include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-			$plugin_dir = ABSPATH . 'wp-content/plugins/woocommerce';
+			$plugin_dir = WP_PLUGIN_DIR . '/woocommerce';
 			if (is_plugin_active('woocommerce/woocommerce.php')) {
 				return 1;
 			} elseif (is_dir($plugin_dir)) {

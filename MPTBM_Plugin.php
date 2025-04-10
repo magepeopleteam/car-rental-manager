@@ -33,7 +33,7 @@ if (!class_exists('MPTBM_Plugin')) {
 				define('MPTBM_PLUGIN_DIR', dirname(__FILE__));
 			}
 			if (!defined('MPTBM_PLUGIN_URL')) {
-				define('MPTBM_PLUGIN_URL', plugins_url() . '/' . plugin_basename(dirname(__FILE__)));
+				define('MPTBM_PLUGIN_URL', plugin_dir_url(__FILE__));
 			}
 			if (!defined('MPTBM_PLUGIN_DATA')) {
 				// define('MPTBM_PLUGIN_DATA', get_plugin_data(__FILE__));

@@ -65,7 +65,6 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 					'install_and_active_woo_btn' => isset($_POST['install_and_active_woo_btn']) ? 'set' : 'not set',
 					'finish_quick_setup' => isset($_POST['finish_quick_setup']) ? 'set' : 'not set'
 				);
-				error_log('Quick Setup Form Submission - Relevant Fields: ' . print_r($relevant_fields, true));
 			}
 
 			$status = MPCR_Global_Function::check_woocommerce();

@@ -57,13 +57,13 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			ob_start(); // Start output buffering
 			// Check if nonce is set
 			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
-				return;
+				wp_die(esc_html__('Security check failed', 'car-rental-manager'));
 			}
 
 			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce']));
 			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
-				return;
+				wp_die(esc_html__('Security check failed', 'car-rental-manager'));
 			}
 			$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
 			$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
@@ -76,7 +76,10 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			$_SESSION['custom_content'] = $content;
 
 			session_write_close(); // Close the session to release the lock
-			$redirect_url = isset($_POST['mptbm_enable_view_search_result_page']) ? sanitize_text_field(wp_unslash($_POST['mptbm_enable_view_search_result_page'])) : '';
+			// Sanitize and validate redirect URL
+			$redirect_url = isset($_POST['mptbm_enable_view_search_result_page']) 
+				? esc_url_raw(sanitize_text_field(wp_unslash($_POST['mptbm_enable_view_search_result_page']))) 
+				: '';
 			if ($redirect_url == '') {
 				$redirect_url = 'transport-result';
 			}
