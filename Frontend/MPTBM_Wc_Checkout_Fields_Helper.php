@@ -1,6 +1,6 @@
 <?php
 if (!defined('ABSPATH')) {
-	die;
+	die; // Exit if accessed directly
 } // Cannot access pages directly.
 /**
  * Class MPTBM_Wc_Checkout_Fields_Helper

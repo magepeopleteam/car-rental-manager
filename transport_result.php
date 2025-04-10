@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    die; // Exit if accessed directly
+}
 /*
 Template Name: Transport Result
 */
