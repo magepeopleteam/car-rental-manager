@@ -17,6 +17,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			add_action('mptbm_extra_service_item', array($this, 'extra_service_item'));
 			//****************************//
 			add_action('add_mptbm_settings_tab_content', [$this, 'ex_service_settings']);
+			add_action('add_mpcr_settings_tab_content', [$this, 'ex_service_settings']);
 			add_action('save_post', [$this, 'save_ex_service']);
 			//*******************//
 			add_action('wp_ajax_get_mptbm_ex_service', array($this, 'get_mptbm_ex_service'));

@@ -11,8 +11,9 @@ if (!class_exists('MPTBM_Price_Settings')) {
 	{
 		public function __construct()
 		{
-			add_action('add_mptbm_settings_tab_content', [$this, 'price_settings'], 10, 1);
-			add_action('save_post', [$this, 'save_price_settings'], 10, 1);
+			add_action('add_mptbm_settings_tab_content', [$this, 'price_settings']);
+			add_action('add_mpcr_settings_tab_content', [$this, 'price_settings']);
+			add_action('save_post', [$this, 'save_price_settings']);
 			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function price_settings($post_id)

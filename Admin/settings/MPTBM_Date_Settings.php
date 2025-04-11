@@ -13,7 +13,8 @@ if (!class_exists('MPTBM_Date_Settings')) {
 		public function __construct()
 		{
 			add_action('add_mptbm_settings_tab_content', [$this, 'date_settings']);
-			add_action('save_post', array($this, 'save_date_time_settings'), 99, 1);
+			add_action('add_mpcr_settings_tab_content', [$this, 'date_settings']);
+			add_action('save_post', [$this, 'save_date_time_settings']);
 			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function default_text($day)

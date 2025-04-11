@@ -10,6 +10,7 @@
 		class MPTBM_Tax_Settings {
 			public function __construct() {
 				add_action('add_mptbm_settings_tab_content', [$this, 'tab_content']);
+				add_action('add_mpcr_settings_tab_content', [$this, 'tab_content']);
 				add_action('save_post', [$this, 'settings_save']);
 				add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 			}
