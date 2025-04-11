@@ -13,6 +13,7 @@ if (!class_exists('MPTBM_Price_Settings')) {
 		{
 			add_action('add_mptbm_settings_tab_content', [$this, 'price_settings'], 10, 1);
 			add_action('save_post', [$this, 'save_price_settings'], 10, 1);
+			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function price_settings($post_id)
 		{	
@@ -104,6 +105,39 @@ if (!class_exists('MPTBM_Price_Settings')) {
 				update_post_meta($post_id, 'mptbm_terms_price_info', $terms_price_infos);
 				
 			}
+		}
+
+		public function settings_sec_fields($default_fields): array {
+			// Ensure $default_fields is an array
+			$default_fields = is_array($default_fields) ? $default_fields : array();
+			
+			$settings_fields = array(
+				'mptbm_price_settings' => array(
+					array(
+						'name' => 'mptbm_day_price',
+						'label' => esc_html__('Price/Day', 'car-rental-manager'),
+						'desc' => esc_html__('Set the daily price for the car rental', 'car-rental-manager'),
+						'type' => 'number',
+						'default' => '0'
+					),
+					array(
+						'name' => 'mptbm_manual_price_info',
+						'label' => esc_html__('Manual Price Settings', 'car-rental-manager'),
+						'desc' => esc_html__('Configure manual pricing options', 'car-rental-manager'),
+						'type' => 'array',
+						'default' => array()
+					),
+					array(
+						'name' => 'mptbm_terms_price_info',
+						'label' => esc_html__('Location Based Pricing', 'car-rental-manager'),
+						'desc' => esc_html__('Set prices based on locations', 'car-rental-manager'),
+						'type' => 'array',
+						'default' => array()
+					)
+				)
+			);
+			
+			return array_merge($default_fields, $settings_fields);
 		}
 	}
 	new MPTBM_Price_Settings();

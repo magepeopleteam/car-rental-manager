@@ -9,11 +9,11 @@
 	if (!class_exists('MPCR_Settings_Global')) {
 		class MPCR_Settings_Global {
 			public function __construct() {
-				add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 10, 1);
-				add_filter('mp_settings_sec_reg', array($this, 'global_sec_reg'), 90, 1);
-				add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
-				add_action('wsa_form_bottom_mp_basic_license_settings', [$this, 'license_settings'], 5);
-				add_action('mp_basic_license_list', [$this, 'licence_area']);
+				add_filter('mptbm_settings_sec_reg', array($this, 'settings_sec_reg'), 10, 1);
+				add_filter('mptbm_settings_sec_reg', array($this, 'global_sec_reg'), 90, 1);
+				add_filter('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
+				add_action('wsa_form_bottom_mptbm_basic_license_settings', [$this, 'license_settings'], 5);
+				add_action('mptbm_basic_license_list', [$this, 'licence_area']);
 			}
 			public function settings_sec_reg($default_sec): array {
 				$sections = array(
@@ -42,6 +42,8 @@
 				return array_merge($default_sec, $sections);
 			}
 			public function settings_sec_fields($default_fields): array {
+				// Ensure $default_fields is an array
+				$default_fields = is_array($default_fields) ? $default_fields : array();
 				$current_date = current_time('Y-m-d');
 				$settings_fields = array(
 					'mp_global_settings' => apply_filters('filter_mp_global_settings', array(
@@ -259,7 +261,7 @@
 					</tr>
 					</thead>
 					<tbody>
-					<?php do_action('mp_license_page_plugin_list'); ?>
+					<?php do_action('mptbm_license_page_plugin_list'); ?>
 					</tbody>
 				</table>
 				<?php

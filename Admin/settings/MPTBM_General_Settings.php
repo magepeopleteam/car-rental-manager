@@ -14,6 +14,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 			add_action('add_mptbm_settings_tab_content', [$this, 'general_settings']);
 			add_action('add_hidden_mptbm_features_item', [$this, 'features_item']);
 			add_action('save_post', [$this, 'save_general_settings']);
+			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function general_settings($post_id)
 		{
@@ -116,6 +117,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 					</section>
 				</div>
 			</div>
+			<?php do_action('mptbm_settings_sec_fields'); ?>
 		<?php
 		}
 		public function features_item($features = array())
@@ -186,6 +188,42 @@ if (!class_exists('MPTBM_General_Settings')) {
 				}
 				update_post_meta($post_id, 'mptbm_features', $all_features);
 			}
+		}
+		public function settings_sec_fields($default_fields): array {
+			// Ensure $default_fields is an array
+			$default_fields = is_array($default_fields) ? $default_fields : array();
+			
+			$settings_fields = array(
+				'mptbm_general_settings' => array(
+					array(
+						'name' => 'mptbm_maximum_passenger',
+						'label' => esc_html__('Maximum Passenger', 'car-rental-manager'),
+						'desc' => esc_html__('Set maximum passenger capacity', 'car-rental-manager'),
+						'type' => 'number',
+						'default' => '4'
+					),
+					array(
+						'name' => 'mptbm_maximum_bag',
+						'label' => esc_html__('Maximum Bag', 'car-rental-manager'),
+						'desc' => esc_html__('Set maximum bag capacity', 'car-rental-manager'),
+						'type' => 'number',
+						'default' => '4'
+					),
+					array(
+						'name' => 'display_mptbm_features',
+						'label' => esc_html__('Display Features', 'car-rental-manager'),
+						'desc' => esc_html__('Enable/Disable features display', 'car-rental-manager'),
+						'type' => 'select',
+						'default' => 'on',
+						'options' => array(
+							'on' => esc_html__('On', 'car-rental-manager'),
+							'off' => esc_html__('Off', 'car-rental-manager')
+						)
+					)
+				)
+			);
+			
+			return array_merge($default_fields, $settings_fields);
 		}
 	}
 	new MPTBM_General_Settings();
