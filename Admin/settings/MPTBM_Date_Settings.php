@@ -347,8 +347,8 @@ if (!class_exists('MPTBM_Date_Settings')) {
 				return;
 			}
 
-			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_date_nonce']);
+			// Unslash and sanitize the nonce
+			$nonce = isset($_POST['mptbm_date_nonce']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date_nonce'])) : '';
 			if (!wp_verify_nonce($nonce, 'mptbm_save_date_time_settings')) {
 				return;
 			}
@@ -417,7 +417,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 			}
 
 			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_date_nonce']);
+			$nonce = isset($_POST['mptbm_date_nonce']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date_nonce'])) : '';
 			if (!wp_verify_nonce($nonce, 'mptbm_save_date_time_settings')) {
 				return;
 			}

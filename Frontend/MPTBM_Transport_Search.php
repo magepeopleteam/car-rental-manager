@@ -81,7 +81,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 				? esc_url_raw(sanitize_text_field(wp_unslash($_POST['mptbm_enable_view_search_result_page']))) 
 				: '';
 			if ($redirect_url == '') {
-				$redirect_url = 'transport-result';
+				$redirect_url = 'mptbm-search';
 			}
 			echo wp_json_encode($redirect_url);
 			die(); // Ensure further execution stops after outputting the JavaScript
@@ -94,6 +94,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		}
 		public function get_mptbm_extra_service()
 		{
+			error_log('get_mptbm_extra_service');
 			include(MPTBM_Function::template_path('registration/extra_service.php'));
 			die();
 		}
@@ -101,6 +102,33 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		{
 			include(MPTBM_Function::template_path('registration/extra_service_summary.php'));
 			die();
+		}
+		public function search_transport()
+		{
+			// Verify nonce
+			if (
+				!isset($_POST['mptbm_transportation_type_nonce']) || 
+				!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')
+			) {
+				wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
+				wp_die();
+			}
+
+			// Store search parameters in session
+			if (isset($_POST['mptbm_start_place'])) {
+				$_SESSION['mptbm_start_place'] = sanitize_text_field(wp_unslash($_POST['mptbm_start_place']));
+			}
+			if (isset($_POST['mptbm_end_place'])) {
+				$_SESSION['mptbm_end_place'] = sanitize_text_field(wp_unslash($_POST['mptbm_end_place']));
+			}
+			if (isset($_POST['mptbm_start_date'])) {
+				$_SESSION['mptbm_start_date'] = sanitize_text_field(wp_unslash($_POST['mptbm_start_date']));
+			}
+
+			// Redirect to search results
+			$redirect_url = 'mptbm-search';
+			wp_redirect(home_url($redirect_url));
+			exit;
 		}
 	}
 	new MPTBM_Transport_Search();

@@ -554,21 +554,33 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			if ($file['size'] > 5 * 1024 * 1024) {
 				wp_die(esc_html__('File size too large. Maximum size is 5MB', 'car-rental-manager'));
 			}
-			
-			// Sanitize file name
-			$file['name'] = sanitize_file_name($file['name']);
 
-			// Sanitize filename and ensure unique name
-			$filename = sanitize_file_name($file['name']);
-			$upload_dir = wp_upload_dir();
-			$upload_path = $upload_dir['path'] . '/' . wp_unique_filename($upload_dir['path'], $filename);
-			
-			// Move uploaded file
-			if (move_uploaded_file($file['tmp_name'], $upload_path)) {
-				return $upload_dir['url'] . '/' . basename($upload_path);
+			// Prepare upload overrides
+			$upload_overrides = array(
+				'test_form' => false,
+				'mimes' => array(
+					'jpg|jpeg' => 'image/jpeg',
+					'png' => 'image/png',
+					'pdf' => 'application/pdf'
+				)
+			);
+
+			// Handle the upload using WordPress functions
+			require_once(ABSPATH . 'wp-admin/includes/file.php');
+			require_once(ABSPATH . 'wp-admin/includes/image.php');
+			require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+			// Insert the file into media library
+			$attachment_id = media_handle_upload($file_field_name, 0);
+
+			if (is_wp_error($attachment_id)) {
+				return false;
 			}
+
+			// Get the URL of the uploaded file
+			$attachment_url = wp_get_attachment_url($attachment_id);
 			
-			return false;
+			return $attachment_url ?: false;
 		}
 
         function order_details($order_id)

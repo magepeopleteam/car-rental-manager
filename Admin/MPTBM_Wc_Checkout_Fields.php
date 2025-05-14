@@ -39,7 +39,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 				wp_die();
 			}
 			
-			$nonce = wp_unslash($_POST['nonce']); 
+			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 			
 			if ( !wp_verify_nonce( $nonce, 'mptbm_disable_field_nonce' ) ) {
 				wp_send_json_error(array( 'message' => 'Invalid nonce' ), 403);

@@ -27,7 +27,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		{
 			$label = MPTBM_Function::get_name();
 
-			
+
 			$extra_services_label = sprintf(
 				// translators: %s represents the plugin version.
 				__('> Extra Services Settings <span class="version"> V%s</span>', 'car-rental-manager'),
@@ -45,10 +45,10 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function mptbm_extra_service()
 		{
-			
+
 			$post_id        = get_the_id();
 			$extra_services = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_service_infos', array());
-			
+
 ?>
 			<div class="mpStyle mptbm_settings">
 				<div class="tabsContent" style="width: 100%;">
@@ -137,20 +137,32 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function save_ex_service_settings($post_id)
 		{
+			// Verify post_id is valid
+			if (!$post_id || !is_numeric($post_id)) {
+				return;
+			}
+
 			// Check if nonce is set
 			if (!isset($_POST['mptbm_ex_service_nonce'])) {
 				return;
 			}
-			
+
 			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_ex_service_nonce']);
+			$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_ex_service_nonce']));
 			if (!wp_verify_nonce($nonce, 'mptbm_save_extra_service_nonce')) {
+				return;
+			}
+
+			// Verify user has permission to save
+			if (!current_user_can('edit_post', $post_id)) {
 				return;
 			}
 
 			if (get_post_type($post_id) == 'mptbm_extra_services') {
 				$extra_service_data = $this->ex_service_data($post_id);
-				update_post_meta($post_id, 'mptbm_extra_service_infos', $extra_service_data);
+				if (!empty($extra_service_data)) {
+					update_post_meta($post_id, 'mptbm_extra_service_infos', $extra_service_data);
+				}
 			}
 		}
 		//**************************************//
@@ -250,14 +262,14 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			if (!isset($_POST['mptbm_ex_service_nonce'])) {
 				return;
 			}
-			
+
 			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_ex_service_nonce']);
+			$nonce = isset($_POST['mptbm_ex_service_nonce']) ? sanitize_text_field(wp_unslash($_POST['mptbm_ex_service_nonce'])) : '';
 			if (!wp_verify_nonce($nonce, 'mptbm_save_extra_service_nonce')) {
 				return;
 			}
-			
-			
+
+
 			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
 				$display = isset($_POST['display_mptbm_extra_services']) && sanitize_text_field(wp_unslash($_POST['display_mptbm_extra_services'])) ? 'on' : 'off';
 				update_post_meta($post_id, 'display_mptbm_extra_services', $display);
@@ -271,45 +283,114 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		}
 		public function ex_service_data($post_id)
 		{
-			// Check if nonce is set
-			if (!isset($_POST['mptbm_ex_service_nonce'])) {
-				return;
+			// Verify post_id is valid
+			if (!$post_id || !is_numeric($post_id)) {
+				return array();
 			}
-			
-			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_ex_service_nonce']);
-			if (!wp_verify_nonce($nonce, 'mptbm_save_extra_service_nonce')) {
-				return;
+
+			// Check if nonce is set and valid
+			if (
+				!isset($_POST['mptbm_ex_service_nonce']) ||
+				!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_ex_service_nonce'])), 'mptbm_save_extra_service_nonce')
+			) {
+				return array();
 			}
-			
-			$new_extra_service         = array();
-			$extra_icon                =  isset($_POST['service_icon']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_icon'])) : [];
-			$extra_names               =  isset($_POST['service_name']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_name'])) : [];
-			$extra_price               =  isset($_POST['service_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_price'])) : [];
-			$extra_qty_type            =  isset($_POST['service_qty_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_qty_type'])) : [];
-			$extra_service_description =  isset($_POST['extra_service_description']) ? array_map('sanitize_textarea_field', wp_unslash($_POST['extra_service_description'])) : [];
-			$extra_count               = count($extra_names);
+
+			// Verify user has permission
+			if (!current_user_can('edit_post', $post_id)) {
+				return array();
+			}
+
+			$new_extra_service = array();
+
+			// Sanitize and validate all input arrays
+			$extra_icon = isset($_POST['service_icon']) ?
+				array_map('sanitize_text_field', wp_unslash($_POST['service_icon'])) :
+				array();
+
+			$extra_names = isset($_POST['service_name']) ?
+				array_map('sanitize_text_field', wp_unslash($_POST['service_name'])) :
+				array();
+
+			$raw_prices = isset($_POST['service_price']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_price'])) : array();
+
+			$extra_price = is_array($raw_prices) ? array_map(function ($price) {
+				return is_numeric($price) ? abs(floatval($price)) : 0;
+			}, $raw_prices) : array();
+
+
+			$raw_qty_types = isset($_POST['service_qty_type']) ? array_map('sanitize_text_field', wp_unslash($_POST['service_qty_type'])) : array();
+
+			$extra_qty_type = is_array($raw_qty_types) ? array_map(function($type) {
+				return in_array($type, array('inputbox', 'dropdown')) ? $type : 'inputbox';
+			}, $raw_qty_types) : array();
+
+			$extra_service_description = isset($_POST['extra_service_description']) ?
+				array_map('sanitize_textarea_field', wp_unslash($_POST['extra_service_description'])) :
+				array();
+
+			$extra_count = count($extra_names);
+
+			// Build sanitized array of services
 			for ($i = 0; $i < $extra_count; $i++) {
-				if ($extra_names[$i] && $extra_price[$i] >= 0) {
-					$new_extra_service[$i]['service_icon']              = $extra_icon[$i] ?? '';
-					$new_extra_service[$i]['service_name']              = $extra_names[$i];
-					$new_extra_service[$i]['service_price']             = $extra_price[$i];
-					$new_extra_service[$i]['service_qty_type']          = $extra_qty_type[$i] ?? 'inputbox';
-					$new_extra_service[$i]['extra_service_description'] = $extra_service_description[$i] ?? '';
+				if (!empty($extra_names[$i]) && isset($extra_price[$i]) && $extra_price[$i] >= 0) {
+					$new_extra_service[$i] = array(
+						'service_icon' => isset($extra_icon[$i]) ? $extra_icon[$i] : '',
+						'service_name' => $extra_names[$i],
+						'service_price' => $extra_price[$i],
+						'service_qty_type' => isset($extra_qty_type[$i]) ? $extra_qty_type[$i] : 'inputbox',
+						'extra_service_description' => isset($extra_service_description[$i]) ? $extra_service_description[$i] : ''
+					);
 				}
 			}
+
 			return apply_filters('filter_mptbm_extra_service_data', $new_extra_service, $post_id);
 		}
 		public function get_mptbm_ex_service()
 		{
-			if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mptbm_extra_service')) {
-				wp_send_json_error(array('message' => 'Invalid nonce'));
+			// Verify nonce
+			if (
+				!isset($_POST['nonce']) ||
+				!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mptbm_extra_service')
+			) {
+				wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
 				wp_die();
 			}
-			$post_id    = isset($_REQUEST['post_id']) ? absint($_REQUEST['post_id']) : '';
-			$service_id = isset($_REQUEST['ex_id']) ? absint($_REQUEST['ex_id']) : '';
+
+			// Validate and sanitize post_id
+			$post_id = isset($_REQUEST['post_id']) ? absint($_REQUEST['post_id']) : 0;
+			if (!$post_id) {
+				wp_send_json_error(array('message' => esc_html__('Invalid post ID', 'car-rental-manager')));
+				wp_die();
+			}
+
+			// Verify user has permission
+			if (!current_user_can('edit_post', $post_id)) {
+				wp_send_json_error(array('message' => esc_html__('Permission denied', 'car-rental-manager')));
+				wp_die();
+			}
+
+			// Validate and sanitize service_id
+			$service_id = isset($_REQUEST['ex_id']) ? absint($_REQUEST['ex_id']) : 0;
+			if (!$service_id) {
+				wp_send_json_error(array('message' => esc_html__('Invalid service ID', 'car-rental-manager')));
+				wp_die();
+			}
+
+			// Verify the service exists and is of correct type
+			if (!get_post($service_id) || get_post_type($service_id) !== 'mptbm_extra_services') {
+				wp_send_json_error(array('message' => esc_html__('Invalid service', 'car-rental-manager')));
+				wp_die();
+			}
+
+			ob_start();
 			$this->ex_service_table($service_id, $post_id);
-			die();
+			$html = ob_get_clean();
+
+			wp_send_json_success(array(
+				'html' => $html
+			));
+			wp_die();
 		}
 	}
 	new MPTBM_Extra_Service();

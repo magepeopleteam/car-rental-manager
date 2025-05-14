@@ -172,7 +172,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 						'desc' => esc_html__('Enter page slug. Leave blank if you dont want to enable this setting', 'car-rental-manager'),
 						'car-rental-manager' . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
 						'type' => 'text',
-						'placeholder' => 'transport-result'
+						'placeholder' => 'mptbm-search'
 					),
 					array(
 						'name' => 'enable_view_find_location_page',

@@ -80,31 +80,19 @@ if (!class_exists('MPTBM_Plugin')) {
             }
         }
 
-        public static function create_pages(): void
+        public static function create_pages()
         {
-            
-            if (!MPCR_Global_Function::get_page_by_slug('transport_booking')) {
-                $transport_booking_manual = array(
+            // Create pages only if they don't exist
+            if (!MPCR_Global_Function::get_page_by_slug('mptbm-search')) {
+                $search_page = array(
                     'post_type' => 'page',
-                    'post_name' => 'transport_booking',
-                    'post_title' => 'Transport Booking',
-                    'post_content' => "[wpcb_booking  form='inline' progressbar='yes']",
-                    'post_status' => 'publish',
-                );
-                wp_insert_post($transport_booking_manual);
-            }
-            
-            if (!MPCR_Global_Function::get_page_by_slug('transport-result')) {
-                $transport_result = array(
-                    'post_type' => 'page',
-                    'post_name' => 'transport-result',
-                    'post_title' => 'Transport Result',
+                    'post_name' => 'mptbm-search',
+                    'post_title' => 'Search Transport',
                     'post_content' => '',
-                    'post_status' => 'publish',
+                    'post_status' => 'publish'
                 );
-                wp_insert_post($transport_result);
+                wp_insert_post($search_page);
             }
-            flush_rewrite_rules();
         }
 
         public function mptbm_on_activation_template_create($templates)
@@ -139,6 +127,21 @@ if (!class_exists('MPTBM_Plugin')) {
                 // Update the page meta to assign the template
                 update_post_meta($page->ID, '_wp_page_template', 'transport_result.php');
             }
+        }
+
+        public function load_template($template)
+        {
+            global $post;
+            if ($post) {
+                if (is_page('mptbm-search')) {
+                    $template_path = 'search_page.php';
+                    $template_file = MPTBM_PLUGIN_DIR . '/templates/' . $template_path;
+                    if (file_exists($template_file)) {
+                        return $template_file;
+                    }
+                }
+            }
+            return $template;
         }
     }
 

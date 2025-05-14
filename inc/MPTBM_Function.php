@@ -254,10 +254,10 @@ if (!class_exists('MPTBM_Function')) {
 			}
 			if (class_exists('MPTBM_Datewise_Discount_Addon')) {
 				if ( isset($_POST['mptbm_transportation_type_nonce']) ) {
-					$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']); // Only unslash
+					$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce']));
 				
 					if ( ! wp_verify_nonce( $nonce, 'mptbm_transportation_type_nonce' ) ) {
-						wp_die( 'Nonce verification failed' );
+						wp_die( esc_html__('Nonce verification failed', 'car-rental-manager') );
 					}
 				}
 				$selected_start_date = isset($_POST["start_date"]) ? sanitize_text_field(wp_unslash($_POST["start_date"])) : "";

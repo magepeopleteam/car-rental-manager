@@ -70,18 +70,69 @@ if (!class_exists('MPCR_Global_Function')) {
 				return ''; // Return empty if nonce validation fails
 			}
 
-			return sanitize_text_field(wp_unslash($_POST[$key] ?? $default));
+			// First check if key exists to avoid undefined index notice
+			if (!isset($_POST[$key])) {
+				return $default;
+			}
+
+			// Get the raw value
+			$value = wp_unslash($_POST[$key]);
+
+			// Validate and sanitize based on expected type
+			if (is_email($value)) {
+				return sanitize_email($value);
+			} else if (is_numeric($value)) {
+				return is_int($value) ? absint($value) : floatval($value);
+			} else if (is_string($value)) {
+				if (strpos($key, 'url') !== false) {
+					return esc_url_raw($value);
+				} else if (strpos($key, 'html') !== false || strpos($key, 'content') !== false) {
+					return wp_kses_post($value);
+				} else {
+					return sanitize_text_field($value);
+				}
+			} else if (is_array($value)) {
+				return array_map('sanitize_text_field', $value);
+			}
+
+			return sanitize_text_field($value);
 		}
 		public static function get_submit_info_get_method($key, $default = '')
 		{
 			// Check if nonce exists in the request
 			if (
 				!isset($_POST['_settings_save_nonce']) ||
-				!wp_verify_nonce(wp_unslash($_POST['_settings_save_nonce']), 'settings_save_action')
+				!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_settings_save_nonce'])), 'settings_save_action')
 			) {
 				return ''; // Return empty if nonce validation fails
 			}
-			return sanitize_text_field(wp_unslash($_GET[$key] ?? $default));
+			
+			// First check if key exists to avoid undefined index notice
+			if (!isset($_GET[$key])) {
+				return $default;
+			}
+			
+			// Get the raw value
+			$value = wp_unslash($_GET[$key]);
+
+			// Validate and sanitize based on expected type
+			if (is_email($value)) {
+				return sanitize_email($value);
+			} else if (is_numeric($value)) {
+				return is_int($value) ? absint($value) : floatval($value);
+			} else if (is_string($value)) {
+				if (strpos($key, 'url') !== false) {
+					return esc_url_raw($value);
+				} else if (strpos($key, 'html') !== false || strpos($key, 'content') !== false) {
+					return wp_kses_post($value);
+				} else {
+					return sanitize_text_field($value);
+				}
+			} else if (is_array($value)) {
+				return array_map('sanitize_text_field', $value);
+			}
+
+			return sanitize_text_field($value);
 		}
 		public static function data_sanitize($data)
 		{
@@ -91,14 +142,32 @@ if (!class_exists('MPCR_Global_Function')) {
 				if (is_array($data)) {
 					$data = self::data_sanitize($data);
 				} else {
-					$data = sanitize_text_field(stripslashes(wp_strip_all_tags($data)));
+					// Determine type of data and sanitize accordingly
+					if (is_email($data)) {
+						$data = sanitize_email($data);
+					} else if (strpos($data, 'http') === 0) {
+						$data = esc_url_raw($data);
+					} else if (strpos($data, '<') !== false && strpos($data, '>') !== false) {
+						$data = wp_kses_post($data);
+					} else {
+						$data = sanitize_text_field(wp_strip_all_tags($data));
+					}
 				}
 			} elseif (is_array($data)) {
 				foreach ($data as &$value) {
 					if (is_array($value)) {
 						$value = self::data_sanitize($value);
 					} else {
-						$value = sanitize_text_field(stripslashes(wp_strip_all_tags($value)));
+						// Determine type of value and sanitize accordingly
+						if (is_email($value)) {
+							$value = sanitize_email($value);
+						} else if (strpos($value, 'http') === 0) {
+							$value = esc_url_raw($value);
+						} else if (strpos($value, '<') !== false && strpos($value, '>') !== false) {
+							$value = wp_kses_post($value);
+						} else {
+							$value = sanitize_text_field(wp_strip_all_tags($value));
+						}
 					}
 				}
 			}

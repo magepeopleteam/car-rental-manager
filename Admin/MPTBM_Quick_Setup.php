@@ -51,7 +51,7 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 			<?php
 
 			// Handle form submission
-			if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quick_setup'])) {
+			if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_quick_setup'])) {
 				if (!isset($_POST['mptbm_quick_setup_nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_quick_setup_nonce'])), 'mptbm_quick_setup_nonce')) {
 					return;
 				}
@@ -71,8 +71,8 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 
 			if (isset($_POST['active_woo_btn'])) {
 
-				// Sanitize input
-				$active_woo_btn = sanitize_text_field($_POST['active_woo_btn']);
+				// Properly unslash and sanitize input
+				$active_woo_btn = isset($_POST['active_woo_btn']) ? sanitize_text_field(wp_unslash($_POST['active_woo_btn'])) : '';
 
 
 
