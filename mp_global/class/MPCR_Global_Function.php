@@ -75,26 +75,33 @@ if (!class_exists('MPCR_Global_Function')) {
 				return $default;
 			}
 
-			// Get the raw value
-			$value = wp_unslash($_POST[$key]);
+			
+			$raw_value = sanitize_text_field( wp_unslash( $_POST[$key] ) );
 
-			// Validate and sanitize based on expected type
+			// Handle arrays specially
+			if (is_array($raw_value)) {
+				$sanitized_array = array();
+				foreach ($raw_value as $k => $v) {
+					$sanitized_array[sanitize_key($k)] = sanitize_text_field($v);
+				}
+				return $sanitized_array;
+			}
+
+			// Convert to string for non-array values
+			$value = strval($raw_value);
+
+			// Validate and sanitize based on type
 			if (is_email($value)) {
 				return sanitize_email($value);
 			} else if (is_numeric($value)) {
-				return is_int($value) ? absint($value) : floatval($value);
-			} else if (is_string($value)) {
-				if (strpos($key, 'url') !== false) {
-					return esc_url_raw($value);
-				} else if (strpos($key, 'html') !== false || strpos($key, 'content') !== false) {
-					return wp_kses_post($value);
-				} else {
-					return sanitize_text_field($value);
-				}
-			} else if (is_array($value)) {
-				return array_map('sanitize_text_field', $value);
+				return is_int($value + 0) ? absint($value) : floatval($value);
+			} else if (strpos($key, 'url') !== false) {
+				return esc_url_raw($value);
+			} else if (strpos($key, 'html') !== false || strpos($key, 'content') !== false) {
+				return wp_kses_post($value);
 			}
 
+			// Default to basic text field sanitization
 			return sanitize_text_field($value);
 		}
 		public static function get_submit_info_get_method($key, $default = '')
@@ -112,26 +119,33 @@ if (!class_exists('MPCR_Global_Function')) {
 				return $default;
 			}
 			
-			// Get the raw value
-			$value = wp_unslash($_GET[$key]);
+			// Unslash the raw input value first
+			$raw_value = sanitize_text_field( wp_unslash( $_GET[$key] ) );
 
-			// Validate and sanitize based on expected type
+			// Handle arrays specially
+			if (is_array($raw_value)) {
+				$sanitized_array = array();
+				foreach ($raw_value as $k => $v) {
+					$sanitized_array[sanitize_key($k)] = sanitize_text_field($v);
+				}
+				return $sanitized_array;
+			}
+
+			// Convert to string for non-array values
+			$value = strval($raw_value);
+
+			// Validate and sanitize based on type
 			if (is_email($value)) {
 				return sanitize_email($value);
 			} else if (is_numeric($value)) {
-				return is_int($value) ? absint($value) : floatval($value);
-			} else if (is_string($value)) {
-				if (strpos($key, 'url') !== false) {
-					return esc_url_raw($value);
-				} else if (strpos($key, 'html') !== false || strpos($key, 'content') !== false) {
-					return wp_kses_post($value);
-				} else {
-					return sanitize_text_field($value);
-				}
-			} else if (is_array($value)) {
-				return array_map('sanitize_text_field', $value);
+				return is_int($value + 0) ? absint($value) : floatval($value);
+			} else if (strpos($key, 'url') !== false) {
+				return esc_url_raw($value);
+			} else if (strpos($key, 'html') !== false || strpos($key, 'content') !== false) {
+				return wp_kses_post($value);
 			}
 
+			// Default to basic text field sanitization
 			return sanitize_text_field($value);
 		}
 		public static function data_sanitize($data)

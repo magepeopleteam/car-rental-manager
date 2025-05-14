@@ -94,7 +94,6 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		}
 		public function get_mptbm_extra_service()
 		{
-			error_log('get_mptbm_extra_service');
 			include(MPTBM_Function::template_path('registration/extra_service.php'));
 			die();
 		}

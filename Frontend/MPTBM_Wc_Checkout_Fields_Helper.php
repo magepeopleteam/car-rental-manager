@@ -468,8 +468,8 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 				return;
 			}
 
-			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			// Sanitize and verify the nonce
+			$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce']));
 			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
 				return;
 			}
@@ -535,13 +535,39 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			// Sanitize the field name
 			$file_field_name = sanitize_key($file_field_name);
 			
-			// Only process if the specific file field exists
-			if (!isset($_FILES[$file_field_name]) || $_FILES[$file_field_name]['error'] !== UPLOAD_ERR_OK) {
+			// Check if file upload exists and all required indexes are present
+			if (!isset($_FILES[$file_field_name]) || 
+				!isset($_FILES[$file_field_name]['error']) || 
+				!isset($_FILES[$file_field_name]['name']) || 
+				!isset($_FILES[$file_field_name]['size']) || 
+				!isset($_FILES[$file_field_name]['tmp_name'])) {
 				return false;
 			}
 
-			$file = $_FILES[$file_field_name];
-			
+			// Sanitize and validate file data
+			$file = array(
+				'name'     => sanitize_file_name(wp_unslash($_FILES[$file_field_name]['name'])),
+				'type'     => isset($_FILES[$file_field_name]['type']) ? sanitize_mime_type(wp_unslash($_FILES[$file_field_name]['type'])) : '',
+				'tmp_name' => sanitize_text_field(wp_unslash($_FILES[$file_field_name]['tmp_name'])),
+				'error'    => absint(wp_unslash($_FILES[$file_field_name]['error'])),
+				'size'     => absint(wp_unslash($_FILES[$file_field_name]['size']))
+			);
+
+			// Validate all required file data is present
+			if (empty($file['name']) || empty($file['tmp_name'])) {
+				return false;
+			}
+
+			// Check if the upload was successful
+			if ($file['error'] !== UPLOAD_ERR_OK) {
+				return false;
+			}
+
+			// Validate file exists and is readable
+			if (!file_exists($file['tmp_name']) || !is_readable($file['tmp_name'])) {
+				return false;
+			}
+
 			// Validate file type
 			$allowed_types = array('jpg', 'jpeg', 'png', 'pdf');
 			$file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -553,6 +579,21 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			// Validate file size (max 5MB)
 			if ($file['size'] > 5 * 1024 * 1024) {
 				wp_die(esc_html__('File size too large. Maximum size is 5MB', 'car-rental-manager'));
+			}
+
+			// Validate MIME type
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$real_mime_type = finfo_file($finfo, $file['tmp_name']);
+			finfo_close($finfo);
+
+			$allowed_mime_types = array(
+				'image/jpeg',
+				'image/png',
+				'application/pdf'
+			);
+
+			if (!in_array($real_mime_type, $allowed_mime_types)) {
+				wp_die(esc_html__('Invalid file type detected', 'car-rental-manager'));
 			}
 
 			// Prepare upload overrides
