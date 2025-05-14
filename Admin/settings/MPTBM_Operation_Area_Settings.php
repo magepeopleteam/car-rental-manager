@@ -77,8 +77,8 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 				return;
 			}
 			
-			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_operation_area']);
+			// Sanitize and verify the nonce
+			$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_operation_area']));
 			if (!wp_verify_nonce($nonce, 'mptbm_save_operation_area_nonce')) {
 				return;
 			}

@@ -150,8 +150,8 @@ if (!class_exists('MPTBM_General_Settings')) {
 				return;
 			};
 
-			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_nonce']);
+			// Sanitize and verify the nonce
+			$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_nonce']));
 			if (!wp_verify_nonce($nonce, 'mptbm_save_general_settings')) {
 				return;
 			};

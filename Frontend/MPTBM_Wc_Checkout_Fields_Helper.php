@@ -526,8 +526,8 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 				return false;
 			}
 
-			// Unslash and verify the nonce
-			$nonce = wp_unslash($_POST['mptbm_transportation_type_nonce']);
+			// Sanitize and verify the nonce
+			$nonce = sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce']));
 			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
 				return false;
 			}
