@@ -163,7 +163,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 								}
 								?>
 							</div>
-							<?php MPCR_Custom_Layout::add_new_button(esc_html__('Add New Particular date', 'car-rental-manager')); ?>
+							<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add New Particular date', 'car-rental-manager')); ?>
 							<div class="mp_hidden_content">
 								<div class="mp_hidden_item">
 									<?php $this->particular_date_item('mptbm_particular_dates[]'); ?>
@@ -305,7 +305,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 								}
 								?>
 							</div>
-							<?php MPCR_Custom_Layout::add_new_button(esc_html__('Add New Off date', 'car-rental-manager')); ?>
+							<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add New Off date', 'car-rental-manager')); ?>
 							<div class="mp_hidden_content">
 								<div class="mp_hidden_item">
 									<?php $this->particular_date_item('mptbm_off_dates[]'); ?>

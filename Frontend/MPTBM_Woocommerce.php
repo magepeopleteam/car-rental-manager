@@ -14,7 +14,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
         public function __construct()
         {
             add_action('woocommerce_checkout_update_order_meta', array($this, 'product_custom_field_to_custom_order_notes'), 100, 2);
-            add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 90, 3);
+            add_filter('woocommerce_add_cart_item_data', array($this, 'mpcrm_cart_item_data'), 90, 3);
             add_action('woocommerce_before_calculate_totals', array($this, 'before_calculate_totals'), 90);
             add_filter('woocommerce_cart_item_thumbnail', array($this, 'cart_item_thumbnail'), 90, 3);
             add_filter('woocommerce_get_item_data', array($this, 'get_item_data'), 90, 2);
@@ -39,7 +39,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                 }
             }
         }
-        public function add_cart_item_data($cart_item_data, $product_id)
+        public function mpcrm_cart_item_data($cart_item_data, $product_id)
         {
 
             if (!isset($_POST['mptbm_transportation_type_nonce'])) {
@@ -452,7 +452,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
 
 
-                            self::add_cpt_data('mpcrm_booking', $booking_data['mptbm_billing_name'], $booking_data);
+                            self::mpcrm_cpt_data('mpcrm_booking', $booking_data['mptbm_billing_name'], $booking_data);
 
                             if (sizeof($service_info) > 0) {
                                 foreach ($service_info as $service) {
@@ -467,7 +467,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                                         'mptbm_payment_method' => $payment_method,
                                         'mptbm_user_id' => $user_id
                                     ];
-                                    self::add_cpt_data('mptbm_service_booking', '#' . $order_id . $ex_data['mptbm_service_name'], $ex_data);
+                                    self::mpcrm_cpt_data('mptbm_service_booking', '#' . $order_id . $ex_data['mptbm_service_name'], $ex_data);
                                 }
                             }
                         }
@@ -801,7 +801,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
             return MPCR_Global_Function::price_convert_raw($wc_price);
         }
-        public static function add_cpt_data($cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array())
+        public static function mpcrm_cpt_data($cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array())
         {
             $new_post = array(
                 'post_title' => $title,
@@ -824,7 +824,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
             }
         }
         /****************************/
-        public function mptbm_add_to_cart()
+        public function mpcrm_add_to_cart()
         {
             if (!isset($_POST['mptbm_transportation_type_nonce'])) {
                 return;

@@ -9,9 +9,9 @@
 	if ( ! class_exists('MPCR_Global_Style') ) {
 		class MPCR_Global_Style {
 			public function __construct() {
-				add_action( 'add_mp_global_enqueue', array( $this, 'add_inline_css_setings' ), 100 );
+				add_action( 'add_mp_global_enqueue', array( $this, 'mpcrm_inline_css_setings' ), 100 );
 			}
-			public function add_inline_css_setings() {
+			public function mpcrm_inline_css_setings() {
 				$default_color   = MPCR_Global_Function::get_style_settings( 'default_text_color', '#303030' );
 				$theme_color     = MPCR_Global_Function::get_style_settings( 'theme_color', '#F12971' );
 				$alternate_color = MPCR_Global_Function::get_style_settings( 'theme_alternate_color', '#fff' );

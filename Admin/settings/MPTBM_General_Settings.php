@@ -112,7 +112,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 							</tbody>
 						</table>
 						<div class="my-2"></div>
-						<?php MPCR_Custom_Layout::add_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
+						<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
 						<?php do_action('add_mp_hidden_table', 'add_hidden_mptbm_features_item'); ?>
 					</section>
 				</div>

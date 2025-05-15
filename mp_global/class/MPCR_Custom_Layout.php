@@ -111,7 +111,7 @@ if (!class_exists('MPCR_Custom_Layout')) {
 		<?php
 		}
 		/*****************************/
-		public static function add_new_button($button_text, $class = 'mp_add_item', $button_class = '_themeButton_xs_mT_xs', $icon_class = 'fas fa-plus-square')
+		public static function mpcrm_new_button($button_text, $class = 'mp_add_item', $button_class = '_themeButton_xs_mT_xs', $icon_class = 'fas fa-plus-square')
 		{
 		?>
 			<button class="<?php echo esc_attr($button_class . ' ' . $class); ?>" type="button">

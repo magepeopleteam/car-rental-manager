@@ -84,7 +84,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 										</tbody>
 									</table>
 								</div>
-								<?php MPCR_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'car-rental-manager')); ?>
+								<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add Extra New Service', 'car-rental-manager')); ?>
 								<?php do_action('add_mp_hidden_table', 'mptbm_extra_service_item'); ?>
 							</div>
 						</section>
@@ -247,7 +247,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 						</table>
 						<?php
 						if ($service_id == $post_id) {
-							MPCR_Custom_Layout::add_new_button(esc_html__('Add Extra New Service', 'car-rental-manager'));
+							MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add Extra New Service', 'car-rental-manager'));
 							do_action('add_mp_hidden_table', 'mptbm_extra_service_item');
 						} ?>
 					</div>

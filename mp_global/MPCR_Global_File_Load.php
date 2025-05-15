@@ -19,8 +19,8 @@ if (!class_exists('MPCR_Global_File_Load')) {
             add_action('admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
             add_action('transporter_panel_admin_enqueue_scripts', array($this, 'admin_enqueue'), 80);
             add_action('wp_enqueue_scripts', array($this, 'frontend_enqueue'), 80);
-            add_action('admin_head', array($this, 'add_admin_head'), 5);
-            add_action('wp_head', array($this, 'add_frontend_head'), 5);
+            add_action('admin_head', array($this, 'mpcrm_admin_head'), 5);
+            add_action('wp_head', array($this, 'mpcrm_frontend_head'), 5);
         }
 
         public function define_constants() {
@@ -136,11 +136,11 @@ if (!class_exists('MPCR_Global_File_Load')) {
             do_action('add_mp_frontend_enqueue');
         }
 
-        public function add_admin_head() {
+        public function mpcrm_admin_head() {
             $this->js_constant();
         }
 
-        public function add_frontend_head() {
+        public function mpcrm_frontend_head() {
             $this->js_constant();
             $this->custom_css();
         }

@@ -413,5 +413,11 @@
 					});
 				');
 			}
+			function mpcrm_section($section) {
+				// ... existing code ...
+			}
+			function mpcrm_field($section, $field) {
+				// ... existing code ...
+			}
 		}
 	}

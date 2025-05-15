@@ -20,13 +20,13 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 			$count_existing_event = wp_count_posts('mptbm_rent')->publish;
 			$plugin_active = MPCR_Global_Function::check_plugin('car-rental-manager', 'MPTBM_Plugin.php');
 			if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
-				$this->add_post($this->dummy_cpt());
+				$this->mpcrm_post($this->dummy_cpt());
 				$this->location_taxonomy();
 				flush_rewrite_rules();
 				update_option('mptbm_dummy_already_inserted', 'yes');
 			}
 		}
-		public static function add_post($dummy_cpt)
+		public static function mpcrm_post($dummy_cpt)
 		{
 			if (array_key_exists('custom_post', $dummy_cpt)) {
 				foreach ($dummy_cpt['custom_post'] as $custom_post => $dummy_post) {

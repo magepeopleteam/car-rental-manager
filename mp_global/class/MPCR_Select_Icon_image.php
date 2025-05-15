@@ -11,9 +11,9 @@
 		class MPCR_Select_Icon_image {
 			public function __construct() {
 				add_action('mp_input_add_icon', array($this, 'load_icon'), 10, 2);
-				add_action('mp_add_single_image', array($this, 'add_single_image'), 10, 2);
-				add_action('mp_add_multi_image', array($this, 'add_multi_image'), 10, 2);
-				add_action('mp_add_icon_image', array($this, 'add_icon_image'), 10, 3);
+				add_action('mp_add_single_image', array($this, 'mpcrm_single_image'), 10, 2);
+				add_action('mp_add_multi_image', array($this, 'mpcrm_multi_image'), 10, 2);
+				add_action('mp_add_icon_image', array($this, 'mpcrm_icon_image'), 10, 3);
 			}
 			public function load_icon($name, $icon = '') {
 				$icon_class = $icon ? '' : 'dNone';
@@ -103,7 +103,7 @@
 				}
 			}
 			//======image========//
-			public function add_single_image($name, $image_id = '') {
+			public function mpcrm_single_image($name, $image_id = '') {
 				?>
                 <div class="mp_add_single_image">
                     <input type="hidden" name="<?php echo esc_attr($name); ?>" value="<?php echo esc_attr($image_id); ?>"/>
@@ -120,7 +120,7 @@
                 </div>
 				<?php
 			}
-			public function add_multi_image($name, $images) {
+			public function mpcrm_multi_image($name, $images) {
 				$images = is_array($images) ? MPCR_Global_Function::array_to_string($images) : $images;
 				?>
                 <div class="mp_multi_image_area">
@@ -149,7 +149,7 @@
 				<?php
 			}
 			//==============//
-			public function add_icon_image($name, $icon = '', $image = '') {
+			public function mpcrm_icon_image($name, $icon = '', $image = '') {
 				$icon_class = $icon ? '' : 'dNone';
 				$image_class = $image ? '' : 'dNone';
 				$value = $image ?: $icon;

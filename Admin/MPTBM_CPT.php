@@ -11,7 +11,7 @@ if (!class_exists('MPTBM_CPT')) {
 	{
 		public function __construct()
 		{
-			add_action('init', [$this, 'add_cpt']);
+			add_action('init', [$this, 'mpcrm_cpt']);
 			add_filter('manage_mptbm_rent_posts_columns', array($this, 'mptbm_rent_columns'));
 			add_action('manage_mptbm_rent_posts_custom_column', array($this, 'mptbm_rent_custom_column'), 10, 2);
 			add_filter('manage_edit-mptbm_rent_sortable_columns', array($this, 'mptbm_rent_sortable_columns'));
@@ -56,7 +56,7 @@ if (!class_exists('MPTBM_CPT')) {
 		}
 
 
-		public function add_cpt(): void
+		public function mpcrm_cpt(): void
 		{
 			$cpt = MPTBM_Function::get_cpt();
 			$label = MPTBM_Function::get_name();

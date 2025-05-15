@@ -11,7 +11,7 @@
 			public function __construct() {
 				if (is_admin()) {
 					$this->load_file();
-					add_action('init', [$this, 'add_dummy_data']);
+					add_action('init', [$this, 'mpcrm_add_dummy_data']);
 					add_filter('use_block_editor_for_post_type', [$this, 'disable_gutenberg'], 10, 2);
 					add_filter('wp_mail_content_type', array($this, 'email_content_type'));
 					add_action('upgrader_process_complete', [$this, 'flush_rewrite'], 0);
@@ -45,7 +45,7 @@
 				require_once MPTBM_PLUGIN_DIR . '/Admin/MPTBM_Wc_Checkout_Shipping.php';
 				require_once MPTBM_PLUGIN_DIR . '/Admin/MPTBM_Wc_Checkout_Order.php';
 			}
-			public function add_dummy_data() {
+			public function mpcrm_add_dummy_data() {
 				new MPTBM_Dummy_Import();
 			}
 			//************Disable Gutenberg************************//
