@@ -6,9 +6,9 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPCR_Select_Icon_image')) {
+	if (!class_exists('MPCRM_Select_Icon_image')) {
 		$GLOBALS['mp_icon_popup_exit'] = false;
-		class MPCR_Select_Icon_image {
+		class MPCRM_Select_Icon_image {
 			public function __construct() {
 				add_action('mp_input_add_icon', array($this, 'load_icon'), 10, 2);
 				add_action('mp_add_single_image', array($this, 'mpcrm_single_image'), 10, 2);
@@ -1923,5 +1923,5 @@
 				];
 			}
 		}
-		new MPCR_Select_Icon_image();
+		new MPCRM_Select_Icon_image();
 	}

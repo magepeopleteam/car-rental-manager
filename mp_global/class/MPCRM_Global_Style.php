@@ -6,8 +6,8 @@
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
-	if ( ! class_exists('MPCR_Global_Style') ) {
-		class MPCR_Global_Style {
+	if ( ! class_exists('MPCRM_Global_Style') ) {
+		class MPCRM_Global_Style {
 			public function __construct() {
 				add_action( 'add_mp_global_enqueue', array( $this, 'mpcrm_inline_css_setings' ), 100 );
 			}
@@ -146,5 +146,5 @@
 				wp_add_inline_style('mp_plugin_global', $inline_css);
 			}
 		}
-		new MPCR_Global_Style();
+		new MPCRM_Global_Style();
 	}

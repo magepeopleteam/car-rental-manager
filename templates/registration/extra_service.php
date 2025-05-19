@@ -79,12 +79,12 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 						</h4>
 						<div class="_equalChild">
 							<div class="_mR_xs">
-								<?php MPCR_Custom_Layout::load_more_text($description, 100); ?>
+								<?php MPCRM_Custom_Layout::load_more_text($description, 100); ?>
 							</div>
 							<div>
 								<div class="justifyEnd">
 									<div class="_mR_min_100" data-collapse="<?php echo esc_attr($ex_unique_id); ?>">
-										<?php MPCR_Custom_Layout::qty_input('mptbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
+										<?php MPCRM_Custom_Layout::qty_input('mptbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
 									</div>
 									<button type="button" class="_mpBtn_dBR_min_150 mptbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">
 										<input type="hidden" name="mptbm_extra_service[]" data-value="<?php echo esc_attr($service_name); ?>" value="" />

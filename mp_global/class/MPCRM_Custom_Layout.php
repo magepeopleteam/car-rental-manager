@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPCR_Custom_Layout')) {
-	class MPCR_Custom_Layout
+if (!class_exists('MPCRM_Custom_Layout')) {
+	class MPCRM_Custom_Layout
 	{
 		public function __construct()
 		{
@@ -251,5 +251,5 @@ if (!class_exists('MPCR_Custom_Layout')) {
 			}
 		}
 	}
-	new MPCR_Custom_Layout();
+	new MPCRM_Custom_Layout();
 }

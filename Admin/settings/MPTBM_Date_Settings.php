@@ -163,7 +163,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 								}
 								?>
 							</div>
-							<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add New Particular date', 'car-rental-manager')); ?>
+							<?php MPCRM_Custom_Layout::mpcrm_new_button(esc_html__('Add New Particular date', 'car-rental-manager')); ?>
 							<div class="mp_hidden_content">
 								<div class="mp_hidden_item">
 									<?php $this->particular_date_item('mptbm_particular_dates[]'); ?>
@@ -222,7 +222,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 							<h6><?php esc_html_e('Make Transport Available For 24 Hours', 'car-rental-manager'); ?></h6>
 							<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
 						</div>
-						<?php MPCR_Custom_Layout::switch_button('mptbm_available_for_all_time', $checked); ?>
+						<?php MPCRM_Custom_Layout::switch_button('mptbm_available_for_all_time', $checked); ?>
 					</label>
 				</section>
 
@@ -305,7 +305,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 								}
 								?>
 							</div>
-							<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add New Off date', 'car-rental-manager')); ?>
+							<?php MPCRM_Custom_Layout::mpcrm_new_button(esc_html__('Add New Off date', 'car-rental-manager')); ?>
 							<div class="mp_hidden_content">
 								<div class="mp_hidden_item">
 									<?php $this->particular_date_item('mptbm_off_dates[]'); ?>
@@ -332,7 +332,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 						<input type="hidden" name="<?php echo esc_attr($name); ?>" value="<?php echo esc_attr($hidden_date); ?>" />
 						<input value="<?php echo esc_attr($visible_date); ?>" class="formControl date_type" placeholder="<?php echo esc_attr($now); ?>" />
 					</label>
-					<?php MPCR_Custom_Layout::move_remove_button(); ?>
+					<?php MPCRM_Custom_Layout::move_remove_button(); ?>
 				</div>
 
 			</div>

@@ -7,8 +7,8 @@
 		die;
 	} // Cannot access pages directly.
 	//echo '<pre>';print_r();echo '</pre>';
-	if ( ! class_exists( 'MPCR_Custom_Slider' ) ) {
-		class MPCR_Custom_Slider {
+	if ( ! class_exists( 'MPCRM_Custom_Slider' ) ) {
+		class MPCRM_Custom_Slider {
 			public function __construct() {
 				add_action( 'add_mp_custom_slider', array( $this, 'super_slider' ), 10, 2 );
 				add_action( 'add_mp_custom_slider_only', array( $this, 'super_slider_only' ) );
@@ -241,5 +241,5 @@
 				return array_unique( $image_ids );
 			}
 		}
-		new MPCR_Custom_Slider();
+		new MPCRM_Custom_Slider();
 	}

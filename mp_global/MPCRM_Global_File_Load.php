@@ -8,8 +8,8 @@ if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
 
-if (!class_exists('MPCR_Global_File_Load')) {
-    class MPCR_Global_File_Load {
+if (!class_exists('MPCRM_Global_File_Load')) {
+    class MPCRM_Global_File_Load {
         
         public function __construct() {
             $this->define_constants();
@@ -24,22 +24,22 @@ if (!class_exists('MPCR_Global_File_Load')) {
         }
 
         public function define_constants() {
-            if (!defined('MPCR_GLOBAL_PLUGIN_DIR')) {
-                define('MPCR_GLOBAL_PLUGIN_DIR', plugin_dir_path(__FILE__));
+            if (!defined('MPCRM_GLOBAL_PLUGIN_DIR')) {
+                define('MPCRM_GLOBAL_PLUGIN_DIR', plugin_dir_path(__FILE__));
             }
-            if (!defined('MPCR_GLOBAL_PLUGIN_URL')) {
-                define('MPCR_GLOBAL_PLUGIN_URL', plugin_dir_url(__FILE__)); 
+            if (!defined('MPCRM_GLOBAL_PLUGIN_URL')) {
+                define('MPCRM_GLOBAL_PLUGIN_URL', plugin_dir_url(__FILE__)); 
             }
         }
 
         public function load_global_file() {
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Global_Function.php';
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Global_Style.php';
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Custom_Layout.php';
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Custom_Slider.php';
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Select_Icon_image.php';
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MAGE_Setting_API.php';
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Settings_Global.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Global_Function.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Global_Style.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Custom_Layout.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Custom_Slider.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Select_Icon_image.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MAGE_Setting_API.php';
+            require_once MPCRM_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Settings_Global.php';
         }
 
         public function custom_css() {
@@ -50,11 +50,11 @@ if (!class_exists('MPCR_Global_File_Load')) {
                 $custom_css = trim(preg_replace('/\s+/', ' ', $custom_css));
 
                 // Ensure a base stylesheet is registered before adding inline styles
-                wp_register_style('mpcr-custom-style', false);
-                wp_enqueue_style('mpcr-custom-style');
+                wp_register_style('mpcrm-custom-style', false);
+                wp_enqueue_style('mpcrm-custom-style');
 
                 // Add the inline CSS
-                wp_add_inline_style('mpcr-custom-style', $custom_css);
+                wp_add_inline_style('mpcrm-custom-style', $custom_css);
             }
         }
 
@@ -72,8 +72,8 @@ if (!class_exists('MPCR_Global_File_Load')) {
             wp_enqueue_script('mp_owl_carousel', plugins_url('assets/owl_carousel/owl.carousel.min.js', __FILE__), array('jquery'), '2.3.4', true);
         
             // Cache busting using file modification time
-            wp_enqueue_style('mp_plugin_global', plugins_url('assets/mp_style/mp_style.css', __FILE__), array(), filemtime(MPCR_GLOBAL_PLUGIN_DIR . 'assets/mp_style/mp_style.css'));
-            wp_enqueue_script('mp_plugin_global', plugins_url('assets/mp_style/mp_script.js', __FILE__), array('jquery'), filemtime(MPCR_GLOBAL_PLUGIN_DIR . 'assets/mp_style/mp_script.js'), true);
+            wp_enqueue_style('mp_plugin_global', plugins_url('assets/mp_style/mp_style.css', __FILE__), array(), filemtime(MPCRM_GLOBAL_PLUGIN_DIR . 'assets/mp_style/mp_style.css'));
+            wp_enqueue_script('mp_plugin_global', plugins_url('assets/mp_style/mp_script.js', __FILE__), array('jquery'), filemtime(MPCRM_GLOBAL_PLUGIN_DIR . 'assets/mp_style/mp_script.js'), true);
         
             do_action('add_mp_global_enqueue');
         }
@@ -94,14 +94,14 @@ if (!class_exists('MPCR_Global_File_Load')) {
                 'jquery-timepicker',
                 plugins_url('assets/admin/jquery.timepicker.min.css', __FILE__),
                 array(),
-                filemtime(MPCR_GLOBAL_PLUGIN_DIR . 'assets/admin/jquery.timepicker.min.css')
+                filemtime(MPCRM_GLOBAL_PLUGIN_DIR . 'assets/admin/jquery.timepicker.min.css')
             );
         
             wp_enqueue_script(
                 'jquery-timepicker',
                 plugins_url('assets/admin/jquery.timepicker.min.js', __FILE__),
                 array('jquery'),
-                filemtime(MPCR_GLOBAL_PLUGIN_DIR . 'assets/admin/jquery.timepicker.min.js'),
+                filemtime(MPCRM_GLOBAL_PLUGIN_DIR . 'assets/admin/jquery.timepicker.min.js'),
                 true
             );
         
@@ -117,7 +117,7 @@ if (!class_exists('MPCR_Global_File_Load')) {
                 'mp_admin_settings',
                 plugins_url('assets/admin/mp_admin_settings.js', __FILE__),
                 array('jquery'),
-                filemtime(MPCR_GLOBAL_PLUGIN_DIR . 'assets/admin/mp_admin_settings.js'),
+                filemtime(MPCRM_GLOBAL_PLUGIN_DIR . 'assets/admin/mp_admin_settings.js'),
                 true
             );
         
@@ -125,7 +125,7 @@ if (!class_exists('MPCR_Global_File_Load')) {
                 'mp_admin_settings',
                 plugins_url('assets/admin/mp_admin_settings.css', __FILE__),
                 array(),
-                filemtime(MPCR_GLOBAL_PLUGIN_DIR . 'assets/admin/mp_admin_settings.css')
+                filemtime(MPCRM_GLOBAL_PLUGIN_DIR . 'assets/admin/mp_admin_settings.css')
             );
         
             do_action('add_mp_admin_enqueue');
@@ -147,8 +147,8 @@ if (!class_exists('MPCR_Global_File_Load')) {
 
         public function js_constant() {
             // Register and enqueue your JavaScript file (if you have one)
-            wp_register_script('mpcr-custom-js-constant', MPCR_GLOBAL_PLUGIN_URL . 'assets/mpcr-custom-js-constant.js', array('jquery'), '1.0', true);
-            wp_enqueue_script('mpcr-custom-js-constant');
+            wp_register_script('mpcrm-custom-js-constant', MPCRM_GLOBAL_PLUGIN_URL . 'assets/mpcrm-custom-js-constant.js', array('jquery'), '1.0', true);
+            wp_enqueue_script('mpcrm-custom-js-constant');
 
             // Prepare inline JavaScript
             $mp_js_constants = '
@@ -158,7 +158,7 @@ if (!class_exists('MPCR_Global_File_Load')) {
                 let mp_currency_thousands_separator = "";
                 let mp_num_of_decimal = "";
                 let mp_ajax_url = "' . esc_url(admin_url('admin-ajax.php')) . '";
-                let mp_empty_image_url = "' . esc_attr(MPCR_GLOBAL_PLUGIN_URL . 'assets/images/no_image.png') . '";
+                let mp_empty_image_url = "' . esc_attr(MPCRM_GLOBAL_PLUGIN_URL . 'assets/images/no_image.png') . '";
                 let mp_date_format = "' . esc_attr(MPCRM_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')) . '";
                 let mp_date_format_without_year = "' . esc_attr(MPCRM_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')) . '";
             ';
@@ -175,8 +175,8 @@ if (!class_exists('MPCR_Global_File_Load')) {
             }
 
             // Add inline script after enqueuing main script
-            wp_add_inline_script('mpcr-custom-js-constant', $mp_js_constants, 'before');
+            wp_add_inline_script('mpcrm-custom-js-constant', $mp_js_constants, 'before');
         }
     }
-    new MPCR_Global_File_Load();
+    new MPCRM_Global_File_Load();
 }

@@ -86,7 +86,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 								<h6><?php esc_html_e('On/Off Feature Extra feature', 'car-rental-manager'); ?></h6>
 								<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
 							</div>
-							<?php MPCR_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
+							<?php MPCRM_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
 						</label>
 					</section>
 					<section data-collapse="#display_mptbm_features" class="<?php echo esc_attr($active); ?>">
@@ -112,7 +112,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 							</tbody>
 						</table>
 						<div class="my-2"></div>
-						<?php MPCR_Custom_Layout::mpcrm_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
+						<?php MPCRM_Custom_Layout::mpcrm_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
 						<?php do_action('add_mp_hidden_table', 'add_hidden_mptbm_features_item'); ?>
 					</section>
 				</div>
@@ -139,7 +139,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 						<input class="formControl mp_name_validation" name="mptbm_features_text[]" value="<?php echo esc_attr($text); ?>" />
 					</label>
 				</td>
-				<td valign="middle"><?php MPCR_Custom_Layout::move_remove_button(); ?></td>
+				<td valign="middle"><?php MPCRM_Custom_Layout::move_remove_button(); ?></td>
 			</tr>
 <?php
 		}
