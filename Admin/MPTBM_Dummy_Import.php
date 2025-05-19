@@ -50,7 +50,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 							$args['post_type'] = $custom_post;
 							$post_id = wp_insert_post($args);
 							$ex_id = 0;
-							if ($custom_post == 'mptbm_extra_services') {
+							if ($custom_post == 'mpcrm_extra_services') {
 								$ex_id = $post_id;
 							}
 							if (array_key_exists('post_data', $dummy_data)) {
@@ -95,7 +95,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		{
 			return [
 				'custom_post' => [
-					'mptbm_extra_services' => [
+					'mpcrm_extra_services' => [
 						0 => [
 							'name' => 'Pre-defined Extra Services',
 							'post_data' => array(

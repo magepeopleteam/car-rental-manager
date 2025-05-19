@@ -12,12 +12,12 @@ if (!class_exists('MPTBM_CPT')) {
 		public function __construct()
 		{
 			add_action('init', [$this, 'mpcrm_cpt']);
-			add_filter('manage_mptbm_rent_posts_columns', array($this, 'mptbm_rent_columns'));
-			add_action('manage_mptbm_rent_posts_custom_column', array($this, 'mptbm_rent_custom_column'), 10, 2);
-			add_filter('manage_edit-mptbm_rent_sortable_columns', array($this, 'mptbm_rent_sortable_columns'));
+			add_filter('manage_mptbm_rent_posts_columns', array($this, 'mpcrm_rent_columns'));
+			add_action('manage_mptbm_rent_posts_custom_column', array($this, 'mpcrm_rent_custom_column'), 10, 2);
+			add_filter('manage_edit-mptbm_rent_sortable_columns', array($this, 'mpcrm_rent_sortable_columns'));
 		}
 
-		public function mptbm_rent_custom_column($columns,$post_id){
+		public function mpcrm_rent_custom_column($columns,$post_id){
 			switch($columns){
 				case 'mptbm_km_price':
 					$mptbm_km_price = get_post_meta($post_id,'mptbm_km_price',true);
@@ -37,7 +37,7 @@ if (!class_exists('MPTBM_CPT')) {
 			}
 		}
 
-		public function mptbm_rent_columns($columns)
+		public function mpcrm_rent_columns($columns)
 		{
 			unset($columns['date']);
 			$columns['author']      =  esc_html__('Author', 'car-rental-manager');
@@ -48,7 +48,7 @@ if (!class_exists('MPTBM_CPT')) {
 
 		
 
-		public function mptbm_rent_sortable_columns($columns)
+		public function mpcrm_rent_sortable_columns($columns)
 		{
 			$columns['mptbm_day_price'] = 'mptbm_day_price';
 			$columns['author'] = 'author';
@@ -159,7 +159,7 @@ if (!class_exists('MPTBM_CPT')) {
 
 			
 			register_taxonomy('locations', $cpt, $taxonomy_args);
-			register_post_type('mptbm_extra_services', $ex_args);
+			register_post_type('mpcrm_extra_services', $ex_args);
 			if (class_exists('MPTBM_Plugin_Pro')) {
 				register_post_type('mptbm_operate_areas', $dx_args);
 			}

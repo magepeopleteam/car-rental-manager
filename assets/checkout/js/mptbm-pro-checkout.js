@@ -322,7 +322,7 @@
 					type: 'POST',
 					url: mp_ajax_url,
 					data: { 
-						action: "mptbm_disable_field",
+						action: "mpcrm_disable_field",
 						key: key,
 						name: name,
 						isChecked: isChecked,

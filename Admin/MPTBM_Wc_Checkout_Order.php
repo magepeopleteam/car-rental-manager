@@ -15,7 +15,7 @@
 				$this->error = new WP_Error();
 				add_action('mptbm_wc_checkout_tab_content', array($this, 'tab_content'), 10, 1);
 				add_action('admin_init', [$this, 'save_mptbm_wc_other_field_settings']);
-				add_action('admin_notices', array($this, 'mp_admin_notice'));
+				add_action('admin_notices', array($this, 'mpcrm_admin_notice'));
 			}
 			public function tab_content($contents) {
 				?>
@@ -68,8 +68,8 @@
 			public function save_mptbm_wc_other_field_settings() {
 				// Save the
 			}
-			public function mp_admin_notice() {
-				MPTBM_Wc_Checkout_Fields::mp_error_notice($this->error);
+			public function mpcrm_admin_notice() {
+				MPTBM_Wc_Checkout_Fields::mpcrm_error_notice($this->error);
 			}
 		}
 		new MPTBM_Wc_Checkout_Order();

@@ -7,19 +7,19 @@
 			protected $settings_sections = array();
 			protected $settings_fields = array();
 			public function __construct() {}
-			function set_sections($sections) {
+			function mpcrm_set_sections($sections) {
 				$this->settings_sections = $sections;
 				return $this;
 			}
-			function add_section($section) {
+			function mpcrm_add_section($section) {
 				$this->settings_sections[] = $section;
 				return $this;
 			}
-			function set_fields($fields) {
+			function mpcrm_set_fields($fields) {
 				$this->settings_fields = $fields;
 				return $this;
 			}
-			function add_field($section, $field) {
+			function mpcrm_add_field($section, $field) {
 				$defaults = array(
 					'name' => '',
 					'label' => '',
@@ -74,7 +74,7 @@
 							'max' => isset($option['max']) ? $option['max'] : '',
 							'step' => isset($option['step']) ? $option['step'] : '',
 						);
-						$label .= $this->get_field_description($args);
+						$label .= $this->mpcrm_get_field_description($args);
 						add_settings_field("{$section}[{$name}]", $label, $callback, $section, $section, $args);
 					}
 				}
@@ -83,7 +83,7 @@
 					register_setting($section['id'], $section['id'], array($this, 'sanitize_options'));
 				}
 			}
-			public function get_field_description($args) {
+			public function mpcrm_get_field_description($args) {
 				if (!empty($args['desc'])) {
 					$desc = sprintf('<br/><i class="info_text"><span class="fas fa-info-circle"></span>%s</i>', $args['desc']);
 				}
@@ -315,7 +315,7 @@
 					return $options;
 				}
 				foreach ($options as $option_slug => $option_value) {
-					$sanitize_callback = $this->get_sanitize_callback($option_slug);
+					$sanitize_callback = $this->mpcrm_get_sanitize_callback($option_slug);
 					// If callback is set, call it
 					if ($sanitize_callback) {
 						$options[$option_slug] = call_user_func($sanitize_callback, $option_value);
@@ -324,7 +324,7 @@
 				}
 				return $options;
 			}
-			function get_sanitize_callback($slug = '') {
+			function mpcrm_get_sanitize_callback($slug = '') {
 				if (empty($slug)) {
 					return false;
 				}

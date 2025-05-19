@@ -21,8 +21,8 @@ if (!class_exists('MPTBM_Plugin')) {
         {
             $this->load_plugin();
 
-            add_filter('theme_page_templates', array($this, 'mptbm_on_activation_template_create'), 10, 3);
-            add_filter('template_include', array($this, 'mptbm_change_page_template'), 99);
+            add_filter('theme_page_templates', array($this, 'mpcrm_on_activation_template_create'), 10, 3);
+            add_filter('template_include', array($this, 'mpcrm_change_page_template'), 99);
             add_action('admin_init', array($this, 'wptbm_assign_template_to_page'));
         }
 
@@ -95,7 +95,7 @@ if (!class_exists('MPTBM_Plugin')) {
             }
         }
 
-        public function mptbm_on_activation_template_create($templates)
+        public function mpcrm_on_activation_template_create($templates)
         {
             $template_path = 'transport_result.php';
             $page_templates[$template_path] = 'Transport Result';
@@ -106,7 +106,7 @@ if (!class_exists('MPTBM_Plugin')) {
             return $templates;
         }
 
-        public function mptbm_change_page_template($template)
+        public function mpcrm_change_page_template($template)
         {
             global $wp_query, $wpdb;
             $page_temp_slug = get_page_template_slug(get_the_ID());

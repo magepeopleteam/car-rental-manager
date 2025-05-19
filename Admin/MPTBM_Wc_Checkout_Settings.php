@@ -14,9 +14,9 @@
 			public function __construct() {
 				$this->error = new WP_Error();
 				add_action('mptbm_wc_checkout_tab_content', array($this, 'tab_content'), 10, 1);
-				add_action('mptbm_save_checkout_fields_settings', [$this, 'mptbm_save_checkout_fields_settings']);
+				add_action('mpcrm_save_checkout_fields_settings', [$this, 'mpcrm_save_checkout_fields_settings']);
 
-				add_action('admin_notices', array($this, 'mp_admin_notice'));
+				add_action('admin_notices', array($this, 'mpcrm_admin_notice'));
 			}
 
 
@@ -59,7 +59,7 @@
                 </div>
 				<?php
 			}
-			public function mptbm_save_checkout_fields_settings() {
+			public function mpcrm_save_checkout_fields_settings() {
 				if (!current_user_can('administrator')) {
 					wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'car-rental-manager'));
 				}
@@ -79,8 +79,8 @@
 					wp_redirect(admin_url('edit.php?post_type=' . MPTBM_Function::get_cpt() . '&page=mptbm_wc_checkout_fields'));
 				}
 			}
-			public function mp_admin_notice() {
-				MPTBM_Wc_Checkout_Fields::mp_error_notice($this->error);
+			public function mpcrm_admin_notice() {
+				MPTBM_Wc_Checkout_Fields::mpcrm_error_notice($this->error);
 			}
 		}
 		new MPTBM_Wc_Checkout_Default();

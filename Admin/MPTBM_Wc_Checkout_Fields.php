@@ -22,12 +22,12 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			add_action('add_mptbm_admin_script', array($this, 'admin_enqueue'));
 			add_action('add_mptbm_frontend_script', array($this, 'frontend_enqueue'), 99);
 			add_action('admin_menu', array($this, 'checkout_menu'));
-			add_action('admin_notices', array($this, 'mp_admin_notice'));
+			add_action('admin_notices', array($this, 'mpcrm_admin_notice'));
 			add_action('add_switch_button', array($this, 'switch_button'), 10, 3);
-			add_action('wp_ajax_mptbm_disable_field', [$this, 'mptbm_disable_field']);
-			add_action('wp_ajax_nopriv_mptbm_disable_field', [$this, 'mptbm_disable_field']);
+			add_action('wp_ajax_mpcrm_disable_field', [$this, 'mpcrm_disable_field']);
+			add_action('wp_ajax_nopriv_mpcrm_disable_field', [$this, 'mpcrm_disable_field']);
 		}
-		public function mptbm_disable_field()
+		public function mpcrm_disable_field()
 		{
 			
 			if (!current_user_can('manage_options')) {
@@ -41,7 +41,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			
 			$nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
 			
-			if ( !wp_verify_nonce( $nonce, 'mptbm_disable_field_nonce' ) ) {
+			if ( !wp_verify_nonce( $nonce, 'mpcrm_disable_field_nonce' ) ) {
 				wp_send_json_error(array( 'message' => 'Invalid nonce' ), 403);
 				wp_die();
 			}			
@@ -91,7 +91,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			wp_enqueue_style('mptbm_checkout', MPTBM_PLUGIN_URL . '/assets/checkout/css/mptbm-pro-checkout.css', array(), time());
 			wp_enqueue_script('mptbm_checkout', MPTBM_PLUGIN_URL . '/assets/checkout/js/mptbm-pro-checkout.js', array('jquery'), time(), true);
 			wp_enqueue_script('mptbm_checkout_custom_script', '', array('jquery', 'jquery-ui-sortable'), null, true);
-			$nonce = wp_create_nonce('mptbm_disable_field_nonce'); 
+			$nonce = wp_create_nonce('mpcrm_disable_field_nonce'); 
 			wp_localize_script('mptbm_checkout', 'mptbmCheckout', array(
 				'nonce' => $nonce
 			));
@@ -111,7 +111,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			if (!current_user_can('administrator')) {
 				wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'car-rental-manager'));
 			}
-			do_action('mptbm_save_checkout_fields_settings');
+			do_action('mpcrm_save_checkout_fields_settings');
 			do_action('mptbm_wc_checkout_fields');
 			self::checkout_field_list();
 		}
@@ -185,11 +185,11 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			</div>
 <?php
 		}
-		public function mp_admin_notice()
+		public function mpcrm_admin_notice()
 		{
-			self::mp_error_notice($this->error);
+			self::mpcrm_error_notice($this->error);
 		}
-		public static function mp_error_notice($error)
+		public static function mpcrm_error_notice($error)
 		{
 			if ($error->has_errors()) {
 				foreach ($error->get_error_messages() as $error) {

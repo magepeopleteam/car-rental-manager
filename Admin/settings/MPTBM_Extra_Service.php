@@ -11,7 +11,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 	{
 		public function __construct()
 		{
-			add_action('add_meta_boxes', array($this, 'mptbm_extra_service_meta'));
+			add_action('add_meta_boxes', array($this, 'mpcrm_extra_service_meta'));
 			add_action('save_post', array($this, 'save_ex_service_settings'));
 			//********************//
 			add_action('mptbm_extra_service_item', array($this, 'extra_service_item'));
@@ -23,7 +23,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			add_action('wp_ajax_get_mptbm_ex_service', array($this, 'get_mptbm_ex_service'));
 			add_action('wp_ajax_nopriv_get_mptbm_ex_service', array($this, 'get_mptbm_ex_service'));
 		}
-		public function mptbm_extra_service_meta()
+		public function mpcrm_extra_service_meta()
 		{
 			$label = MPTBM_Function::get_name();
 
@@ -38,12 +38,12 @@ if (! class_exists('MPTBM_Extra_Service')) {
 				'mp_meta_box_panel',
 				$label . ' ' . $extra_services_label,
 				array($this, 'mptbm_extra_service'),
-				'mptbm_extra_services',
+				'mpcrm_extra_services',
 				'normal',
 				'high'
 			);
 		}
-		public function mptbm_extra_service()
+		public function mpcrm_extra_service()
 		{
 
 			$post_id        = get_the_id();
@@ -158,7 +158,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 				return;
 			}
 
-			if (get_post_type($post_id) == 'mptbm_extra_services') {
+			if (get_post_type($post_id) == 'mpcrm_extra_services') {
 				$extra_service_data = $this->ex_service_data($post_id);
 				if (!empty($extra_service_data)) {
 					update_post_meta($post_id, 'mptbm_extra_service_infos', $extra_service_data);
@@ -173,7 +173,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			$service_id         = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
 			$active             = $display == 'off' ? '' : 'mActive';
 			$checked            = $display == 'off' ? '' : 'checked';
-			$all_ex_services_id = MPTBM_Query::query_post_id('mptbm_extra_services');
+			$all_ex_services_id = MPTBM_Query::query_post_id('mpcrm_extra_services');
 		?>
 			<div class="tabsItem mptbm_extra_services_setting" data-tabs="#mptbm_settings_ex_service">
 				<h2><?php esc_html_e('On/Off Extra Service Settings', 'car-rental-manager'); ?></h2>
@@ -378,7 +378,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			}
 
 			// Verify the service exists and is of correct type
-			if (!get_post($service_id) || get_post_type($service_id) !== 'mptbm_extra_services') {
+			if (!get_post($service_id) || get_post_type($service_id) !== 'mpcrm_extra_services') {
 				wp_send_json_error(array('message' => esc_html__('Invalid service', 'car-rental-manager')));
 				wp_die();
 			}

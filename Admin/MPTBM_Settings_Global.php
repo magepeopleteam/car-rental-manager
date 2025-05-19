@@ -45,8 +45,8 @@ if (!class_exists('MPTBM_Settings_Global')) {
 
 		public function admin_init()
 		{
-			$this->settings_api->set_sections($this->get_settings_sections());
-			$this->settings_api->set_fields($this->get_settings_fields());
+			$this->settings_api->mpcrm_set_sections($this->get_settings_sections());
+			$this->settings_api->mpcrm_set_fields($this->get_settings_fields());
 			$this->settings_api->admin_init();
 		}
 		public function get_settings_sections()
