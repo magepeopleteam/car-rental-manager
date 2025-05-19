@@ -11,16 +11,16 @@ if (!class_exists('MPTBM_Price_Settings')) {
 	{
 		public function __construct()
 		{
-			add_action('add_mptbm_settings_tab_content', [$this, 'price_settings']);
-			add_action('add_mpcr_settings_tab_content', [$this, 'price_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'price_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'price_settings']);
 			add_action('save_post', [$this, 'save_price_settings']);
 			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function price_settings($post_id)
 		{	
-			$time_price = MPCR_Global_Function::get_post_info($post_id, 'mptbm_day_price');
-			$manual_prices = MPCR_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
-			$terms_location_prices = MPCR_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
+			$time_price = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_day_price');
+			$manual_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
+			$terms_location_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
 			$location_terms = get_terms(array('taxonomy' => 'locations', 'hide_empty' => false));
 
 ?>

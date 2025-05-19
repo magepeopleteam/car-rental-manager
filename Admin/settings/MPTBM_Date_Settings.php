@@ -12,8 +12,8 @@ if (!class_exists('MPTBM_Date_Settings')) {
 	{
 		public function __construct()
 		{
-			add_action('add_mptbm_settings_tab_content', [$this, 'date_settings']);
-			add_action('add_mpcr_settings_tab_content', [$this, 'date_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'date_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'date_settings']);
 			add_action('save_post', [$this, 'save_date_time_settings']);
 			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
@@ -42,7 +42,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 					// Format the time for display
 					$time_formatted = sprintf('%02d:%02d', $hours, $minutes);
 ?>
-					<option value="<?php echo esc_attr($data_value); ?>" <?php echo esc_attr($time != '' && $time == $data_value ? 'selected' : ''); ?>><?php echo esc_html(MPCR_Global_Function::date_format($time_formatted, 'time')); ?></option>
+					<option value="<?php echo esc_attr($data_value); ?>" <?php echo esc_attr($time != '' && $time == $data_value ? 'selected' : ''); ?>><?php echo esc_html(MPCRM_Global_Function::date_format($time_formatted, 'time')); ?></option>
 			<?php }
 			}
 		}
@@ -51,7 +51,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 		{
 			$end_name = 'mptbm_' . $day . '_end_time';
 			$default_end_time = $day == 'default' ? 24 : '';
-			$end_time = MPCR_Global_Function::get_post_info($post_id, $end_name, $default_end_time);
+			$end_time = MPCRM_Global_Function::get_post_info($post_id, $end_name, $default_end_time);
 			?>
 			<label>
 				<select class="formControl " name="<?php echo esc_attr($end_name); ?>">
@@ -65,9 +65,9 @@ if (!class_exists('MPTBM_Date_Settings')) {
 		}
 		/*************************************/
 		//			public function get_mptbm_end_time_slot() {
-		//				$post_id = isset($_REQUEST['post_id']) ? MPCR_Global_Function::data_sanitize($_REQUEST['post_id']) : '';
-		//				$day = isset($_REQUEST['day_name']) ? MPCR_Global_Function::data_sanitize($_REQUEST['day_name']) : '';
-		//				$start_time = isset($_REQUEST['start_time']) ? MPCR_Global_Function::data_sanitize($_REQUEST['start_time']) : '';
+		//				$post_id = isset($_REQUEST['post_id']) ? MPCRM_Global_Function::data_sanitize($_REQUEST['post_id']) : '';
+		//				$day = isset($_REQUEST['day_name']) ? MPCRM_Global_Function::data_sanitize($_REQUEST['day_name']) : '';
+		//				$start_time = isset($_REQUEST['start_time']) ? MPCRM_Global_Function::data_sanitize($_REQUEST['start_time']) : '';
 		//				$this->end_time_slot($post_id, $day, $start_time);
 		//				die();
 		//			}
@@ -76,12 +76,12 @@ if (!class_exists('MPTBM_Date_Settings')) {
 			$start_name = 'mptbm_' . $day . '_start_time';
 			$default_start_time = $day == 'default' ? 0.5 : '';
 
-			$start_time = MPCR_Global_Function::get_post_info($post_id, $start_name, $default_start_time);
+			$start_time = MPCRM_Global_Function::get_post_info($post_id, $start_name, $default_start_time);
 
 			$end_name = 'mptbm_' . $day . '_end_time';
 			$default_end_time = $day == 'default' ? 24 : '';
 
-			$end_time = MPCR_Global_Function::get_post_info($post_id, $end_name, $default_end_time);
+			$end_time = MPCRM_Global_Function::get_post_info($post_id, $end_name, $default_end_time);
 
 		?>
 			<tr>
@@ -116,9 +116,9 @@ if (!class_exists('MPTBM_Date_Settings')) {
 		public function date_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_date_time_settings', 'mptbm_date_nonce');
-			$date_format = MPCR_Global_Function::date_picker_format();
+			$date_format = MPCRM_Global_Function::date_picker_format();
 			$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
-			$date_type = MPCR_Global_Function::get_post_info($post_id, 'mptbm_date_type', 'repeated');
+			$date_type = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_date_type', 'repeated');
 
 		?>
 			<div class="tabsItem" data-tabs="#mptbm_settings_date">
@@ -153,7 +153,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 						<div class="mp_settings_area">
 							<div class="mp_item_insert mp_sortable_area">
 								<?php
-								$particular_date_lists = MPCR_Global_Function::get_post_info($post_id, 'mptbm_particular_dates', array());
+								$particular_date_lists = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_particular_dates', array());
 								if (sizeof($particular_date_lists)) {
 									foreach ($particular_date_lists as $particular_date) {
 										if ($particular_date) {
@@ -173,12 +173,12 @@ if (!class_exists('MPTBM_Date_Settings')) {
 					</label>
 				</section>
 				<?php
-				$repeated_start_date = MPCR_Global_Function::get_post_info($post_id, 'mptbm_repeated_start_date');
+				$repeated_start_date = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_repeated_start_date');
 				$hidden_repeated_start_date = $repeated_start_date ? gmdate('Y-m-d', strtotime($repeated_start_date)) : '';
 				$visible_repeated_start_date = $repeated_start_date ? date_i18n($date_format, strtotime($repeated_start_date)) : '';
-				$repeated_after = MPCR_Global_Function::get_post_info($post_id, 'mptbm_repeated_after', 1);
-				$active_days = MPCR_Global_Function::get_post_info($post_id, 'mptbm_active_days', 60);
-				$available_for_all_time = MPCR_Global_Function::get_post_info($post_id, 'mptbm_available_for_all_time', 'on');
+				$repeated_after = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_repeated_after', 1);
+				$active_days = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_active_days', 60);
+				$available_for_all_time = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_available_for_all_time', 'on');
 				$active = $available_for_all_time == 'off' ? '' : 'mActive';
 				$checked = $available_for_all_time == 'off' ? '' : 'checked';
 
@@ -243,7 +243,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 						</thead>
 						<tbody>
 							<?php $this->time_slot_tr($post_id, 'default');
-							$days = MPCR_Global_Function::week_day();
+							$days = MPCRM_Global_Function::week_day();
 							foreach ($days as $key => $day) {
 								$this->time_slot_tr($post_id, $key);
 							}
@@ -269,8 +269,8 @@ if (!class_exists('MPTBM_Date_Settings')) {
 						<div>
 							<?php
 
-							$off_days = MPCR_Global_Function::get_post_info($post_id, 'mptbm_off_days');
-							$days = MPCR_Global_Function::week_day();
+							$off_days = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_off_days');
+							$days = MPCRM_Global_Function::week_day();
 							$off_day_array = explode(',', $off_days);
 							?>
 							<div class="groupCheckBox">
@@ -295,7 +295,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 						<div class="mp_settings_area">
 							<div class="mp_item_insert mp_sortable_area mb-1">
 								<?php
-								$off_day_lists = MPCR_Global_Function::get_post_info($post_id, 'mptbm_off_dates', array());
+								$off_day_lists = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_off_dates', array());
 								if (sizeof($off_day_lists)) {
 									foreach ($off_day_lists as $off_day) {
 										if ($off_day) {
@@ -321,7 +321,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 		}
 		public function particular_date_item($name, $date = '')
 		{
-			$date_format = MPCR_Global_Function::date_picker_format();
+			$date_format = MPCRM_Global_Function::date_picker_format();
 			$now = date_i18n($date_format, strtotime(current_time('Y-m-d')));
 			$hidden_date = $date ? gmdate('Y-m-d', strtotime($date)) : '';
 			$visible_date = $date ? date_i18n($date_format, strtotime($date)) : '';
@@ -403,7 +403,7 @@ if (!class_exists('MPTBM_Date_Settings')) {
 				}
 				update_post_meta($post_id, 'mptbm_off_dates', $_off_dates);
 				$this->save_schedule($post_id, 'default');
-				$days = MPCR_Global_Function::week_day();
+				$days = MPCRM_Global_Function::week_day();
 				foreach ($days as $key => $day) {
 					$this->save_schedule($post_id, $key);
 				}

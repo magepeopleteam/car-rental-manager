@@ -11,7 +11,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 	{
 		public function __construct()
 		{
-			add_action('add_mptbm_settings_tab_content', [$this, 'general_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'general_settings']);
 			add_action('add_hidden_mptbm_features_item', [$this, 'features_item']);
 			add_action('save_post', [$this, 'save_general_settings']);
 			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
@@ -19,12 +19,12 @@ if (!class_exists('MPTBM_General_Settings')) {
 		public function general_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_general_settings', 'mptbm_nonce');
-			$max_passenger = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
-			$max_bag = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
-			$display_features = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
+			$max_passenger = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
+			$max_bag = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
+			$display_features = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
 			$active = $display_features == 'off' ? '' : 'mActive';
 			$checked = $display_features == 'off' ? '' : 'checked';
-			$all_features = MPCR_Global_Function::get_post_info($post_id, 'mptbm_features');
+			$all_features = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_features');
 			if (!$all_features) {
 				$all_features = array(
 					array(

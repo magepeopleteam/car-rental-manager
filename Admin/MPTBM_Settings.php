@@ -67,7 +67,7 @@ if (!class_exists('MPTBM_Settings')) {
 					<div class="tabsContent">
 						<?php 
 						// Use a single hook for tab content
-						do_action('add_mptbm_settings_tab_content', $post_id);
+						do_action('mpcrm_settings_tab_content', $post_id);
 						?>
 					</div>
 				</div>

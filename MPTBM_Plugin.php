@@ -41,8 +41,8 @@ if (!class_exists('MPTBM_Plugin')) {
 			if (!defined('MPTBM_PLUGIN_VERSION')) {
 				define('MPTBM_PLUGIN_VERSION', '1.0.7');
 			}
-			require_once MPTBM_PLUGIN_DIR . '/mp_global/MPCR_Global_File_Load.php';
-			if (MPCR_Global_Function::check_woocommerce() == 1) {
+			require_once MPTBM_PLUGIN_DIR . '/mp_global/MPCRM_Global_File_Load.php';
+			if (MPCRM_Global_Function::check_woocommerce() == 1) {
 				add_action('activated_plugin', array($this, 'activation_redirect'), 90, 1);
 				self::on_activation_page_create();
 				require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Dependencies.php';
@@ -83,7 +83,7 @@ if (!class_exists('MPTBM_Plugin')) {
         public static function create_pages()
         {
             // Create pages only if they don't exist
-            if (!MPCR_Global_Function::get_page_by_slug('mptbm-search')) {
+            if (!MPCRM_Global_Function::get_page_by_slug('mptbm-search')) {
                 $search_page = array(
                     'post_type' => 'page',
                     'post_name' => 'mptbm-search',

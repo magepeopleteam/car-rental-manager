@@ -9,8 +9,8 @@
 	if (!class_exists('MPTBM_Tax_Settings')) {
 		class MPTBM_Tax_Settings {
 			public function __construct() {
-				add_action('add_mptbm_settings_tab_content', [$this, 'tab_content']);
-				add_action('add_mpcr_settings_tab_content', [$this, 'tab_content']);
+				add_action('mpcrm_settings_tab_content', [$this, 'tab_content']);
+				add_action('mpcrm_settings_tab_content', [$this, 'tab_content']);
 				add_action('save_post', [$this, 'settings_save']);
 				add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 			}
@@ -20,9 +20,9 @@
 					<h3><?php esc_html_e('Tax Configuration', 'car-rental-manager'); ?></h3>
 					<p><?php esc_html_e('Tax Configuration settings.', 'car-rental-manager'); ?></p>
 					<?php
-						$tax_status = MPCR_Global_Function::get_post_info($post_id, '_tax_status');
-						$tax_class = MPCR_Global_Function::get_post_info($post_id, '_tax_class');
-						$all_tax_class = MPCR_Global_Function::all_tax_list();
+						$tax_status = MPCRM_Global_Function::get_post_info($post_id, '_tax_status');
+						$tax_class = MPCRM_Global_Function::get_post_info($post_id, '_tax_class');
+						$all_tax_class = MPCRM_Global_Function::all_tax_list();
 						
 					?>
 					<?php wp_nonce_field('save_tax_settings', 'tax_settings_nonce'); ?>
@@ -91,8 +91,8 @@
 					$nonce = wp_create_nonce('settings_save_action');
 					update_post_meta($post_id, '_settings_save_nonce', $nonce);
 			
-					$tax_status = MPCR_Global_Function::get_submit_info('_tax_status', 'none');
-					$tax_class = MPCR_Global_Function::get_submit_info('_tax_class');
+					$tax_status = MPCRM_Global_Function::get_submit_info('_tax_status', 'none');
+					$tax_class = MPCRM_Global_Function::get_submit_info('_tax_class');
 			
 					update_post_meta($post_id, '_tax_status', $tax_status);
 					update_post_meta($post_id, '_tax_class', $tax_class);

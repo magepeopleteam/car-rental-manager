@@ -33,7 +33,7 @@ if (!class_exists('MPCR_Global_File_Load')) {
         }
 
         public function load_global_file() {
-            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Global_Function.php';
+            require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCRM_Global_Function.php';
             require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Global_Style.php';
             require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Custom_Layout.php';
             require_once MPCR_GLOBAL_PLUGIN_DIR . '/class/MPCR_Custom_Slider.php';
@@ -43,7 +43,7 @@ if (!class_exists('MPCR_Global_File_Load')) {
         }
 
         public function custom_css() {
-            $custom_css = MPCR_Global_Function::get_settings('mp_add_custom_css', 'custom_css');
+            $custom_css = MPCRM_Global_Function::get_settings('mp_add_custom_css', 'custom_css');
 
             if (!empty($custom_css)) {
                 // Minify the CSS
@@ -159,12 +159,12 @@ if (!class_exists('MPCR_Global_File_Load')) {
                 let mp_num_of_decimal = "";
                 let mp_ajax_url = "' . esc_url(admin_url('admin-ajax.php')) . '";
                 let mp_empty_image_url = "' . esc_attr(MPCR_GLOBAL_PLUGIN_URL . 'assets/images/no_image.png') . '";
-                let mp_date_format = "' . esc_attr(MPCR_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')) . '";
-                let mp_date_format_without_year = "' . esc_attr(MPCR_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')) . '";
+                let mp_date_format = "' . esc_attr(MPCRM_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')) . '";
+                let mp_date_format_without_year = "' . esc_attr(MPCRM_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')) . '";
             ';
 
             // Check if WooCommerce is active
-            if (MPCR_Global_Function::check_woocommerce() == 1) {
+            if (MPCRM_Global_Function::check_woocommerce() == 1) {
                 $mp_js_constants .= '
                     mp_currency_symbol = "' . esc_js(get_woocommerce_currency_symbol()) . '";
                     mp_currency_position = "' . esc_attr(get_option("woocommerce_currency_pos")) . '";

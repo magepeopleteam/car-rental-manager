@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly.
-if (!class_exists('MPCR_Global_Function')) {
-	class MPCR_Global_Function
+if (!class_exists('MPCRM_Global_Function')) {
+	class MPCRM_Global_Function
 	{
 		public function __construct()
 		{
@@ -190,7 +190,7 @@ if (!class_exists('MPCR_Global_Function')) {
 		//**************Date related*********************//
 		public static function date_picker_format_without_year($key = 'date_format'): string
 		{
-			$format = MPCR_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
+			$format = MPCRM_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
 			$date_format = 'm-d';
 			$date_format = $format == 'yy/mm/dd' ? 'm/d' : $date_format;
 			$date_format = $format == 'yy-dd-mm' ? 'd-m' : $date_format;
@@ -206,7 +206,7 @@ if (!class_exists('MPCR_Global_Function')) {
 		}
 		public static function date_picker_format($key = 'date_format'): string
 		{
-			$format = MPCR_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
+			$format = MPCRM_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
 			$date_format = 'Y-m-d';
 			$date_format = $format == 'yy/mm/dd' ? 'Y/m/d' : $date_format;
 			$date_format = $format == 'yy-dd-mm' ? 'Y-d-m' : $date_format;
@@ -311,7 +311,7 @@ if (!class_exists('MPCR_Global_Function')) {
 				if ($date == 'lifetime') {
 					return esc_html__('Lifetime', 'car-rental-manager');
 				} else if (strtotime(current_time('Y-m-d H:i')) < strtotime(gmdate('Y-m-d H:i', strtotime($date)))) {
-					return MPCR_Global_Function::date_format($date, 'full');
+					return MPCRM_Global_Function::date_format($date, 'full');
 				} else {
 					return esc_html__('Expired', 'car-rental-manager');
 				}
@@ -524,9 +524,9 @@ if (!class_exists('MPCR_Global_Function')) {
 		}
 		public static function check_product_in_cart($post_id)
 		{
-			$status = MPCR_Global_Function::check_woocommerce();
+			$status = MPCRM_Global_Function::check_woocommerce();
 			if ($status == 1) {
-				$product_id = MPCR_Global_Function::get_post_info($post_id, 'link_wc_product');
+				$product_id = MPCRM_Global_Function::get_post_info($post_id, 'link_wc_product');
 				foreach (WC()->cart->get_cart() as $cart_item) {
 					if ($cart_item['product_id'] == $product_id) {
 						return true;
@@ -743,7 +743,7 @@ if (!class_exists('MPCR_Global_Function')) {
 				} else {
 					$payment_id = $license_data->payment_id;
 					$expire = $license_data->expires;
-					$message = esc_html__('Success, License Key is valid for the plugin', 'car-rental-manager') . ' ' . $plugin_name . ' ' . esc_html__('Your Order id is', 'car-rental-manager') . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__('Validity of this licenses is', 'car-rental-manager') . ' ' . MPCR_Global_Function::check_licensee_date($expire);
+					$message = esc_html__('Success, License Key is valid for the plugin', 'car-rental-manager') . ' ' . $plugin_name . ' ' . esc_html__('Your Order id is', 'car-rental-manager') . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__('Validity of this licenses is', 'car-rental-manager') . ' ' . MPCRM_Global_Function::check_licensee_date($expire);
 				}
 			}
 			return $message;
@@ -1004,5 +1004,5 @@ if (!class_exists('MPCR_Global_Function')) {
             return fmod($number, 1) != 0;
         }
 	}
-	new MPCR_Global_Function();
+	new MPCRM_Global_Function();
 }

@@ -30,9 +30,9 @@
 	}
 
 	// Get service data
-	$display_extra_services = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-	$service_id = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-	$extra_services = MPCR_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+	$display_extra_services = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+	$service_id = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+	$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
 
 	if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 	?>
@@ -53,8 +53,8 @@
 					continue;
 				}
 
-				$wc_price = MPCR_Global_Function::wc_price($post_id, $service_price);
-				$service_price = MPCR_Global_Function::price_convert_raw($wc_price);
+				$wc_price = MPCRM_Global_Function::wc_price($post_id, $service_price);
+				$service_price = MPCRM_Global_Function::price_convert_raw($wc_price);
 			?>
 				<div class="justifyBetween">
 					<h6><?php echo esc_html($service_name); ?></h6>

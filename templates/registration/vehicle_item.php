@@ -31,9 +31,9 @@ if (!$post_id || !get_post($post_id)) {
 
 // Feature class handling
 $feature_class = '';
-if (MPCR_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') == 'yes') {
-    $max_passenger = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
-    $max_bag = MPCR_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
+if (MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') == 'yes') {
+    $max_passenger = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
+    $max_bag = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
     if (!empty($max_passenger) && !empty($max_bag)) {
         $feature_class = sprintf(
             'feature_passenger_%d_feature_bag_%d_post_id_%d',
@@ -56,7 +56,7 @@ if (empty($all_dates) || !in_array($start_date, $all_dates, true)) {
 }
 
 // View settings
-$mptbm_enable_view_search_result_page = MPCR_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page');
+$mptbm_enable_view_search_result_page = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page');
 $hidden_class = $mptbm_enable_view_search_result_page == '' ? '' : '';
 
 // Sanitize location data
@@ -67,17 +67,17 @@ $two_way = $two_way ?? 1;
 
 if ($post_id) {
     // Get vehicle data
-    $thumbnail = MPCR_Global_Function::get_image_url($post_id);
+    $thumbnail = MPCRM_Global_Function::get_image_url($post_id);
     $price = MPTBM_Function::get_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
     
     if (!$price || $price <= 0) {
         return;
     }
     
-    $wc_price = MPCR_Global_Function::wc_price($post_id, $price);
-    $raw_price = MPCR_Global_Function::price_convert_raw($wc_price);
-    $display_features = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
-    $all_features = MPCR_Global_Function::get_post_info($post_id, 'mptbm_features');
+    $wc_price = MPCRM_Global_Function::wc_price($post_id, $price);
+    $raw_price = MPCRM_Global_Function::price_convert_raw($wc_price);
+    $display_features = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
+    $all_features = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_features');
     ?>
     <div class="_dLayout_dFlex mptbm_booking_item <?php echo esc_attr('mptbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
         <div class="_max_200_mR">

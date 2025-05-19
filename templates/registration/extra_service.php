@@ -30,10 +30,10 @@ if (!current_user_can('read_post', $post_id)) {
 }
 
 // Get service data
-$link_wc_product = MPCR_Global_Function::get_post_info($post_id, 'link_wc_product');
-$display_extra_services = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-$service_id = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-$extra_services = MPCR_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+$link_wc_product = MPCRM_Global_Function::get_post_info($post_id, 'link_wc_product');
+$display_extra_services = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+$service_id = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
 
 if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 ?>
@@ -57,15 +57,15 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 					continue;
 				}
 
-				$wc_price = MPCR_Global_Function::wc_price($post_id, $service_price);
-				$service_price = MPCR_Global_Function::price_convert_raw($wc_price);
+				$wc_price = MPCRM_Global_Function::wc_price($post_id, $service_price);
+				$service_price = MPCRM_Global_Function::price_convert_raw($wc_price);
 				$ex_unique_id = '#ex_service_' . uniqid();
 			?>
 				<div class="dFlex mptbm_extra_service_item">
 					<?php if ($service_image) { ?>
 						<div class="service_img_area alignCenter">
 							<div class="bg_image_area">
-								<div data-bg-image="<?php echo esc_attr(MPCR_Global_Function::get_image_url('', $service_image, 'medium')); ?>"></div>
+								<div data-bg-image="<?php echo esc_attr(MPCRM_Global_Function::get_image_url('', $service_image, 'medium')); ?>"></div>
 							</div>
 						</div>
 					<?php } ?>

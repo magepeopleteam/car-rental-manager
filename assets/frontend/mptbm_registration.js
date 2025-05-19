@@ -827,7 +827,7 @@ function mptbm_price_calculation(parent) {
                 type: 'POST',
                 url: mp_ajax_url,
                 data: {
-                    action: "mptbm_add_to_cart",
+                    action: "mpcrm_add_to_cart",
                     //"product_id": post_id,
                     link_id: link_id,
                     mptbm_start_place: start_place,

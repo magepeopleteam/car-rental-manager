@@ -7,7 +7,7 @@ if (!defined("ABSPATH")) {
     die();
 } // Cannot access pages directly
 $label = MPTBM_Function::get_name();
-$days = MPCR_Global_Function::week_day();
+$days = MPCRM_Global_Function::week_day();
 $days_name = array_keys($days);
 $schedule = [];
 
@@ -334,7 +334,7 @@ if ($two_way > 1) {
 }
 
 // Handle feature filtering
-if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
+if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) 
         ? absint(wp_unslash($_POST["feature_passenger_number"])) 
         : 0;
@@ -346,7 +346,7 @@ if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_
 // Get available vehicles
 $mptbm_bags = [];
 $mptbm_passengers = [];
-$mptbm_all_transport_id = MPCR_Global_Function::get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCRM_Global_Function::get_all_post_id('mptbm_rent');
 
 if (!empty($mptbm_all_transport_id)) {
     foreach ($mptbm_all_transport_id as $value) {
@@ -379,7 +379,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn">
                     <!-- Filter area start -->
-                    <?php if (MPCR_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
+                    <?php if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>

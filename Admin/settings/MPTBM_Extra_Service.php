@@ -16,8 +16,8 @@ if (! class_exists('MPTBM_Extra_Service')) {
 			//********************//
 			add_action('mptbm_extra_service_item', array($this, 'extra_service_item'));
 			//****************************//
-			add_action('add_mptbm_settings_tab_content', [$this, 'ex_service_settings']);
-			add_action('add_mpcr_settings_tab_content', [$this, 'ex_service_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'ex_service_settings']);
+			add_action('mpcrm_settings_tab_content', [$this, 'ex_service_settings']);
 			add_action('save_post', [$this, 'save_ex_service']);
 			//*******************//
 			add_action('wp_ajax_get_mptbm_ex_service', array($this, 'get_mptbm_ex_service'));
@@ -47,7 +47,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		{
 
 			$post_id        = get_the_id();
-			$extra_services = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_service_infos', array());
+			$extra_services = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_service_infos', array());
 
 ?>
 			<div class="mpStyle mptbm_settings">
@@ -169,8 +169,8 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		public function ex_service_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_extra_service_nonce', 'mptbm_ex_service_nonce');
-			$display            = MPCR_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-			$service_id         = MPCR_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+			$display            = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+			$service_id         = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
 			$active             = $display == 'off' ? '' : 'mActive';
 			$checked            = $display == 'off' ? '' : 'checked';
 			$all_ex_services_id = MPTBM_Query::query_post_id('mptbm_extra_services');
@@ -220,7 +220,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		public function ex_service_table($service_id, $post_id)
 		{
 			if ($service_id && $post_id) {
-				$extra_services = MPCR_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+				$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
 			?>
 				<section>
 					<div>
