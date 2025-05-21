@@ -83,7 +83,7 @@ if (!class_exists('MPTBM_Plugin')) {
         public static function create_pages()
         {
             // Create pages only if they don't exist
-            if (!MPCRM_Global_Function::get_page_by_slug('mptbm-search')) {
+            if (!MPCRM_Global_Function::mpcrm_get_page_by_slug('mptbm-search')) {
                 $search_page = array(
                     'post_type' => 'page',
                     'post_name' => 'mptbm-search',

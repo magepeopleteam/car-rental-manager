@@ -27,7 +27,7 @@
             public function global_sec_reg($default_sec): array {
 				$sections = array(
 					array(
-						'id' => 'mp_style_settings',
+						'id' => 'mp_mpcrm_get_style_settings',
 						'title' => esc_html__('Style Settings', 'car-rental-manager')
 					),
 					array(
@@ -105,7 +105,7 @@
 							)
 						),
 					)),
-					'mp_style_settings' => apply_filters('filter_mp_style_settings', array(
+					'mp_mpcrm_get_style_settings' => apply_filters('filter_mp_mpcrm_get_style_settings', array(
 						array(
 							'name' => 'theme_color',
 							'label' => esc_html__('Theme Color', 'car-rental-manager'),

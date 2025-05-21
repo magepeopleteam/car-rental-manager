@@ -175,7 +175,7 @@ if (!class_exists('MPCRM_Custom_Layout')) {
 		/*****************************/
 		public static function bg_image($post_id = '', $url = '')
 		{
-			$thumbnail = $post_id > 0 ? MPCRM_Global_Function::get_image_url($post_id) : $url;
+			$thumbnail = $post_id > 0 ? MPCRM_Global_Function::mpcrm_get_image_url($post_id) : $url;
 			$post_url = $post_id > 0 ? get_the_permalink($post_id) : '';
 		?>
 			<div class="bg_image_area" data-href="<?php echo esc_attr($post_url); ?>" data-placeholder>

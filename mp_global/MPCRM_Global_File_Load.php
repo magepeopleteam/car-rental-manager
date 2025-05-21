@@ -43,7 +43,7 @@ if (!class_exists('MPCRM_Global_File_Load')) {
         }
 
         public function custom_css() {
-            $custom_css = MPCRM_Global_Function::get_settings('mp_add_custom_css', 'custom_css');
+            $custom_css = MPCRM_Global_Function::mpcrm_get_settings('mp_add_custom_css', 'custom_css');
 
             if (!empty($custom_css)) {
                 // Minify the CSS
@@ -147,7 +147,7 @@ if (!class_exists('MPCRM_Global_File_Load')) {
 
         public function js_constant() {
             // Register and enqueue your JavaScript file (if you have one)
-            wp_register_script('mpcrm-custom-js-constant', MPCRM_GLOBAL_PLUGIN_URL . 'assets/mpcrm-custom-js-constant.js', array('jquery'), '1.0', true);
+            wp_register_script('mpcrm-custom-js-constant', MPCRM_GLOBAL_PLUGIN_URL . 'assets/mpcr-custom-js-constant.js', array('jquery'), '1.0', true);
             wp_enqueue_script('mpcrm-custom-js-constant');
 
             // Prepare inline JavaScript
@@ -159,8 +159,8 @@ if (!class_exists('MPCRM_Global_File_Load')) {
                 let mp_num_of_decimal = "";
                 let mp_ajax_url = "' . esc_url(admin_url('admin-ajax.php')) . '";
                 let mp_empty_image_url = "' . esc_attr(MPCRM_GLOBAL_PLUGIN_URL . 'assets/images/no_image.png') . '";
-                let mp_date_format = "' . esc_attr(MPCRM_Global_Function::get_settings('mp_global_settings', 'date_format', 'D d M , yy')) . '";
-                let mp_date_format_without_year = "' . esc_attr(MPCRM_Global_Function::get_settings('mp_global_settings', 'date_format_without_year', 'D d M')) . '";
+                let mp_date_format = "' . esc_attr(MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', 'date_format', 'D d M , yy')) . '";
+                let mp_date_format_without_year = "' . esc_attr(MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', 'date_format_without_year', 'D d M')) . '";
             ';
 
             // Check if WooCommerce is active

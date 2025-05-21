@@ -50,8 +50,8 @@
 			}
 			//************Disable Gutenberg************************//
 			public function disable_gutenberg($current_status, $post_type) {
-				$user_status = MPCRM_Global_Function::get_settings('mp_global_settings', 'disable_block_editor', 'yes');
-				if ($post_type === MPTBM_Function::get_cpt() && $user_status == 'yes') {
+				$user_status = MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', 'disable_block_editor', 'yes');
+				if ($post_type === MPTBM_Function::mpcrm_get_cpt() && $user_status == 'yes') {
 					return false;
 				}
 				return $current_status;

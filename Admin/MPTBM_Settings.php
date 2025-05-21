@@ -22,7 +22,7 @@ if (!class_exists('MPTBM_Settings')) {
 				__('Information Settings <span class="version">V%s</span>', 'car-rental-manager'),
 				MPTBM_PLUGIN_VERSION
 			);
-			$cpt = MPTBM_Function::get_cpt();
+			$cpt = MPTBM_Function::mpcrm_get_cpt();
 			add_meta_box('mp_meta_box_panel', $label, array($this, 'settings'), $cpt, 'normal', 'high');
 		}
 		//******************************//

@@ -12,22 +12,22 @@
 				add_action( 'add_mp_global_enqueue', array( $this, 'mpcrm_inline_css_setings' ), 100 );
 			}
 			public function mpcrm_inline_css_setings() {
-				$default_color   = MPCRM_Global_Function::get_style_settings( 'default_text_color', '#303030' );
-				$theme_color     = MPCRM_Global_Function::get_style_settings( 'theme_color', '#F12971' );
-				$alternate_color = MPCRM_Global_Function::get_style_settings( 'theme_alternate_color', '#fff' );
-				$warning_color   = MPCRM_Global_Function::get_style_settings( 'warning_color', '#E67C30' );
-				$default_fs      = MPCRM_Global_Function::get_style_settings( 'default_font_size', '14' ) . 'px';
-				$fs_h1           = MPCRM_Global_Function::get_style_settings( 'font_size_h1', '35' ) . 'px';
-				$fs_h2           = MPCRM_Global_Function::get_style_settings( 'font_size_h2', '30' ) . 'px';
-				$fs_h3           = MPCRM_Global_Function::get_style_settings( 'font_size_h3', '25' ) . 'px';
-				$fs_h4           = MPCRM_Global_Function::get_style_settings( 'font_size_h4', '22' ) . 'px';
-				$fs_h5           = MPCRM_Global_Function::get_style_settings( 'font_size_h5', '18' ) . 'px';
-				$fs_h6           = MPCRM_Global_Function::get_style_settings( 'font_size_h6', '16' ) . 'px';
-				$fs_label        = MPCRM_Global_Function::get_style_settings( 'font_size_label', '16' ) . 'px';
-				$button_fs       = MPCRM_Global_Function::get_style_settings( 'button_font_size', '16' ) . 'px';
-				$button_color    = MPCRM_Global_Function::get_style_settings( 'button_color', $alternate_color );
-				$button_bg       = MPCRM_Global_Function::get_style_settings( 'button_bg', '#ea8125' );
-				$section_bg      = MPCRM_Global_Function::get_style_settings( 'section_bg', '#FAFCFE' );
+				$default_color   = MPCRM_Global_Function::mpcrm_get_style_settings( 'default_text_color', '#303030' );
+				$theme_color     = MPCRM_Global_Function::mpcrm_get_style_settings( 'theme_color', '#F12971' );
+				$alternate_color = MPCRM_Global_Function::mpcrm_get_style_settings( 'theme_alternate_color', '#fff' );
+				$warning_color   = MPCRM_Global_Function::mpcrm_get_style_settings( 'warning_color', '#E67C30' );
+				$default_fs      = MPCRM_Global_Function::mpcrm_get_style_settings( 'default_font_size', '14' ) . 'px';
+				$fs_h1           = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_h1', '35' ) . 'px';
+				$fs_h2           = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_h2', '30' ) . 'px';
+				$fs_h3           = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_h3', '25' ) . 'px';
+				$fs_h4           = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_h4', '22' ) . 'px';
+				$fs_h5           = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_h5', '18' ) . 'px';
+				$fs_h6           = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_h6', '16' ) . 'px';
+				$fs_label        = MPCRM_Global_Function::mpcrm_get_style_settings( 'font_size_label', '16' ) . 'px';
+				$button_fs       = MPCRM_Global_Function::mpcrm_get_style_settings( 'button_font_size', '16' ) . 'px';
+				$button_color    = MPCRM_Global_Function::mpcrm_get_style_settings( 'button_color', $alternate_color );
+				$button_bg       = MPCRM_Global_Function::mpcrm_get_style_settings( 'button_bg', '#ea8125' );
+				$section_bg      = MPCRM_Global_Function::mpcrm_get_style_settings( 'section_bg', '#FAFCFE' );
 				$theme_color_ee  = $theme_color.'ee';
 				$theme_color_cc  = $theme_color.'cc';
 				$theme_color_aa  = $theme_color.'aa';

@@ -12,11 +12,11 @@
 				add_action('admin_menu', array($this, 'guideline_menu'));
 			}
 			public function guideline_menu() {
-				$cpt = MPTBM_Function::get_cpt();
+				$cpt = MPTBM_Function::mpcrm_get_cpt();
 				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Guideline', 'car-rental-manager'), '<span>' . esc_html__('Guideline', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_guideline_page', array($this, 'guideline_page'));
 			}
 			public function guideline_page() {
-				$label = MPTBM_Function::get_name();
+				$label = MPTBM_Function::mpcrm_get_name();
 				?>
 				<div class="wrap"></div>
 				<div class="mpStyle">

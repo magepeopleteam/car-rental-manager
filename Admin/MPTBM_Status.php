@@ -12,11 +12,11 @@
 				add_action('admin_menu', array($this, 'status_menu'));
 			}
 			public function status_menu() {
-				$cpt = MPTBM_Function::get_cpt();
+				$cpt = MPTBM_Function::mpcrm_get_cpt();
 				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Status', 'car-rental-manager'), '<span style="color:yellow">' . esc_html__('Status', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_status_page', array($this, 'status_page'));
 			}
 			public function status_page() {
-				$label = MPTBM_Function::get_name();
+				$label = MPTBM_Function::mpcrm_get_name();
 				$wc_i = MPCRM_Global_Function::check_woocommerce();
 				$wc_i_text = $wc_i == 1 ? esc_html__('Yes', 'car-rental-manager') : esc_html__('No', 'car-rental-manager');
 				$wp_v = get_bloginfo('version');

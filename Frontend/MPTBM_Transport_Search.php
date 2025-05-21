@@ -14,23 +14,23 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			add_action('mptbm_transport_search', [$this, 'transport_search'], 10, 1);
 			//add_action('mptbm_transport_search_form', [$this, 'transport_search_form'], 10, 2);
 			/*******************/
-			add_action('wp_ajax_get_mptbm_map_search_result', [$this, 'get_mptbm_map_search_result']);
-			add_action('wp_ajax_nopriv_get_mptbm_map_search_result', [$this, 'get_mptbm_map_search_result']);
+			add_action('wp_ajax_get_mptbm_map_search_result', [$this, 'mpcrm_get_map_search_result']);
+			add_action('wp_ajax_nopriv_get_mptbm_map_search_result', [$this, 'mpcrm_get_map_search_result']);
 			add_action('wp_ajax_get_mptbm_map_search_result_redirect', [$this, 'get_mptbm_map_search_result_redirect']);
 			add_action('wp_ajax_nopriv_get_mptbm_map_search_result_redirect', [$this, 'get_mptbm_map_search_result_redirect']);
 			/*********************/
 			add_action('wp_ajax_get_mptbm_end_place', [$this, 'get_mptbm_end_place']);
 			add_action('wp_ajax_nopriv_get_mptbm_end_place', [$this, 'get_mptbm_end_place']);
 			/**************************/
-			add_action('wp_ajax_get_mptbm_extra_service', [$this, 'get_mptbm_extra_service']);
-			add_action('wp_ajax_nopriv_get_mptbm_extra_service', [$this, 'get_mptbm_extra_service']);
+			add_action('wp_ajax_get_mptbm_extra_service', [$this, 'mpcrm_get_extra_service']);
+			add_action('wp_ajax_nopriv_get_mptbm_extra_service', [$this, 'mpcrm_get_extra_service']);
 			/*******************************/
-			add_action('wp_ajax_get_mptbm_extra_service_summary', [$this, 'get_mptbm_extra_service_summary']);
-			add_action('wp_ajax_nopriv_get_mptbm_extra_service_summary', [$this, 'get_mptbm_extra_service_summary']);
+			add_action('wp_ajax_get_mptbm_extra_service_summary', [$this, 'mpcrm_get_extra_service_summary']);
+			add_action('wp_ajax_nopriv_get_mptbm_extra_service_summary', [$this, 'mpcrm_get_extra_service_summary']);
 		}
 		public function transport_search($params)
 		{
-			$display_map = MPCRM_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
+			$display_map = MPCRM_Global_Function::mpcrm_get_settings('mptbm_map_api_settings', 'display_map', 'enable');
 			$price_based = $params['price_based'] ?: 'dynamic';
 			$price_based = $display_map == 'disable' ? 'manual' : $price_based;
 			$progressbar = $params['progressbar'] ?: 'yes';
@@ -43,7 +43,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			//echo '<pre>';print_r($params);echo '</pre>';
 			include(MPTBM_Function::template_path('registration/registration_layout.php'));
 		}
-		public function get_mptbm_map_search_result()
+		public function mpcrm_get_map_search_result()
 		{
 
 			include(MPTBM_Function::template_path('registration/choose_vehicles.php'));
@@ -51,7 +51,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 
 			die(); // Ensure further execution stops after outputting the JavaScript
 		}
-		public function get_mptbm_map_search_result_redirect()
+		public function mpcrm_get_map_search_result_redirect()
 		{
 			
 			ob_start(); // Start output buffering
@@ -87,17 +87,17 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			die(); // Ensure further execution stops after outputting the JavaScript
 		}
 
-		public function get_mptbm_end_place()
+		public function mpcrm_get_end_place()
 		{
 			include(MPTBM_Function::template_path('registration/get_end_place.php'));
 			die();
 		}
-		public function get_mptbm_extra_service()
+		public function mpcrm_get_extra_service()
 		{
 			include(MPTBM_Function::template_path('registration/extra_service.php'));
 			die();
 		}
-		public function get_mptbm_extra_service_summary()
+		public function mpcrm_get_extra_service_summary()
 		{
 			include(MPTBM_Function::template_path('registration/extra_service_summary.php'));
 			die();

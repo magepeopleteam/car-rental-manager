@@ -30,9 +30,9 @@
 	}
 
 	// Get service data
-	$display_extra_services = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-	$service_id = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-	$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+	$display_extra_services = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+	$service_id = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+	$extra_services = MPCRM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
 
 	if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 	?>

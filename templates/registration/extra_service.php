@@ -30,10 +30,10 @@ if (!current_user_can('read_post', $post_id)) {
 }
 
 // Get service data
-$link_wc_product = MPCRM_Global_Function::get_post_info($post_id, 'link_wc_product');
-$display_extra_services = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-$service_id = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+$link_wc_product = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'link_wc_product');
+$display_extra_services = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+$service_id = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+$extra_services = MPCRM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
 
 if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 ?>
@@ -65,7 +65,7 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 					<?php if ($service_image) { ?>
 						<div class="service_img_area alignCenter">
 							<div class="bg_image_area">
-								<div data-bg-image="<?php echo esc_attr(MPCRM_Global_Function::get_image_url('', $service_image, 'medium')); ?>"></div>
+								<div data-bg-image="<?php echo esc_attr(MPCRM_Global_Function::mpcrm_get_image_url('', $service_image, 'medium')); ?>"></div>
 							</div>
 						</div>
 					<?php } ?>

@@ -21,7 +21,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function global_settings_menu()
 		{
-			$cpt = MPTBM_Function::get_cpt();
+			$cpt = MPTBM_Function::mpcrm_get_cpt();
 			add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Global Settings', 'car-rental-manager'), esc_html__('Global Settings', 'car-rental-manager'), 'manage_options', 'mptbm_settings_page', array($this, 'settings_page'));
 		}
 		public function settings_page()
@@ -45,23 +45,23 @@ if (!class_exists('MPTBM_Settings_Global')) {
 
 		public function admin_init()
 		{
-			$this->settings_api->mpcrm_set_sections($this->get_settings_sections());
-			$this->settings_api->mpcrm_set_fields($this->get_settings_fields());
+			$this->settings_api->mpcrm_set_sections($this->mpcrm_get_settings_sections());
+			$this->settings_api->mpcrm_set_fields($this->mpcrm_get_settings_fields());
 			$this->settings_api->admin_init();
 		}
-		public function get_settings_sections()
+		public function mpcrm_get_settings_sections()
 		{
 			$sections = array();
 			return apply_filters('mp_settings_sec_reg', $sections);
 		}
-		public function get_settings_fields()
+		public function mpcrm_get_settings_fields()
 		{
 			$settings_fields = array();
 			return apply_filters('mp_settings_sec_fields', $settings_fields);
 		}
 		public function settings_sec_reg($default_sec): array
 		{
-			$label = MPTBM_Function::get_name();
+			$label = MPTBM_Function::mpcrm_get_name();
 			$sections = array(
 				array(
 					'id' => 'mptbm_general_settings',
@@ -74,7 +74,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		public function settings_sec_fields($default_fields): array
 		{
 			$gm_api_url = 'https://developers.google.com/maps/documentation/javascript/get-api-key';
-			$label = MPTBM_Function::get_name();
+			$label = MPTBM_Function::mpcrm_get_name();
 
 
 
@@ -247,7 +247,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function global_taxi($default_sec)
 		{
-			$label = MPTBM_Function::get_name();
+			$label = MPTBM_Function::mpcrm_get_name();
 			$sections = array(
 				array(
 					'name' => 'set_book_status',

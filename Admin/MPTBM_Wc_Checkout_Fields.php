@@ -18,7 +18,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 		public function __construct()
 		{
 			$this->error = new WP_Error();
-			add_action('init', array($this, 'get_settings_options'));
+			add_action('init', array($this, 'mpcrm_get_settings_options'));
 			add_action('add_mptbm_admin_script', array($this, 'admin_enqueue'));
 			add_action('add_mptbm_frontend_script', array($this, 'frontend_enqueue'), 99);
 			add_action('admin_menu', array($this, 'checkout_menu'));
@@ -80,7 +80,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			</label>
 		<?php
 		}
-		public function get_settings_options()
+		public function mpcrm_get_settings_options()
 		{
 			$this->settings_options = get_option('mptbm_custom_checkout_fields');
 		}
@@ -103,7 +103,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 		}
 		public function checkout_menu()
 		{
-			$cpt = MPTBM_Function::get_cpt();
+			$cpt = MPTBM_Function::mpcrm_get_cpt();
 			add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Checkout Fields', 'car-rental-manager'), esc_html__('Checkout Fields', 'car-rental-manager'), 'manage_options', 'mptbm_wc_checkout_fields', array($this, 'wc_checkout_fields'));
 		}
 		public function wc_checkout_fields()

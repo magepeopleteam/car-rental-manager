@@ -6,7 +6,7 @@
 if (!defined("ABSPATH")) {
     die();
 } // Cannot access pages directly
-$label = MPTBM_Function::get_name();
+$label = MPTBM_Function::mpcrm_get_name();
 $days = MPCRM_Global_Function::week_day();
 $days_name = array_keys($days);
 $schedule = [];
@@ -52,7 +52,7 @@ function wptbm_check_operation_area($post_id, $start_place, $end_place)
 }
 
 
-function wptbm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
+function mpcrm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
 {
     // Validate inputs
     $post_id = absint($post_id);
@@ -207,7 +207,7 @@ if ($start_time !== "") {
             wp_die();
         }
 
-        $interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+        $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
         
         // Calculate minutes based on interval time
         if ($interval_time == "5" || $interval_time == "15") {
@@ -300,7 +300,7 @@ if ($two_way > 1) {
                 wp_die();
             }
 
-            $interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time');
+            $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
             
             // Calculate minutes based on interval time
             if ($interval_time == "5" || $interval_time == "15") {
@@ -334,7 +334,7 @@ if ($two_way > 1) {
 }
 
 // Handle feature filtering
-if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
+if (MPCRM_Global_Function::mpcrm_get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) 
         ? absint(wp_unslash($_POST["feature_passenger_number"])) 
         : 0;
@@ -346,13 +346,13 @@ if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter
 // Get available vehicles
 $mptbm_bags = [];
 $mptbm_passengers = [];
-$mptbm_all_transport_id = MPCRM_Global_Function::get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCRM_Global_Function::mpcrm_get_all_post_id('mptbm_rent');
 
 if (!empty($mptbm_all_transport_id)) {
     foreach ($mptbm_all_transport_id as $value) {
         if ($value && get_post($value)) {
-            $mptbm_bags[] = MPTBM_Function::get_feature_bag($value);
-            $mptbm_passengers[] = MPTBM_Function::get_feature_passenger($value);
+            $mptbm_bags[] = MPTBM_Function::mpcrm_get_feature_bag($value);
+            $mptbm_passengers[] = MPTBM_Function::mpcrm_get_feature_passenger($value);
         }
     }
 }
@@ -379,7 +379,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn">
                     <!-- Filter area start -->
-                    <?php if (MPCRM_Global_Function::get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
+                    <?php if (MPCRM_Global_Function::mpcrm_get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
@@ -422,7 +422,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
                         foreach ($posts as $post) {
 
                             $post_id = $post->ID;
-                            $check_schedule = wptbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
+                            $check_schedule = mpcrm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
                             $check_operation_area = wptbm_check_operation_area($post_id, $start_place, $end_place);
                             
                            

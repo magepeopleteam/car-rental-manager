@@ -287,7 +287,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 				"pdf" => "application/pdf"
 			);
 			//add_filter('woocommerce_add_cart_item_data', array($this, 'add_cart_item_data'), 99, 3);
-			add_filter('woocommerce_checkout_fields', array($this, 'get_checkout_fields_for_checkout'), 10);
+			add_filter('woocommerce_checkout_fields', array($this, 'mpcrm_get_checkout_fields_for_checkout'), 10);
 			add_action('woocommerce_after_checkout_billing_form', array($this, 'file_upload_field'));
 			add_action('woocommerce_after_checkout_shipping_form', array($this, 'file_upload_field'));
 			add_action('woocommerce_after_checkout_order_form', array($this, 'file_upload_field'));
@@ -297,7 +297,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			add_action('woocommerce_admin_order_data_after_shipping_address', array($this, 'order_details'), 99, 1);
 			//add_filter('woocommerce_available_payment_gateways', array($this, 'custom_filter_payment_gateways'),10);
 		}
-		public static function get_checkout_fields_for_list()
+		public static function mpcrm_get_checkout_fields_for_list()
 		{
 			$fields = array();
 			$checkout_fields = self::$default_woocommerce_checkout_fields;
@@ -330,7 +330,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			}
 			return $fields;
 		}
-		public function get_checkout_fields_for_checkout()
+		public function mpcrm_get_checkout_fields_for_checkout()
 		{
 			$fields = array();
 			$checkout_fields = WC()->checkout->get_checkout_fields();
@@ -414,33 +414,33 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 		}
 		function file_upload_field()
 		{
-			$checkout_fields = $this->get_checkout_fields_for_checkout();
+			$checkout_fields = $this->mpcrm_get_checkout_fields_for_checkout();
 			$billing_fields = $checkout_fields['billing'];
 			$shipping_fields = $checkout_fields['shipping'];
 			$order_fields = $checkout_fields['order'];
 			$current_action = current_filter();
 			if ($current_action == 'woocommerce_after_checkout_billing_form') {
 				if (in_array('file', array_column($billing_fields, 'type'))) {
-					$billing_file_fields = array_filter($billing_fields, array($this, 'get_file_fields'));
+					$billing_file_fields = array_filter($billing_fields, array($this, 'mpcrm_get_file_fields'));
 					$this->file_upload_field_element($billing_file_fields);
 				}
 			} else if ($current_action == 'woocommerce_after_checkout_shipping_form') {
 				if (in_array('file', array_column($shipping_fields, 'type'))) {
-					$shipping_file_fields = array_filter($shipping_fields, array($this, 'get_file_fields'));
+					$shipping_file_fields = array_filter($shipping_fields, array($this, 'mpcrm_get_file_fields'));
 					$this->file_upload_field_element($shipping_file_fields);
 				}
 			} else if ($current_action == 'woocommerce_after_checkout_order_form') {
 				if (in_array('file', array_column($order_fields, 'type'))) {
-					$order_file_fields = array_filter($order_fields, array($this, 'get_file_fields'));
+					$order_file_fields = array_filter($order_fields, array($this, 'mpcrm_get_file_fields'));
 					$this->file_upload_field_element($order_file_fields);
 				}
 			}
 		}
-		public function get_other_fields($field)
+		public function mpcrm_get_other_fields($field)
 		{
 			return (is_array($field) && isset($field['custom_field']) && $field['custom_field'] == '1' && isset($field['type']) && $field['type'] != 'file');
 		}
-		public function get_file_fields($field)
+		public function mpcrm_get_file_fields($field)
 		{
 			return (is_array($field) && isset($field['custom_field']) && $field['custom_field'] == '1' && isset($field['type']) && $field['type'] == 'file');
 		}
@@ -473,10 +473,10 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			if (!wp_verify_nonce($nonce, 'mptbm_transportation_type_nonce')) {
 				return;
 			}
-			$checkout_key_fields = $this->get_checkout_fields_for_checkout();
+			$checkout_key_fields = $this->mpcrm_get_checkout_fields_for_checkout();
 			foreach ($checkout_key_fields as $key => $checkout_fields) {
 				if (is_array($checkout_fields) && count($checkout_fields)) {
-					$checkout_other_fields = array_filter($checkout_fields, array($this, 'get_other_fields'));
+					$checkout_other_fields = array_filter($checkout_fields, array($this, 'mpcrm_get_other_fields'));
 					foreach ($checkout_other_fields as $key => $file_fields) {
 						if ( isset( $_POST[$key] ) ) {
 							update_post_meta(
@@ -487,16 +487,16 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 						}						
 					}
 					if (in_array('file', array_column($checkout_fields, 'type'))) {
-						$checkout_file_fields = array_filter($checkout_fields, array($this, 'get_file_fields'));
+						$checkout_file_fields = array_filter($checkout_fields, array($this, 'mpcrm_get_file_fields'));
 						foreach ($checkout_file_fields as $key => $file_fields) {
-							$image_url = $this->get_uploaded_image_link($key . '_file');
+							$image_url = $this->mpcrm_get_uploaded_image_link($key . '_file');
 							update_post_meta($order_id, '_' . $key, esc_url($image_url));
 						}
 					}
 				}
 			}
 		}
-		function get_post($order_id)
+		function mpcrm_get_post($order_id)
 		{
 			$args = array(
 				'post_type' => 'mpcrm_booking',
@@ -520,7 +520,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 			}
 			return $post_ids;
 		}
-        function get_uploaded_image_link($file_field_name) {
+        function mpcrm_get_uploaded_image_link($file_field_name) {
 			// Check if nonce is set
 			if (!isset($_POST['mptbm_transportation_type_nonce'])) {
 				return false;
@@ -627,37 +627,37 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
         function order_details($order_id)
 		{
 			$order = wc_get_order($order_id);
-			$checkout_fields = $this->get_checkout_fields_for_checkout();
+			$checkout_fields = $this->mpcrm_get_checkout_fields_for_checkout();
 			$billing_fields = $checkout_fields['billing'];
 			$shipping_fields = $checkout_fields['shipping'];
 			$order_fields = $checkout_fields['order'];
 			$current_action = current_filter();
 			if ($current_action == 'woocommerce_admin_order_data_after_billing_address') {
-				$checkout_billing_other_fields = array_filter($billing_fields, array($this, 'get_other_fields'));
+				$checkout_billing_other_fields = array_filter($billing_fields, array($this, 'mpcrm_get_other_fields'));
 				$this->prepare_other_field($checkout_billing_other_fields, 'billing', $order);
 				if (in_array('file', array_column($billing_fields, 'type'))) {
-					$checkout_billing_file_fields = array_filter($billing_fields, array($this, 'get_file_fields'));
+					$checkout_billing_file_fields = array_filter($billing_fields, array($this, 'mpcrm_get_file_fields'));
 					$this->prepare_file_field($checkout_billing_file_fields, 'billing', $order);
 				}
 			} else if ($current_action == 'woocommerce_admin_order_data_after_shipping_address') {
-				$checkout_shipping_other_fields = array_filter($shipping_fields, array($this, 'get_other_fields'));
+				$checkout_shipping_other_fields = array_filter($shipping_fields, array($this, 'mpcrm_get_other_fields'));
 				$this->prepare_other_field($checkout_shipping_other_fields, 'shipping', $order);
 				if (in_array('file', array_column($shipping_fields, 'type'))) {
-					$checkout_shipping_file_fields = array_filter($shipping_fields, array($this, 'get_file_fields'));
+					$checkout_shipping_file_fields = array_filter($shipping_fields, array($this, 'mpcrm_get_file_fields'));
 					$this->prepare_file_field($checkout_shipping_file_fields, 'shipping', $order);
 				}
 			} else if ($current_action == 'woocommerce_admin_order_data_after_order_address') {
-				$checkout_order_other_fields = array_filter($order_fields, array($this, 'get_other_fields'));
+				$checkout_order_other_fields = array_filter($order_fields, array($this, 'mpcrm_get_other_fields'));
 				$this->prepare_other_field($checkout_order_other_fields, 'order', $order);
 				if (in_array('file', array_column($order_fields, 'type'))) {
-					$checkout_order_file_fields = array_filter($order_fields, array($this, 'get_file_fields'));
+					$checkout_order_file_fields = array_filter($order_fields, array($this, 'mpcrm_get_file_fields'));
 					$this->prepare_file_field($checkout_order_file_fields, 'order', $order);
 				}
 			}
 		}
 		function prepare_other_field($custom_fields, $key, $order)
 		{
-			?>
+		?>
 			<div class="order_data_column_container">
 				<?php if (is_array($custom_fields) && count($custom_fields)) : ?>
 					<div class="order_data_column">

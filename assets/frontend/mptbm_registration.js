@@ -97,23 +97,17 @@ function mptbmCreateMarker(place) {
         mptbm_map_window.open(map);
     });
 }
-(function ($) {
+jQuery(document).ready(function($) {
     "use strict";
-    $(document).ready(function () {
-        $(".mpStyle ul.mp_input_select_list").hide();
 
+    // Initialize map and autocomplete
+    $(".mpStyle ul.mp_input_select_list").hide();
         if ($("#mptbm_map_area").length > 0) {
             mptbm_set_cookie_distance_duration();
-            if (
-                $("#mptbm_map_start_place").length > 0 &&
-                $("#mptbm_map_end_place").length > 0
-            ) {
+        if ($("#mptbm_map_start_place").length > 0 && $("#mptbm_map_end_place").length > 0) {
                 let start_place = document.getElementById("mptbm_map_start_place");
                 let end_place = document.getElementById("mptbm_map_end_place");
-    
-                let start_place_autoload = new google.maps.places.Autocomplete(
-                    start_place,
-                );
+            let start_place_autoload = new google.maps.places.Autocomplete(start_place);
                 let mptbm_restrict_search_to_country = $('[name="mptbm_restrict_search_country"]').val();
                 let mptbm_country = $('[name="mptbm_country"]').val();
                 
@@ -123,39 +117,94 @@ function mptbmCreateMarker(place) {
                     });
                 }
                 
-                google.maps.event.addListener(
-                    start_place_autoload,
-                    "place_changed",
-                    function () {
-                        mptbm_set_cookie_distance_duration(
-                            start_place.value,
-                            end_place.value
-                        );
-                    }
-                );
-                let end_place_autoload = new google.maps.places.Autocomplete(
-                    end_place,
-                );
+            google.maps.event.addListener(start_place_autoload, "place_changed", function() {
+                mptbm_set_cookie_distance_duration(start_place.value, end_place.value);
+            });
+            
+            let end_place_autoload = new google.maps.places.Autocomplete(end_place);
                 if(mptbm_restrict_search_to_country == 'yes'){
                     end_place_autoload.setComponentRestrictions({
                         country: [mptbm_country]
                     });
                 }
                 
-                google.maps.event.addListener(
-                    end_place_autoload,
-                    "place_changed",
-                    function () {
-                        mptbm_set_cookie_distance_duration(
-                            start_place.value,
-                            end_place.value
-                        );
-                    }
-                );
-            }
+            google.maps.event.addListener(end_place_autoload, "place_changed", function() {
+                mptbm_set_cookie_distance_duration(start_place.value, end_place.value);
+            });
+        }
+    }
+
+    // Handle vehicle selection
+    $(document).on('click', '.mptbm_transport_select', function() {
+        let $this = $(this);
+        let parent = $this.closest('.mptbm_transport_search_area');
+        let target_summary = parent.find('.mptbm_transport_summary');
+        let target_extra_service = parent.find('.mptbm_extra_service');
+        let target_extra_service_summary = parent.find('.mptbm_extra_service_summary');
+        
+        // Clear all extra services when selecting a new vehicle
+        target_extra_service_summary.empty();
+        target_extra_service.empty();
+        
+        // Reset all extra service inputs
+        parent.find('[name="mptbm_extra_service[]"]').val('').trigger('change');
+        parent.find('[name="mptbm_extra_service_qty[]"]').val('1');
+        
+        if ($this.hasClass('active_select')) {
+            // Deselect vehicle
+            $this.removeClass('active_select');
+            target_summary.slideUp(400);
+            target_extra_service.slideUp(400);
+            target_extra_service_summary.slideUp(400);
+            parent.find('[name="mptbm_post_id"]').val('');
+        } else {
+            // Select new vehicle
+            parent.find('.mptbm_transport_select.active_select').removeClass('active_select');
+            
+            let transport_name = $this.attr('data-transport-name');
+            let transport_price = parseFloat($this.attr('data-transport-price'));
+            let post_id = $this.attr('data-post-id');
+            
+            // Update vehicle details in summary
+            target_summary.find('.mptbm_product_name').html(transport_name);
+            target_summary.find('.mptbm_product_price').html(mp_price_format(transport_price));
+            target_summary.find('.mptbm_product_total_price').html(mp_price_format(transport_price));
+            
+            $this.addClass('active_select');
+            parent.find('[name="mptbm_post_id"]').val(post_id).attr('data-price', transport_price);
+            
+            // Show summary sections
+            target_summary.slideDown(400);
+            target_extra_service.slideDown(400);
+            target_extra_service_summary.slideDown(400);
+            
+            // Fetch available extra services
+            $.ajax({
+                type: 'POST',
+                url: mptbm_ajax.ajax_url,
+                data: {
+                    action: 'get_mptbm_extra_service',
+                    post_id: post_id,
+                    mptbm_transportation_type_nonce: mptbm_ajax.nonce
+                },
+                beforeSend: function() {
+                    dLoader(parent.find('.tabsContentNext'));
+                },
+                success: function(data) {
+                    target_extra_service.html(data);
+                    checkAndToggleBookNowButton(parent);
+                    dLoaderRemove(parent.find('.tabsContentNext'));
+                },
+                error: function(response) {
+                    console.log(response);
+                    dLoaderRemove(parent.find('.tabsContentNext'));
+                }
+            });
         }
     });
-    $(document).on("click", "#mptbm_get_vehicle", function () {
+
+    // Handle get vehicle button
+    $(document).on("click", "#mptbm_get_vehicle", function() {
         let parent = $(this).closest(".mptbm_transport_search_area");
         let mptbm_enable_return_in_different_date = parent
             .find('[name="mptbm_enable_return_in_different_date"]')
@@ -404,9 +453,10 @@ function mptbmCreateMarker(place) {
             }
         }
     });
-    $(document).on("change", "#mptbm_map_start_date", function () {
-        // Clear the time slots list
 
+    // Handle date and time changes
+    $(document).on("change", "#mptbm_map_start_date", function() {
+        // Clear the time slots list
         $('#mptbm_map_start_time').siblings('.start_time_list').empty();
         $('.start_time_input,#mptbm_map_start_time').val('');
         let mptbm_enable_return_in_different_date = $('[name="mptbm_enable_return_in_different_date"]').val();
@@ -470,8 +520,7 @@ function mptbmCreateMarker(place) {
             .trigger("click");
     });
 
-
-    $(document).on("change", "#mptbm_map_return_date", function () {
+    $(document).on("change", "#mptbm_map_return_date", function() {
         let mptbm_enable_return_in_different_date = $('[name="mptbm_enable_return_in_different_date"]').val();
 
         if (mptbm_enable_return_in_different_date == 'yes') {
@@ -509,62 +558,19 @@ function mptbmCreateMarker(place) {
         parent.find("#mptbm_map_return_time").closest(".mp_input_select").find("input.formControl").trigger("click");
     });
 
-
-    $(document).on("click", ".start_time_list li", function () {
+    // Handle time selection
+    $(document).on("click", ".start_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
         $('#mptbm_map_start_time').val(selectedValue).trigger('change');
     });
-    $(document).on("click", ".return_time_list li", function () {
+
+    $(document).on("click", ".return_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
         $('#mptbm_map_return_time').val(selectedValue).trigger('change');
     });
-    $(document).on("change", "#mptbm_map_start_time", function () {
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
-        parent.find("#mptbm_map_start_place").focus();
-    });
-    // $(document).on("change", "#mptbm_manual_start_place", function () {
-    //     let parent = $(this).closest(".mptbm_transport_search_area");
-    //     mptbm_content_refresh(parent);
-    //     let start_place = $(this).val();
-    //     let target = parent.find(".mptbm_manual_end_place");
-    //     if (start_place) {
-    //         let end_place = "";
-    //         let price_based = parent.find('[name="mptbm_price_based"]').val();
-    //         if (price_based === "manual") {
-    //             let post_id = parent.find('[name="mptbm_post_id"]').val();
-    //             $.ajax({
-    //                 type: "POST",
-    //                 url: mp_ajax_url,
-    //                 data: {
-    //                     action: "get_mptbm_end_place",
-    //                     start_place: start_place,
-    //                     price_based: price_based,
-    //                     post_id: post_id,
-    //                 },
-    //                 beforeSend: function () {
-    //                     dLoader(target.closest(".mptbm_search_area"));
-    //                 },
-    //                 success: function (data) {
-    //                     target
-    //                         .html(data)
-    //                         .promise()
-    //                         .done(function () {
-    //                             dLoaderRemove(target.closest(".mptbm_search_area"));
-    //                         });
-    //                 },
-    //                 error: function (response) {
-    //                     console.log(response);
-    //                 },
-    //             });
-    //         }
-    //     }
-    // });
-    $(document).on("change", "#mptbm_manual_end_place", function () {
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
-    });
-    $(document).on("change", "#mptbm_map_start_place,#mptbm_map_end_place", function () {
+
+    // Handle place changes
+    $(document).on("change", "#mptbm_map_start_place, #mptbm_map_end_place", function() {
         let parent = $(this).closest(".mptbm_transport_search_area");
         mptbm_content_refresh(parent);
         let start_place = parent.find("#mptbm_map_start_place").val();
@@ -580,221 +586,102 @@ function mptbmCreateMarker(place) {
         } else {
             parent.find("#mptbm_map_start_place").focus();
         }
-    }
-    );
-    $(document).on("change", ".mptbm_transport_search_area [name='mptbm_taxi_return']", function () {
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
-    }
-    );
-    $(document).on(
-        "change",
-        ".mptbm_transport_search_area [name='mptbm_waiting_time']",
-        function () {
-            let parent = $(this).closest(".mptbm_transport_search_area");
-            mptbm_content_refresh(parent);
-        }
-    );
-})(jQuery);
-function mptbm_content_refresh(parent) {
-    parent.find('[name="mptbm_post_id"]').val("");
-    parent.find(".mptbm_map_search_result").remove();
-    parent.find(".mptbm_order_summary").remove();
-    parent.find(".get_details_next_link").slideUp("fast");
-}
-//=======================//
-function mptbm_price_calculation(parent) {
-    let target_summary = parent.find(".mptbm_transport_summary");
-    let total = 0;
-    let post_id = parseInt(parent.find('[name="mptbm_post_id"]').val());
-    if (post_id > 0) {
-        total =
-            total +
-            parseFloat(parent.find('[name="mptbm_post_id"]').attr("data-price"));
-        parent.find(".mptbm_extra_service_item").each(function () {
-            let service_name = jQuery(this)
-                .find('[name="mptbm_extra_service[]"]')
-                .val();
-            if (service_name) {
-                let ex_target = jQuery(this).find('[name="mptbm_extra_service_qty[]');
-                let ex_qty = parseInt(ex_target.val());
-                let ex_price = ex_target.data("price");
-                ex_price = ex_price && ex_price > 0 ? ex_price : 0;
-                total = total + parseFloat(ex_price) * ex_qty;
-            }
-        });
-    }
-    target_summary
-        .find(".mptbm_product_total_price")
-        .html(mp_price_format(total));
-}
-(function ($) {
-    $(document).on('click', '.mptbm_transport_search_area .mptbm_transport_select', function () {
-        let $this = $(this);
-        let parent = $this.closest('.mptbm_transport_search_area');
-        let target_summary = parent.find('.mptbm_transport_summary');
-        let target_extra_service = parent.find('.mptbm_extra_service');
-        let target_extra_service_summary = parent.find('.mptbm_extra_service_summary');
-        target_summary.slideDown(400);
-        target_extra_service.slideDown(400).html('');
-        target_extra_service_summary.slideDown(400).html('');
-        parent.find('[name="mptbm_post_id"]').val('');
-        parent.find('.mptbm_checkout_area').html('');
-        if ($this.hasClass('active_select')) {
-            $this.removeClass('active_select');
-            mp_all_content_change($this);
-        } else {
-            parent.find('.mptbm_transport_select.active_select').each(function () {
-                $(this).removeClass('active_select');
-                mp_all_content_change($(this));
-            }).promise().done(function () {
-                let transport_name = $this.attr('data-transport-name');
-                let transport_price = parseFloat($this.attr('data-transport-price'));
-                let post_id = $this.attr('data-post-id');
-                target_summary.find('.mptbm_product_name').html(transport_name);
-                target_summary.find('.mptbm_product_price').html(mp_price_format(transport_price));
-                $this.addClass('active_select');
-                mp_all_content_change($this);
-                parent.find('[name="mptbm_post_id"]').val(post_id).attr('data-price', transport_price).promise().done(function () {
-                    mptbm_price_calculation(parent);
-                });
-                $.ajax({
-                    type: 'POST',
-                    url: mp_ajax_url,
-                    data: {
-                        "action": "get_mptbm_extra_service",
-                        "post_id": post_id,
-                        mptbm_transportation_type_nonce: mptbm_ajax.nonce
-                    },
-                    beforeSend: function () {
-                        dLoader(parent.find('.tabsContentNext'));
-                    },
-                    success: function (data) {
-                        target_extra_service.html(data);
-                        checkAndToggleBookNowButton(parent);
-                    },
-                    error: function (response) {
-                        console.log(response);
-                    }
-                }).promise().done(function () {
-                    $.ajax({
-                        type: 'POST',
-                        url: mp_ajax_url,
-                        data: {
-                            "action": "get_mptbm_extra_service_summary",
-                            "post_id": post_id,
-                            mptbm_transportation_type_nonce: mptbm_ajax.nonce
-                        },
-                        success: function (data) {
-                            target_extra_service_summary.html(data).promise().done(function () {
-                                // Check if there are extra services before scrolling
-                                if (target_extra_service.find('[name="mptbm_extra_service[]"]').length > 0) {
-                                    target_summary.slideDown(400);
-                                    target_extra_service.slideDown(400);
-                                    target_extra_service_summary.slideDown(400);
-                                    pageScrollTo(target_extra_service);
-                                }
-                                dLoaderRemove(parent.find('.tabsContentNext'));
-                                if (!target_extra_service.find('[name="mptbm_extra_service[]"]').length) {
-                                    parent.find('.mptbm_book_now[type="button"]').trigger('click');
-                                } else {
-                                    checkAndToggleBookNowButton(parent);
-                                }
-                            });
-                        },
-                        error: function (response) {
-                            console.log(response);
-                        }
-                    });
-                });
-            });
-        }
     });
-    $(document).on('click', '.mptbm_transport_search_area .mptbm_price_calculation', function () {
-        mptbm_price_calculation($(this).closest('.mptbm_transport_search_area'));
-    });
-    //========Extra service==============//
+
+    // Handle extra service quantity changes
     $(document).on('change', '.mptbm_transport_search_area [name="mptbm_extra_service_qty[]"]', function () {
         $(this).closest('.mptbm_extra_service_item').find('[name="mptbm_extra_service[]"]').trigger('change');
         let parent = $(this).closest('.mptbm_transport_search_area');
         checkAndToggleBookNowButton(parent);
     });
+
+    // Handle extra service selection
     $(document).on('change', '.mptbm_transport_search_area [name="mptbm_extra_service[]"]', function () {
         let parent = $(this).closest('.mptbm_transport_search_area');
-        let service_name = $(this).data('value');
+        let service_id = $(this).data('value');
         let service_value = $(this).val();
-        if (service_value) {
-            let qty = $(this).closest('.mptbm_extra_service_item').find('[name="mptbm_extra_service_qty[]"]').val();
-            parent.find('[data-extra-service="' + service_name + '"]').slideDown(350).find('.ex_service_qty').html('x' + qty);
-        } else {
-            parent.find('[data-extra-service="' + service_name + '"]').slideUp(350);
-        }
-        mptbm_price_calculation(parent);
+        let $qty_input = $(this).closest('.mptbm_extra_service_item').find('[name="mptbm_extra_service_qty[]"]');
+        let qty = parseInt($qty_input.val()) || 1;
+        let price_per_item = parseFloat($qty_input.data('price')) || 0;
+        let total_price_for_item = price_per_item * qty;
+        let $button = $(this).closest('[data-extra-item]');
 
+        if (service_value) {
+            let service_name_display = service_id;
+            let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
+
+            if (summary_item.length === 0) {
+                let new_item_html = `
+                    <div class="_textLight_1_dFlex_flexWrap_justifyBetween" data-extra-service-id="${service_id}" data-price="${price_per_item}">
+                        <div class="_dFlex_alignCenter">
+                            <span class="fas fa-check-square _textTheme_mR_xs"></span>
+                            <span>${service_name_display}</span>
+                        </div>
+                        <p>
+                            <span class="textTheme ex_service_qty">x${qty}</span>&nbsp;|&nbsp;
+                            <span class="textTheme"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol"></span>${mp_price_format(total_price_for_item)}</span></span>
+                        </p>
+                    </div>
+                `;
+                parent.find('.mptbm_extra_service_summary').append(new_item_html);
+            } else {
+                summary_item.find('.ex_service_qty').text('x' + qty);
+                summary_item.find('.woocommerce-Price-amount').html(mp_price_format(total_price_for_item));
+            }
+
+            $button.addClass('mActive');
+            $button.find('[data-text]').text($button.data('close-text'));
+            if ($button.data('close-icon')) {
+                $button.find('[data-icon]').attr('class', 'mL_xs ' + $button.data('close-icon'));
+            }
+        } else {
+            let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
+            if (summary_item.length > 0) {
+                summary_item.slideUp(350, function() {
+                    $(this).remove();
+                });
+            }
+
+            $button.removeClass('mActive');
+            $button.find('[data-text]').text($button.data('open-text'));
+            if ($button.data('open-icon')) {
+                $button.find('[data-icon]').attr('class', 'mL_xs ' + $button.data('open-icon'));
+            }
+        }
+
+        mptbm_price_calculation(parent);
         checkAndToggleBookNowButton(parent);
     });
 
-    function checkAndToggleBookNowButton(parent) {
-        // Check if there are any extra services present
-        let extraServicesAvailable = parent.find('[name="mptbm_extra_service[]"]').length > 0;
-
-        if (extraServicesAvailable) {
-            parent.find('.mptbm_book_now[type="button"]').show();
-        } else {
-            parent.find('.mptbm_book_now[type="button"]').hide();
+    // Price calculation function
+    function mptbm_price_calculation(parent) {
+        let target_summary = parent.find(".mptbm_transport_summary");
+        let total = 0;
+        let post_id = parseInt(parent.find('[name="mptbm_post_id"]').val());
+        if (post_id > 0) {
+            total = total + parseFloat(parent.find('[name="mptbm_post_id"]').attr("data-price"));
+            parent.find(".mptbm_extra_service_item").each(function () {
+                let service_name = jQuery(this).find('[name="mptbm_extra_service[]"]').val();
+                if (service_name) {
+                    let ex_target = jQuery(this).find('[name="mptbm_extra_service_qty[]');
+                    let ex_qty = parseInt(ex_target.val());
+                    let ex_price = ex_target.data("price");
+                    ex_price = ex_price && ex_price > 0 ? ex_price : 0;
+                    total = total + parseFloat(ex_price) * ex_qty;
+                }
+            });
         }
+        target_summary.find(".mptbm_product_total_price").html(mp_price_format(total));
     }
 
-
-
-    //===========================//
-    $(document).on('click', '.mptbm_transport_search_area .mptbm_get_vehicle_prev', function () {
-        var mptbmTemplateExists = $(".mptbm-show-search-result").length;
-        if (mptbmTemplateExists) {
-            // Function to retrieve cookie value by name
-            function getCookie(name) {
-                // Split the cookies by semicolon
-                var cookies = document.cookie.split(";");
-                // Loop through each cookie to find the one with the specified name
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    // Check if the cookie starts with the specified name
-                    if (cookie.startsWith(name + "=")) {
-                        // Return the value of the cookie
-                        return cookie.substring(name.length + 1);
-                    }
-                }
-                // Return null if the cookie is not found
-                return null;
-            }
-            // Usage example:
-            var httpReferrerValue = getCookie("httpReferrer");
-            // Function to delete a cookie by setting its expiry date to a past time
-            function deleteCookie(name) {
-                document.cookie =
-                    name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            }
-            deleteCookie("httpReferrer");
-            window.location.href = httpReferrerValue;
-        } else {
+    // Handle taxi return and waiting time changes
+    $(document).on("change", ".mptbm_transport_search_area [name='mptbm_taxi_return'], .mptbm_transport_search_area [name='mptbm_waiting_time']", function() {
             let parent = $(this).closest(".mptbm_transport_search_area");
-            parent.find(".get_details_next_link").slideDown("fast");
-            parent.find(".nextTab_prev").trigger("click");
-        }
+        mptbm_content_refresh(parent);
     });
-    $(document).on('click', '.mptbm_transport_search_area .mptbm_summary_prev', function () {
-        let mptbmTemplateExists = $(".mptbm-show-search-result").length;
-        if (mptbmTemplateExists) {
-            $(".mptbm_order_summary").css("display", "none");
-            $(".mptbm_map_search_result").css("display", "block").hide().slideDown("slow");
-            $(".step-place-order").removeClass("active");
-        } else {
-            let parent = $(this).closest(".mptbm_transport_search_area");
-            parent.find(".nextTab_prev").trigger("click");
-        }
-    });
-    //===========================//
-    $(document).on("click", ".mptbm_book_now[type='button']", function () {
+
+    // Handle Book Now button click
+    $(document).on("click", ".mptbm_book_now[type='button']", function() {
         let parent = $(this).closest('.mptbm_transport_search_area');
         let target_checkout = parent.find('.mptbm_checkout_area');
         let start_place = parent.find('[name="mptbm_start_place"]').val();
@@ -803,17 +690,18 @@ function mptbm_price_calculation(parent) {
         let mptbm_taxi_return = parent.find('[name="mptbm_taxi_return"]').val();
         let return_target_date = parent.find("#mptbm_map_return_date").val();
         let return_target_time = parent.find("#mptbm_map_return_time").val();
-
-
         let mptbm_fixed_hours = parent.find('[name="mptbm_fixed_hours"]').val();
         let post_id = parent.find('[name="mptbm_post_id"]').val();
         let date = parent.find('[name="mptbm_date"]').val();
         let link_id = $(this).attr('data-wc_link_id');
+
         if (start_place !== '' && end_place !== '' && link_id && post_id) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
-            parent.find('[name="mptbm_extra_service[]"]').each(function () {
+            
+            // Collect extra service data
+            parent.find('[name="mptbm_extra_service[]"]').each(function() {
                 let ex_name = $(this).val();
                 if (ex_name) {
                     extra_service_name[count] = ex_name;
@@ -823,12 +711,13 @@ function mptbm_price_calculation(parent) {
                     count++;
                 }
             });
+
+            // Make AJAX request to add to cart
             $.ajax({
                 type: 'POST',
-                url: mp_ajax_url,
+                url: mptbm_ajax.ajax_url,
                 data: {
                     action: "mpcrm_add_to_cart",
-                    //"product_id": post_id,
                     link_id: link_id,
                     mptbm_start_place: start_place,
                     mptbm_end_place: end_place,
@@ -842,10 +731,10 @@ function mptbm_price_calculation(parent) {
                     mptbm_extra_service_qty: extra_service_qty,
                     mptbm_transportation_type_nonce: mptbm_ajax.nonce
                 },
-                beforeSend: function () {
+                beforeSend: function() {
                     dLoader(parent.find('.tabsContentNext'));
                 },
-                success: function (data) {
+                success: function(data) {
                     if ($('<div />', { html: data }).find("div").length > 0) {
                         var mptbmTemplateExists = $(".mptbm-show-search-result").length;
                         if (mptbmTemplateExists) {
@@ -853,9 +742,9 @@ function mptbm_price_calculation(parent) {
                             $(".mptbm_order_summary").css("display", "block");
                             $(".step-place-order").addClass('active');
                         }
-                        target_checkout.html(data).promise().done(function () {
-                            target_checkout.find('.woocommerce-billing-fields .required').each(function () {
-                                $(this).closest('p').find('.input-text , select, textarea ').attr('required', 'required');
+                        target_checkout.html(data).promise().done(function() {
+                            target_checkout.find('.woocommerce-billing-fields .required').each(function() {
+                                $(this).closest('p').find('.input-text, select, textarea').attr('required', 'required');
                             });
                             $(document.body).trigger('init_checkout');
                             if ($('body select#billing_country').length > 0) {
@@ -871,13 +760,83 @@ function mptbm_price_calculation(parent) {
                         window.location.href = data;
                     }
                 },
-                error: function (response) {
+                error: function(response) {
                     console.log(response);
+                    dLoaderRemove(parent.find('.tabsContentNext'));
                 }
             });
         }
     });
-}(jQuery));
+
+    // Handle Previous button click
+    $(document).on("click", ".mptbm_get_vehicle_prev", function() {
+        var mptbmTemplateExists = $(".mptbm-show-search-result").length;
+        if (mptbmTemplateExists) {
+            // Function to retrieve cookie value by name
+            function getCookie(name) {
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.startsWith(name + "=")) {
+                        return cookie.substring(name.length + 1);
+                    }
+                }
+                return null;
+            }
+
+            // Get the referrer URL from cookie
+            var httpReferrerValue = getCookie("httpReferrer");
+            
+            // Function to delete a cookie
+            function deleteCookie(name) {
+                document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+            
+            // Delete the referrer cookie and redirect
+            deleteCookie("httpReferrer");
+            window.location.href = httpReferrerValue;
+        } else {
+            let parent = $(this).closest(".mptbm_transport_search_area");
+            parent.find(".get_details_next_link").slideDown("fast");
+            parent.find(".nextTab_prev").trigger("click");
+        }
+    });
+
+    // Handle Summary Previous button click
+    $(document).on("click", ".mptbm_summary_prev", function() {
+        let mptbmTemplateExists = $(".mptbm-show-search-result").length;
+        if (mptbmTemplateExists) {
+            $(".mptbm_order_summary").css("display", "none");
+            $(".mptbm_map_search_result").css("display", "block").hide().slideDown("slow");
+            $(".step-place-order").removeClass("active");
+        } else {
+            let parent = $(this).closest(".mptbm_transport_search_area");
+            parent.find(".nextTab_prev").trigger("click");
+        }
+    });
+    
+});
+
+// Helper functions
+function mptbm_content_refresh(parent) {
+    jQuery(parent).find('[name="mptbm_post_id"]').val("");
+    jQuery(parent).find(".mptbm_map_search_result").remove();
+    jQuery(parent).find(".mptbm_order_summary").remove();
+    jQuery(parent).find(".get_details_next_link").slideUp("fast");
+}
+
+function checkAndToggleBookNowButton(parent) {
+    var $parent = jQuery(parent);
+    var hasSelectedVehicle = $parent.find('.mptbm_transport_select.active_select').length > 0;
+    var $bookNowButton = $parent.find('.mptbm_book_now[type="button"]');
+    
+    if (hasSelectedVehicle) {
+        $bookNowButton.show();
+    } else {
+        $bookNowButton.hide();
+    }
+}
+
 function gm_authFailure() {
     alert('Admin use Invalid Google Api Key . So, Google Map not working !');
 }

@@ -23,7 +23,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 			);
 			return new WP_Query($args);
 		}
-		public static function get_all_post_id($post_type, $show = -1, $page = 1, $status = 'publish'): array
+		public static function mpcrm_get_all_post_id($post_type, $show = -1, $page = 1, $status = 'publish'): array
 		{
 			$all_data = get_posts(array(
 				'fields' => 'ids',
@@ -34,25 +34,25 @@ if (!class_exists('MPCRM_Global_Function')) {
 			));
 			return array_unique($all_data);
 		}
-		public static function get_post_info($post_id, $key, $default = '')
+		public static function mpcrm_get_post_info($post_id, $key, $default = '')
 		{
 			$data = get_post_meta($post_id, $key, true) ?: $default;
 			return self::data_sanitize($data);
 		}
 		//***********************************//
-		public static function get_taxonomy($name)
+		public static function mpcrm_get_taxonomy($name)
 		{
 			return get_terms(array('taxonomy' => $name, 'hide_empty' => false));
 		}
-		public static function get_term_meta($meta_id, $meta_key, $default = '')
+		public static function mpcrm_get_term_meta($meta_id, $meta_key, $default = '')
 		{
-			$data = get_term_meta($meta_id, $meta_key, true) ?: $default;
+			$data = mpcrm_get_term_meta($meta_id, $meta_key, true) ?: $default;
 			return self::data_sanitize($data);
 		}
-		public static function get_all_term_data($term_name, $value = 'name')
+		public static function mpcrm_get_all_term_data($term_name, $value = 'name')
 		{
 			$all_data = [];
-			$taxonomies = self::get_taxonomy($term_name);
+			$taxonomies = self::mpcrm_get_taxonomy($term_name);
 			if ($taxonomies && is_array($taxonomies) && sizeof($taxonomies) > 0) {
 				foreach ($taxonomies as $taxonomy) {
 					$all_data[] = $taxonomy->$value;
@@ -60,7 +60,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 			}
 			return $all_data;
 		}
-		public static function get_submit_info($key, $default = '')
+		public static function mpcrm_get_submit_info($key, $default = '')
 		{
 			// Check if nonce exists in the request
 			if (
@@ -104,7 +104,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 			// Default to basic text field sanitization
 			return sanitize_text_field($value);
 		}
-		public static function get_submit_info_get_method($key, $default = '')
+		public static function  mpcrm_get_submit_info_get_method($key, $default = '')
 		{
 			// Check if nonce exists in the request
 			if (
@@ -190,7 +190,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 		//**************Date related*********************//
 		public static function date_picker_format_without_year($key = 'date_format'): string
 		{
-			$format = MPCRM_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
+			$format = MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', $key, 'D d M , yy');
 			$date_format = 'm-d';
 			$date_format = $format == 'yy/mm/dd' ? 'm/d' : $date_format;
 			$date_format = $format == 'yy-dd-mm' ? 'd-m' : $date_format;
@@ -206,7 +206,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 		}
 		public static function date_picker_format($key = 'date_format'): string
 		{
-			$format = MPCRM_Global_Function::get_settings('mp_global_settings', $key, 'D d M , yy');
+			$format = MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', $key, 'D d M , yy');
 			$date_format = 'Y-m-d';
 			$date_format = $format == 'yy/mm/dd' ? 'Y/m/d' : $date_format;
 			$date_format = $format == 'yy-dd-mm' ? 'Y-d-m' : $date_format;
@@ -346,7 +346,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 			return $interval->format('%h') . "H " . $interval->format('%i') . "M";
 		}
 		//***********************************//
-		public static function get_settings($section, $key, $default = '')
+		public static function mpcrm_get_settings($section, $key, $default = '')
 		{
 			$options = get_option($section);
 			if (isset($options[$key])) {
@@ -370,17 +370,17 @@ if (!class_exists('MPCRM_Global_Function')) {
 				return wp_kses_post($default);
 			}
 		}
-		public static function get_style_settings($key, $default = '')
+		public static function mpcrm_get_style_settings($key, $default = '')
 		{
-			return self::get_settings('mp_style_settings', $key, $default);
+			return self::mpcrm_get_settings('mp_mpcrm_get_style_settings', $key, $default);
 		}
-		public static function get_slider_settings($key, $default = '')
+		public static function mpcrm_get_slider_settings($key, $default = '')
 		{
-			return self::get_settings('mp_slider_settings', $key, $default);
+			return self::mpcrm_get_settings('mp_slider_settings', $key, $default);
 		}
-		public static function get_licence_settings($key, $default = '')
+		public static function mpcrm_get_licence_settings($key, $default = '')
 		{
-			return self::get_settings('mp_basic_license_settings', $key, $default);
+			return self::mpcrm_get_settings('mp_basic_license_settings', $key, $default);
 		}
 		//***********************************//
 		public static function price_convert_raw($price)
@@ -401,7 +401,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 				'qty' => '',
 				'price' => '',
 			));
-			$_product = self::get_post_info($post_id, 'link_wc_product', $post_id);
+			$_product = self::mpcrm_get_post_info($post_id, 'link_wc_product', $post_id);
 			$product = wc_get_product($_product);
 			$qty = '' !== $args['qty'] ? max(0.0, (float)$args['qty']) : 1;
 			$tax_with_price = get_option('woocommerce_tax_display_shop');
@@ -452,21 +452,21 @@ if (!class_exists('MPCRM_Global_Function')) {
 			$display_suffix = get_option('woocommerce_price_display_suffix') ? get_option('woocommerce_price_display_suffix') : '';
 			return wc_price($return_price) . ' ' . $display_suffix;
 		}
-		public static function get_wc_raw_price($post_id, $price, $args = array())
+		public static function mpcrm_get_wc_raw_price($post_id, $price, $args = array())
 		{
 			$price = self::wc_price($post_id, $price, $args = array());
 			return self::price_convert_raw($price);
 		}
 		//***********************************//
-		public static function get_image_url($post_id = '', $image_id = '', $size = 'full')
+		public static function mpcrm_get_image_url($post_id = '', $image_id = '', $size = 'full')
 		{
 			if ($post_id) {
 				$image_id = get_post_thumbnail_id($post_id);
-				$image_id = $image_id ?: self::get_post_info($post_id, 'mp_thumbnail');
+				$image_id = $image_id ?: self::mpcrm_get_post_info($post_id, 'mp_thumbnail');
 			}
 			return wp_get_attachment_image_url($image_id, $size);
 		}
-		public static function get_page_by_slug($slug)
+		public static function mpcrm_get_page_by_slug($slug)
 		{
 			if ($pages = get_pages()) {
 				foreach ($pages as $page) {
@@ -477,7 +477,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 			}
 			return false;
 		}
-		public static function get_id_by_slug($page_slug)
+		public static function mpcrm_get_id_by_slug($page_slug)
 		{
 			$page = get_page_by_path($page_slug);
 			if ($page) {
@@ -511,7 +511,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 				return 0;
 			}
 		}
-		public static function get_order_item_meta($item_id, $key): string
+		public static function mpcrm_get_order_item_meta($item_id, $key): string
 		{
 
 			global $wpdb;
@@ -526,7 +526,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 		{
 			$status = MPCRM_Global_Function::check_woocommerce();
 			if ($status == 1) {
-				$product_id = MPCRM_Global_Function::get_post_info($post_id, 'link_wc_product');
+				$product_id = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'link_wc_product');
 				foreach (WC()->cart->get_cart() as $cart_item) {
 					if ($cart_item['product_id'] == $product_id) {
 						return true;
@@ -566,12 +566,12 @@ if (!class_exists('MPCRM_Global_Function')) {
 				'sunday' => esc_html__('Sunday', 'car-rental-manager'),
 			];
 		}
-		public static function get_plugin_data($data)
+		public static function mpcrm_get_plugin_data($data)
 		{
-			$plugin_data = get_plugin_data(__FILE__);
+			$plugin_data = mpcrm_get_plugin_data(__FILE__);
 			return $plugin_data[$data];
 		}
-		public static function array_to_string($array)
+		public static function mpcrm_array_to_string($array)
 		{
 			$ids = '';
 			if (sizeof($array) > 0) {
@@ -749,7 +749,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 			return $message;
 		}
 		//***********************************//
-		public static function get_country_list()
+		public static function mpcrm_get_country_list()
 		{
 			return array(
 				'AF' => 'Afghanistan',

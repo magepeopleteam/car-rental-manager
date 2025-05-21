@@ -76,7 +76,7 @@
 						$options['hide_checkout_order_review'] = $hide_checkout_order_review;
 						update_option('mptbm_custom_checkout_fields', $options);
 					}
-					wp_redirect(admin_url('edit.php?post_type=' . MPTBM_Function::get_cpt() . '&page=mptbm_wc_checkout_fields'));
+					wp_redirect(admin_url('edit.php?post_type=' . MPTBM_Function::mpcrm_get_cpt() . '&page=mptbm_wc_checkout_fields'));
 				}
 			}
 			public function mpcrm_admin_notice() {

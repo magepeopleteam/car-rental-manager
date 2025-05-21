@@ -19,12 +19,12 @@ if (!class_exists('MPTBM_General_Settings')) {
 		public function general_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_general_settings', 'mptbm_nonce');
-			$max_passenger = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
-			$max_bag = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
-			$display_features = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
+			$max_passenger = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_passenger');
+			$max_bag = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_bag');
+			$display_features = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_features', 'on');
 			$active = $display_features == 'off' ? '' : 'mActive';
 			$checked = $display_features == 'off' ? '' : 'checked';
-			$all_features = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_features');
+			$all_features = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_features');
 			if (!$all_features) {
 				$all_features = array(
 					array(
@@ -155,7 +155,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 			if (!wp_verify_nonce($nonce, 'mptbm_save_general_settings')) {
 				return;
 			};
-			if (get_post_type($post_id) == MPTBM_Function::get_cpt()) {
+			if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
 				$all_features = [];
 				$max_passenger = isset($_POST['mptbm_maximum_passenger']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_passenger'])) : '';
 				$max_bag = isset($_POST['mptbm_maximum_bag']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_bag'])) : '';

@@ -31,9 +31,9 @@ if (!$post_id || !get_post($post_id)) {
 
 // Feature class handling
 $feature_class = '';
-if (MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_filter_via_features') == 'yes') {
-    $max_passenger = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_passenger');
-    $max_bag = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_maximum_bag');
+if (MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'enable_filter_via_features') == 'yes') {
+    $max_passenger = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_passenger');
+    $max_bag = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_bag');
     if (!empty($max_passenger) && !empty($max_bag)) {
         $feature_class = sprintf(
             'feature_passenger_%d_feature_bag_%d_post_id_%d',
@@ -50,25 +50,25 @@ $start_date = isset($_POST['start_date']) ? sanitize_text_field(wp_unslash($_POS
 $start_date = $start_date ? gmdate('Y-m-d', strtotime($start_date)) : '';
 
 // Validate dates
-$all_dates = MPTBM_Function::get_date($post_id);
+$all_dates = MPTBM_Function::mpcrm_get_date($post_id);
 if (empty($all_dates) || !in_array($start_date, $all_dates, true)) {
     return;
 }
 
 // View settings
-$mptbm_enable_view_search_result_page = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_view_search_result_page');
+$mptbm_enable_view_search_result_page = MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'enable_view_search_result_page');
 $hidden_class = $mptbm_enable_view_search_result_page == '' ? '' : '';
 
 // Sanitize location data
-$label = $label ?? MPTBM_Function::get_name();
+$label = $label ?? MPTBM_Function::mpcrm_get_name();
 $start_place = $start_place ?? isset($_POST['start_place']) ? sanitize_text_field(wp_unslash($_POST['start_place'])) : '';
 $end_place = $end_place ?? isset($_POST['end_place']) ? sanitize_text_field(wp_unslash($_POST['end_place'])) : '';
 $two_way = $two_way ?? 1;
 
 if ($post_id) {
     // Get vehicle data
-    $thumbnail = MPCRM_Global_Function::get_image_url($post_id);
-    $price = MPTBM_Function::get_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
+    $thumbnail = MPCRM_Global_Function::mpcrm_get_image_url($post_id);
+    $price = MPTBM_Function::mpcrm_get_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
     
     if (!$price || $price <= 0) {
         return;
@@ -76,8 +76,8 @@ if ($post_id) {
     
     $wc_price = MPCRM_Global_Function::wc_price($post_id, $price);
     $raw_price = MPCRM_Global_Function::price_convert_raw($wc_price);
-    $display_features = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_features', 'on');
-    $all_features = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_features');
+    $display_features = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_features', 'on');
+    $all_features = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_features');
     ?>
     <div class="_dLayout_dFlex mptbm_booking_item <?php echo esc_attr('mptbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
         <div class="_max_200_mR">

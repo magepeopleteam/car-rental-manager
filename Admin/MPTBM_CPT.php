@@ -58,10 +58,10 @@ if (!class_exists('MPTBM_CPT')) {
 
 		public function mpcrm_cpt(): void
 		{
-			$cpt = MPTBM_Function::get_cpt();
-			$label = MPTBM_Function::get_name();
-			$slug = MPTBM_Function::get_slug();
-			$icon = MPTBM_Function::get_icon();
+			$cpt = MPTBM_Function::mpcrm_get_cpt();
+			$label = MPTBM_Function::mpcrm_get_name();
+			$slug = MPTBM_Function::mpcrm_get_slug();
+			$icon = MPTBM_Function::mpcrm_get_icon();
 			$labels = [
 				'name' => $label,
 				'singular_name' => $label,

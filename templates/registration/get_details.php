@@ -9,15 +9,15 @@ if (!defined('ABSPATH')) {
 delete_transient('original_price_based');
 
 
-$km_or_mile = MPCRM_Global_Function::get_settings('mp_global_settings', 'km_or_mile', 'km');
+$km_or_mile = MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', 'km_or_mile', 'km');
 $price_based = $price_based ?? '';
 set_transient('original_price_based', $price_based);
-$all_dates = MPTBM_Function::get_all_dates($price_based);
+$all_dates = MPTBM_Function::mpcrm_get_all_dates($price_based);
 $form_style = $form_style ?? 'horizontal';
 $form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';
 $area_class = $price_based == 'manual' ? ' ' : 'justifyBetween';
 $area_class = $form_style != 'horizontal' ? 'mptbm_form_details_area fdColumn' : $area_class;
-$mptbm_all_transport_id = MPCRM_Global_Function::get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCRM_Global_Function::mpcrm_get_all_post_id('mptbm_rent');
 $mptbm_available_for_all_time = false;
 $mptbm_schedule = [];
 $min_schedule_value = 0;
@@ -25,7 +25,7 @@ $max_schedule_value = 24;
 $loop = 1;
 
 foreach ($mptbm_all_transport_id as $key => $value) {
-	if (MPCRM_Global_Function::get_post_info($value, 'mptbm_available_for_all_time') == 'on') {
+	if (MPCRM_Global_Function::mpcrm_get_post_info($value, 'mptbm_available_for_all_time') == 'on') {
 		$mptbm_available_for_all_time = true;
 	}
 }
@@ -33,7 +33,7 @@ foreach ($mptbm_all_transport_id as $key => $value) {
 if ($mptbm_available_for_all_time == false) {
 
 	foreach ($mptbm_all_transport_id as $key => $value) {
-		array_push($mptbm_schedule, MPTBM_Function::get_schedule($value));
+		array_push($mptbm_schedule, MPTBM_Function::mpcrm_get_schedule($value));
 	}
 	foreach ($mptbm_schedule as $dayArray) {
 		foreach ($dayArray as $times) {
@@ -74,7 +74,7 @@ if (!function_exists('convertToMinutes')) {
 $min_minutes = convertToMinutes($min_schedule_value);
 $max_minutes = convertToMinutes($max_schedule_value);
 
-$buffer_time = (int) MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_buffer_time');
+$buffer_time = (int) MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'enable_buffer_time');
 
 $current_time = time();
 $current_hour = wp_date('H', $current_time);
@@ -91,10 +91,10 @@ while ($buffer_end_minutes > 1440) {
 	$buffer_end_minutes -= 1440;
 }
 if (sizeof($all_dates) > 0) {
-	$taxi_return = MPTBM_Function::get_general_settings('taxi_return', 'enable');
-	$interval_time = MPTBM_Function::get_general_settings('mptbm_pickup_interval_time', '30');
+	$taxi_return = MPTBM_Function::mpcrm_get_general_settings('taxi_return', 'enable');
+	$interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time', '30');
 	$interval_hours = $interval_time / 60;
-	$waiting_time_check = MPTBM_Function::get_general_settings('taxi_waiting_time', 'enable');
+	$waiting_time_check = MPTBM_Function::mpcrm_get_general_settings('taxi_waiting_time', 'enable');
 ?>
 	<div class="<?php echo esc_attr($area_class); ?> ">
 		<div class="_dLayout mptbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
@@ -103,9 +103,9 @@ if (sizeof($all_dates) > 0) {
 				<input type="hidden" id="mptbm_km_or_mile" name="mptbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
 				<input type="hidden" name="mptbm_price_based" value="<?php echo esc_attr($price_based); ?>" />
 				<input type="hidden" name="mptbm_post_id" value="" />
-				<input type="hidden" id="mptbm_enable_view_search_result_page" name="mptbm_enable_view_search_result_page" value="<?php echo esc_attr( MPCRM_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_search_result_page' ) ); ?>" />
+				<input type="hidden" id="mptbm_enable_view_search_result_page" name="mptbm_enable_view_search_result_page" value="<?php echo esc_attr( MPCRM_Global_Function::mpcrm_get_settings( 'mptbm_general_settings', 'enable_view_search_result_page' ) ); ?>" />
 				<input type='hidden' id="mptbm_enable_return_in_different_date" name="mptbm_enable_return_in_different_date" value="yes" />
-				<input type="hidden" id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRM_Global_Function::get_settings( 'mptbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
+				<input type="hidden" id="mptbm_enable_filter_via_features" name="mptbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRM_Global_Function::mpcrm_get_settings( 'mptbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
 				<input type="hidden" id="mptbm_buffer_end_minutes" name="mptbm_buffer_end_minutes" value="<?php echo esc_attr( $buffer_end_minutes ); ?>" />
 				<input type="hidden" id="mptbm_first_calendar_date" name="mptbm_first_calendar_date" value="<?php echo esc_attr( $all_dates[0] ); ?>" />
 
@@ -172,12 +172,12 @@ if (sizeof($all_dates) > 0) {
 						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
 						<?php if ($price_based == 'manual') {
 						?>
-							<?php $all_start_locations = MPTBM_Function::get_all_start_location(); ?>
+							<?php $all_start_locations = MPTBM_Function::mpcrm_get_all_start_location(); ?>
 							<select id="mptbm_manual_start_place" class="mptbm_manual_start_place formControl">
 								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
@@ -187,9 +187,9 @@ if (sizeof($all_dates) > 0) {
 					</label>
 				</div>
 				<?php
-				if (MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
+				if (MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo esc_url( MPCRM_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'car-rental-manager' ); ?></a>
+					<a href="<?php echo esc_url( MPCRM_Global_Function::mpcrm_get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'car-rental-manager' ); ?></a>
 					<?php esc_html_e('If you are not able to find your desired location', 'car-rental-manager'); ?>
 				<?php
 				}
@@ -202,7 +202,7 @@ if (sizeof($all_dates) > 0) {
 								<option selected disabled><?php esc_html_e(' Select Return Location', 'car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
@@ -212,9 +212,9 @@ if (sizeof($all_dates) > 0) {
 					</label>
 				</div>
 				<?php
-				if (MPCRM_Global_Function::get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
+				if (MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'enable_view_find_location_page')) {
 				?>
-					<a href="<?php echo esc_url( MPCRM_Global_Function::get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'car-rental-manager' ); ?></a>
+					<a href="<?php echo esc_url( MPCRM_Global_Function::mpcrm_get_settings( 'mptbm_general_settings', 'enable_view_find_location_page' ) ); ?>" class="mptbm_find_location_btn"><?php esc_html_e( 'Click here', 'car-rental-manager' ); ?></a>
 					<?php esc_html_e('If you are not able to find your desired location', 'car-rental-manager'); ?>
 				<?php
 				}
@@ -317,7 +317,7 @@ if (sizeof($all_dates) > 0) {
 	<div class="dLayout">
 		<h3 class="_textDanger_textCenter">
 			<?php
-			$transportaion_label = MPTBM_Function::get_name();
+			$transportaion_label = MPTBM_Function::mpcrm_get_name();
 
 			// Translators comment to explain the placeholder
 			/* translators: %s: Car label */

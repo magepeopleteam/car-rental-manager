@@ -16,7 +16,7 @@ if (!class_exists('MPTBM_Function')) {
 			if (function_exists('wpml_loaded')) {
 				global $sitepress;
 				$default_language = function_exists('wpml_loaded') ? $sitepress->get_default_language() : get_locale();
-				return apply_filters('wpml_object_id', $post_id, MPTBM_Function::get_cpt(), TRUE, $default_language);
+				return apply_filters('wpml_object_id', $post_id, MPTBM_Function::mpcrm_get_cpt(), TRUE, $default_language);
 			}
 			if (function_exists('pll_get_post_translations')) {
 				$defaultLanguage = function_exists('pll_default_language') ? pll_default_language() : get_locale();
@@ -46,17 +46,17 @@ if (!class_exists('MPTBM_Function')) {
 //			return apply_filters('filter_mptbm_details_template', $name);
 //		}
 
-		public static function get_feature_bag($post_id)
+		public static function mpcrm_get_feature_bag($post_id)
 		{
 			return get_post_meta($post_id, "mptbm_maximum_bag", 0);
 		}
 
-		public static function get_feature_passenger($post_id)
+		public static function mpcrm_get_feature_passenger($post_id)
 		{
 			return get_post_meta($post_id, "mptbm_maximum_passenger", 0);
 		}
 
-		public static function get_schedule($post_id)
+		public static function mpcrm_get_schedule($post_id)
 		{
 			$days = MPCRM_Global_Function::week_day();
 			$days_name = array_keys($days);
@@ -86,7 +86,7 @@ if (!class_exists('MPTBM_Function')) {
 		public static function details_template_path(): string
 		{
 			$tour_id = get_the_id();
-			$template_name = MPCRM_Global_Function::get_post_info($tour_id, 'mptbm_theme_file', 'default.php');
+			$template_name = MPCRM_Global_Function::mpcrm_get_post_info($tour_id, 'mptbm_theme_file', 'default.php');
 			$file_name = 'themes/' . $template_name;
 			$dir = MPTBM_PLUGIN_DIR . '/templates/' . $file_name;
 			if (!file_exists($dir)) {
@@ -95,7 +95,7 @@ if (!class_exists('MPTBM_Function')) {
 			return self::template_path($file_name);
 		}
 
-		public static function get_taxonomy_name_by_slug($slug, $taxonomy)
+		public static function mpcrm_get_taxonomy_name_by_slug($slug, $taxonomy)
 		{
 			global $wpdb;
 
@@ -124,63 +124,63 @@ if (!class_exists('MPTBM_Function')) {
 			return locate_template(array('mptbm_templates/' . $file_name)) ? $file_path : $default_dir . $file_name;
 		}
 		//************************//
-		public static function get_general_settings($key, $default = '')
+		public static function mpcrm_get_general_settings($key, $default = '')
 		{
-			return MPCRM_Global_Function::get_settings('mptbm_general_settings', $key, $default);
+			return MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', $key, $default);
 		}
-		public static function get_cpt(): string
+		public static function mpcrm_get_cpt(): string
 		{
 			return 'mptbm_rent';
 		}
-		public static function get_name()
+		public static function mpcrm_get_name()
 		{
-			return self::get_general_settings('label', esc_html__('Car', 'car-rental-manager'));
+			return self::mpcrm_get_general_settings('label', esc_html__('Car', 'car-rental-manager'));
 		}
-		public static function get_slug()
+		public static function mpcrm_get_slug()
 		{
-			return self::get_general_settings('slug', 'Car');
+			return self::mpcrm_get_general_settings('slug', 'Car');
 		}
-		public static function get_icon()
+		public static function mpcrm_get_icon()
 		{
-			return self::get_general_settings('icon', 'dashicons-car');
+			return self::mpcrm_get_general_settings('icon', 'dashicons-car');
 		}
 		public static function get_category_label()
 		{
-			return self::get_general_settings('category_label', esc_html__('Category', 'car-rental-manager'));
+			return self::mpcrm_get_general_settings('category_label', esc_html__('Category', 'car-rental-manager'));
 		}
 		public static function get_category_slug()
 		{
-			return self::get_general_settings('category_slug', 'Car-category');
+			return self::mpcrm_get_general_settings('category_slug', 'Car-category');
 		}
 		public static function get_organizer_label()
 		{
-			return self::get_general_settings('organizer_label', esc_html__('Organizer', 'car-rental-manager'));
+			return self::mpcrm_get_general_settings('organizer_label', esc_html__('Organizer', 'car-rental-manager'));
 		}
 		public static function get_organizer_slug()
 		{
-			return self::get_general_settings('organizer_slug', 'Car-organizer');
+			return self::mpcrm_get_general_settings('organizer_slug', 'Car-organizer');
 		}
 		//*************************************************************Full Custom Function******************************//
 		//*************Date*********************************//
-		public static function get_date($post_id, $expire = false)
+		public static function mpcrm_get_date($post_id, $expire = false)
 		{
 			$now = current_time('Y-m-d');
-			$date_type = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_date_type', 'repeated');
+			$date_type = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_date_type', 'repeated');
 			$all_dates = [];
-			$off_days = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_off_days');
+			$off_days = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_off_days');
 			$all_off_days = explode(',', $off_days);
-			$all_off_dates = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_off_dates', array());
+			$all_off_dates = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_off_dates', array());
 			$off_dates = [];
 			foreach ($all_off_dates as $off_date) {
 				$off_dates[] = gmdate('Y-m-d', strtotime($off_date));
 			}
 			if ($date_type == 'repeated') {
-				$start_date = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_repeated_start_date', $now);
+				$start_date = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_repeated_start_date', $now);
 				if (strtotime($now) >= strtotime($start_date) && !$expire) {
 					$start_date = $now;
 				}
-				$repeated_after = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_repeated_after', 1);
-				$active_days = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_active_days', 10) - 1;
+				$repeated_after = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_repeated_after', 1);
+				$active_days = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_active_days', 10) - 1;
 				$end_date = gmdate('Y-m-d', strtotime($start_date . ' +' . $active_days . ' day'));
 				$dates = MPCRM_Global_Function::date_separate_period($start_date, $end_date, $repeated_after);
 				foreach ($dates as $date) {
@@ -191,7 +191,7 @@ if (!class_exists('MPTBM_Function')) {
 					}
 				}
 			} else {
-				$particular_date_lists = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_particular_dates', array());
+				$particular_date_lists = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_particular_dates', array());
 				if (sizeof($particular_date_lists)) {
 					foreach ($particular_date_lists as $particular_date) {
 						if ($particular_date && ($expire || strtotime($now) <= strtotime($particular_date)) && !in_array($particular_date, $off_dates) && !in_array($particular_date, $all_off_days)) {
@@ -202,7 +202,7 @@ if (!class_exists('MPTBM_Function')) {
 			}
 			return apply_filters('mptbm_get_date', $all_dates, $post_id);
 		}
-		public static function get_all_dates($price_based = 'dynamic', $expire = false)
+		public static function mpcrm_get_all_dates($price_based = 'dynamic', $expire = false)
 		{
 			$all_posts = MPTBM_Query::query_transport_list($price_based);
 			$all_dates = [];
@@ -210,7 +210,7 @@ if (!class_exists('MPTBM_Function')) {
 				$posts = $all_posts->posts;
 				foreach ($posts as $post) {
 					$post_id = $post->ID;
-					$dates = MPTBM_Function::get_date($post_id, $expire);
+					$dates = MPTBM_Function::mpcrm_get_date($post_id, $expire);
 					$all_dates = array_merge($all_dates, $dates);
 				}
 			}
@@ -221,7 +221,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 
 		//*************Price*********************************//
-		public static function get_price($post_id,  $start_place = '', $destination_place = '', $start_date_time = '', $return_date_time = '')
+		public static function mpcrm_get_price($post_id,  $start_place = '', $destination_place = '', $start_date_time = '', $return_date_time = '')
 		{
 
 			if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -240,13 +240,13 @@ if (!class_exists('MPTBM_Function')) {
 			$minutes_to_day = ceil($minutes/1440);
 			
 
-			$manual_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
+			$manual_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_terms_price_info', []);
 			
 			if (sizeof($manual_prices) > 0) {
 				foreach ($manual_prices as $manual_price) {
 					
 						
-						$price_per_day = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_day_price', 0);
+						$price_per_day = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_day_price', 0);
 						
 						$price = $price_per_day * $minutes_to_day;
 					
@@ -270,7 +270,7 @@ if (!class_exists('MPTBM_Function')) {
 				$selected_start_date = gmdate('Y-m-d', strtotime($selected_start_date));
 				$selected_start_time = gmdate('H:i', strtotime($selected_start_time));
 
-				$discounts = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_discounts', []);
+				$discounts = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_discounts', []);
 				if (!empty($discounts)) {
 					foreach ($discounts as $discount) {
 						$start_date = isset($discount['start_date']) ? gmdate('Y-m-d', strtotime($discount['start_date'])) : '';
@@ -315,7 +315,7 @@ if (!class_exists('MPTBM_Function')) {
 		}
 		public static function calculate_return_discount($post_id, $price)
 		{
-			$return_discount = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_return_discount', 0);
+			$return_discount = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_return_discount', 0);
 
 			// Check if the return discount is a percentage or a fixed amount
 			if (strpos($return_discount, '%') !== false) {
@@ -329,11 +329,11 @@ if (!class_exists('MPTBM_Function')) {
 
 			return $return_discount_amount;
 		}
-		public static function get_extra_service_price_by_name($post_id, $service_name)
+		public static function mpcrm_get_extra_service_price_by_name($post_id, $service_name)
 		{
-			$display_extra_services = MPCRM_Global_Function::get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-			$service_id = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-			$extra_services = MPCRM_Global_Function::get_post_info($service_id, 'mptbm_extra_service_infos', []);
+			$display_extra_services = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+			$service_id = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+			$extra_services = MPCRM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
 			$price = 0;
 			if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 				foreach ($extra_services as $service) {
@@ -346,12 +346,12 @@ if (!class_exists('MPTBM_Function')) {
 			return $price;
 		}
 		
-		public static function get_all_start_location($post_id = '')
+		public static function mpcrm_get_all_start_location($post_id = '')
 		{
 			$all_location = [];
 			if ($post_id && $post_id > 0) {
-				$manual_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
-				$terms_location_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_terms_start_location', []);
+				$manual_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_manual_price_info', []);
+				$terms_location_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_terms_start_location', []);
 				if (sizeof($manual_prices) > 0) {
 					foreach ($manual_prices as $manual_price) {
 						$start_location = array_key_exists('start_location', $manual_price) ? $manual_price['start_location'] : '';
@@ -366,8 +366,8 @@ if (!class_exists('MPTBM_Function')) {
 					$posts = $all_posts->posts;
 					foreach ($posts as $post) {
 						$post_id = $post->ID;
-						$manual_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
-						$terms_location_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
+						$manual_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_manual_price_info', []);
+						$terms_location_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_terms_price_info', []);
 						if (sizeof($manual_prices) > 0) {
 							foreach ($manual_prices as $manual_price) {
 								$start_location = array_key_exists('start_location', $manual_price) ? $manual_price['start_location'] : '';
@@ -389,11 +389,11 @@ if (!class_exists('MPTBM_Function')) {
 			}
 			return array_unique($all_location);
 		}
-		public static function get_end_location($start_place, $post_id = '')
+		public static function mpcrm_get_end_location($start_place, $post_id = '')
 		{
 			$all_location = [];
 			if ($post_id && $post_id > 0) {
-				$manual_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
+				$manual_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_manual_price_info', []);
 				if (sizeof($manual_prices) > 0) {
 					foreach ($manual_prices as $manual_price) {
 						$start_location = array_key_exists('start_location', $manual_price) ? $manual_price['start_location'] : '';
@@ -409,8 +409,8 @@ if (!class_exists('MPTBM_Function')) {
 					$posts = $all_posts->posts;
 					foreach ($posts as $post) {
 						$post_id = $post->ID;
-						$manual_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_manual_price_info', []);
-						$terms_location_prices = MPCRM_Global_Function::get_post_info($post_id, 'mptbm_terms_price_info', []);
+						$manual_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_manual_price_info', []);
+						$terms_location_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_terms_price_info', []);
 						if (sizeof($manual_prices) > 0) {
 							foreach ($manual_prices as $manual_price) {
 								$start_location = array_key_exists('start_location', $manual_price) ? $manual_price['start_location'] : '';

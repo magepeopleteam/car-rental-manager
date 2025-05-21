@@ -261,8 +261,8 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 		}
 		public function setup_general_content()
 		{
-			$label = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'label', 'Car');
-			$slug = MPCRM_Global_Function::get_settings('mptbm_general_settings', 'slug', 'Car');
+			$label = MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'label', 'Car');
+			$slug = MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'slug', 'Car');
 		?>
 			<div data-tabs-next="#mptbm_qs_general">
 				<div class="section">
