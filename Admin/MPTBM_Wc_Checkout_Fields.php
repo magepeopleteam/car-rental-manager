@@ -178,7 +178,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
                                 <li class="tab-item" data-tabs-target="#mptbm_wc_order_field_settings"><i class="dashicons dashicons-format-status text-primary"></i> Order Fields <i class="i i-chevron-right dashicons dashicons-arrow-right-alt2"></i></li> -->
 						</ul>
 						<div class="tab-content-container">
-							<?php do_action('mptbm_wc_checkout_tab_content', MPTBM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list()); ?>
+							<?php do_action('mptbm_wc_checkout_tab_content', MPTBM_Wc_Checkout_Fields_Helper::mpcrm_get_checkout_fields_for_list()); ?>
 						</div>
 					</div>
 				</div>

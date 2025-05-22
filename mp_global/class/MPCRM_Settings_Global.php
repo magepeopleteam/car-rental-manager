@@ -10,9 +10,8 @@
 		class MPCRM_Settings_Global {
 			public function __construct() {
 				add_filter('mptbm_settings_sec_reg', array($this, 'settings_sec_reg'), 10, 1);
-				add_filter('mptbm_settings_sec_reg', array($this, 'global_sec_reg'), 90, 1);
+				add_filter('mptbm_settings_sec_reg', array($this, 'global_sec_reg'), 20, 1);
 				add_filter('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
-				add_action('wsa_form_bottom_mptbm_basic_license_settings', [$this, 'license_settings'], 5);
 				add_action('mptbm_basic_license_list', [$this, 'licence_area']);
 			}
 			public function settings_sec_reg($default_sec): array {
@@ -36,7 +35,8 @@
 					),
 					array(
 						'id' => 'mp_basic_license_settings',
-						'title' => esc_html__('Mage-People License', 'car-rental-manager')
+						'title' => esc_html__('Mage-People License', 'car-rental-manager'),
+						'callback' => array($this, 'license_settings')
 					)
 				);
 				return array_merge($default_sec, $sections);
@@ -236,7 +236,7 @@
 					<h3><?php esc_html_e('Mage-People License', 'car-rental-manager'); ?></h3>
 					<div class="_dFlex">
 						<span class="fas fa-info-circle _mR_xs"></span>
-						<i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin  free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?>                    </i>
+						<i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></i>
 					</div>
 					<div class="divider"></div>
 					<div class="dLayout mp_basic_license_area">
@@ -245,23 +245,79 @@
 				</div>
 				<?php
 			}
-			public function licence_area(){
-				do_action('ecab_before_global_setting_page');
+			public function licence_area() {
+				// Get active plugins
+				$active_plugins = get_option('active_plugins');
+				$mp_plugins = array();
+				
+				// Filter Mage-People plugins
+				foreach ($active_plugins as $plugin) {
+					if (strpos($plugin, 'mage-people') !== false || strpos($plugin, 'mptbm') !== false) {
+						$plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin);
+						$mp_plugins[] = array(
+							'name' => $plugin_data['Name'],
+							'type' => 'Plugin',
+							'order_no' => '-',
+							'expire' => '-',
+							'license_key' => '-',
+							'status' => 'Active'
+						);
+					}
+				}
+				
+				// Add addons if any
+				$addons = apply_filters('mptbm_license_addons', array());
+				$mp_plugins = array_merge($mp_plugins, $addons);
+				
 				?>
-				<table>
+				<table class="widefat">
 					<thead>
-					<tr>
-						<th colspan="4"><?php esc_html_e('Plugin Name', 'car-rental-manager'); ?></th>
-						<th><?php esc_html_e('Type', 'car-rental-manager'); ?></th>
-						<th><?php esc_html_e('Order No', 'car-rental-manager'); ?></th>
-						<th colspan="2"><?php esc_html_e('Expire on', 'car-rental-manager'); ?></th>
-						<th colspan="3"><?php esc_html_e('License Key', 'car-rental-manager'); ?></th>
-						<th><?php esc_html_e('Status', 'car-rental-manager'); ?></th>
-						<th colspan="2"><?php esc_html_e('Action', 'car-rental-manager'); ?></th>
-					</tr>
+						<tr>
+							<th><?php esc_html_e('Plugin Name', 'car-rental-manager'); ?></th>
+							<th><?php esc_html_e('Type', 'car-rental-manager'); ?></th>
+							<th><?php esc_html_e('Order No', 'car-rental-manager'); ?></th>
+							<th><?php esc_html_e('Expire on', 'car-rental-manager'); ?></th>
+							<th><?php esc_html_e('License Key', 'car-rental-manager'); ?></th>
+							<th><?php esc_html_e('Status', 'car-rental-manager'); ?></th>
+							<th><?php esc_html_e('Action', 'car-rental-manager'); ?></th>
+						</tr>
 					</thead>
 					<tbody>
-					<?php do_action('mptbm_license_page_plugin_list'); ?>
+						<?php 
+						if (!empty($mp_plugins)) {
+							foreach ($mp_plugins as $plugin) {
+								?>
+								<tr>
+									<td><?php echo esc_html($plugin['name']); ?></td>
+									<td><?php echo esc_html($plugin['type']); ?></td>
+									<td><?php echo esc_html($plugin['order_no']); ?></td>
+									<td><?php echo esc_html($plugin['expire']); ?></td>
+									<td>
+										<?php if ($plugin['type'] === 'Addon') { ?>
+											<input type="text" class="regular-text" name="license_key[<?php echo esc_attr(sanitize_title($plugin['name'])); ?>]" value="<?php echo esc_attr($plugin['license_key']); ?>" />
+										<?php } else { 
+											echo esc_html($plugin['license_key']);
+										} ?>
+									</td>
+									<td><?php echo esc_html($plugin['status']); ?></td>
+									<td>
+										<?php if ($plugin['type'] === 'Addon') { ?>
+											<button type="submit" class="button button-primary" name="activate_license[<?php echo esc_attr(sanitize_title($plugin['name'])); ?>]">
+												<?php esc_html_e('Activate', 'car-rental-manager'); ?>
+											</button>
+										<?php } ?>
+									</td>
+								</tr>
+								<?php
+							}
+						} else {
+							?>
+							<tr>
+								<td colspan="7"><?php esc_html_e('No plugins found.', 'car-rental-manager'); ?></td>
+							</tr>
+							<?php
+						}
+						?>
 					</tbody>
 				</table>
 				<?php

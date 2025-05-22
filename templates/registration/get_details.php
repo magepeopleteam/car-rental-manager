@@ -23,7 +23,6 @@ $mptbm_schedule = [];
 $min_schedule_value = 0;
 $max_schedule_value = 24;
 $loop = 1;
-
 foreach ($mptbm_all_transport_id as $key => $value) {
 	if (MPCRM_Global_Function::mpcrm_get_post_info($value, 'mptbm_available_for_all_time') == 'on') {
 		$mptbm_available_for_all_time = true;

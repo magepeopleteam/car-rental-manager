@@ -14,9 +14,9 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		{
 			$this->settings_api = new MAGE_Setting_API;
 			add_action('admin_menu', array($this, 'global_settings_menu'));
-			add_action('admin_init', array($this, 'admin_init'));
-			add_filter('mp_settings_sec_reg', array($this, 'settings_sec_reg'), 10);
-			add_filter('mp_settings_sec_fields', array($this, 'settings_sec_fields'), 10);
+			add_action('admin_init', array($this, 'admin_init'), 20);
+			add_filter('mptbm_settings_sec_reg', array($this, 'settings_sec_reg'), 10);
+			add_filter('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10);
 			add_filter('filter_mp_global_settings', array($this, 'global_taxi'), 10);
 		}
 		public function global_settings_menu()
@@ -45,19 +45,23 @@ if (!class_exists('MPTBM_Settings_Global')) {
 
 		public function admin_init()
 		{
-			$this->settings_api->mpcrm_set_sections($this->mpcrm_get_settings_sections());
-			$this->settings_api->mpcrm_set_fields($this->mpcrm_get_settings_fields());
+			$sections = $this->mpcrm_get_settings_sections();
+			$fields = $this->mpcrm_get_settings_fields();
+			
+			$this->settings_api->mpcrm_set_sections($sections);
+			$this->settings_api->mpcrm_set_fields($fields);
+			
 			$this->settings_api->admin_init();
 		}
 		public function mpcrm_get_settings_sections()
 		{
 			$sections = array();
-			return apply_filters('mp_settings_sec_reg', $sections);
+			return apply_filters('mptbm_settings_sec_reg', $sections);
 		}
 		public function mpcrm_get_settings_fields()
 		{
 			$settings_fields = array();
-			return apply_filters('mp_settings_sec_fields', $settings_fields);
+			return apply_filters('mptbm_settings_sec_fields', $settings_fields);
 		}
 		public function settings_sec_reg($default_sec): array
 		{
