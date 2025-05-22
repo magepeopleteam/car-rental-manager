@@ -35,7 +35,7 @@
 			<option selected disabled><?php esc_html_e('Select Return Location', 'car-rental-manager'); ?></option>
 			<?php foreach ($end_locations as $location) { ?>
 				<option value="<?php echo esc_attr($location); ?>">
-					<?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($location, 'locations')); ?>
+					<?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($location, 'mpcrm_locations')); ?>
 				</option>
 			<?php } ?>
 		</select>

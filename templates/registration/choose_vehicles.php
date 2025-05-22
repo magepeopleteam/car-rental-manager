@@ -1,11 +1,12 @@
 <?php
+if (!defined('ABSPATH')) {
+    die;
+} // Cannot access pages directly.
+
 /*
  * @Author 		engr.sumonazma@gmail.com
  * Copyright: 	mage-people.com
 */
-if (!defined("ABSPATH")) {
-    die();
-} // Cannot access pages directly
 $label = MPTBM_Function::mpcrm_get_name();
 $days = MPCRM_Global_Function::week_day();
 $days_name = array_keys($days);

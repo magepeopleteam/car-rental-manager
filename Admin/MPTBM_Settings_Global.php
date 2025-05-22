@@ -26,7 +26,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function settings_page()
 		{
-?>
+			?>
 			<div class="mpStyle mp_global_settings">
 				<div class="mpPanel">
 					<div class="mpPanelHeader"><?php echo esc_html(esc_html__(' Global Settings', 'car-rental-manager')); ?></div>
@@ -40,7 +40,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 					</div>
 				</div>
 			</div>
-<?php
+			<?php
 		}
 
 		public function admin_init()

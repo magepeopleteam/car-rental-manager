@@ -176,7 +176,7 @@ if (sizeof($all_dates) > 0) {
 								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+										<option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_location, 'mpcrm_locations')); ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>
@@ -201,7 +201,7 @@ if (sizeof($all_dates) > 0) {
 								<option selected disabled><?php esc_html_e(' Select Return Location', 'car-rental-manager'); ?></option>
 								<?php if (sizeof($all_start_locations) > 0) { ?>
 									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option class="textCapitalize" value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_location, 'locations')); ?></option>
+										<option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_location, 'mpcrm_locations')); ?></option>
 									<?php } ?>
 								<?php } ?>
 							</select>

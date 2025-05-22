@@ -22,8 +22,8 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 		public function operation_area_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_operation_area_nonce', 'mptbm_operation_area');
-			// Fetch all terms in the 'locations' taxonomy
-			$location_terms = get_terms(array('taxonomy' => 'locations', 'hide_empty' => false));
+			// Fetch all terms in the 'mpcrm_locations' taxonomy
+			$location_terms = get_terms(array('taxonomy' => 'mpcrm_locations', 'hide_empty' => false));
 
 			// Retrieve saved data from post meta
 			$saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
@@ -115,7 +115,7 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 						'desc' => esc_html__('Select the operational areas for the car rental', 'car-rental-manager'),
 						'type' => 'multiselect',
 						'default' => array(),
-						'options' => array()  // Will be populated dynamically from locations taxonomy
+						'options' => array()  // Will be populated dynamically from mpcrm_locations taxonomy
 					),
 					array(
 						'name' => 'mptbm_terms_price_info',

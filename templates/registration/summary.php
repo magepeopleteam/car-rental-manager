@@ -30,16 +30,16 @@
 					<div class="dividerL"></div>
 					<h6 class="_mB_xs"><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></h6>
 					<?php if($price_based == 'manual'){ ?>
-						<p class="_textLight_1 mptbm_manual_start_place"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug( $start_place,'locations' )); ?></p>
+						<p class="_textLight_1 mptbm_manual_start_place"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug( $start_place,'mpcrm_locations' )); ?></p>
 					<?php }else{ ?>
-						<p class="_textLight_1 mptbm_manual_start_place"><?php echo esc_html($start_place); ?></p>
+						<p class="_textLight_1 mptbm_map_start_place"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($start_place, 'mpcrm_locations')); ?></p>
 					<?php } ?>
 					<div class="dividerL"></div>
 					<h6 class="_mB_xs"><?php esc_html_e('Return Location', 'car-rental-manager'); ?></h6>
 					<?php if($price_based == 'manual'){ ?>
-						<p class="_textLight_1 mptbm_map_end_place"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug( $end_place,'locations' )); ?></p>
+						<p class="_textLight_1 mptbm_map_end_place"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug( $end_place,'mpcrm_locations' )); ?></p>
 					<?php }else{ ?>
-						<p class="_textLight_1 mptbm_map_end_place"><?php echo esc_html($end_place); ?></p>
+						<p class="_textLight_1 mptbm_map_end_place"><?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($end_place, 'mpcrm_locations')); ?></p>
 					<?php } ?>
 					
 					<?php if($two_way>1){ 

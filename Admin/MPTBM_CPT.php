@@ -153,12 +153,11 @@ if (!class_exists('MPTBM_CPT')) {
 				'show_ui' => true,
 				'show_in_rest' => true,
 				'query_var' => true,
-				'rewrite' => array('slug' => 'locations'),  // Adjust the slug as needed
+				'rewrite' => array('slug' => 'mpcrm_locations'),  // Updated slug
 				'meta_box_cb' => false,
 			);
 
-			
-			register_taxonomy('locations', $cpt, $taxonomy_args);
+			register_taxonomy('mpcrm_locations', $cpt, $taxonomy_args);  // Updated taxonomy name
 			register_post_type('mpcrm_extra_services', $ex_args);
 			if (class_exists('MPTBM_Plugin_Pro')) {
 				register_post_type('mptbm_operate_areas', $dx_args);

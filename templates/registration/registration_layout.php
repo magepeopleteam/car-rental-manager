@@ -4,7 +4,7 @@
 * Copyright: 	mage-people.com
 */
 	if (!defined('ABSPATH')) {
-		exit;
+		die;
 	}
 	$progressbar = $progressbar ?? 'yes';
 	$progressbar_class = $progressbar == 'yes' ? '' : 'dNone';

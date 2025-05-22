@@ -18,7 +18,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		{
 			$dummy_post_inserted = get_option('mpcrm_dummy_already_inserted', 'no');
 			$count_existing_event = wp_count_posts('mptbm_rent')->publish;
-			$plugin_active = MPCRM_Global_Function::check_plugin('car-rental-manager', 'MPTBM_Plugin.php');
+			$plugin_active = MPCRM_Global_Function::check_plugin('car-rental-manager', 'car-rental-manager.php');
 			if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				$this->mpcrm_post($this->dummy_cpt());
 				$this->location_taxonomy();
@@ -70,13 +70,12 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		public function location_taxonomy(): array
 		{
 			$taxonomy_data = array(
-				'locations' => array(
+				'mpcrm_locations' => array(
 					'Dhaka',
 					'Chittagong',
 					'Sylhet',
 					'Rajshahi'
 				),
-
 			);
 
 			foreach ($taxonomy_data as $taxonomy => $terms) {

@@ -1,11 +1,12 @@
 <?php
+if (!defined('ABSPATH')) {
+    die;
+} // Cannot access pages directly.
+
 /*
  * @Author 		engr.sumonazma@gmail.com
  * Copyright: 	mage-people.com
  */
-if (!defined('ABSPATH')) {
-    die;
-} // Cannot access pages directly
 
 // Verify nonce
 if (

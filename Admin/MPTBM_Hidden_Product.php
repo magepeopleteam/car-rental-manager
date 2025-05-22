@@ -1,11 +1,12 @@
 <?php
+if (!defined('ABSPATH')) {
+	die;
+} // Cannot access pages directly.
+
 	/*
 	   * @Author 		engr.sumonazma@gmail.com
 	   * Copyright: 	mage-people.com
 	   */
-	if (!defined('ABSPATH')) {
-		exit;
-	}  // if direct access
 	if (!class_exists('MPTBM_Hidden_Product')) {
 		class MPTBM_Hidden_Product {
 			public function __construct() {
