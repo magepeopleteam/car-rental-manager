@@ -77,6 +77,9 @@ if (!class_exists('MPTBM_Settings_Global')) {
 		}
 		public function settings_sec_fields($default_fields): array
 		{
+			// Ensure $default_fields is an array
+			$default_fields = is_array($default_fields) ? $default_fields : array();
+			
 			$gm_api_url = 'https://developers.google.com/maps/documentation/javascript/get-api-key';
 			$label = MPTBM_Function::mpcrm_get_name();
 

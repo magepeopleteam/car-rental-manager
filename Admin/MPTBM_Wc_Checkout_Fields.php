@@ -51,7 +51,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 			$isChecked = isset($_POST['isChecked']) ? sanitize_text_field(wp_unslash($_POST['isChecked'])) : null;
 			$checkout_fields = MPTBM_Wc_Checkout_Fields_Helper::get_checkout_fields_for_list();
 			$custom_checkout_fields = array();
-			$custom_checkout_fields = get_option('mptbm_custom_checkout_fields');
+			$custom_checkout_fields = get_option('mpcrm_custom_checkout_fields');
 			if (isset($checkout_fields[$key][$name])) {
 				unset($custom_checkout_fields[$key][$name]);
 				if ($isChecked == 'true') {
@@ -61,7 +61,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 					$custom_checkout_fields[$key][$name] = $checkout_fields[$key][$name];
 					$custom_checkout_fields[$key][$name]['disabled'] = '1';
 				}
-				update_option('mptbm_custom_checkout_fields', $custom_checkout_fields);
+				update_option('mpcrm_custom_checkout_fields', $custom_checkout_fields);
 				$response = 'success';
 			}
 			echo esc_html($response);
@@ -82,7 +82,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields')) {
 		}
 		public function mpcrm_get_settings_options()
 		{
-			$this->settings_options = get_option('mptbm_custom_checkout_fields');
+			$this->settings_options = get_option('mpcrm_custom_checkout_fields');
 		}
 		public function admin_enqueue()
 		{

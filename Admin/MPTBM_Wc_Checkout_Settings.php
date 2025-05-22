@@ -68,13 +68,13 @@
 					if (check_admin_referer('mptbm_wc_checkout_settings', 'mptbm_wc_checkout_settings_nonce')) {
 						$hide_checkout_order_additional_information = isset($_POST['hide_checkout_order_additional_information']) ? sanitize_text_field(wp_unslash($_POST['hide_checkout_order_additional_information'])) : null;
 						$hide_checkout_order_review = isset($_POST['hide_checkout_order_review']) ? sanitize_text_field(wp_unslash($_POST['hide_checkout_order_review'])) : null;
-						$options = get_option('mptbm_custom_checkout_fields');
+						$options = get_option('mpcrm_custom_checkout_fields');
 						if (!is_array($options)) {
 							$options = array();
 						}
 						$options['hide_checkout_order_additional_information'] = $hide_checkout_order_additional_information;
 						$options['hide_checkout_order_review'] = $hide_checkout_order_review;
-						update_option('mptbm_custom_checkout_fields', $options);
+						update_option('mpcrm_custom_checkout_fields', $options);
 					}
 					wp_redirect(admin_url('edit.php?post_type=' . MPTBM_Function::mpcrm_get_cpt() . '&page=mptbm_wc_checkout_fields'));
 				}

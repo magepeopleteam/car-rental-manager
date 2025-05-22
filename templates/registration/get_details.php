@@ -6,12 +6,12 @@
 if (!defined('ABSPATH')) {
 	die;
 } // Cannot access pages directly
-delete_transient('original_price_based');
+delete_transient('mprcm_original_price_based');
 
 
 $km_or_mile = MPCRM_Global_Function::mpcrm_get_settings('mp_global_settings', 'km_or_mile', 'km');
 $price_based = $price_based ?? '';
-set_transient('original_price_based', $price_based);
+set_transient('mprcm_original_price_based', $price_based);
 $all_dates = MPTBM_Function::mpcrm_get_all_dates($price_based);
 $form_style = $form_style ?? 'horizontal';
 $form_style_class = $form_style == 'horizontal' ? 'inputHorizontal' : 'inputInline';

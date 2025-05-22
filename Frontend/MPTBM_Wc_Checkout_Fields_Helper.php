@@ -276,7 +276,7 @@ if (!class_exists('MPTBM_Wc_Checkout_Fields_Helper')) {
 		}
 		public function init()
 		{
-			self::$settings_options = get_option('mptbm_custom_checkout_fields');
+			self::$settings_options = get_option('mpcrm_custom_checkout_fields');
 			self::$default_woocommerce_checkout_fields = self::woocommerce_default_checkout_fields();
 			//self::$default_woocommerce_checkout_required_fields = self::default_woocommerce_checkout_required_fields();
 			//self::$default_app_required_fields = self::default_app_required_fields();

@@ -164,15 +164,15 @@ if (!class_exists('MPTBM_Quick_Setup')) {
 			if (isset($_POST['finish_quick_setup'])) {
 				$label = isset($_POST['mptbm_label']) ? sanitize_text_field(wp_unslash($_POST['mptbm_label'])) : 'Car';
 				$slug = isset($_POST['mptbm_slug']) ? sanitize_text_field(wp_unslash($_POST['mptbm_slug'])) : 'Car';
-				$general_settings_data = get_option('mptbm_general_settings');
+				$general_settings_data = get_option('mpcrm_general_settings');
 				$update_general_settings_arr = [
 					'mptbm_rent_label' => $label,
 					'mptbm_rent_slug' => $slug
 				];
 				$new_general_settings_data = is_array($general_settings_data) ? array_replace($general_settings_data, $update_general_settings_arr) : $update_general_settings_arr;
-				update_option('mptbm_general_settings', $new_general_settings_data);
-				update_option('mptbm_basic_gen_settings', $new_general_settings_data);
-				update_option('mptbm_quick_setup_done', 'yes');
+				update_option('mpcrm_general_settings', $new_general_settings_data);
+				update_option('mpcrm_basic_gen_settings', $new_general_settings_data);
+				update_option('mpcrm_quick_setup_done', 'yes');
 				wp_redirect(admin_url('edit.php?post_type=mptbm_rent'));
 			}
 
