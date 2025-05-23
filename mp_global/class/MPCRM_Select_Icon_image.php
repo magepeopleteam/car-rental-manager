@@ -7,13 +7,13 @@
 		die;
 	} // Cannot access pages directly.
 	if (!class_exists('MPCRM_Select_Icon_image')) {
-		$GLOBALS['mp_icon_popup_exit'] = false;
+		$GLOBALS['mpcrm_mp_icon_popup_exit'] = false;
 		class MPCRM_Select_Icon_image {
 			public function __construct() {
 				add_action('mp_input_add_icon', array($this, 'load_icon'), 10, 2);
-				add_action('mp_add_single_image', array($this, 'mpcrm_single_image'), 10, 2);
+				add_action('mpcrm_mp_add_single_image', array($this, 'mpcrm_single_image'), 10, 2);
 				add_action('mp_add_multi_image', array($this, 'mpcrm_multi_image'), 10, 2);
-				add_action('mp_add_icon_image', array($this, 'mpcrm_icon_image'), 10, 3);
+				add_action('mpcrm_mp_add_icon_image', array($this, 'mpcrm_icon_image'), 10, 3);
 			}
 			public function load_icon($name, $icon = '') {
 				$icon_class = $icon ? '' : 'dNone';
@@ -38,8 +38,8 @@
 				add_action('admin_footer', array($this, 'icon_popup'));
 			}
 			public function icon_popup() {
-				if (!$GLOBALS['mp_icon_popup_exit']) {
-					$GLOBALS['mp_icon_popup_exit'] = true;
+				if (!$GLOBALS['mpcrm_mp_icon_popup_exit']) {
+					$GLOBALS['mpcrm_mp_icon_popup_exit'] = true;
 					?>
                     <div class="mp_add_icon_popup mpPopup mpStyle" data-popup="#mp_add_icon_popup">
                         <div class="popupMainArea fullWidth">

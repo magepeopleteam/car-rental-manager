@@ -11,7 +11,7 @@ if (!class_exists('MPCRM_Global_Function')) {
 	{
 		public function __construct()
 		{
-			add_action('mp_load_date_picker_js', [$this, 'date_picker_js'], 10, 2);
+			add_action('mpcrm_mp_load_date_picker_js', [$this, 'date_picker_js'], 10, 2);
 		}
 		public static function query_post_type($post_type, $show = -1, $page = 1): WP_Query
 		{

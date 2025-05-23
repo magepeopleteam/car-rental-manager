@@ -111,7 +111,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 		?>
 			<tr class="mp_remove_area">
 				<td>
-					<?php do_action('mp_add_icon_image', 'service_icon[]', $icon, $image); ?>
+					<?php do_action('mpcrm_mp_add_icon_image', 'service_icon[]', $icon, $image); ?>
 				</td>
 				<td class="text-center">
 					<input type="text" class="small mp_name_validation" name="service_name[]" placeholder="<?php esc_attr_e('EX: Driver', 'car-rental-manager'); ?>" value="<?php echo esc_attr($service_name); ?>" />
@@ -334,7 +334,7 @@ if (! class_exists('MPTBM_Extra_Service')) {
 				}
 			}
 
-			return apply_filters('filter_mptbm_extra_service_data', $new_extra_service, $post_id);
+			return apply_filters('mpcrm_filter_mptbm_extra_service_data', $new_extra_service, $post_id);
 		}
 		public function get_mptbm_ex_service()
 		{

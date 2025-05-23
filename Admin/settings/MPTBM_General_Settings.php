@@ -128,7 +128,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 			$image = array_key_exists('image', $features) ? $features['image'] : '';
 		?>
 			<tr class="mp_remove_area">
-				<td valign="middle"><?php do_action('mp_add_icon_image', 'mptbm_features_icon_image[]', $icon, $image); ?></td>
+				<td valign="middle"><?php do_action('mpcrm_mp_add_icon_image', 'mptbm_features_icon_image[]', $icon, $image); ?></td>
 				<td valign="middle">
 					<label>
 						<input class="formControl mp_name_validation" name="mptbm_features_label[]" value="<?php echo esc_attr($label); ?>" />

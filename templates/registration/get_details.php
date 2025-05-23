@@ -61,8 +61,8 @@ if ($mptbm_available_for_all_time == false) {
 $min_schedule_value = floatval($min_schedule_value);
 $max_schedule_value = floatval($max_schedule_value);
 
-if (!function_exists('convertToMinutes')) {
-	function convertToMinutes($schedule_value)
+if (!function_exists('mpcrm_convertToMinutes')) {
+	function mpcrm_convertToMinutes($schedule_value)
 	{
 		$hours = floor($schedule_value); // Get the hour part
 		$minutes = ($schedule_value - $hours) * 100; // Convert decimal part to minutes
@@ -70,8 +70,8 @@ if (!function_exists('convertToMinutes')) {
 	}
 }
 
-$min_minutes = convertToMinutes($min_schedule_value);
-$max_minutes = convertToMinutes($max_schedule_value);
+$min_minutes = mpcrm_convertToMinutes($min_schedule_value);
+$max_minutes = mpcrm_convertToMinutes($max_schedule_value);
 
 $buffer_time = (int) MPCRM_Global_Function::mpcrm_get_settings('mptbm_general_settings', 'enable_buffer_time');
 
@@ -310,8 +310,8 @@ if (sizeof($all_dates) > 0) {
 			</button>
 		</div>
 	</div>
-	<?php do_action('mp_load_date_picker_js', '#mptbm_start_date', $all_dates); ?>
-	<?php do_action('mp_load_date_picker_js', '#mptbm_return_date', $all_dates); ?>
+	<?php do_action('mpcrm_mp_load_date_picker_js', '#mptbm_start_date', $all_dates); ?>
+	<?php do_action('mpcrm_mp_load_date_picker_js', '#mptbm_return_date', $all_dates); ?>
 <?php } else { ?>
 	<div class="dLayout">
 		<h3 class="_textDanger_textCenter">

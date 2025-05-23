@@ -9,7 +9,7 @@
 	if ( post_password_required() ) {
 		echo wp_kses_post(get_the_password_form()); // WPCS: XSS ok.
 	} else {
-		do_action( 'woocommerce_before_single_product' );
+		do_action( 'mpcrm_woocommerce_before_single_product' );
 		$post_id                   = get_the_id();
 		$template_name = MPCRM_Global_Function::mpcrm_get_post_info( $post_id, 'mptbm_theme_file', 'default.php' );
 		$price_based    = MPCRM_Global_Function::mpcrm_get_post_info( $post_id, 'mptbm_price_based' );

@@ -13,7 +13,7 @@ $days_name = array_keys($days);
 $schedule = [];
 
 
-function wptbm_check_operation_area($post_id, $start_place, $end_place)
+function mpcrm_check_operation_area($post_id, $start_place, $end_place)
 {
     // Retrieve saved locations from post meta
     $saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
@@ -424,7 +424,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
 
                             $post_id = $post->ID;
                             $check_schedule = mpcrm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
-                            $check_operation_area = wptbm_check_operation_area($post_id, $start_place, $end_place);
+                            $check_operation_area = mpcrm_check_operation_area($post_id, $start_place, $end_place);
                             
                            
                             if ($check_schedule && $check_operation_area) {

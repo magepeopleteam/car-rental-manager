@@ -46,7 +46,7 @@
 				$default_fields = is_array($default_fields) ? $default_fields : array();
 				$current_date = current_time('Y-m-d');
 				$settings_fields = array(
-					'mp_global_settings' => apply_filters('filter_mp_global_settings', array(
+					'mp_global_settings' => apply_filters('mpcrm_mp_global_settings', array(
 						array(
 							'name' => 'disable_block_editor',
 							'label' => esc_html__('Disable Block/Gutenberg Editor', 'car-rental-manager'),
@@ -219,7 +219,7 @@
 							'default' => '#FAFCFE'
 						),
 					)),
-					'mp_add_custom_css' => apply_filters('filter_mp_add_custom_css', array(
+					'mp_add_custom_css' => apply_filters('mpcrm_mp_add_custom_css', array(
 						array(
 							'name' => 'custom_css',
 							'label' => esc_html__('Custom CSS', 'car-rental-manager'),
@@ -321,7 +321,7 @@
 					</tbody>
 				</table>
 				<?php
-				do_action('ecab_after_global_setting_page');
+				do_action('mpcrm_after_global_setting_page');
 			}
 		}
 		new MPCRM_Settings_Global();

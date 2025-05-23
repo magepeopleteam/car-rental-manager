@@ -26,7 +26,7 @@
 				?>
 				<div class="wrap"></div>
 				<div class="mpStyle">
-					<?php do_action('mp_status_notice_sec'); ?>
+					<?php do_action('mpcrm_mp_status_notice_sec'); ?>
 					<div class=_dShadow_6_adminLayout">
 						<h2 class="textCenter"><?php echo esc_html($label) . '  ' . esc_html__('For Woocommerce Environment Status', 'car-rental-manager'); ?></h2>
 						<div class="divider"></div>
@@ -64,7 +64,7 @@
 									</th>
 								</tr>
 							<?php }
-								do_action('mp_status_table_item_sec'); ?>
+								do_action('mpcrm_mp_status_table_item_sec'); ?>
 							</tbody>
 						</table>
 					</div>

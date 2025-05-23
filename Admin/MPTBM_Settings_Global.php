@@ -17,7 +17,7 @@ if (!class_exists('MPTBM_Settings_Global')) {
 			add_action('admin_init', array($this, 'admin_init'), 20);
 			add_filter('mptbm_settings_sec_reg', array($this, 'settings_sec_reg'), 10);
 			add_filter('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10);
-			add_filter('filter_mp_global_settings', array($this, 'global_taxi'), 10);
+			add_filter('mpcrm_mp_global_settings', array($this, 'global_taxi'), 10);
 		}
 		public function global_settings_menu()
 		{
