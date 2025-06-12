@@ -27,7 +27,7 @@
 		wp_die();
 	}
 
-	$end_locations = MPTBM_Function::get_end_location($start_place, $post_id);
+	$end_locations = MPCRBM_Function::get_end_location($start_place, $post_id);
 	if (!empty($end_locations)) {
 		?>
 		<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'car-rental-manager'); ?></span>
@@ -35,7 +35,7 @@
 			<option selected disabled><?php esc_html_e('Select Return Location', 'car-rental-manager'); ?></option>
 			<?php foreach ($end_locations as $location) { ?>
 				<option value="<?php echo esc_attr($location); ?>">
-					<?php echo esc_html(MPTBM_Function::mpcrm_get_taxonomy_name_by_slug($location, 'mpcrm_locations')); ?>
+					<?php echo esc_html(MPCRBM_Function::mpcrm_get_taxonomy_name_by_slug($location, 'mpcrm_locations')); ?>
 				</option>
 			<?php } ?>
 		</select>

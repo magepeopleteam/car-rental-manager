@@ -12,14 +12,14 @@
 				add_action('admin_menu', array($this, 'guideline_menu'));
 			}
 			public function guideline_menu() {
-				$cpt = MPTBM_Function::mpcrm_get_cpt();
+				$cpt = MPCRBM_Function::get_cpt();
 				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Guideline', 'car-rental-manager'), '<span>' . esc_html__('Guideline', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_guideline_page', array($this, 'guideline_page'));
 			}
 			public function guideline_page() {
-				$label = MPTBM_Function::mpcrm_get_name();
+				$label = MPCRBM_Function::get_name();
 				?>
 				<div class="wrap"></div>
-				<div class="mpStyle">
+				<div class="mpcrbm">
 					<div class="_dShadow_6_adminLayout">
 						<h2 class="textCenter"><?php echo esc_html($label) . '  ' . esc_html__('Shortcode', 'car-rental-manager'); ?></h2>
 						<div class="divider"></div>

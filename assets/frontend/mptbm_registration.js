@@ -101,7 +101,7 @@ jQuery(document).ready(function($) {
     "use strict";
 
     // Initialize map and autocomplete
-    $(".mpStyle ul.mp_input_select_list").hide();
+    $(".mpcrbm ul.mp_input_select_list").hide();
         if ($("#mptbm_map_area").length > 0) {
             mptbm_set_cookie_distance_duration();
         if ($("#mptbm_map_start_place").length > 0 && $("#mptbm_map_end_place").length > 0) {
@@ -167,8 +167,8 @@ jQuery(document).ready(function($) {
             
             // Update vehicle details in summary
             target_summary.find('.mptbm_product_name').html(transport_name);
-            target_summary.find('.mptbm_product_price').html(mp_price_format(transport_price));
-            target_summary.find('.mptbm_product_total_price').html(mp_price_format(transport_price));
+            target_summary.find('.mptbm_product_price').html(mpcrbm_price_format(transport_price));
+            target_summary.find('.mptbm_product_total_price').html(mpcrbm_price_format(transport_price));
             
             $this.addClass('active_select');
             parent.find('[name="mptbm_post_id"]').val(post_id).attr('data-price', transport_price);
@@ -188,16 +188,16 @@ jQuery(document).ready(function($) {
                     mptbm_transportation_type_nonce: mptbm_ajax.nonce
                 },
                 beforeSend: function() {
-                    dLoader(parent.find('.tabsContentNext'));
+                    mpcrbm_loader(parent.find('.tabsContentNext'));
                 },
                 success: function(data) {
                     target_extra_service.html(data);
                     checkAndToggleBookNowButton(parent);
-                    dLoaderRemove(parent.find('.tabsContentNext'));
+                    mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                 },
                 error: function(response) {
                     console.log(response);
-                    dLoaderRemove(parent.find('.tabsContentNext'));
+                    mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                 }
             });
         }
@@ -261,7 +261,7 @@ jQuery(document).ready(function($) {
         } else if (!end_place.value) {
             end_place.focus();
         } else {
-            dLoader(parent.find(".tabsContentNext"));
+            mpcrbm_loader(parent.find(".tabsContentNext"));
             mptbm_content_refresh(parent);
             if (price_based !== "manual") {
                 mptbm_set_cookie_distance_duration(start_place.value, end_place.value);
@@ -309,7 +309,7 @@ jQuery(document).ready(function($) {
                             
                             $.ajax({
                                 type: "POST",
-                                url: mp_ajax_url,
+                                url: mpcrbm_ajax_url,
                                 data: {
                                     action: actionValue,
                                     start_place: start_place.value,
@@ -326,14 +326,14 @@ jQuery(document).ready(function($) {
                                     return_time: return_time,
                                 },
                                 beforeSend: function () {
-                                    //dLoader(target);
+                                    //mpcrbm_loader(target);
                                 },
                                 success: function (data) {
                                     target
                                         .append(data)
                                         .promise()
                                         .done(function () {
-                                            dLoaderRemove(parent.find(".tabsContentNext"));
+                                            mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                             parent.find(".nextTab_next").trigger("click");
                                         });
                                 },
@@ -345,7 +345,7 @@ jQuery(document).ready(function($) {
                             actionValue = "get_mptbm_map_search_result_redirect";
                             $.ajax({
                                 type: "POST",
-                                url: mp_ajax_url,
+                                url: mpcrbm_ajax_url,
                                 data: {
                                     action: actionValue,
                                     start_place: start_place.value,
@@ -364,7 +364,7 @@ jQuery(document).ready(function($) {
                                     mptbm_transportation_type_nonce: mptbm_ajax.nonce
                                 },
                                 beforeSend: function () {
-                                    dLoader(target);
+                                    mpcrbm_loader(target);
                                 },
                                 success: function (data) {
                                     var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
@@ -386,7 +386,7 @@ jQuery(document).ready(function($) {
                        
                         $.ajax({
                             type: "POST",
-                            url: mp_ajax_url,
+                            url: mpcrbm_ajax_url,
                             data: {
                                 action: actionValue,
                                 start_place: start_place.value,
@@ -402,14 +402,14 @@ jQuery(document).ready(function($) {
                                 mptbm_transportation_type_nonce: mptbm_ajax.nonce
                             },
                             beforeSend: function () {
-                                //dLoader(target);
+                                //mpcrbm_loader(target);
                             },
                             success: function (data) {
                                 target
                                     .append(data)
                                     .promise()
                                     .done(function () {
-                                        dLoaderRemove(parent.find(".tabsContentNext"));
+                                        mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                         parent.find(".nextTab_next").trigger("click");
                                     });
                             },
@@ -421,7 +421,7 @@ jQuery(document).ready(function($) {
                         actionValue = "get_mptbm_map_search_result_redirect";
                         $.ajax({
                             type: "POST",
-                            url: mp_ajax_url,
+                            url: mpcrbm_ajax_url,
                             data: {
                                 action: actionValue,
                                 start_place: start_place.value,
@@ -438,7 +438,7 @@ jQuery(document).ready(function($) {
                                 mptbm_transportation_type_nonce: mptbm_ajax.nonce
                             },
                             beforeSend: function () {
-                                dLoader(target);
+                                mpcrbm_loader(target);
                             },
                             success: function (data) {
                                 var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
@@ -619,14 +619,14 @@ jQuery(document).ready(function($) {
                         </div>
                         <p>
                             <span class="textTheme ex_service_qty">x${qty}</span>&nbsp;|&nbsp;
-                            <span class="textTheme"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol"></span>${mp_price_format(total_price_for_item)}</span></span>
+                            <span class="textTheme"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol"></span>${mpcrbm_price_format(total_price_for_item)}</span></span>
                         </p>
                     </div>
                 `;
                 parent.find('.mptbm_extra_service_summary').append(new_item_html);
             } else {
                 summary_item.find('.ex_service_qty').text('x' + qty);
-                summary_item.find('.woocommerce-Price-amount').html(mp_price_format(total_price_for_item));
+                summary_item.find('.woocommerce-Price-amount').html(mpcrbm_price_format(total_price_for_item));
             }
 
             $button.addClass('mActive');
@@ -671,7 +671,7 @@ jQuery(document).ready(function($) {
                 }
             });
         }
-        target_summary.find(".mptbm_product_total_price").html(mp_price_format(total));
+        target_summary.find(".mptbm_product_total_price").html(mpcrbm_price_format(total));
     }
 
     // Handle taxi return and waiting time changes
@@ -732,7 +732,7 @@ jQuery(document).ready(function($) {
                     mptbm_transportation_type_nonce: mptbm_ajax.nonce
                 },
                 beforeSend: function() {
-                    dLoader(parent.find('.tabsContentNext'));
+                    mpcrbm_loader(parent.find('.tabsContentNext'));
                 },
                 success: function(data) {
                     if ($('<div />', { html: data }).find("div").length > 0) {
@@ -753,7 +753,7 @@ jQuery(document).ready(function($) {
                             if ($('body select#billing_state').length > 0) {
                                 $('body select#billing_state').select2({});
                             }
-                            dLoaderRemove(parent.find('.tabsContentNext'));
+                            mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                             parent.find('.nextTab_next').trigger('click');
                         });
                     } else {
@@ -762,7 +762,7 @@ jQuery(document).ready(function($) {
                 },
                 error: function(response) {
                     console.log(response);
-                    dLoaderRemove(parent.find('.tabsContentNext'));
+                    mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                 }
             });
         }

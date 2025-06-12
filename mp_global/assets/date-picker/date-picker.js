@@ -6,7 +6,7 @@ jQuery(document).ready(function () {
 
     selectors.forEach(function (selector) {
         jQuery(selector).datepicker({
-            dateFormat: mp_date_format,
+            dateFormat: mpcrbm_date_format,
             minDate: new Date(startDate.year, startDate.month, startDate.day),
             maxDate: new Date(endDate.year, endDate.month, endDate.day),
             autoSize: true,

@@ -6,9 +6,9 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPCRM_Select_Icon_image')) {
+	if (!class_exists('MPCRBM_Select_Icon_image')) {
 		$GLOBALS['mpcrm_mp_icon_popup_exit'] = false;
-		class MPCRM_Select_Icon_image {
+		class MPCRBM_Select_Icon_image {
 			public function __construct() {
 				add_action('mp_input_add_icon', array($this, 'load_icon'), 10, 2);
 				add_action('mpcrm_mp_add_single_image', array($this, 'mpcrm_single_image'), 10, 2);
@@ -41,7 +41,7 @@
 				if (!$GLOBALS['mpcrm_mp_icon_popup_exit']) {
 					$GLOBALS['mpcrm_mp_icon_popup_exit'] = true;
 					?>
-                    <div class="mp_add_icon_popup mpPopup mpStyle" data-popup="#mp_add_icon_popup">
+                    <div class="mp_add_icon_popup mpPopup mpcrbm" data-popup="#mp_add_icon_popup">
                         <div class="popupMainArea fullWidth">
                             <div class="popupHeader allCenter">
                                 <h2 class="_mR"><?php esc_html_e('Select Icon', 'car-rental-manager'); ?></h2>
@@ -121,7 +121,7 @@
 				<?php
 			}
 			public function mpcrm_multi_image($name, $images) {
-				$images = is_array($images) ? MPCRM_Global_Function::array_to_string($images) : $images;
+				$images = is_array($images) ? MPCRBM_Global_Function::array_to_string($images) : $images;
 				?>
                 <div class="mp_multi_image_area">
 				<input type="hidden" class="mp_multi_image_value" name="<?php echo esc_attr($name); ?>" value="<?php echo esc_attr($images); ?>"/>
@@ -133,7 +133,7 @@
 									?>
 									<div class="mp_multi_image_item" data-image-id="<?php echo esc_attr($image); ?>">                                        
 										<span class="fas fa-times circleIcon_xs mp_remove_multi_image"></span>
-										<img src="<?php echo esc_url( MPCRM_Global_Function::mpcrm_get_image_url('', $image, 'medium') ); ?>" 
+										<img src="<?php echo esc_url( MPCRBM_Global_Function::mpcrm_get_image_url('', $image, 'medium') ); ?>" 
      									alt="<?php echo esc_attr($image); ?>" />
 									</div>
 
@@ -164,7 +164,7 @@
                         <span class="fas fa-times mp_remove_icon mp_icon_remove" title="<?php esc_html_e('Remove Icon', 'car-rental-manager'); ?>"></span>
                     </div>
                     <div class="mp_image_item <?php echo esc_attr($image_class); ?>">
-                        <img class="" src="<?php echo esc_attr(MPCRM_Global_Function::mpcrm_get_image_url('', $image, 'medium')); ?>" alt="">
+                        <img class="" src="<?php echo esc_attr(MPCRBM_Global_Function::mpcrm_get_image_url('', $image, 'medium')); ?>" alt="">
                         <span class="fas fa-times mp_remove_icon mp_image_remove" title="<?php esc_html_e('Remove Image', 'car-rental-manager'); ?>"></span>
                     </div>
                     <div class="mp_add_icon_image_button_area <?php echo esc_attr($button_active_class); ?>">
@@ -1923,5 +1923,5 @@
 				];
 			}
 		}
-		new MPCRM_Select_Icon_image();
+		new MPCRBM_Select_Icon_image();
 	}

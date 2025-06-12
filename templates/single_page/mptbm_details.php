@@ -11,9 +11,9 @@
 	} else {
 		do_action( 'mpcrm_woocommerce_before_single_product' );
 		$post_id                   = get_the_id();
-		$template_name = MPCRM_Global_Function::mpcrm_get_post_info( $post_id, 'mptbm_theme_file', 'default.php' );
-		$price_based    = MPCRM_Global_Function::mpcrm_get_post_info( $post_id, 'mptbm_price_based' );
-		include_once( MPTBM_Function::details_template_path() );
+		$template_name = MPCRBM_Global_Function::mpcrm_get_post_info( $post_id, 'mptbm_theme_file', 'default.php' );
+		$price_based    = MPCRBM_Global_Function::mpcrm_get_post_info( $post_id, 'mptbm_price_based' );
+		include_once( MPCRBM_Function::details_template_path() );
 	}
 	do_action( 'mptbm_single_page_after_wrapper' );
 	get_footer();

@@ -52,10 +52,10 @@ if (!class_exists('MPTBM_Woocommerce')) {
                 return;
             }
 
-            $linked_id = MPCRM_Global_Function::mpcrm_get_post_info($product_id, 'link_mptbm_id', $product_id);
+            $linked_id = MPCRBM_Global_Function::mpcrm_get_post_info($product_id, 'link_mptbm_id', $product_id);
 
             $post_id = is_string(get_post_status($linked_id)) ? $linked_id : $product_id;
-            if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+            if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
                 $start_place = isset($_POST['mptbm_start_place']) ? sanitize_text_field(wp_unslash($_POST['mptbm_start_place'])) : '';
                 $end_place = isset($_POST['mptbm_end_place']) ? sanitize_text_field(wp_unslash($_POST['mptbm_end_place'])) : '';
                 $return = isset($_POST['mptbm_taxi_return']) ? sanitize_text_field(wp_unslash($_POST['mptbm_taxi_return'])) : 1;
@@ -69,7 +69,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                         if ($return_time !== "0") {
                             // Convert start time to hours and minutes
                             list($hours, $decimal_part) = explode('.', $return_time);
-                            $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+                            $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
                             if ($interval_time == "5" || $interval_time == "15") {
                                 $minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
                             } else {
@@ -93,9 +93,9 @@ if (!class_exists('MPTBM_Woocommerce')) {
                 $total_price = $this->mpcrm_get_cart_total_price($post_id);
 
 
-                $price = MPTBM_Function::mpcrm_get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
-                $wc_price = MPCRM_Global_Function::wc_price($post_id, $price);
-                $raw_price = MPCRM_Global_Function::price_convert_raw($wc_price);
+                $price = MPCRBM_Function::mpcrm_get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
+                $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
+                $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
 
                 $cart_item_data['mptbm_date'] = isset($_POST['mptbm_date']) ? sanitize_text_field(wp_unslash($_POST['mptbm_date'])) : '';
 
@@ -129,7 +129,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
         {
             foreach ($cart_object->cart_contents as $value) {
                 $post_id = array_key_exists('mptbm_id', $value) ? $value['mptbm_id'] : 0;
-                if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+                if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
                     $total_price = $value['mptbm_tp'];
                     if (isset($_SESSION['geo_fence_post_' . $post_id])) {
                         // Extract amount from session
@@ -152,15 +152,15 @@ if (!class_exists('MPTBM_Woocommerce')) {
         public function cart_item_thumbnail($thumbnail, $cart_item)
         {
             $mptbm_id = array_key_exists('mptbm_id', $cart_item) ? $cart_item['mptbm_id'] : 0;
-            if (get_post_type($mptbm_id) == MPTBM_Function::mpcrm_get_cpt()) {
-                $thumbnail = '<div class="bg_image_area" data-href="' . get_the_permalink($mptbm_id) . '"><div data-bg-image="' . MPCRM_Global_Function::mpcrm_get_image_url($mptbm_id) . '"></div></div>';
+            if (get_post_type($mptbm_id) == MPCRBM_Function::get_cpt()) {
+                $thumbnail = '<div class="bg_image_area" data-href="' . get_the_permalink($mptbm_id) . '"><div data-bg-image="' . MPCRBM_Global_Function::mpcrm_get_image_url($mptbm_id) . '"></div></div>';
             }
             return $thumbnail;
         }
         public function mpcrm_get_item_data($item_data, $cart_item)
         {
             $post_id = array_key_exists('mptbm_id', $cart_item) ? $cart_item['mptbm_id'] : 0;
-            if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+            if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
                 ob_start();
                 $this->show_cart_item($cart_item, $post_id);
                 do_action('mptbm_show_cart_item', $cart_item, $post_id);
@@ -175,7 +175,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
             $items = $woocommerce->cart->get_cart();
             foreach ($items as $values) {
                 $post_id = array_key_exists('mptbm_id', $values) ? $values['mptbm_id'] : 0;
-                if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+                if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
                     do_action('mptbm_validate_cart_item', $values, $post_id);
                 }
             }
@@ -185,7 +185,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
             $this->ordered_item_name = $item->get_name();
 
             $post_id = array_key_exists('mptbm_id', $values) ? $values['mptbm_id'] : 0;
-            if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+            if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
                 $date = $values['mptbm_date'] ?? '';
                 $start_location = $values['mptbm_start_place'] ?? '';
                 $end_location = $values['mptbm_end_place'] ?? '';
@@ -202,7 +202,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
                 $item->add_meta_data(esc_html__('Pickup Location ', 'car-rental-manager'), $start_location);
                 $item->add_meta_data(esc_html__('Return Location ', 'car-rental-manager'), $end_location);
-                $price_type = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_price_based');
+                $price_type = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_price_based');
                 if ($price_type !== 'manual') {
                     $item->add_meta_data(esc_html__('Approximate Distance ', 'car-rental-manager'), $distance_text);
                     $item->add_meta_data(esc_html__('Approximate Time ', 'car-rental-manager'), $duration_text);
@@ -214,9 +214,9 @@ if (!class_exists('MPTBM_Woocommerce')) {
                 if ($fixed_time && $fixed_time > 0) {
                     $item->add_meta_data(esc_html__('Service Times', 'car-rental-manager'), $fixed_time . ' ' . esc_html__('Hour ', 'car-rental-manager'));
                 }
-                $item->add_meta_data(esc_html__('Date ', 'car-rental-manager'), esc_html(MPCRM_Global_Function::date_format($date)));
+                $item->add_meta_data(esc_html__('Date ', 'car-rental-manager'), esc_html(MPCRBM_Global_Function::date_format($date)));
 
-                $item->add_meta_data(esc_html__('Time ', 'car-rental-manager'), esc_html(MPCRM_Global_Function::date_format($date, 'time')));
+                $item->add_meta_data(esc_html__('Time ', 'car-rental-manager'), esc_html(MPCRBM_Global_Function::date_format($date, 'time')));
 
                     $item->add_meta_data(esc_html__('Transfer Type', 'car-rental-manager'), esc_html__('Return ', 'car-rental-manager'));
                         $return_date = $values['mptbm_return_target_date'] ?? '';
@@ -226,7 +226,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                             if ($return_time !== "0") {
                                 // Convert start time to hours and minutes
                                 list($hours, $decimal_part) = explode('.', $return_time);
-                                $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+                                $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
                                 if ($interval_time == "5" || $interval_time == "15") {
                                     $minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
                                 } else {
@@ -252,8 +252,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
 
 
-                        $item->add_meta_data(esc_html__('Return Date', 'car-rental-manager'), esc_html(MPCRM_Global_Function::date_format($return_date_time)));
-                        $item->add_meta_data(esc_html__('Return Time', 'car-rental-manager'), esc_html(MPCRM_Global_Function::date_format($return_date_time, 'time')));
+                        $item->add_meta_data(esc_html__('Return Date', 'car-rental-manager'), esc_html(MPCRBM_Global_Function::date_format($return_date_time)));
+                        $item->add_meta_data(esc_html__('Return Time', 'car-rental-manager'), esc_html(MPCRBM_Global_Function::date_format($return_date_time, 'time')));
                         $item->add_meta_data('_mptbm_return_date', $return_date);
                         $item->add_meta_data('_mptbm_return_time', $return_time);
                         $item->add_meta_data('_return_date_time', $return_date_time);
@@ -268,10 +268,10 @@ if (!class_exists('MPTBM_Woocommerce')) {
                         $item->add_meta_data(esc_html__('Price ', 'car-rental-manager'), esc_html(' ( ') . wp_kses_post(wc_price($service['service_price'])) . esc_html(' X ') . esc_html($service['service_quantity']) . esc_html(') = ') . wp_kses_post(wc_price($service['service_price'] * $service['service_quantity'])));
                     }
                 }
-                if (class_exists('MPTBM_Plugin_Ecab_Calendar_Addon')) {
+                if (class_exists('MPCRBM_Plugin_Ecab_Calendar_Addon')) {
                     // Prepare date and time for Google Calendar format
-                    $formatted_date = MPCRM_Global_Function::date_format($date);
-                    $formatted_time = MPCRM_Global_Function::date_format($date, 'time');
+                    $formatted_date = MPCRBM_Global_Function::date_format($date);
+                    $formatted_time = MPCRBM_Global_Function::date_format($date, 'time');
                     // Combine the provided formatted date and time
                     $date_time_string = $formatted_date . ' ' . $formatted_time; // Combine date and time as a single string
 
@@ -382,41 +382,41 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
                 if ($order_status != 'failed') {
                     foreach ($order->get_items() as $item_id => $item) {
-                        $post_id = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_id');
-                        if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
-                            $date = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_date');
-                            $date = $date ? MPCRM_Global_Function::data_sanitize($date) : '';
+                        $post_id = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_id');
+                        if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
+                            $date = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_date');
+                            $date = $date ? MPCRBM_Global_Function::data_sanitize($date) : '';
 
-                            $return_date_time = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_return_date_time');
-                            $return_date_time = $return_date_time ? MPCRM_Global_Function::data_sanitize($return_date_time) : '';
-
-
-
-                            $start_place = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_start_place');
-                            $start_place = $start_place ? MPCRM_Global_Function::data_sanitize($start_place) : '';
-                            $end_place = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_end_place');
-                            $end_place = $end_place ? MPCRM_Global_Function::data_sanitize($end_place) : '';
-                            $waiting_time = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_waiting_time');
-                            $waiting_time = $waiting_time ? MPCRM_Global_Function::data_sanitize($waiting_time) : '';
-                            $return = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_taxi_return');
-                            $return = $return ? MPCRM_Global_Function::data_sanitize($return) : '';
-
-                            $return_target_date = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_return_date');
-                            $return_target_time = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_return_time');
+                            $return_date_time = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_return_date_time');
+                            $return_date_time = $return_date_time ? MPCRBM_Global_Function::data_sanitize($return_date_time) : '';
 
 
-                            $fixed_time = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_fixed_hours');
-                            $fixed_time = $fixed_time ? MPCRM_Global_Function::data_sanitize($fixed_time) : '';
-                            $distance = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_distance');
-                            $distance = $distance ? MPCRM_Global_Function::data_sanitize($distance) : '';
-                            $duration = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_duration');
-                            $duration = $duration ? MPCRM_Global_Function::data_sanitize($duration) : '';
-                            $base_price = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_base_price');
-                            $base_price = $base_price ? MPCRM_Global_Function::data_sanitize($base_price) : '';
-                            $service = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_service_info');
-                            $service_info = $service ? MPCRM_Global_Function::data_sanitize($service) : [];
-                            $price = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_tp');
-                            $price = $price ? MPCRM_Global_Function::data_sanitize($price) : [];
+
+                            $start_place = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_start_place');
+                            $start_place = $start_place ? MPCRBM_Global_Function::data_sanitize($start_place) : '';
+                            $end_place = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_end_place');
+                            $end_place = $end_place ? MPCRBM_Global_Function::data_sanitize($end_place) : '';
+                            $waiting_time = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_waiting_time');
+                            $waiting_time = $waiting_time ? MPCRBM_Global_Function::data_sanitize($waiting_time) : '';
+                            $return = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_taxi_return');
+                            $return = $return ? MPCRBM_Global_Function::data_sanitize($return) : '';
+
+                            $return_target_date = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_return_date');
+                            $return_target_time = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_return_time');
+
+
+                            $fixed_time = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_fixed_hours');
+                            $fixed_time = $fixed_time ? MPCRBM_Global_Function::data_sanitize($fixed_time) : '';
+                            $distance = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_distance');
+                            $distance = $distance ? MPCRBM_Global_Function::data_sanitize($distance) : '';
+                            $duration = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_duration');
+                            $duration = $duration ? MPCRBM_Global_Function::data_sanitize($duration) : '';
+                            $base_price = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_base_price');
+                            $base_price = $base_price ? MPCRBM_Global_Function::data_sanitize($base_price) : '';
+                            $service = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_service_info');
+                            $service_info = $service ? MPCRBM_Global_Function::data_sanitize($service) : [];
+                            $price = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_tp');
+                            $price = $price ? MPCRBM_Global_Function::data_sanitize($price) : [];
 
                             // Add meta array data to the $data array
                             $data = array_merge($meta_array, [
@@ -442,7 +442,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                                 'mptbm_billing_name' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
                                 'mptbm_billing_email' => $order->get_billing_email(),
                                 'mptbm_billing_phone' => $order->get_billing_phone(),
-                                'mptbm_target_pickup_interval_time' => MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time', '30')
+                                'mptbm_target_pickup_interval_time' => MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time', '30')
                             ]);
 
 
@@ -490,8 +490,8 @@ if (!class_exists('MPTBM_Woocommerce')) {
             $order = wc_get_order($order_id);
             $order_status = $order->get_status();
             foreach ($order->get_items() as $item_id => $item_values) {
-                $post_id = MPCRM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_id');
-                if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+                $post_id = MPCRBM_Global_Function::mpcrm_get_order_item_meta($item_id, '_mptbm_id');
+                if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
                     if ($order->has_status('processing') || $order->has_status('pending') || $order->has_status('on-hold') || $order->has_status('completed') || $order->has_status('cancelled') || $order->has_status('refunded') || $order->has_status('failed') || $order->has_status('requested')) {
                         $this->wc_order_status_change($order_status, $post_id, $order_id);
                     }
@@ -511,7 +511,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
             $fixed_time = array_key_exists('mptbm_fixed_hours', $cart_item) ? $cart_item['mptbm_fixed_hours'] : '';
             $extra_service = array_key_exists('mptbm_extra_service_info', $cart_item) ? $cart_item['mptbm_extra_service_info'] : [];
             ?>
-            <div class="mpStyle">
+            <div class="mpcrbm">
                 <?php do_action('mptbm_before_cart_item_display', $cart_item, $post_id); ?>
                 <div class="dLayout_xs">
                     <ul class="cart_list">
@@ -526,7 +526,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                             <span><?php echo esc_html($end_location); ?></span>
                         </li>
                         <?php
-                        $price_type = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_price_based');
+                        $price_type = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_price_based');
                         if ($price_type !== 'manual') {
                             ?>
                             <li>
@@ -543,12 +543,12 @@ if (!class_exists('MPTBM_Woocommerce')) {
                         <li>
                             <span class="far fa-calendar-alt"></span>
                             <h6 class="_mR_xs"><?php esc_html_e('Date', 'car-rental-manager'); ?> :</h6>
-                            <span><?php echo esc_html(MPCRM_Global_Function::date_format($date)); ?></span>
+                            <span><?php echo esc_html(MPCRBM_Global_Function::date_format($date)); ?></span>
                         </li>
                         <li>
                             <span class="far fa-clock"></span>
                             <h6 class="_mR_xs"><?php esc_html_e('Time : ', 'car-rental-manager'); ?></h6>
-                            <span><?php echo esc_html(MPCRM_Global_Function::date_format($date, 'time')); ?></span>
+                            <span><?php echo esc_html(MPCRBM_Global_Function::date_format($date, 'time')); ?></span>
                         </li>
 
 
@@ -560,7 +560,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                                     if ($return_time !== "0") {
                                         // Convert start time to hours and minutes
 
-                                        if(MPCRM_Global_Function::hasDecimal($return_time)){
+                                        if(MPCRBM_Global_Function::hasDecimal($return_time)){
                                             list($hours, $decimal_part) = explode('.', $return_time);
                                         }else{
                                             $hours = $return_time;
@@ -569,7 +569,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
 
 
 
-                                        $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+                                        $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
                                         if ($interval_time == "5" || $interval_time == "15") {
                                             $minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
                                         } else {
@@ -599,12 +599,12 @@ if (!class_exists('MPTBM_Woocommerce')) {
                                 <li>
                                     <span class="far fa-calendar-alt"></span>
                                     <h6 class="_mR_xs"><?php esc_html_e('Return Date', 'car-rental-manager'); ?> :</h6>
-                                    <span><?php echo esc_html(MPCRM_Global_Function::date_format($return_date_time)); ?></span>
+                                    <span><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time)); ?></span>
                                 </li>
                                 <li>
                                     <span class="far fa-clock"></span>
                                     <h6 class="_mR_xs"><?php esc_html_e('Return Time', 'car-rental-manager'); ?> :</h6>
-                                    <span><?php echo esc_html(MPCRM_Global_Function::date_format($return_date_time, 'time')); ?></span>
+                                    <span><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time, 'time')); ?></span>
                                 </li>
 
 
@@ -724,9 +724,9 @@ if (!class_exists('MPTBM_Woocommerce')) {
             if (sizeof($service_name) > 0) {
                 for ($i = 0; $i < count($service_name); $i++) {
                     if ($service_name[$i] && $service_quantity[$i] > 0) {
-                        $price = MPTBM_Function::mpcrm_get_extra_service_price_by_name($post_id, $service_name[$i]);
-                        $wc_price = MPCRM_Global_Function::wc_price($post_id, $price);
-                        $raw_price = MPCRM_Global_Function::price_convert_raw($wc_price);
+                        $price = MPCRBM_Function::mpcrm_get_extra_service_price_by_name($post_id, $service_name[$i]);
+                        $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
+                        $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
                         $extra_service[$i]['service_name'] = $service_name[$i];
                         $extra_service[$i]['service_quantity'] = $service_quantity[$i];
                         $extra_service[$i]['service_price'] = $raw_price;
@@ -763,7 +763,7 @@ if (!class_exists('MPTBM_Woocommerce')) {
                     if ($return_time !== "0") {
                         // Convert start time to hours and minutes
                         list($hours, $decimal_part) = explode('.', $return_time);
-                        $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+                        $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
                         if ($interval_time == "5" || $interval_time == "15") {
                             $minutes = isset($decimal_part) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
                         } else {
@@ -781,25 +781,25 @@ if (!class_exists('MPTBM_Woocommerce')) {
                 $return_date_time .= " " . $return_time_formatted;
             }
 
-            $price = MPTBM_Function::mpcrm_get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
-            $wc_price = MPCRM_Global_Function::wc_price($post_id, $price);
-            $raw_price = MPCRM_Global_Function::price_convert_raw($wc_price);
+            $price = MPCRBM_Function::mpcrm_get_price($post_id,  $start_place, $end_place,  $start_time, $return_date_time);
+            $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
+            $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
             $service_name = isset($_POST['mptbm_extra_service']) ? array_map('sanitize_text_field', wp_unslash($_POST['mptbm_extra_service'])) : [];
             $service_quantity = isset($_POST['mptbm_extra_service_qty']) ? array_map('absint', $_POST['mptbm_extra_service_qty']) : [];
             if (sizeof($service_name) > 0) {
                 for ($i = 0; $i < count($service_name); $i++) {
                     if ($service_name[$i]) {
                         if (array_key_exists($i, $service_quantity) && isset($service_quantity[$i])) {
-                            $raw_price = $raw_price + MPTBM_Function::mpcrm_get_extra_service_price_by_name($post_id, $service_name[$i]) * $service_quantity[$i];
+                            $raw_price = $raw_price + MPCRBM_Function::mpcrm_get_extra_service_price_by_name($post_id, $service_name[$i]) * $service_quantity[$i];
                         } else {
-                            $raw_price = $raw_price + MPTBM_Function::mpcrm_get_extra_service_price_by_name($post_id, $service_name[$i]);
+                            $raw_price = $raw_price + MPCRBM_Function::mpcrm_get_extra_service_price_by_name($post_id, $service_name[$i]);
                         }
                     }
                 }
             }
-            $wc_price = MPCRM_Global_Function::wc_price($post_id, $raw_price);
+            $wc_price = MPCRBM_Global_Function::wc_price($post_id, $raw_price);
 
-            return MPCRM_Global_Function::price_convert_raw($wc_price);
+            return MPCRBM_Global_Function::price_convert_raw($wc_price);
         }
         public static function mpcrm_cpt_data($cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array())
         {

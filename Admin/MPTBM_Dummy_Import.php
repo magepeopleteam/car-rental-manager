@@ -17,8 +17,8 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 		public function dummy_import()
 		{
 			$dummy_post_inserted = get_option('mpcrm_dummy_already_inserted', 'no');
-			$count_existing_event = wp_count_posts('mptbm_rent')->publish;
-			$plugin_active = MPCRM_Global_Function::check_plugin('car-rental-manager', 'car-rental-manager.php');
+			$count_existing_event = wp_count_posts('mpcrbm_rent')->publish;
+			$plugin_active = MPCRBM_Global_Function::check_plugin('car-rental-manager', 'car-rental-manager.php');
 			if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				$this->mpcrm_post($this->dummy_cpt());
 				$this->location_taxonomy();
@@ -138,7 +138,7 @@ if (!class_exists('MPTBM_Dummy_Import')) {
 							)
 						],
 					],
-					'mptbm_rent' => [
+					'mpcrbm_rent' => [
 						0 => [
 							'name' => 'BMW 5 Series',
 							'post_data' => [

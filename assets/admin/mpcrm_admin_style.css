@@ -146,43 +146,43 @@
     min-width: inherit;
     max-width: inherit;
   }
-  div.mpStyle [data-tabs-target] {
+  div.mpcrbm [data-tabs-target] {
     color: var(--mptbm-secondary);
   }
-  .mpStyle .tabsContent {
+  .mpcrbm .tabsContent {
     overflow: visible;
   }
-  .mpStyle .navy_blueButton, .mpStyle [class*=_navy_blueButton] {
+  .mpcrbm .navy_blueButton, .mpcrbm [class*=_navy_blueButton] {
     background-color: var(--mptbm-primary);
     color: var(--mptbm-white);
     padding: 1.5em;
     border: 2px solid var(--mptbm-primary);
   }
-  .mpStyle .navy_blueButton:hover, .mpStyle [class*=_navy_blueButton]:hover {
+  .mpcrbm .navy_blueButton:hover, .mpcrbm [class*=_navy_blueButton]:hover {
     background-color: var(--mptbm-white);
     color: var(--mptbm-primary);
     border-color: var(--mptbm-primary);
   }
-  .mpStyle .navy_blueButton:hover span, .mpStyle [class*=_navy_blueButton]:hover span {
+  .mpcrbm .navy_blueButton:hover span, .mpcrbm [class*=_navy_blueButton]:hover span {
     color: var(--mptbm-primary);
   }
-  .mpStyle .warningButton, .mpStyle [class*=_warningButton] {
+  .mpcrbm .warningButton, .mpcrbm [class*=_warningButton] {
     background-color: var(--mptbm-yellow);
     color: var(--mptbm-white);
     padding: 1.5em;
     border: 2px solid var(--mptbm-yellow);
   }
-  .mpStyle .warningButton:hover, .mpStyle [class*=_warningButton]:hover {
+  .mpcrbm .warningButton:hover, .mpcrbm [class*=_warningButton]:hover {
     background-color: var(--mptbm-white);
     color: var(--mptbm-yellow);
   }
-  .mpStyle .warningButton:hover span, .mpStyle [class*=_warningButton]:hover span {
+  .mpcrbm .warningButton:hover span, .mpcrbm [class*=_warningButton]:hover span {
     color: var(--mptbm-yellow);
   }
-  div.mpStyle select.formControl:focus {
+  div.mpcrbm select.formControl:focus {
     background-color: var(--mptbm-white);
   }
-  .mpStyle .mp_remove_icon {
+  .mpcrbm .mp_remove_icon {
     position: absolute;
     top: -5px;
     right: -5px;
@@ -281,44 +281,7 @@
   margin-bottom: 12px;
   font-weight: 700;
 }
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs .description, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs .description {
-  margin: 0;
-  padding: 1.5em;
-  font-size: 1rem;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  border: 0;
-  margin: 0;
-  margin-top: 50px;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr th, #mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr th, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td {
-  background-color: var(--mptbm-white);
-  padding: 3em;
-  margin-bottom: 3em;
-  width: 50%;
-  border: 1px solid var(--mptbm-gray);
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr th p, #mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td p, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr th p, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td p {
-  font-size: 0.8rem;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td {
-  text-align: right;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td label, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td label {
-  display: block;
-  text-align: right;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td input, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td input {
-  border-radius: 0.5em;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td input.select2-search__field, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td input.select2-search__field {
-  border: 0;
-}
-#mp_meta_box_panel .tab-content-ttbm_date_config_meta_boxs table.form-table tr td input#mep_disable_ticket_time, #mp_meta_box_panel .tab-content-ttbm_tax_meta_boxs table.form-table tr td input#mep_disable_ticket_time {
-  margin-right: 0.5em;
-}
+
 #mp_meta_box_panel .form-wrap.form-builder h1, #mp_meta_box_panel .form-wrap.form-builder h2, #mp_meta_box_panel .form-wrap.form-builder h3, #mp_meta_box_panel .form-wrap.form-builder h4, #mp_meta_box_panel .form-wrap.form-builder h5, #mp_meta_box_panel .form-wrap.form-builder h6,
 #mp_meta_box_panel .form-wrap.form-builder .h1, #mp_meta_box_panel .form-wrap.form-builder .h2, #mp_meta_box_panel .form-wrap.form-builder .h3, #mp_meta_box_panel .form-wrap.form-builder .h4, #mp_meta_box_panel .form-wrap.form-builder .h5, #mp_meta_box_panel .form-wrap.form-builder .h6 {
   color: var(--mptbm-dark);
@@ -370,7 +333,7 @@ div > .ppof-metabox {
   background: transparent;
 }
 
-.mpStyle .ppof-button {
+.mpcrbm .ppof-button {
   width: 320px;
   border: 0px solid;
   box-shadow: none;
@@ -400,18 +363,18 @@ div > .ppof-metabox {
     height: 180px;
     object-fit: cover;
   }
-  div.mpStyle .description {
+  div.mpcrbm .description {
     font-size: 1rem !important;
     color: var(--mpl-secondary);
   }
-  .mpStyle .customCheckboxLabel input:checked ~ .customCheckbox::before {
+  .mpcrbm .customCheckboxLabel input:checked ~ .customCheckbox::before {
     background: var(--mptbm-sky);
   }
-  .mpStyle .customCheckboxLabel {
+  .mpcrbm .customCheckboxLabel {
     cursor: pointer;
     font-weight: normal;
   }
-  .mpStyle .customCheckbox::before {
+  .mpcrbm .customCheckbox::before {
     content: "";
     position: absolute;
     left: 0;
@@ -423,13 +386,13 @@ div > .ppof-metabox {
     border-radius: 2px;
   }
 }
-div.mpStyle span.mp_remove_multi_image {
+div.mpcrbm span.mp_remove_multi_image {
   background-color: var(--mptbm-black);
   color: var(--mptbm-white);
   box-shadow: 0 0 5px var(--mptbm-white);
 }
 
-div.mpStyle span.mp_remove_multi_image {
+div.mpcrbm span.mp_remove_multi_image {
   top: -7px;
   right: -7px;
 }
@@ -456,11 +419,11 @@ div.mpStyle span.mp_remove_multi_image {
   display: block;
 }
 
-div.mp_global_settings label .info_text {
+div.mpcrbm_global_settings label .info_text {
   line-height: 0.9rem;
 }
 
-div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists {
+div.mpcrbm_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists {
   width: 25%;
 }
 
@@ -469,13 +432,13 @@ div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists {
 }
 
 @media only screen and (min-width: 10px) {
-  div.mpStyle .mp_sticky_area.mpSticky {
+  div.mpcrbm .mp_sticky_area.mpSticky {
     position: relative;
   }
-  div.mpStyle span.selection {
+  div.mpcrbm span.selection {
     height: auto;
   }
-  div.mpStyle span.select2-container.select2 {
+  div.mpcrbm span.select2-container.select2 {
     height: auto;
   }
 }

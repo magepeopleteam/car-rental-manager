@@ -14,17 +14,17 @@ if (!class_exists('MPTBM_General_Settings')) {
 			add_action('mpcrm_settings_tab_content', [$this, 'general_settings']);
 			add_action('add_hidden_mptbm_features_item', [$this, 'features_item']);
 			add_action('save_post', [$this, 'save_general_settings']);
-			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
+			add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function general_settings($post_id)
 		{
 			wp_nonce_field('mptbm_save_general_settings', 'mptbm_nonce');
-			$max_passenger = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_passenger');
-			$max_bag = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_bag');
-			$display_features = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_features', 'on');
+			$max_passenger = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_passenger');
+			$max_bag = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_maximum_bag');
+			$display_features = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_features', 'on');
 			$active = $display_features == 'off' ? '' : 'mActive';
 			$checked = $display_features == 'off' ? '' : 'checked';
-			$all_features = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_features');
+			$all_features = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_features');
 			if (!$all_features) {
 				$all_features = array(
 					array(
@@ -86,7 +86,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 								<h6><?php esc_html_e('On/Off Feature Extra feature', 'car-rental-manager'); ?></h6>
 								<span class="desc"><?php MPTBM_Settings::info_text('display_mptbm_features'); ?></span>
 							</div>
-							<?php MPCRM_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
+							<?php MPCRBM_Custom_Layout::switch_button('display_mptbm_features', $checked); ?>
 						</label>
 					</section>
 					<section data-collapse="#display_mptbm_features" class="<?php echo esc_attr($active); ?>">
@@ -112,12 +112,12 @@ if (!class_exists('MPTBM_General_Settings')) {
 							</tbody>
 						</table>
 						<div class="my-2"></div>
-						<?php MPCRM_Custom_Layout::mpcrm_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
+						<?php MPCRBM_Custom_Layout::mpcrm_new_button(esc_html__('Add New Item', 'car-rental-manager')); ?>
 						<?php do_action('add_mp_hidden_table', 'add_hidden_mptbm_features_item'); ?>
 					</section>
 				</div>
 			</div>
-			<?php do_action('mptbm_settings_sec_fields'); ?>
+			<?php do_action('mpcrbm_settings_sec_fields'); ?>
 		<?php
 		}
 		public function features_item($features = array())
@@ -139,7 +139,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 						<input class="formControl mp_name_validation" name="mptbm_features_text[]" value="<?php echo esc_attr($text); ?>" />
 					</label>
 				</td>
-				<td valign="middle"><?php MPCRM_Custom_Layout::move_remove_button(); ?></td>
+				<td valign="middle"><?php MPCRBM_Custom_Layout::move_remove_button(); ?></td>
 			</tr>
 <?php
 		}
@@ -155,7 +155,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 			if (!wp_verify_nonce($nonce, 'mptbm_save_general_settings')) {
 				return;
 			};
-			if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+			if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
 				$all_features = [];
 				$max_passenger = isset($_POST['mptbm_maximum_passenger']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_passenger'])) : '';
 				$max_bag = isset($_POST['mptbm_maximum_bag']) ? sanitize_text_field(wp_unslash($_POST['mptbm_maximum_bag'])) : '';
@@ -194,7 +194,7 @@ if (!class_exists('MPTBM_General_Settings')) {
 			$default_fields = is_array($default_fields) ? $default_fields : array();
 			
 			$settings_fields = array(
-				'mptbm_general_settings' => array(
+				'mpcrbm_general_settings' => array(
 					array(
 						'name' => 'mptbm_maximum_passenger',
 						'label' => esc_html__('Maximum Passenger', 'car-rental-manager'),

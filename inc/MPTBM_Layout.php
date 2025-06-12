@@ -10,19 +10,19 @@
 		class MPTBM_Layout {
 			public function __construct() {}
 			public static function post_select() {
-				$label = MPTBM_Function::mpcrm_get_name();
+				$label = MPCRBM_Function::get_name();
 				?>
 				<label class="min_400 mptbm_post_id">
 					<select name="mptbm_id" class="formControl mp_select2" id="mptbm_post_id" required>
 						<option value="" selected><?php esc_html_e('Select', 'car-rental-manager') . ' ' . esc_html($label); ?></option>
 						<?php
-							$post_query = MPCRM_Global_Function::query_post_type(MPTBM_Function::mpcrm_get_cpt());
+							$post_query = MPCRBM_Global_Function::query_post_type(MPCRBM_Function::get_cpt());
 							$all_posts = $post_query->posts;
 							foreach ($all_posts as $post) {
 								$post_id = $post->ID;
-								$mptbm_id = MPTBM_Function::post_id_multi_language($post_id);
+								$mptbm_id = MPCRBM_Function::post_id_multi_language($post_id);
 								if ($post_id == $mptbm_id) {
-									//$price_based = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_price_based');
+									//$price_based = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_price_based');
 									//$price_based_text = $price_based == 'manual' ? esc_html__('Manual', 'car-rental-manager') : esc_html__('Dynamic', 'car-rental-manager');
 									?>
 									<option value="<?php echo esc_attr($post_id); ?>">

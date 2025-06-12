@@ -12,12 +12,12 @@
 				add_action('admin_menu', array($this, 'status_menu'));
 			}
 			public function status_menu() {
-				$cpt = MPTBM_Function::mpcrm_get_cpt();
+				$cpt = MPCRBM_Function::get_cpt();
 				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Status', 'car-rental-manager'), '<span style="color:yellow">' . esc_html__('Status', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_status_page', array($this, 'status_page'));
 			}
 			public function status_page() {
-				$label = MPTBM_Function::mpcrm_get_name();
-				$wc_i = MPCRM_Global_Function::check_woocommerce();
+				$label = MPCRBM_Function::get_name();
+				$wc_i = MPCRBM_Global_Function::check_woocommerce();
 				$wc_i_text = $wc_i == 1 ? esc_html__('Yes', 'car-rental-manager') : esc_html__('No', 'car-rental-manager');
 				$wp_v = get_bloginfo('version');
 				$wc_v = WC()->version;
@@ -25,7 +25,7 @@
 				$from_email = get_option('woocommerce_email_from_address');
 				?>
 				<div class="wrap"></div>
-				<div class="mpStyle">
+				<div class="mpcrbm">
 					<?php do_action('mpcrm_mp_status_notice_sec'); ?>
 					<div class=_dShadow_6_adminLayout">
 						<h2 class="textCenter"><?php echo esc_html($label) . '  ' . esc_html__('For Woocommerce Environment Status', 'car-rental-manager'); ?></h2>

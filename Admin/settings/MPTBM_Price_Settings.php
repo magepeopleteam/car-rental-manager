@@ -14,13 +14,13 @@ if (!class_exists('MPTBM_Price_Settings')) {
 			add_action('mpcrm_settings_tab_content', [$this, 'price_settings']);
 			add_action('mpcrm_settings_tab_content', [$this, 'price_settings']);
 			add_action('save_post', [$this, 'save_price_settings']);
-			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
+			add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 		public function price_settings($post_id)
 		{	
-			$time_price = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_day_price');
-			$manual_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_manual_price_info', []);
-			$terms_location_prices = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_terms_price_info', []);
+			$time_price = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_day_price');
+			$manual_prices = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_manual_price_info', []);
+			$terms_location_prices = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_terms_price_info', []);
 			$location_terms = get_terms(array('taxonomy' => 'mpcrm_locations', 'hide_empty' => false));
 
 ?>
@@ -64,7 +64,7 @@ if (!class_exists('MPTBM_Price_Settings')) {
             ) {
                 return;
             }
-            if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+            if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
 
 				$price_based = "manual";
 				update_post_meta($post_id, 'mptbm_price_based', $price_based);

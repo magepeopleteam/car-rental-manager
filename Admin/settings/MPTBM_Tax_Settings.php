@@ -12,7 +12,7 @@
 				add_action('mpcrm_settings_tab_content', [$this, 'tab_content']);
 				add_action('mpcrm_settings_tab_content', [$this, 'tab_content']);
 				add_action('save_post', [$this, 'settings_save']);
-				add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
+				add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 			}
 			public function tab_content($post_id) {
 				?>
@@ -20,9 +20,9 @@
 					<h3><?php esc_html_e('Tax Configuration', 'car-rental-manager'); ?></h3>
 					<p><?php esc_html_e('Tax Configuration settings.', 'car-rental-manager'); ?></p>
 					<?php
-						$tax_status = MPCRM_Global_Function::mpcrm_get_post_info($post_id, '_tax_status');
-						$tax_class = MPCRM_Global_Function::mpcrm_get_post_info($post_id, '_tax_class');
-						$all_tax_class = MPCRM_Global_Function::all_tax_list();
+						$tax_status = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, '_tax_status');
+						$tax_class = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, '_tax_class');
+						$all_tax_class = MPCRBM_Global_Function::all_tax_list();
 						
 					?>
 					<?php wp_nonce_field('save_tax_settings', 'tax_settings_nonce'); ?>
@@ -82,17 +82,17 @@
 						</div>
 					<?php } ?>
 				</div>
-				<?php do_action('mptbm_settings_sec_fields'); ?>
+				<?php do_action('mpcrbm_settings_sec_fields'); ?>
 				<?php
 			}
 			public function settings_save($post_id) {
-				if (get_post_type($post_id) == MPTBM_Function::mpcrm_get_cpt()) {
+				if (get_post_type($post_id) == MPCRBM_Function::get_cpt()) {
 					// Create and store nonce
 					$nonce = wp_create_nonce('settings_save_action');
 					update_post_meta($post_id, '_settings_save_nonce', $nonce);
 			
-					$tax_status = MPCRM_Global_Function::mpcrm_get_submit_info('_tax_status', 'none');
-					$tax_class = MPCRM_Global_Function::mpcrm_get_submit_info('_tax_class');
+					$tax_status = MPCRBM_Global_Function::mpcrm_get_submit_info('_tax_status', 'none');
+					$tax_class = MPCRBM_Global_Function::mpcrm_get_submit_info('_tax_class');
 			
 					update_post_meta($post_id, '_tax_status', $tax_status);
 					update_post_meta($post_id, '_tax_class', $tax_class);

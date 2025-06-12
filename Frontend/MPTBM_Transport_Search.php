@@ -30,7 +30,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 		}
 		public function transport_search($params)
 		{
-			$display_map = MPCRM_Global_Function::mpcrm_get_settings('mptbm_map_api_settings', 'display_map', 'enable');
+			$display_map = MPCRBM_Global_Function::get_settings('mptbm_map_api_settings', 'display_map', 'enable');
 			$price_based = $params['price_based'] ?: 'dynamic';
 			$price_based = $display_map == 'disable' ? 'manual' : $price_based;
 			$progressbar = $params['progressbar'] ?: 'yes';
@@ -41,12 +41,12 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			do_shortcode('[shop_messages]');
 			echo wp_kses_post(ob_get_clean());
 			//echo '<pre>';print_r($params);echo '</pre>';
-			include(MPTBM_Function::template_path('registration/registration_layout.php'));
+			include(MPCRBM_Function::template_path('registration/registration_layout.php'));
 		}
 		public function mpcrm_get_map_search_result()
 		{
 
-			include(MPTBM_Function::template_path('registration/choose_vehicles.php'));
+			include(MPCRBM_Function::template_path('registration/choose_vehicles.php'));
 
 
 			die(); // Ensure further execution stops after outputting the JavaScript
@@ -68,7 +68,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			$distance = isset($_COOKIE['mptbm_distance']) ? absint($_COOKIE['mptbm_distance']) : '';
 			$duration = isset($_COOKIE['mptbm_duration']) ? absint($_COOKIE['mptbm_duration']) : '';
 			// if ($distance && $duration) {
-			include(MPTBM_Function::template_path('registration/choose_vehicles.php'));
+			include(MPCRBM_Function::template_path('registration/choose_vehicles.php'));
 			// }
 			$content = ob_get_clean(); // Get the buffered content and clean the buffer
 			// Store the content in a session variable
@@ -81,7 +81,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 				? esc_url_raw(sanitize_text_field(wp_unslash($_POST['mptbm_enable_view_search_result_page']))) 
 				: '';
 			if ($redirect_url == '') {
-				$redirect_url = 'mptbm-search';
+				$redirect_url = 'mpcrbm-search';
 			}
 			echo wp_json_encode($redirect_url);
 			die(); // Ensure further execution stops after outputting the JavaScript
@@ -89,17 +89,17 @@ if (!class_exists('MPTBM_Transport_Search')) {
 
 		public function mpcrm_get_end_place()
 		{
-			include(MPTBM_Function::template_path('registration/get_end_place.php'));
+			include(MPCRBM_Function::template_path('registration/get_end_place.php'));
 			die();
 		}
 		public function mpcrm_get_extra_service()
 		{
-			include(MPTBM_Function::template_path('registration/extra_service.php'));
+			include(MPCRBM_Function::template_path('registration/extra_service.php'));
 			die();
 		}
 		public function mpcrm_get_extra_service_summary()
 		{
-			include(MPTBM_Function::template_path('registration/extra_service_summary.php'));
+			include(MPCRBM_Function::template_path('registration/extra_service_summary.php'));
 			die();
 		}
 		public function search_transport()
@@ -125,7 +125,7 @@ if (!class_exists('MPTBM_Transport_Search')) {
 			}
 
 			// Redirect to search results
-			$redirect_url = 'mptbm-search';
+			$redirect_url = 'mpcrbm-search';
 			wp_redirect(home_url($redirect_url));
 			exit;
 		}

@@ -20,9 +20,9 @@ if (!class_exists('MPTBM_Settings')) {
 			$label = sprintf(
 				/* translators: %s: plugin version */ 
 				__('Information Settings <span class="version">V%s</span>', 'car-rental-manager'),
-				MPTBM_PLUGIN_VERSION
+				MPCRBM_PLUGIN_VERSION
 			);
-			$cpt = MPTBM_Function::mpcrm_get_cpt();
+			$cpt = MPCRBM_Function::get_cpt();
 			add_meta_box('mp_meta_box_panel', $label, array($this, 'settings'), $cpt, 'normal', 'high');
 		}
 		//******************************//
@@ -32,7 +32,7 @@ if (!class_exists('MPTBM_Settings')) {
 			wp_nonce_field('mptbm_transportation_type_nonce', 'mptbm_transportation_type_nonce');
 ?>
 			<input type="hidden" name="mptbm_post_id" value="<?php echo esc_attr($post_id); ?>" />
-			<div class="mpStyle mptbm_settings">
+			<div class="mpcrbm mptbm_settings">
 				<div class="mpTabs leftTabs">
 					<ul class="tabLists">
 						<li data-tabs-target="#mptbm_general_info">
@@ -48,7 +48,7 @@ if (!class_exists('MPTBM_Settings')) {
 							<span class="pe-1 fas fa-puzzle-piece"></span><?php esc_html_e('Extra Service', 'car-rental-manager'); ?>
 						</li>
 						<?php
-						if (class_exists('MPTBM_Plugin_Pro')) {
+						if (class_exists('MPCRBM_Plugin_Pro')) {
 						?>
 							<li data-tabs-target="#mptbm_setting_operation_area">
 								<span class="pe-1 fas fa-map-marker-alt"></span><?php esc_html_e('Operation Area', 'car-rental-manager'); ?>

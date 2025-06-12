@@ -15,7 +15,7 @@ if (!class_exists('MPTBM_Operation_Area_Settings')) {
 			add_action('mpcrm_settings_tab_content', [$this, 'operation_area_settings']);
 			add_action('mpcrm_settings_tab_content', [$this, 'operation_area_settings']);
 			add_action('save_post', array($this, 'save_operation_area_settings'), 99, 1);
-			add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
+			add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
 		}
 
 

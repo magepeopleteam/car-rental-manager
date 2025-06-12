@@ -9,7 +9,7 @@
 		if (ex_id && post_id) {
 			$.ajax({
 				type: 'POST',
-				url: mp_ajax_url,
+				url: mpcrbm_ajax_url,
 				data: {
 					action: 'get_mptbm_ex_service',
 					ex_id: ex_id,

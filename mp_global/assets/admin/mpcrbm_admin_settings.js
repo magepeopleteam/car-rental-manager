@@ -7,7 +7,7 @@ function load_sortable_datepicker(parent, item) {
                 parent.find(".mp_sortable_area").sortable({
                     handle: jQuery(this).find(".mp_sortable_button"),
                 });
-                mp_load_date_picker(parent);
+                mpcrbm_load_date_picker(parent);
             });
     } else {
         parent
@@ -19,7 +19,7 @@ function load_sortable_datepicker(parent, item) {
                 parent.find(".mp_sortable_area").sortable({
                     handle: jQuery(this).find(".mp_sortable_button"),
                 });
-                mp_load_date_picker(parent);
+                mpcrbm_load_date_picker(parent);
             });
     }
     return true;

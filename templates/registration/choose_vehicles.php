@@ -7,8 +7,8 @@ if (!defined('ABSPATH')) {
  * @Author 		engr.sumonazma@gmail.com
  * Copyright: 	mage-people.com
 */
-$label = MPTBM_Function::mpcrm_get_name();
-$days = MPCRM_Global_Function::week_day();
+$label = MPCRBM_Function::get_name();
+$days = MPCRBM_Global_Function::week_day();
 $days_name = array_keys($days);
 $schedule = [];
 
@@ -208,7 +208,7 @@ if ($start_time !== "") {
             wp_die();
         }
 
-        $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+        $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
         
         // Calculate minutes based on interval time
         if ($interval_time == "5" || $interval_time == "15") {
@@ -301,7 +301,7 @@ if ($two_way > 1) {
                 wp_die();
             }
 
-            $interval_time = MPTBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+            $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
             
             // Calculate minutes based on interval time
             if ($interval_time == "5" || $interval_time == "15") {
@@ -335,7 +335,7 @@ if ($two_way > 1) {
 }
 
 // Handle feature filtering
-if (MPCRM_Global_Function::mpcrm_get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") {
+if (MPCRBM_Global_Function::get_settings("mpcrbm_general_settings", "enable_filter_via_features") == "yes") {
     $feature_passenger_number = isset($_POST["feature_passenger_number"]) 
         ? absint(wp_unslash($_POST["feature_passenger_number"])) 
         : 0;
@@ -347,13 +347,13 @@ if (MPCRM_Global_Function::mpcrm_get_settings("mptbm_general_settings", "enable_
 // Get available vehicles
 $mptbm_bags = [];
 $mptbm_passengers = [];
-$mptbm_all_transport_id = MPCRM_Global_Function::mpcrm_get_all_post_id('mptbm_rent');
+$mptbm_all_transport_id = MPCRBM_Global_Function::mpcrm_get_all_post_id('mpcrbm_rent');
 
 if (!empty($mptbm_all_transport_id)) {
     foreach ($mptbm_all_transport_id as $value) {
         if ($value && get_post($value)) {
-            $mptbm_bags[] = MPTBM_Function::mpcrm_get_feature_bag($value);
-            $mptbm_passengers[] = MPTBM_Function::mpcrm_get_feature_passenger($value);
+            $mptbm_bags[] = MPCRBM_Function::mpcrm_get_feature_bag($value);
+            $mptbm_passengers[] = MPCRBM_Function::mpcrm_get_feature_passenger($value);
         }
     }
 }
@@ -376,11 +376,11 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
     <div class="mp_sticky_section">
         <div class="flexWrap">
 
-            <?php include MPTBM_Function::template_path("registration/summary.php"); ?>
+            <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn">
                     <!-- Filter area start -->
-                    <?php if (MPCRM_Global_Function::mpcrm_get_settings("mptbm_general_settings", "enable_filter_via_features") == "yes") { ?>
+                    <?php if (MPCRBM_Global_Function::get_settings("mpcrbm_general_settings", "enable_filter_via_features") == "yes") { ?>
                         <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
                             <div class="mptbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
@@ -430,7 +430,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
                             if ($check_schedule && $check_operation_area) {
 
                                 $vehicle_item_count = $vehicle_item_count + 1;
-                                include MPTBM_Function::template_path("registration/vehicle_item.php");
+                                include MPCRBM_Function::template_path("registration/vehicle_item.php");
                             }
                         }
                     } else {
@@ -453,7 +453,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
 <div data-tabs-next="#mptbm_order_summary" class="mptbm_order_summary">
     <div class="mp_sticky_section">
         <div class="flexWrap">
-            <?php include MPTBM_Function::template_path("registration/summary.php"); ?>
+            <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
                 <div class="mp_sticky_depend_area fdColumn mptbm_checkout_area">
                 </div>

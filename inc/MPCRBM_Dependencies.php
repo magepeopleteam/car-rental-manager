@@ -6,8 +6,8 @@
 if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
-if (!class_exists('MPTBM_Dependencies')) {
-    class MPTBM_Dependencies
+if (!class_exists('MPCRBM_Dependencies')) {
+    class MPCRBM_Dependencies
     {
         public function __construct()
         {
@@ -24,11 +24,11 @@ if (!class_exists('MPTBM_Dependencies')) {
         }
         private function load_file(): void
         {
-            require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Function.php';
-            require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Query.php';
-            require_once MPTBM_PLUGIN_DIR . '/inc/MPTBM_Layout.php';
-            require_once MPTBM_PLUGIN_DIR . '/Admin/MPTBM_Admin.php';
-            require_once MPTBM_PLUGIN_DIR . '/Frontend/MPTBM_Frontend.php';
+            require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Function.php';
+            require_once MPCRBM_PLUGIN_DIR . '/inc/MPTBM_Query.php';
+            require_once MPCRBM_PLUGIN_DIR . '/inc/MPTBM_Layout.php';
+            require_once MPCRBM_PLUGIN_DIR . '/Admin/MPTBM_Admin.php';
+            require_once MPCRBM_PLUGIN_DIR . '/Frontend/MPTBM_Frontend.php';
         }
         public function global_enqueue()
         {
@@ -40,10 +40,10 @@ if (!class_exists('MPTBM_Dependencies')) {
         {
             $this->global_enqueue();
             // custom
-            wp_enqueue_style('mptbm_admin', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_admin.css', array(), time());
-            wp_enqueue_style('mpcrm_admin_style', MPTBM_PLUGIN_URL . '/assets/admin/mpcrm_admin_style.css', array(), time());
-            wp_enqueue_script('mptbm_admin', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_admin.js', array('jquery'), time(), true);
-            wp_enqueue_script('mptbm_admin_quick_setup', MPTBM_PLUGIN_URL . '/assets/admin/mptbm_admin_quick_setup.js', array('jquery'), time(), true);
+            wp_enqueue_style('mptbm_admin', MPCRBM_PLUGIN_URL . '/assets/admin/mptbm_admin.css', array(), time());
+            wp_enqueue_style('mpcrm_admin_style', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrm_admin_style.css', array(), time());
+            wp_enqueue_script('mptbm_admin', MPCRBM_PLUGIN_URL . '/assets/admin/mptbm_admin.js', array('jquery'), time(), true);
+            wp_enqueue_script('mptbm_admin_quick_setup', MPCRBM_PLUGIN_URL . '/assets/admin/mptbm_admin_quick_setup.js', array('jquery'), time(), true);
             $nonce = wp_create_nonce('mptbm_extra_service');
             wp_localize_script('mptbm_admin', 'mptbmAdmin', array(
                 'nonce' => $nonce
@@ -55,15 +55,15 @@ if (!class_exists('MPTBM_Dependencies')) {
         public function frontend_enqueue()
         {
             $this->global_enqueue();
-            wp_enqueue_script('wc-checkout');
+
             
             // Enqueue styles
-            wp_enqueue_style('mptbm_style', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_style.css', array(), time());
-            wp_enqueue_style('mptbm_registration', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_registration.css', array(), time());
+            wp_enqueue_style('mptbm_style', MPCRBM_PLUGIN_URL . '/assets/frontend/mptbm_style.css', array(), time());
+            wp_enqueue_style('mptbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mptbm_registration.css', array(), time());
             
             // Enqueue scripts
-            wp_enqueue_script('mptbm_script', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_script.js', array('jquery'), time(), true);
-            wp_enqueue_script('mptbm_registration', MPTBM_PLUGIN_URL . '/assets/frontend/mptbm_registration.js', array('jquery'), time(), true);
+            wp_enqueue_script('mptbm_script', MPCRBM_PLUGIN_URL . '/assets/frontend/mptbm_script.js', array('jquery'), time(), true);
+            wp_enqueue_script('mptbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mptbm_registration.js', array('jquery'), time(), true);
             
             // Localize scripts
             wp_localize_script('mptbm_registration', 'mptbm_ajax', array(
@@ -82,5 +82,5 @@ if (!class_exists('MPTBM_Dependencies')) {
         
         
     }
-    new MPTBM_Dependencies();
+    new MPCRBM_Dependencies();
 }

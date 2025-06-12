@@ -12,9 +12,9 @@ if (!class_exists('MPTBM_CPT')) {
 		public function __construct()
 		{
 			add_action('init', [$this, 'mpcrm_cpt']);
-			add_filter('manage_mptbm_rent_posts_columns', array($this, 'mpcrm_rent_columns'));
-			add_action('manage_mptbm_rent_posts_custom_column', array($this, 'mpcrm_rent_custom_column'), 10, 2);
-			add_filter('manage_edit-mptbm_rent_sortable_columns', array($this, 'mpcrm_rent_sortable_columns'));
+			add_filter('manage_mpcrbm_rent_posts_columns', array($this, 'mpcrm_rent_columns'));
+			add_action('manage_mpcrbm_rent_posts_custom_column', array($this, 'mpcrm_rent_custom_column'), 10, 2);
+			add_filter('manage_edit-mpcrbm_rent_sortable_columns', array($this, 'mpcrm_rent_sortable_columns'));
 		}
 
 		public function mpcrm_rent_custom_column($columns,$post_id){
@@ -58,10 +58,10 @@ if (!class_exists('MPTBM_CPT')) {
 
 		public function mpcrm_cpt(): void
 		{
-			$cpt = MPTBM_Function::mpcrm_get_cpt();
-			$label = MPTBM_Function::mpcrm_get_name();
-			$slug = MPTBM_Function::mpcrm_get_slug();
-			$icon = MPTBM_Function::mpcrm_get_icon();
+			$cpt = MPCRBM_Function::get_cpt();
+			$label = MPCRBM_Function::get_name();
+			$slug = MPCRBM_Function::mpcrm_get_slug();
+			$icon = MPCRBM_Function::mpcrm_get_icon();
 			$labels = [
 				'name' => $label,
 				'singular_name' => $label,
@@ -159,7 +159,7 @@ if (!class_exists('MPTBM_CPT')) {
 
 			register_taxonomy('mpcrm_locations', $cpt, $taxonomy_args);  // Updated taxonomy name
 			register_post_type('mpcrm_extra_services', $ex_args);
-			if (class_exists('MPTBM_Plugin_Pro')) {
+			if (class_exists('MPCRBM_Plugin_Pro')) {
 				register_post_type('mptbm_operate_areas', $dx_args);
 			}
 		}

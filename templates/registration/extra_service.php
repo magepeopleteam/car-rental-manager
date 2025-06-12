@@ -26,10 +26,10 @@ if (!current_user_can('read_post', $post_id)) {
 }
 
 // Get service data
-$link_wc_product = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'link_wc_product');
-$display_extra_services = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-$service_id = MPCRM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-$extra_services = MPCRM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
+$link_wc_product = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'link_wc_product');
+$display_extra_services = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
+$service_id = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
+$extra_services = MPCRBM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
 
 if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 ?>
@@ -53,15 +53,15 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 					continue;
 				}
 
-				$wc_price = MPCRM_Global_Function::wc_price($post_id, $service_price);
-				$service_price = MPCRM_Global_Function::price_convert_raw($wc_price);
+				$wc_price = MPCRBM_Global_Function::wc_price($post_id, $service_price);
+				$service_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
 				$ex_unique_id = '#ex_service_' . uniqid();
 			?>
 				<div class="dFlex mptbm_extra_service_item">
 					<?php if ($service_image) { ?>
 						<div class="service_img_area alignCenter">
 							<div class="bg_image_area">
-								<div data-bg-image="<?php echo esc_attr(MPCRM_Global_Function::mpcrm_get_image_url('', $service_image, 'medium')); ?>"></div>
+								<div data-bg-image="<?php echo esc_attr(MPCRBM_Global_Function::mpcrm_get_image_url('', $service_image, 'medium')); ?>"></div>
 							</div>
 						</div>
 					<?php } ?>
@@ -75,12 +75,12 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 						</h4>
 						<div class="_equalChild">
 							<div class="_mR_xs">
-								<?php MPCRM_Custom_Layout::load_more_text($description, 100); ?>
+								<?php MPCRBM_Custom_Layout::load_more_text($description, 100); ?>
 							</div>
 							<div>
 								<div class="justifyEnd">
 									<div class="_mR_min_100" data-collapse="<?php echo esc_attr($ex_unique_id); ?>">
-										<?php MPCRM_Custom_Layout::qty_input('mptbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
+										<?php MPCRBM_Custom_Layout::qty_input('mptbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
 									</div>
 									<button type="button" class="_mpBtn_dBR_min_150 mptbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">
 										<input type="hidden" name="mptbm_extra_service[]" data-value="<?php echo esc_attr($service_name); ?>" value="" />

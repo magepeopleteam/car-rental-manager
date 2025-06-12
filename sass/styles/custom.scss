@@ -146,15 +146,15 @@
       min-width:inherit;
       max-width:inherit;
     }
-    div.mpStyle [data-tabs-target]{
+    div.mpcrbm [data-tabs-target]{
       color: $color-secondary;
       
     }
-    .mpStyle .tabsContent {
+    .mpcrbm .tabsContent {
       overflow: visible;
     }
 
-    .mpStyle .navy_blueButton, .mpStyle [class*="_navy_blueButton"] {
+    .mpcrbm .navy_blueButton, .mpcrbm [class*="_navy_blueButton"] {
       background-color: $color-primary;
       color: $color-white;
       padding: 1.5em;
@@ -169,7 +169,7 @@
       }
     }
 
-    .mpStyle .warningButton, .mpStyle [class*="_warningButton"] {
+    .mpcrbm .warningButton, .mpcrbm [class*="_warningButton"] {
       background-color: $color-yellow;
       color: $color-white;
       padding:1.5em;
@@ -184,10 +184,10 @@
     }
   }
   
-    div.mpStyle select.formControl:focus {
+    div.mpcrbm select.formControl:focus {
       background-color: $color-white;
     }
-    .mpStyle .mp_remove_icon {
+    .mpcrbm .mp_remove_icon {
       position: absolute;
       top: -5px;
       right: -5px;
@@ -294,50 +294,6 @@
     margin-bottom: 12px;
     font-weight: 700;
   }
-
-  .tab-content-ttbm_date_config_meta_boxs,.tab-content-ttbm_tax_meta_boxs{
-    .description{
-      margin: 0;
-      padding:1.5em;
-      font-size: 1rem;
-    }
-    table {
-      border-collapse: collapse; 
-      border-spacing:0;
-      border: 0;
-      margin: 0;
-      margin-top: 50px;
-    }
-    table.form-table tr th,table.form-table tr td{
-      background-color: $color-white;
-      padding: 3em;
-      margin-bottom:3em;
-      width:50%;
-      border:1px solid $color-gray;
-      p{
-        font-size: .8rem;
-      }
-    }
-    
-    table.form-table tr td{
-      text-align: right;
-      label{
-        display: block;
-        text-align: right;
-      }
-      input{
-        border-radius:.5em;
-      }
-      input.select2-search__field{
-        border: 0;
-      }
-      input#mep_disable_ticket_time{
-        margin-right: .5em;
-      }
-    }
-  }
-
-
 // form builder custom code==========
 
   .form-wrap.form-builder {
@@ -404,7 +360,7 @@ div > .ppof-metabox {
   background: transparent;
 }
 
-.mpStyle .ppof-button{
+.mpcrbm .ppof-button{
   width: 320px;
   border: 0px solid;
   box-shadow: none;
@@ -435,19 +391,19 @@ div > .ppof-metabox {
     }
     
   }
-  div.mpStyle .description{
+  div.mpcrbm .description{
     font-size:1rem !important;
     color: var(--mpl-secondary);
   }
  
-  .mpStyle .customCheckboxLabel input:checked ~ .customCheckbox::before {
+  .mpcrbm .customCheckboxLabel input:checked ~ .customCheckbox::before {
     background: $color-sky;
   }
-  .mpStyle .customCheckboxLabel {
+  .mpcrbm .customCheckboxLabel {
     cursor: pointer;
     font-weight: normal;
   }
-  .mpStyle .customCheckbox::before {
+  .mpcrbm .customCheckbox::before {
     content: "";
     position: absolute;
     left: 0;
@@ -461,12 +417,12 @@ div > .ppof-metabox {
 }
 
 
-div.mpStyle span.mp_remove_multi_image {
+div.mpcrbm span.mp_remove_multi_image {
   background-color:$color-black;
   color: $color-white;
   box-shadow: 0 0 5px $color-white;
 }
-div.mpStyle span.mp_remove_multi_image{
+div.mpcrbm span.mp_remove_multi_image{
   top:-7px;
   right:-7px;
 }
@@ -493,11 +449,11 @@ div.mpStyle span.mp_remove_multi_image{
   }
 }
 
-div.mp_global_settings label .info_text{
+div.mpcrbm_global_settings label .info_text{
   line-height: .9rem;
 }
 
-div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists{
+div.mpcrbm_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists{
   width: 25%;
 }
 
@@ -506,13 +462,13 @@ div.mp_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists{
 }
 
 @media only screen and (min-width: 10px) {
-  div.mpStyle .mp_sticky_area.mpSticky {
+  div.mpcrbm .mp_sticky_area.mpSticky {
     position: relative;
   }
-  div.mpStyle span.selection{
+  div.mpcrbm span.selection{
     height: auto;
   }
-  div.mpStyle span.select2-container.select2{
+  div.mpcrbm span.select2-container.select2{
     height: auto;
   }
 }

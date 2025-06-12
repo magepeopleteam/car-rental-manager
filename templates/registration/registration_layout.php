@@ -9,7 +9,7 @@
 	$progressbar = $progressbar ?? 'yes';
 	$progressbar_class = $progressbar == 'yes' ? '' : 'dNone';
 ?>
-	<div class="mpStyle mptbm_transport_search_area">
+	<div class="mpcrbm mptbm_transport_search_area">
 		<div class="mpTabsNext _mT">
 			<div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>">
 				<div data-tabs-target-next="#mptbm_pick_up_details" class="tabItemNext active" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
@@ -36,8 +36,8 @@
 			</div>
 			<div class="tabsContentNext">
 				<div data-tabs-next="#mptbm_pick_up_details" class="active mptbm_pick_up_details">
-                    <?php //echo MPTBM_Function::template_path('registration/get_details.php'); ?>
-					<?php include MPTBM_Function::template_path('registration/get_details.php'); ?>
+                    <?php //echo MPCRBM_Function::template_path('registration/get_details.php'); ?>
+					<?php include MPCRBM_Function::template_path('registration/get_details.php'); ?>
 				</div>
 			</div>
 		</div>

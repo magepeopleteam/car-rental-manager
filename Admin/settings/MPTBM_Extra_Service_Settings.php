@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 if (!class_exists('MPTBM_Extra_Service_Settings')) {
     class MPTBM_Extra_Service_Settings {
         public function __construct() {
-            add_action('mptbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
+            add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
             add_action('mpcrm_settings_tab_content', array($this, 'extra_service_settings_tab'), 10, 1);
             add_action('save_post', array($this, 'save_extra_service_settings'), 10, 1);
         }
@@ -65,7 +65,7 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
         }
 
         public function extra_service_settings_tab($post_id) {
-            if (get_post_type($post_id) !== MPTBM_Function::mpcrm_get_cpt()) {
+            if (get_post_type($post_id) !== MPCRBM_Function::get_cpt()) {
                 return;
             }
 
@@ -91,7 +91,7 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
                             <h6><?php esc_html_e('Display Extra Services', 'car-rental-manager'); ?></h6>
                             <span class="desc"><?php esc_html_e('Enable or disable extra services for this vehicle', 'car-rental-manager'); ?></span>
                         </div>
-                        <?php MPCRM_Custom_Layout::switch_button('display_mptbm_extra_services', $checked); ?>
+                        <?php MPCRBM_Custom_Layout::switch_button('display_mptbm_extra_services', $checked); ?>
                     </label>
                 </section>
 
@@ -125,7 +125,7 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
                 return;
             }
 
-            if (get_post_type($post_id) !== MPTBM_Function::mpcrm_get_cpt()) {
+            if (get_post_type($post_id) !== MPCRBM_Function::get_cpt()) {
                 return;
             }
 
@@ -146,4 +146,4 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
     new MPTBM_Extra_Service_Settings();
 }
 ?>
-<?php do_action('mptbm_settings_sec_fields'); ?> 
+<?php do_action('mpcrbm_settings_sec_fields'); ?> 
