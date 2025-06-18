@@ -6,16 +6,16 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPTBM_Shortcodes')) {
-		class MPTBM_Shortcodes {
+	if (!class_exists('MPCRBM_Shortcodes')) {
+		class MPCRBM_Shortcodes {
 			public function __construct() {
-				add_shortcode('mpcrm_booking', array($this, 'mpcrm_booking'));
+				add_shortcode('mpcrbm_booking', array($this, 'mpcrbm_booking'));
 			}
-			public function mpcrm_booking($attribute) {
+			public function mpcrbm_booking($attribute) {
 				$defaults = $this->default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
 				ob_start();
-				do_action('mptbm_transport_search', $params);
+				do_action('mpcrbm_transport_search', $params);
 				return ob_get_clean();
 			}
 			public function default_attribute() {
@@ -38,5 +38,5 @@
 				);
 			}
 		}
-		new MPTBM_Shortcodes();
+		new MPCRBM_Shortcodes();
 	}

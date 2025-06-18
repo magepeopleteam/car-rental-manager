@@ -20,19 +20,21 @@
 
 			public function global_settings_menu() {
 				$cpt = MPCRBM_Function::get_cpt();
-				add_submenu_page( 'edit.php?post_type=' . $cpt, esc_html__( 'Global Settings', 'car-rental-manager' ), esc_html__( 'Global Settings', 'car-rental-manager' ), 'manage_options', 'mptbm_settings_page', array( $this, 'settings_page' ) );
+				add_submenu_page( 'edit.php?post_type=' . $cpt, esc_html__( 'Global Settings', 'car-rental-manager' ), esc_html__( 'Global Settings', 'car-rental-manager' ), 'manage_options', 'mpcrbm_settings_page', array( $this, 'settings_page' ) );
 			}
 
 			public function settings_page() {
 				?>
-                <div class="mpcrbm mpcrbm_global_settings">
-                    <div class="mpPanel">
-                        <div class="mpPanelHeader"><?php echo esc_html( esc_html__( ' Global Settings', 'car-rental-manager' ) ); ?></div>
-                        <div class="mpPanelBody mp_zero">
-                            <div class="mpTabs leftTabs">
-								<?php $this->settings_api->show_navigation(); ?>
-                                <div class="tabsContent">
-									<?php $this->settings_api->show_forms(); ?>
+                <div class="mpcrbm">
+                    <div class="global_settings">
+                        <div class="mpcrbm_panel">
+                            <div class="panel_header"><?php esc_html_e( ' Global Settings', 'car-rental-manager' ); ?></div>
+                            <div class="panel_body mp_zero">
+                                <div class="mpcrbm_tabs leftTabs">
+									<?php $this->settings_api->show_navigation(); ?>
+                                    <div class="tabsContent">
+										<?php $this->settings_api->show_forms(); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -68,6 +70,10 @@
 
 			public function global_sec_reg( $default_sec ): array {
 				$sections = array(
+					array(
+						'id' => 'mpcrbm_slider_settings',
+						'title' => esc_html__('Slider Settings', 'car-rental-manager')
+					),
 					array(
 						'id'    => 'mpcrbm_style_settings',
 						'title' => esc_html__( 'Style Settings', 'car-rental-manager' )
@@ -175,32 +181,28 @@
 						array(
 							'name'        => 'enable_view_search_result_page',
 							'label'       => $label . ' ' . esc_html__( 'Show Search Result In A Different Page', 'car-rental-manager' ),
-							'desc'        => esc_html__( 'Enter page slug. Leave blank if you dont want to enable this setting', 'car-rental-manager' ),
-							'car-rental-manager' . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
+							'desc'        => esc_html__( 'Enter page slug. Leave blank if you dont want to enable this setting', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
 							'type'        => 'text',
 							'placeholder' => 'mpcrbm-search'
 						),
 						array(
 							'name'        => 'enable_view_find_location_page',
 							'label'       => $label . ' ' . esc_html__( 'Take user to another page if location can not be found', 'car-rental-manager' ),
-							'desc'        => esc_html__( 'Enter page url. Leave blank if you dont want to enable this setting', 'car-rental-manager' ),
-							'car-rental-manager' . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
+							'desc'        => esc_html__( 'Enter page url. Leave blank if you dont want to enable this setting', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
 							'type'        => 'text',
 							'placeholder' => 'https://mysite.com/taxi'
 						),
 						array(
 							'name'        => 'enable_buffer_time',
 							'label'       => $label . ' ' . esc_html__( 'Buffer Time', 'car-rental-manager' ),
-							'desc'        => esc_html__( 'Enter buffer time per minutes. Also you have to change the timezone from', 'car-rental-manager' ) .
-							                 '<strong style="color: red;">' . esc_html__( 'Settings --> General --> Timezone', 'car-rental-manager' ) . '</strong>',
+							'desc'        => esc_html__( 'Enter buffer time per minutes. Also you have to change the timezone from', 'car-rental-manager' ) . '<strong style="color: red;">' . esc_html__( 'Settings --> General --> Timezone', 'car-rental-manager' ) . '</strong>',
 							'type'        => 'text',
 							'placeholder' => 'Ex:10'
 						),
 						array(
-							'name'    => 'mptbm_pickup_interval_time',
+							'name'    => 'pickup_interval_time',
 							'label'   => $label . ' ' . esc_html__( 'Interval of pickup/return time in frontend', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select frontend interval pickup and return time', 'car-rental-manager' ),
-							'car-rental-manager' . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
+							'desc'    => esc_html__( 'Select frontend interval pickup and return time', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
 							'type'    => 'select',
 							'default' => 30,
 							'options' => array(
@@ -213,8 +215,7 @@
 						array(
 							'name'    => 'enable_return_in_different_date',
 							'label'   => $label . ' ' . esc_html__( 'Enable return in different date', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select yes if you want to enable different date return field', 'car-rental-manager' ),
-							'car-rental-manager' . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
+							'desc'    => esc_html__( 'Select yes if you want to enable different date return field', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
 							'type'    => 'select',
 							'default' => 'no',
 							'options' => array(
@@ -225,8 +226,7 @@
 						array(
 							'name'    => 'enable_filter_via_features',
 							'label'   => $label . ' ' . esc_html__( 'Enable filter via features', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select yes if you want to enable filter via passenger and bags', 'car-rental-manager' ),
-							'car-rental-manager' . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
+							'desc'    => esc_html__( 'Select yes if you want to enable filter via passenger and bags', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
 							'type'    => 'select',
 							'default' => 'no',
 							'options' => array(
@@ -243,6 +243,31 @@
 							'options' => array(
 								'yes' => esc_html__( 'Yes', 'car-rental-manager' ),
 								'no'  => esc_html__( 'No', 'car-rental-manager' )
+							)
+						),
+						array(
+							'name'    => 'maximum_passenger',
+							'label'   => esc_html__( 'Maximum Passenger', 'car-rental-manager' ),
+							'desc'    => esc_html__( 'Set maximum passenger capacity', 'car-rental-manager' ),
+							'type'    => 'number',
+							'default' => '4'
+						),
+						array(
+							'name'    => 'maximum_bag',
+							'label'   => esc_html__( 'Maximum Bag', 'car-rental-manager' ),
+							'desc'    => esc_html__( 'Set maximum bag capacity', 'car-rental-manager' ),
+							'type'    => 'number',
+							'default' => '4'
+						),
+						array(
+							'name'    => 'display_features',
+							'label'   => esc_html__( 'Display Features', 'car-rental-manager' ),
+							'desc'    => esc_html__( 'Enable/Disable features display', 'car-rental-manager' ),
+							'type'    => 'select',
+							'default' => 'on',
+							'options' => array(
+								'on'  => esc_html__( 'On', 'car-rental-manager' ),
+								'off' => esc_html__( 'Off', 'car-rental-manager' )
 							)
 						)
 					) ),
@@ -321,6 +346,98 @@
 							)
 						),
 					) ),
+					'mpcrbm_slider_settings' => array(
+						array(
+							'name' => 'slider_type',
+							'label' => esc_html__('Slider Type', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Type Default Slider', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'slider',
+							'options' => array(
+								'slider' => esc_html__('Slider', 'car-rental-manager'),
+								'single_image' => esc_html__('Post Thumbnail', 'car-rental-manager')
+							)
+						),
+						array(
+							'name' => 'slider_style',
+							'label' => esc_html__('Slider Style', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Style Default Style One', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'style_1',
+							'options' => array(
+								'style_1' => esc_html__('Style One', 'car-rental-manager'),
+								'style_2' => esc_html__('Style Two', 'car-rental-manager'),
+							)
+						),
+						array(
+							'name' => 'indicator_visible',
+							'label' => esc_html__('Slider Indicator Visible?', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Indicator Visible or Not? Default ON', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'on',
+							'options' => array(
+								'on' => esc_html__('ON', 'car-rental-manager'),
+								'off' => esc_html__('Off', 'car-rental-manager')
+							)
+						),
+						array(
+							'name' => 'indicator_type',
+							'label' => esc_html__('Slider Indicator Type', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Indicator Type Default Icon', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'icon',
+							'options' => array(
+								'icon' => esc_html__('Icon Indicator', 'car-rental-manager'),
+								'image' => esc_html__('image Indicator', 'car-rental-manager')
+							)
+						),
+						array(
+							'name' => 'showcase_visible',
+							'label' => esc_html__('Slider Showcase Visible?', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Showcase Visible or Not? Default ON', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'on',
+							'options' => array(
+								'on' => esc_html__('ON', 'car-rental-manager'),
+								'off' => esc_html__('Off', 'car-rental-manager')
+							)
+						),
+						array(
+							'name' => 'showcase_position',
+							'label' => esc_html__('Slider Showcase Position', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Showcase Position Default Right', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'right',
+							'options' => array(
+								'top' => esc_html__('At Top Position', 'car-rental-manager'),
+								'right' => esc_html__('At Right Position', 'car-rental-manager'),
+								'bottom' => esc_html__('At Bottom Position', 'car-rental-manager'),
+								'left' => esc_html__('At Left Position', 'car-rental-manager')
+							)
+						),
+						array(
+							'name' => 'popup_image_indicator',
+							'label' => esc_html__('Slider Popup Image Indicator', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Popup Indicator Image ON or Off? Default ON', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'on',
+							'options' => array(
+								'on' => esc_html__('ON', 'car-rental-manager'),
+								'off' => esc_html__('Off', 'car-rental-manager')
+							)
+						),
+						array(
+							'name' => 'popup_icon_indicator',
+							'label' => esc_html__('Slider Popup Icon Indicator', 'car-rental-manager'),
+							'desc' => esc_html__('Please Select Slider Popup Indicator Icon ON or Off? Default ON', 'car-rental-manager'),
+							'type' => 'select',
+							'default' => 'on',
+							'options' => array(
+								'on' => esc_html__('ON', 'car-rental-manager'),
+								'off' => esc_html__('Off', 'car-rental-manager')
+							)
+						)
+					),
 					'mpcrbm_style_settings'   => apply_filters( 'filter_mpcrbm_style_settings', array(
 						array(
 							'name'    => 'theme_color',
@@ -449,7 +566,7 @@
                         <i><?php esc_html_e( 'Thanking you for using our Mage-People plugin. Our some plugin free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager' ); ?></i>
                     </div>
                     <div class="divider"></div>
-                    <div class="dLayout mp_basic_license_area">
+                    <div class="dLayout basic_license_area">
 						<?php $this->licence_area(); ?>
                     </div>
                 </div>
@@ -457,79 +574,24 @@
 			}
 
 			public function licence_area() {
-				// Get active plugins
-				$active_plugins = get_option( 'active_plugins' );
-				$mp_plugins     = array();
-				// Filter Mage-People plugins
-				foreach ( $active_plugins as $plugin ) {
-					if ( strpos( $plugin, 'mage-people' ) !== false || strpos( $plugin, 'mptbm' ) !== false ) {
-						$plugin_data  = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
-						$mp_plugins[] = array(
-							'name'        => $plugin_data['Name'],
-							'type'        => 'Plugin',
-							'order_no'    => '-',
-							'expire'      => '-',
-							'license_key' => '-',
-							'status'      => 'Active'
-						);
-					}
-				}
-				// Add addons if any
-				$addons     = apply_filters( 'mptbm_license_addons', array() );
-				$mp_plugins = array_merge( $mp_plugins, $addons );
 				?>
-                <table class="widefat">
+                <table>
                     <thead>
                     <tr>
-                        <th><?php esc_html_e( 'Plugin Name', 'car-rental-manager' ); ?></th>
+                        <th colspan="4"><?php esc_html_e( 'Plugin Name', 'car-rental-manager' ); ?></th>
                         <th><?php esc_html_e( 'Type', 'car-rental-manager' ); ?></th>
                         <th><?php esc_html_e( 'Order No', 'car-rental-manager' ); ?></th>
-                        <th><?php esc_html_e( 'Expire on', 'car-rental-manager' ); ?></th>
-                        <th><?php esc_html_e( 'License Key', 'car-rental-manager' ); ?></th>
+                        <th colspan="2"><?php esc_html_e( 'Expire on', 'car-rental-manager' ); ?></th>
+                        <th colspan="3"><?php esc_html_e( 'License Key', 'car-rental-manager' ); ?></th>
                         <th><?php esc_html_e( 'Status', 'car-rental-manager' ); ?></th>
-                        <th><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></th>
+                        <th colspan="2"><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></th>
                     </tr>
                     </thead>
                     <tbody>
-					<?php
-						if ( ! empty( $mp_plugins ) ) {
-							foreach ( $mp_plugins as $plugin ) {
-								?>
-                                <tr>
-                                    <td><?php echo esc_html( $plugin['name'] ); ?></td>
-                                    <td><?php echo esc_html( $plugin['type'] ); ?></td>
-                                    <td><?php echo esc_html( $plugin['order_no'] ); ?></td>
-                                    <td><?php echo esc_html( $plugin['expire'] ); ?></td>
-                                    <td>
-										<?php if ( $plugin['type'] === 'Addon' ) { ?>
-                                            <input type="text" class="regular-text" name="license_key[<?php echo esc_attr( sanitize_title( $plugin['name'] ) ); ?>]" value="<?php echo esc_attr( $plugin['license_key'] ); ?>"/>
-										<?php } else {
-											echo esc_html( $plugin['license_key'] );
-										} ?>
-                                    </td>
-                                    <td><?php echo esc_html( $plugin['status'] ); ?></td>
-                                    <td>
-										<?php if ( $plugin['type'] === 'Addon' ) { ?>
-                                            <button type="submit" class="button button-primary" name="activate_license[<?php echo esc_attr( sanitize_title( $plugin['name'] ) ); ?>]">
-												<?php esc_html_e( 'Activate', 'car-rental-manager' ); ?>
-                                            </button>
-										<?php } ?>
-                                    </td>
-                                </tr>
-								<?php
-							}
-						} else {
-							?>
-                            <tr>
-                                <td colspan="7"><?php esc_html_e( 'No plugins found.', 'car-rental-manager' ); ?></td>
-                            </tr>
-							<?php
-						}
-					?>
+					<?php do_action( 'mpcrbm_license_page_plugin_list' ); ?>
                     </tbody>
                 </table>
 				<?php
-				do_action( 'mpcrm_after_global_setting_page' );
 			}
 		}
 		new  MPCRBM_Settings_Global();

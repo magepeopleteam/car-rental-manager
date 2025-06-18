@@ -6,14 +6,14 @@
 	if (!defined('ABSPATH')) {
 		die;
 	} // Cannot access pages directly.
-	if (!class_exists('MPTBM_Guideline')) {
-		class MPTBM_Guideline {
+	if (!class_exists('MPCRBM_Guideline')) {
+		class MPCRBM_Guideline {
 			public function __construct() {
 				add_action('admin_menu', array($this, 'guideline_menu'));
 			}
 			public function guideline_menu() {
 				$cpt = MPCRBM_Function::get_cpt();
-				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Guideline', 'car-rental-manager'), '<span>' . esc_html__('Guideline', 'car-rental-manager') . '</span>', 'manage_options', 'mptbm_guideline_page', array($this, 'guideline_page'));
+				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Guideline', 'car-rental-manager'), '<span>' . esc_html__('Guideline', 'car-rental-manager') . '</span>', 'manage_options', 'mpcrbm_guideline_page', array($this, 'guideline_page'));
 			}
 			public function guideline_page() {
 				$label = MPCRBM_Function::get_name();
@@ -27,7 +27,7 @@
 							<tbody>
 							<tr>
 								<td>Shortcode:</td>
-								<td colspan="2"><code>[mpcrm_booking form='inline' progressbar='yes']</code></td>
+								<td colspan="2"><code>[mpcrbm_booking form='inline' progressbar='yes']</code></td>
 							</tr>
 							
 							<tr>
@@ -46,5 +46,5 @@
 				<?php
 			}
 		}
-		new MPTBM_Guideline();
+		new MPCRBM_Guideline();
 	}

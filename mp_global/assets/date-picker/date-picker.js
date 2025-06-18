@@ -2,7 +2,7 @@ jQuery(document).ready(function () {
     if (typeof datePickerData === "undefined") return;
 
     let { availableDates, startDate, endDate } = datePickerData;
-    let selectors = ['#mptbm_start_date', '#mptbm_return_date'];
+    let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
 
     selectors.forEach(function (selector) {
         jQuery(selector).datepicker({

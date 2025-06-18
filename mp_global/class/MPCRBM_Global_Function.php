@@ -23,7 +23,7 @@
 				return new WP_Query( $args );
 			}
 
-			public static function mpcrm_get_all_post_id( $post_type, $show = - 1, $page = 1, $status = 'publish' ): array {
+			public static function get_all_post_id( $post_type, $show = - 1, $page = 1, $status = 'publish' ): array {
 				$all_data = get_posts( array(
 					'fields'         => 'ids',
 					'post_type'      => $post_type,
@@ -35,26 +35,20 @@
 				return array_unique( $all_data );
 			}
 
-			public static function mpcrm_get_post_info( $post_id, $key, $default = '' ) {
+			public static function get_post_info( $post_id, $key, $default = '' ) {
 				$data = get_post_meta( $post_id, $key, true ) ?: $default;
 
 				return self::data_sanitize( $data );
 			}
 
 			//***********************************//
-			public static function mpcrm_get_taxonomy( $name ) {
+			public static function get_taxonomy( $name ) {
 				return get_terms( array( 'taxonomy' => $name, 'hide_empty' => false ) );
 			}
 
-			public static function mpcrm_get_term_meta( $meta_id, $meta_key, $default = '' ) {
-				$data = mpcrm_get_term_meta( $meta_id, $meta_key, true ) ?: $default;
-
-				return self::data_sanitize( $data );
-			}
-
-			public static function mpcrm_get_all_term_data( $term_name, $value = 'name' ) {
+			public static function get_all_term_data( $term_name, $value = 'name' ) {
 				$all_data   = [];
-				$taxonomies = self::mpcrm_get_taxonomy( $term_name );
+				$taxonomies = self::get_taxonomy( $term_name );
 				if ( $taxonomies && is_array( $taxonomies ) && sizeof( $taxonomies ) > 0 ) {
 					foreach ( $taxonomies as $taxonomy ) {
 						$all_data[] = $taxonomy->$value;
@@ -64,7 +58,7 @@
 				return $all_data;
 			}
 
-			public static function mpcrm_get_submit_info( $key, $default = '' ) {
+			public static function get_submit_info( $key, $default = '' ) {
 				// Check if nonce exists in the request
 				if (
 					! isset( $_POST['_settings_save_nonce'] ) ||
@@ -103,7 +97,7 @@
 				return sanitize_text_field( $value );
 			}
 
-			public static function mpcrm_get_submit_info_get_method( $key, $default = '' ) {
+			public static function get_submit_info_get_method( $key, $default = '' ) {
 				// Check if nonce exists in the request
 				if (
 					! isset( $_POST['_settings_save_nonce'] ) ||
@@ -225,7 +219,7 @@
 				// Extract dates
 				$start_date = $dates[0];
 				$end_date   = end( $dates );
-				$all_date = array_map( function ( $date ) {
+				$all_date   = array_map( function ( $date ) {
 					return gmdate( 'j-n-Y', strtotime( $date ) );
 				}, $dates );
 				// Register and enqueue script
@@ -368,11 +362,11 @@
 				return self::get_settings( 'mpcrbm_style_settings', $key, $default );
 			}
 
-			public static function mpcrm_get_slider_settings( $key, $default = '' ) {
-				return self::get_settings( 'mp_slider_settings', $key, $default );
+			public static function get_slider_settings( $key, $default = '' ) {
+				return self::get_settings( 'mpcrbm_slider_settings', $key, $default );
 			}
 
-			public static function mpcrm_get_licence_settings( $key, $default = '' ) {
+			public static function get_licence_settings( $key, $default = '' ) {
 				return self::get_settings( 'mpcrbm_license_settings', $key, $default );
 			}
 
@@ -395,7 +389,7 @@
 					'qty'   => '',
 					'price' => '',
 				) );
-				$_product       = self::mpcrm_get_post_info( $post_id, 'link_wc_product', $post_id );
+				$_product       = self::get_post_info( $post_id, 'link_wc_product', $post_id );
 				$product        = wc_get_product( $_product );
 				$qty            = '' !== $args['qty'] ? max( 0.0, (float) $args['qty'] ) : 1;
 				$tax_with_price = get_option( 'woocommerce_tax_display_shop' );
@@ -448,17 +442,17 @@
 				return wc_price( $return_price ) . ' ' . $display_suffix;
 			}
 
-			public static function mpcrm_get_wc_raw_price( $post_id, $price, $args = array() ) {
+			public static function get_wc_raw_price( $post_id, $price, $args = array() ) {
 				$price = self::wc_price( $post_id, $price, $args = array() );
 
 				return self::price_convert_raw( $price );
 			}
 
 			//***********************************//
-			public static function mpcrm_get_image_url( $post_id = '', $image_id = '', $size = 'full' ) {
+			public static function get_image_url( $post_id = '', $image_id = '', $size = 'full' ) {
 				if ( $post_id ) {
 					$image_id = get_post_thumbnail_id( $post_id );
-					$image_id = $image_id ?: self::mpcrm_get_post_info( $post_id, 'mp_thumbnail' );
+					$image_id = $image_id ?: self::get_post_info( $post_id, 'mp_thumbnail' );
 				}
 
 				return wp_get_attachment_image_url( $image_id, $size );
@@ -510,7 +504,7 @@
 				}
 			}
 
-			public static function mpcrm_get_order_item_meta( $item_id, $key ): string {
+			public static function get_order_item_meta( $item_id, $key ): string {
 				global $wpdb;
 				$table_name = $wpdb->prefix . "woocommerce_order_itemmeta";
 				$results    = $wpdb->get_results( $wpdb->prepare( "SELECT meta_value FROM $table_name WHERE order_item_id = %d AND meta_key = %s", $item_id, $key ) );
@@ -524,7 +518,7 @@
 			public static function check_product_in_cart( $post_id ) {
 				$status = MPCRBM_Global_Function::check_woocommerce();
 				if ( $status == 1 ) {
-					$product_id = MPCRBM_Global_Function::mpcrm_get_post_info( $post_id, 'link_wc_product' );
+					$product_id = MPCRBM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
 					foreach ( WC()->cart->get_cart() as $cart_item ) {
 						if ( $cart_item['product_id'] == $product_id ) {
 							return true;
@@ -566,148 +560,6 @@
 					'saturday'  => esc_html__( 'Saturday', 'car-rental-manager' ),
 					'sunday'    => esc_html__( 'Sunday', 'car-rental-manager' ),
 				];
-			}
-
-			public static function mpcrm_get_plugin_data( $data ) {
-				$plugin_data = mpcrm_get_plugin_data( __FILE__ );
-
-				return $plugin_data[ $data ];
-			}
-
-			public static function mpcrm_array_to_string( $array ) {
-				$ids = '';
-				if ( sizeof( $array ) > 0 ) {
-					foreach ( $array as $data ) {
-						if ( $data ) {
-							$ids = $ids ? $ids . ',' . $data : $data;
-						}
-					}
-				}
-
-				return $ids;
-			}
-
-			public static function esc_html( $string ): string {
-				$allow_attr = array(
-					'input'    => [
-						'type'               => [],
-						'class'              => [],
-						'id'                 => [],
-						'name'               => [],
-						'value'              => [],
-						'size'               => [],
-						'placeholder'        => [],
-						'min'                => [],
-						'max'                => [],
-						'checked'            => [],
-						'required'           => [],
-						'disabled'           => [],
-						'readonly'           => [],
-						'step'               => [],
-						'data-default-color' => [],
-						'data-price'         => [],
-					],
-					'p'        => [ 'class' => [] ],
-					'img'      => [ 'class' => [], 'id' => [], 'src' => [], 'alt' => [], ],
-					'fieldset' => [
-						'class' => []
-					],
-					'label'    => [
-						'for'   => [],
-						'class' => []
-					],
-					'select'   => [
-						'class'      => [],
-						'name'       => [],
-						'id'         => [],
-						'data-price' => [],
-					],
-					'option'   => [
-						'class'    => [],
-						'value'    => [],
-						'id'       => [],
-						'selected' => [],
-					],
-					'textarea' => [
-						'class' => [],
-						'rows'  => [],
-						'id'    => [],
-						'cols'  => [],
-						'name'  => [],
-					],
-					'h1'       => [ 'class' => [], 'id' => [], ],
-					'h2'       => [ 'class' => [], 'id' => [], ],
-					'h3'       => [ 'class' => [], 'id' => [], ],
-					'h4'       => [ 'class' => [], 'id' => [], ],
-					'h5'       => [ 'class' => [], 'id' => [], ],
-					'h6'       => [ 'class' => [], 'id' => [], ],
-					'a'        => [ 'class' => [], 'id' => [], 'href' => [], ],
-					'div'      => [
-						'class'                 => [],
-						'id'                    => [],
-						'data-ticket-type-name' => [],
-					],
-					'span'     => [
-						'class'             => [],
-						'id'                => [],
-						'data'              => [],
-						'data-input-change' => [],
-					],
-					'i'        => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'table'    => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'tr'       => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'td'       => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'thead'    => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'tbody'    => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'th'       => [
-						'class' => [],
-						'id'    => [],
-						'data'  => [],
-					],
-					'svg'      => [
-						'class'   => [],
-						'id'      => [],
-						'width'   => [],
-						'height'  => [],
-						'viewBox' => [],
-						'xmlns'   => [],
-					],
-					'g'        => [
-						'fill' => [],
-					],
-					'path'     => [
-						'd' => [],
-					],
-					'br'       => array(),
-					'em'       => array(),
-					'strong'   => array(),
-				);
-
-				return wp_kses( $string, $allow_attr );
 			}
 
 			//***********************************//
@@ -754,256 +606,20 @@
 			}
 
 			//***********************************//
-			public static function mpcrm_get_country_list() {
-				return array(
-					'AF' => 'Afghanistan',
-					'AX' => 'Aland Islands',
-					'AL' => 'Albania',
-					'DZ' => 'Algeria',
-					'AS' => 'American Samoa',
-					'AD' => 'Andorra',
-					'AO' => 'Angola',
-					'AI' => 'Anguilla',
-					'AQ' => 'Antarctica',
-					'AG' => 'Antigua And Barbuda',
-					'AR' => 'Argentina',
-					'AM' => 'Armenia',
-					'AW' => 'Aruba',
-					'AU' => 'Australia',
-					'AT' => 'Austria',
-					'AZ' => 'Azerbaijan',
-					'BS' => 'Bahamas',
-					'BH' => 'Bahrain',
-					'BD' => 'Bangladesh',
-					'BB' => 'Barbados',
-					'BY' => 'Belarus',
-					'BE' => 'Belgium',
-					'BZ' => 'Belize',
-					'BJ' => 'Benin',
-					'BM' => 'Bermuda',
-					'BT' => 'Bhutan',
-					'BO' => 'Bolivia',
-					'BA' => 'Bosnia And Herzegovina',
-					'BW' => 'Botswana',
-					'BV' => 'Bouvet Island',
-					'BR' => 'Brazil',
-					'IO' => 'British Indian Ocean Territory',
-					'BN' => 'Brunei Darussalam',
-					'BG' => 'Bulgaria',
-					'BF' => 'Burkina Faso',
-					'BI' => 'Burundi',
-					'KH' => 'Cambodia',
-					'CM' => 'Cameroon',
-					'CA' => 'Canada',
-					'CV' => 'Cape Verde',
-					'KY' => 'Cayman Islands',
-					'CF' => 'Central African Republic',
-					'TD' => 'Chad',
-					'CL' => 'Chile',
-					'CN' => 'China',
-					'CX' => 'Christmas Island',
-					'CC' => 'Cocos (Keeling) Islands',
-					'CO' => 'Colombia',
-					'KM' => 'Comoros',
-					'CG' => 'Congo',
-					'CD' => 'Congo, Democratic Republic',
-					'CK' => 'Cook Islands',
-					'CR' => 'Costa Rica',
-					'CI' => 'Cote D\'Ivoire',
-					'HR' => 'Croatia',
-					'CU' => 'Cuba',
-					'CY' => 'Cyprus',
-					'CZ' => 'Czech Republic',
-					'DK' => 'Denmark',
-					'DJ' => 'Djibouti',
-					'DM' => 'Dominica',
-					'DO' => 'Dominican Republic',
-					'EC' => 'Ecuador',
-					'EG' => 'Egypt',
-					'SV' => 'El Salvador',
-					'GQ' => 'Equatorial Guinea',
-					'ER' => 'Eritrea',
-					'EE' => 'Estonia',
-					'ET' => 'Ethiopia',
-					'FK' => 'Falkland Islands (Malvinas)',
-					'FO' => 'Faroe Islands',
-					'FJ' => 'Fiji',
-					'FI' => 'Finland',
-					'FR' => 'France',
-					'GF' => 'French Guiana',
-					'PF' => 'French Polynesia',
-					'TF' => 'French Southern Territories',
-					'GA' => 'Gabon',
-					'GM' => 'Gambia',
-					'GE' => 'Georgia',
-					'DE' => 'Germany',
-					'GH' => 'Ghana',
-					'GI' => 'Gibraltar',
-					'GR' => 'Greece',
-					'GL' => 'Greenland',
-					'GD' => 'Grenada',
-					'GP' => 'Guadeloupe',
-					'GU' => 'Guam',
-					'GT' => 'Guatemala',
-					'GG' => 'Guernsey',
-					'GN' => 'Guinea',
-					'GW' => 'Guinea-Bissau',
-					'GY' => 'Guyana',
-					'HT' => 'Haiti',
-					'HM' => 'Heard Island & Mcdonald Islands',
-					'VA' => 'Holy See (Vatican City State)',
-					'HN' => 'Honduras',
-					'HK' => 'Hong Kong',
-					'HU' => 'Hungary',
-					'IS' => 'Iceland',
-					'IN' => 'India',
-					'ID' => 'Indonesia',
-					'IR' => 'Iran, Islamic Republic Of',
-					'IQ' => 'Iraq',
-					'IE' => 'Ireland',
-					'IM' => 'Isle Of Man',
-					'IL' => 'Israel',
-					'IT' => 'Italy',
-					'JM' => 'Jamaica',
-					'JP' => 'Japan',
-					'JE' => 'Jersey',
-					'JO' => 'Jordan',
-					'KZ' => 'Kazakhstan',
-					'KE' => 'Kenya',
-					'KI' => 'Kiribati',
-					'KR' => 'Korea',
-					'KW' => 'Kuwait',
-					'KG' => 'Kyrgyzstan',
-					'LA' => 'Lao People\'s Democratic Republic',
-					'LV' => 'Latvia',
-					'LB' => 'Lebanon',
-					'LS' => 'Lesotho',
-					'LR' => 'Liberia',
-					'LY' => 'Libyan Arab Jamahiriya',
-					'LI' => 'Liechtenstein',
-					'LT' => 'Lithuania',
-					'LU' => 'Luxembourg',
-					'MO' => 'Macao',
-					'MK' => 'Macedonia',
-					'MG' => 'Madagascar',
-					'MW' => 'Malawi',
-					'MY' => 'Malaysia',
-					'MV' => 'Maldives',
-					'ML' => 'Mali',
-					'MT' => 'Malta',
-					'MH' => 'Marshall Islands',
-					'MQ' => 'Martinique',
-					'MR' => 'Mauritania',
-					'MU' => 'Mauritius',
-					'YT' => 'Mayotte',
-					'MX' => 'Mexico',
-					'FM' => 'Micronesia, Federated States Of',
-					'MD' => 'Moldova',
-					'MC' => 'Monaco',
-					'MN' => 'Mongolia',
-					'ME' => 'Montenegro',
-					'MS' => 'Montserrat',
-					'MA' => 'Morocco',
-					'MZ' => 'Mozambique',
-					'MM' => 'Myanmar',
-					'NA' => 'Namibia',
-					'NR' => 'Nauru',
-					'NP' => 'Nepal',
-					'NL' => 'Netherlands',
-					'AN' => 'Netherlands Antilles',
-					'NC' => 'New Caledonia',
-					'NZ' => 'New Zealand',
-					'NI' => 'Nicaragua',
-					'NE' => 'Niger',
-					'NG' => 'Nigeria',
-					'NU' => 'Niue',
-					'NF' => 'Norfolk Island',
-					'MP' => 'Northern Mariana Islands',
-					'NO' => 'Norway',
-					'OM' => 'Oman',
-					'PK' => 'Pakistan',
-					'PW' => 'Palau',
-					'PS' => 'Palestinian Territory, Occupied',
-					'PA' => 'Panama',
-					'PG' => 'Papua New Guinea',
-					'PY' => 'Paraguay',
-					'PE' => 'Peru',
-					'PH' => 'Philippines',
-					'PN' => 'Pitcairn',
-					'PL' => 'Poland',
-					'PT' => 'Portugal',
-					'PR' => 'Puerto Rico',
-					'QA' => 'Qatar',
-					'RE' => 'Reunion',
-					'RO' => 'Romania',
-					'RU' => 'Russian Federation',
-					'RW' => 'Rwanda',
-					'BL' => 'Saint Barthelemy',
-					'SH' => 'Saint Helena',
-					'KN' => 'Saint Kitts And Nevis',
-					'LC' => 'Saint Lucia',
-					'MF' => 'Saint Martin',
-					'PM' => 'Saint Pierre And Miquelon',
-					'VC' => 'Saint Vincent And Grenadines',
-					'WS' => 'Samoa',
-					'SM' => 'San Marino',
-					'ST' => 'Sao Tome And Principe',
-					'SA' => 'Saudi Arabia',
-					'SN' => 'Senegal',
-					'RS' => 'Serbia',
-					'SC' => 'Seychelles',
-					'SL' => 'Sierra Leone',
-					'SG' => 'Singapore',
-					'SK' => 'Slovakia',
-					'SI' => 'Slovenia',
-					'SB' => 'Solomon Islands',
-					'SO' => 'Somalia',
-					'ZA' => 'South Africa',
-					'GS' => 'South Georgia And Sandwich Isl.',
-					'ES' => 'Spain',
-					'LK' => 'Sri Lanka',
-					'SD' => 'Sudan',
-					'SR' => 'Suriname',
-					'SJ' => 'Svalbard And Jan Mayen',
-					'SZ' => 'Swaziland',
-					'SE' => 'Sweden',
-					'CH' => 'Switzerland',
-					'SY' => 'Syrian Arab Republic',
-					'TW' => 'Taiwan',
-					'TJ' => 'Tajikistan',
-					'TZ' => 'Tanzania',
-					'TH' => 'Thailand',
-					'TL' => 'Timor-Leste',
-					'TG' => 'Togo',
-					'TK' => 'Tokelau',
-					'TO' => 'Tonga',
-					'TT' => 'Trinidad And Tobago',
-					'TN' => 'Tunisia',
-					'TR' => 'Turkey',
-					'TM' => 'Turkmenistan',
-					'TC' => 'Turks And Caicos Islands',
-					'TV' => 'Tuvalu',
-					'UG' => 'Uganda',
-					'UA' => 'Ukraine',
-					'AE' => 'United Arab Emirates',
-					'GB' => 'United Kingdom',
-					'US' => 'United States',
-					'UM' => 'United States Outlying Islands',
-					'UY' => 'Uruguay',
-					'UZ' => 'Uzbekistan',
-					'VU' => 'Vanuatu',
-					'VE' => 'Venezuela',
-					'VN' => 'Viet Nam',
-					'VG' => 'Virgin Islands, British',
-					'VI' => 'Virgin Islands, U.S.',
-					'WF' => 'Wallis And Futuna',
-					'EH' => 'Western Sahara',
-					'YE' => 'Yemen',
-					'ZM' => 'Zambia',
-					'ZW' => 'Zimbabwe',
-				);
+			public static function array_to_string( $array ) {
+				$ids = '';
+				if ( sizeof( $array ) > 0 ) {
+					foreach ( $array as $data ) {
+						if ( $data ) {
+							$ids = $ids ? $ids . ',' . $data : $data;
+						}
+					}
+				}
+
+				return $ids;
 			}
 
+			//***********************************//
 			public static function hasDecimal( $number ) {
 				return fmod( $number, 1 ) != 0;
 			}

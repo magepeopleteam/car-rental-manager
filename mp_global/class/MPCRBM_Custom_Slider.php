@@ -10,14 +10,14 @@
 	if ( ! class_exists( 'MPCRBM_Custom_Slider' ) ) {
 		class MPCRBM_Custom_Slider {
 			public function __construct() {
-				add_action( 'add_mp_custom_slider', array( $this, 'super_slider' ), 10, 2 );
-				add_action( 'add_mp_custom_slider_only', array( $this, 'super_slider_only' ) );
-				add_action( 'add_mp_custom_slider_icon_indicator', array( $this, 'icon_indicator' ) );
+				add_action( 'mpcrbm_custom_slider', array( $this, 'super_slider' ), 10, 2 );
+				add_action( 'mpcrbm_custom_slider_only', array( $this, 'super_slider_only' ) );
+				add_action( 'mpcrbm_custom_slider_icon_indicator', array( $this, 'icon_indicator' ) );
 			}
 			public function super_slider( $post_id = '', $meta_key = '' ) {
-				$type      = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'slider_type', 'slider' );
+				$type      = MPCRBM_Global_Function::get_slider_settings( 'slider_type', 'slider' );
 				$post_id   = $post_id > 0 ? $post_id : get_the_id();
-				$image_ids = $this->mpcrm_get_slider_ids( $post_id, $meta_key );
+				$image_ids = $this->get_slider_ids( $post_id, $meta_key );
 				if ( is_array( $image_ids ) && sizeof( $image_ids ) > 0 ) {
 					if ( $type == 'slider' && sizeof( $image_ids ) > 1 ) {
 						$this->slider( $post_id, $image_ids );
@@ -39,9 +39,9 @@
 			}
 			public function slider( $post_id, $image_ids ) {
 				if ( is_array( $image_ids ) && sizeof( $image_ids ) > 0 ) {
-					$showcase_position = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'showcase_position', 'right' );
+					$showcase_position = MPCRBM_Global_Function::get_slider_settings( 'showcase_position', 'right' );
 					$column_class      = $showcase_position == 'top' || $showcase_position == 'bottom' ? 'area_column' : '';
-					$slider_style      = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'slider_style', 'style_1' );
+					$slider_style      = MPCRBM_Global_Function::get_slider_settings( 'slider_style', 'style_1' );
 					?>
 					<div class="superSlider placeholder_area fdColumn">
 						<div class="dFlex  <?php echo esc_attr( $column_class ); ?>">
@@ -67,8 +67,8 @@
 							?>
 						</div>
 						<?php
-							$slider_indicator = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'indicator_visible', 'on' );
-							$icon             = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'indicator_type', 'icon' );
+							$slider_indicator = MPCRBM_Global_Function::get_slider_settings( 'indicator_visible', 'on' );
+							$icon             = MPCRBM_Global_Function::get_slider_settings( 'indicator_type', 'icon' );
 							if ( $slider_indicator == 'on' && $icon == 'image' ) {
 								$this->image_indicator( $image_ids );
 							}
@@ -79,7 +79,7 @@
 				}
 			}
 			public function post_thumbnail( $image_id = '' ) {
-				$thumbnail = MPCRBM_Global_Function::mpcrm_get_image_url( '', $image_id );
+				$thumbnail = MPCRBM_Global_Function::get_image_url( '', $image_id );
 				if ( $thumbnail ) {
 					?>
 					<div class="superSlider">
@@ -95,7 +95,7 @@
 						<?php
 							$count = 1;
 							foreach ( $image_ids as $id ) {
-								$image_url = MPCRBM_Global_Function::mpcrm_get_image_url( '', $id );
+								$image_url = MPCRBM_Global_Function::get_image_url( '', $id );
 								?>
 								<div class="sliderItem" data-slide-index="<?php echo esc_html( $count ); ?>" data-target-popup="superSlider" data-placeholder>
 									<div data-bg-image="<?php echo esc_html( $image_url ); ?>"></div>
@@ -105,7 +105,7 @@
 							}
 						?>
 						<?php
-							$icon = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'indicator_type', 'icon' );
+							$icon = MPCRBM_Global_Function::get_slider_settings( 'indicator_type', 'icon' );
 							if ( ( $icon == 'icon' || $popup_slider_icon == 'on' ) && sizeof( $image_ids ) > 1 ) {
 								$this->icon_indicator( $popup_slider_icon );
 							}
@@ -115,10 +115,10 @@
 				}
 			}
 			public function slider_showcase( $image_ids ) {
-				$showcase = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'showcase_visible', 'on' );
+				$showcase = MPCRBM_Global_Function::get_slider_settings( 'showcase_visible', 'on' );
 				if ( $showcase == 'on' && is_array( $image_ids ) && sizeof( $image_ids ) > 0 ) {
-					$showcase_position = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'showcase_position', 'right' );
-					$slider_style      = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'slider_style', 'style_1' );
+					$showcase_position = MPCRBM_Global_Function::get_slider_settings( 'showcase_position', 'right' );
+					$slider_style      = MPCRBM_Global_Function::get_slider_settings( 'slider_style', 'style_1' );
 					?>
 					<div class="sliderShowcase <?php echo esc_attr( $showcase_position . ' ' . $slider_style ); ?>">
 						<?php
@@ -135,7 +135,7 @@
 			public function slider_showcase_style_1( $image_ids ) {
 				$count = 1;
 				foreach ( $image_ids as $id ) {
-					$image_url = MPCRBM_Global_Function::mpcrm_get_image_url( '', $id );
+					$image_url = MPCRBM_Global_Function::get_image_url( '', $id );
 					if ( $count < 4 ) {
 						?>
 						<div class="sliderShowcaseItem" data-slide-target="<?php echo esc_html( $count ); ?>" data-placeholder>
@@ -161,7 +161,7 @@
 			public function slider_showcase_style_2( $image_ids ) {
 				$count = 1;
 				foreach ( $image_ids as $id ) {
-					$image_url = MPCRBM_Global_Function::mpcrm_get_image_url( '', $id );
+					$image_url = MPCRBM_Global_Function::get_image_url( '', $id );
 					if ( $count > 1 && $count < 5 ) {
 						?>
 						<div class="sliderShowcaseItem" data-target-popup="superSlider" data-slide-index="<?php echo esc_html( $count ); ?>" data-placeholder>
@@ -179,7 +179,7 @@
 						<?php
 							$count = 1;
 							foreach ( $image_ids as $id ) {
-								$image_url = MPCRBM_Global_Function::mpcrm_get_image_url( '', $id, array( 150, 100 ) );
+								$image_url = MPCRBM_Global_Function::get_image_url( '', $id, array( 150, 100 ) );
 								?>
 								<div class="slideIndicatorItem" data-slide-target="<?php echo esc_html( $count ); ?>">
 									<div data-bg-image="<?php echo esc_html( $image_url ); ?>"></div>
@@ -193,7 +193,7 @@
 				}
 			}
 			public function icon_indicator( $popup_slider_icon = '' ) {
-				$slider_indicator = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'indicator_visible', 'on' );
+				$slider_indicator = MPCRBM_Global_Function::get_slider_settings( 'indicator_visible', 'on' );
 				if ( $slider_indicator == 'on' || $popup_slider_icon == 'on' ) {
 					?>
 					<div class="iconIndicator prevItem">
@@ -207,11 +207,11 @@
 			}
 			public function slider_popup( $post_id, $image_ids ) {
 				if ( is_array( $image_ids ) && sizeof( $image_ids ) > 0 ) {
-					$popup_icon_indicator = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'popup_icon_indicator', 'on' );
+					$popup_icon_indicator = MPCRBM_Global_Function::get_slider_settings( 'popup_icon_indicator', 'on' );
 					?>
 					<div class="sliderPopup" data-popup="superSlider">
 						<div class="superSlider">
-							<div class="popupHeader">
+							<div class="popup_header">
 								<h2><?php echo esc_html( get_the_title( $post_id ) ); ?></h2>
 								<span class="fas fa-times popupClose"></span>
 							</div>
@@ -220,7 +220,7 @@
 							</div>
 							<div class="popupFooter">
 								<?php
-									$indicator = MPCRBM_Global_Function::mpcrm_get_slider_settings( 'popup_image_indicator', 'on' );
+									$indicator = MPCRBM_Global_Function::get_slider_settings( 'popup_image_indicator', 'on' );
 									if ( $indicator == 'on' ) {
 										$this->image_indicator( $image_ids );
 									}
@@ -232,9 +232,9 @@
 				}
 			}
 			//==============//
-			public function mpcrm_get_slider_ids( $post_id, $key ) {
+			public function get_slider_ids( $post_id, $key ) {
 				$thumb_id  = get_post_thumbnail_id( $post_id );
-				$image_ids = MPCRBM_Global_Function::mpcrm_get_post_info( $post_id, $key, array() );
+				$image_ids = MPCRBM_Global_Function::get_post_info( $post_id, $key, array() );
 				if ( $thumb_id ) {
 					array_unshift( $image_ids, $thumb_id );
 				}

@@ -1,4 +1,4 @@
-.mptbm-filter-feature{
+.mpcrbm-filter-feature{
     display: flex !important;
     flex-direction: row !important;
     flex-flow: column wrap;
@@ -6,11 +6,11 @@
     align-items: center !important;
 }
 
-.mptbm-filter-feature-input{
+.mpcrbm-filter-feature-input{
     width: 49%;
 }
 
-.mptbm-filter-feature-input select:focus {
+.mpcrbm-filter-feature-input select:focus {
   /* Add your styling here */
   border-color: #007bff; /* Example border color */
   outline: none; /* Remove default focus outline */
@@ -21,7 +21,7 @@
 .geo-fence-no-transport{
   display: none;
 }
-.mptbm_manual_start_place , .mptbm_map_end_place{
+.mpcrbm_manual_start_place , .mpcrbm_map_end_place{
   text-transform: capitalize;
 }
 .wp-block-post-title{

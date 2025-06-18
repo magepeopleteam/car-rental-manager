@@ -5,9 +5,9 @@
 	}
 	$post_id = $post_id ?? get_the_id();
 ?>
-	<div class="mpcrbm mptbm_default_theme">
+	<div class="mpcrbm mpcrbm_default_theme">
 		<div class="mpContainer">
-			<?php do_action( 'mptbm_transport_search_form',$post_id ); ?>
+			<?php do_action( 'mpcrbm_transport_search_form',$post_id ); ?>
 		</div>
 	</div>
-<?php do_action( 'mptbm_after_details_page' ); ?>
+<?php do_action( 'mpcrbm_after_details_page' ); ?>

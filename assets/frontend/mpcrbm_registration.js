@@ -1,7 +1,7 @@
-let mptbm_map;
-let mptbm_map_window;
-function mptbm_set_cookie_distance_duration(start_place = "", end_place = "") {
-    mptbm_map = new google.maps.Map(document.getElementById("mptbm_map_area"), {
+let mpcrbm_map;
+let mpcrbm_map_window;
+function mpcrbm_set_cookie_distance_duration(start_place = "", end_place = "") {
+    mpcrbm_map = new google.maps.Map(document.getElementById("mpcrbm_map_area"), {
         mapTypeControl: false,
         center: mp_lat_lng,
         zoom: 15,
@@ -9,7 +9,7 @@ function mptbm_set_cookie_distance_duration(start_place = "", end_place = "") {
     if (start_place && end_place) {
         let directionsService = new google.maps.DirectionsService();
         let directionsRenderer = new google.maps.DirectionsRenderer();
-        directionsRenderer.setMap(mptbm_map);
+        directionsRenderer.setMap(mpcrbm_map);
         let request = {
             origin: start_place,
             destination: end_place,
@@ -23,7 +23,7 @@ function mptbm_set_cookie_distance_duration(start_place = "", end_place = "") {
         directionsService.route(request, (result, status) => {
             if (status === google.maps.DirectionsStatus.OK) {
                 let distance = result.routes[0].legs[0].distance.value;
-                let kmOrMile = document.getElementById("mptbm_km_or_mile").value;
+                let kmOrMile = document.getElementById("mpcrbm_km_or_mile").value;
                 let distance_text = result.routes[0].legs[0].distance.text;
                 let duration = result.routes[0].legs[0].duration.value;
                 var duration_text = result.routes[0].legs[0].duration.text;
@@ -35,25 +35,25 @@ function mptbm_set_cookie_distance_duration(start_place = "", end_place = "") {
                 }
                 // Build the set-cookie string:
                 document.cookie =
-                    "mptbm_distance=" + distance + "; expires=" + now + "; path=/; ";
+                    "mpcrbm_distance=" + distance + "; expires=" + now + "; path=/; ";
                 document.cookie =
-                    "mptbm_distance_text=" +
+                    "mpcrbm_distance_text=" +
                     distance_text +
                     "; expires=" +
                     now +
                     "; path=/; ";
                 document.cookie =
-                    "mptbm_duration=" + duration + ";  expires=" + now + "; path=/; ";
+                    "mpcrbm_duration=" + duration + ";  expires=" + now + "; path=/; ";
                 document.cookie =
-                    "mptbm_duration_text=" +
+                    "mpcrbm_duration_text=" +
                     duration_text +
                     ";  expires=" +
                     now +
                     "; path=/; ";
                 directionsRenderer.setDirections(result);
-                jQuery(".mptbm_total_distance").html(distance_text);
-                jQuery(".mptbm_total_time").html(duration_text);
-                jQuery(".mptbm_distance_time").slideDown("fast");
+                jQuery(".mpcrbm_total_distance").html(distance_text);
+                jQuery(".mpcrbm_total_time").html(duration_text);
+                jQuery(".mpcrbm_distance_time").slideDown("fast");
             } else {
                 //directionsRenderer.setDirections({routes: []})
                 //alert('location error');
@@ -61,8 +61,8 @@ function mptbm_set_cookie_distance_duration(start_place = "", end_place = "") {
         });
     } else if (start_place || end_place) {
         let place = start_place ? start_place : end_place;
-        mptbm_map_window = new google.maps.InfoWindow();
-        map = new google.maps.Map(document.getElementById("mptbm_map_area"), {
+        mpcrbm_map_window = new google.maps.InfoWindow();
+        map = new google.maps.Map(document.getElementById("mpcrbm_map_area"), {
             center: mp_lat_lng,
             zoom: 15,
         });
@@ -74,81 +74,81 @@ function mptbm_set_cookie_distance_duration(start_place = "", end_place = "") {
         service.findPlaceFromQuery(request, (results, status) => {
             if (status === google.maps.places.PlacesServiceStatus.OK && results) {
                 for (let i = 0; i < results.length; i++) {
-                    mptbmCreateMarker(results[i]);
+                    mpcrbmCreateMarker(results[i]);
                 }
                 map.setCenter(results[0].geometry.location);
             }
         });
     } else {
         let directionsRenderer = new google.maps.DirectionsRenderer();
-        directionsRenderer.setMap(mptbm_map);
-        //document.getElementById('mptbm_map_start_place').focus();
+        directionsRenderer.setMap(mpcrbm_map);
+        //document.getElementById('mpcrbm_map_start_place').focus();
     }
     return true;
 }
-function mptbmCreateMarker(place) {
+function mpcrbmCreateMarker(place) {
     if (!place.geometry || !place.geometry.location) return;
     const marker = new google.maps.Marker({
         map,
         position: place.geometry.location,
     });
     google.maps.event.addListener(marker, "click", () => {
-        mptbm_map_window.setContent(place.name || "");
-        mptbm_map_window.open(map);
+        mpcrbm_map_window.setContent(place.name || "");
+        mpcrbm_map_window.open(map);
     });
 }
 jQuery(document).ready(function($) {
     "use strict";
 
     // Initialize map and autocomplete
-    $(".mpcrbm ul.mp_input_select_list").hide();
-        if ($("#mptbm_map_area").length > 0) {
-            mptbm_set_cookie_distance_duration();
-        if ($("#mptbm_map_start_place").length > 0 && $("#mptbm_map_end_place").length > 0) {
-                let start_place = document.getElementById("mptbm_map_start_place");
-                let end_place = document.getElementById("mptbm_map_end_place");
+    $(".mpcrbm ul.input_select_list").hide();
+        if ($("#mpcrbm_map_area").length > 0) {
+            mpcrbm_set_cookie_distance_duration();
+        if ($("#mpcrbm_map_start_place").length > 0 && $("#mpcrbm_map_end_place").length > 0) {
+                let start_place = document.getElementById("mpcrbm_map_start_place");
+                let end_place = document.getElementById("mpcrbm_map_end_place");
             let start_place_autoload = new google.maps.places.Autocomplete(start_place);
-                let mptbm_restrict_search_to_country = $('[name="mptbm_restrict_search_country"]').val();
-                let mptbm_country = $('[name="mptbm_country"]').val();
+                let mpcrbm_restrict_search_to_country = $('[name="mpcrbm_restrict_search_country"]').val();
+                let mpcrbm_country = $('[name="mpcrbm_country"]').val();
                 
-                if(mptbm_restrict_search_to_country == 'yes'){
+                if(mpcrbm_restrict_search_to_country == 'yes'){
                     start_place_autoload.setComponentRestrictions({
-                        country: [mptbm_country]
+                        country: [mpcrbm_country]
                     });
                 }
                 
             google.maps.event.addListener(start_place_autoload, "place_changed", function() {
-                mptbm_set_cookie_distance_duration(start_place.value, end_place.value);
+                mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
             });
             
             let end_place_autoload = new google.maps.places.Autocomplete(end_place);
-                if(mptbm_restrict_search_to_country == 'yes'){
+                if(mpcrbm_restrict_search_to_country == 'yes'){
                     end_place_autoload.setComponentRestrictions({
-                        country: [mptbm_country]
+                        country: [mpcrbm_country]
                     });
                 }
                 
             google.maps.event.addListener(end_place_autoload, "place_changed", function() {
-                mptbm_set_cookie_distance_duration(start_place.value, end_place.value);
+                mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
             });
         }
     }
 
     // Handle vehicle selection
-    $(document).on('click', '.mptbm_transport_select', function() {
+    $(document).on('click', '.mpcrbm_transport_select', function() {
         let $this = $(this);
-        let parent = $this.closest('.mptbm_transport_search_area');
-        let target_summary = parent.find('.mptbm_transport_summary');
-        let target_extra_service = parent.find('.mptbm_extra_service');
-        let target_extra_service_summary = parent.find('.mptbm_extra_service_summary');
+        let parent = $this.closest('.mpcrbm_transport_search_area');
+        let target_summary = parent.find('.mpcrbm_transport_summary');
+        let target_extra_service = parent.find('.mpcrbm_extra_service');
+        let target_extra_service_summary = parent.find('.mpcrbm_extra_service_summary');
         
         // Clear all extra services when selecting a new vehicle
         target_extra_service_summary.empty();
         target_extra_service.empty();
         
         // Reset all extra service inputs
-        parent.find('[name="mptbm_extra_service[]"]').val('').trigger('change');
-        parent.find('[name="mptbm_extra_service_qty[]"]').val('1');
+        parent.find('[name="mpcrbm_extra_service[]"]').val('').trigger('change');
+        parent.find('[name="mpcrbm_extra_service_qty[]"]').val('1');
         
         if ($this.hasClass('active_select')) {
             // Deselect vehicle
@@ -156,22 +156,22 @@ jQuery(document).ready(function($) {
             target_summary.slideUp(400);
             target_extra_service.slideUp(400);
             target_extra_service_summary.slideUp(400);
-            parent.find('[name="mptbm_post_id"]').val('');
+            parent.find('[name="mpcrbm_post_id"]').val('');
         } else {
             // Select new vehicle
-            parent.find('.mptbm_transport_select.active_select').removeClass('active_select');
+            parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
             
             let transport_name = $this.attr('data-transport-name');
             let transport_price = parseFloat($this.attr('data-transport-price'));
             let post_id = $this.attr('data-post-id');
             
             // Update vehicle details in summary
-            target_summary.find('.mptbm_product_name').html(transport_name);
-            target_summary.find('.mptbm_product_price').html(mpcrbm_price_format(transport_price));
-            target_summary.find('.mptbm_product_total_price').html(mpcrbm_price_format(transport_price));
+            target_summary.find('.mpcrbm_product_name').html(transport_name);
+            target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(transport_price));
+            target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(transport_price));
             
             $this.addClass('active_select');
-            parent.find('[name="mptbm_post_id"]').val(post_id).attr('data-price', transport_price);
+            parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', transport_price);
             
             // Show summary sections
             target_summary.slideDown(400);
@@ -181,11 +181,11 @@ jQuery(document).ready(function($) {
             // Fetch available extra services
             $.ajax({
                 type: 'POST',
-                url: mptbm_ajax.ajax_url,
+                url: mpcrbm_ajax.ajax_url,
                 data: {
-                    action: 'get_mptbm_extra_service',
+                    action: 'get_mpcrbm_extra_service',
                     post_id: post_id,
-                    mptbm_transportation_type_nonce: mptbm_ajax.nonce
+                    mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
                 beforeSend: function() {
                     mpcrbm_loader(parent.find('.tabsContentNext'));
@@ -204,32 +204,32 @@ jQuery(document).ready(function($) {
     });
 
     // Handle get vehicle button
-    $(document).on("click", "#mptbm_get_vehicle", function() {
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        let mptbm_enable_return_in_different_date = parent
-            .find('[name="mptbm_enable_return_in_different_date"]')
+    $(document).on("click", "#mpcrbm_get_vehicle", function() {
+        let parent = $(this).closest(".mpcrbm_transport_search_area");
+        let mpcrbm_enable_return_in_different_date = parent
+            .find('[name="mpcrbm_enable_return_in_different_date"]')
             .val();
 
         let target = parent.find(".tabsContentNext");
-        let target_date = parent.find("#mptbm_map_start_date");
-        let return_target_date = parent.find("#mptbm_map_return_date");
-        let target_time = parent.find("#mptbm_map_start_time");
-        let return_target_time = parent.find("#mptbm_map_return_time");
+        let target_date = parent.find("#mpcrbm_map_start_date");
+        let return_target_date = parent.find("#mpcrbm_map_return_date");
+        let target_time = parent.find("#mpcrbm_map_start_time");
+        let return_target_time = parent.find("#mpcrbm_map_return_time");
         let start_place;
         let end_place;
-        let price_based = parent.find('[name="mptbm_price_based"]').val();
-        let two_way = parent.find('[name="mptbm_taxi_return"]').val();
-        let waiting_time = parent.find('[name="mptbm_waiting_time"]').val();
-        let fixed_time = parent.find('[name="mptbm_fixed_hours"]').val();
-        let mptbm_enable_view_search_result_page = parent
-            .find('[name="mptbm_enable_view_search_result_page"]')
+        let price_based = parent.find('[name="mpcrbm_price_based"]').val();
+        let two_way = parent.find('[name="mpcrbm_taxi_return"]').val();
+        let waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
+        let fixed_time = parent.find('[name="mpcrbm_fixed_hours"]').val();
+        let mpcrbm_enable_view_search_result_page = parent
+            .find('[name="mpcrbm_enable_view_search_result_page"]')
             .val();
         if (price_based === "manual") {
-            start_place = document.getElementById("mptbm_manual_start_place");
-            end_place = document.getElementById("mptbm_manual_end_place");
+            start_place = document.getElementById("mpcrbm_manual_start_place");
+            end_place = document.getElementById("mpcrbm_manual_end_place");
         } else {
-            start_place = document.getElementById("mptbm_map_start_place");
-            end_place = document.getElementById("mptbm_map_end_place");
+            start_place = document.getElementById("mpcrbm_map_start_place");
+            end_place = document.getElementById("mpcrbm_map_end_place");
         }
         let start_date = target_date.val();
         let return_date = return_target_date.val();
@@ -240,19 +240,19 @@ jQuery(document).ready(function($) {
             target_date.trigger("click");
         } else if (!start_time) {
             parent
-                .find("#mptbm_map_start_time")
-                .closest(".mp_input_select")
+                .find("#mpcrbm_map_start_time")
+                .closest(".input_select")
                 .find("input.formControl")
                 .trigger("click");
         } else if (!return_date) {
-            if (mptbm_enable_return_in_different_date == 'yes' && two_way != 1) {
+            if (mpcrbm_enable_return_in_different_date == 'yes' && two_way != 1) {
                 return_target_date.trigger("click");
             }
         } else if (!return_time) {
-            if (mptbm_enable_return_in_different_date == 'yes' && two_way != 1) {
+            if (mpcrbm_enable_return_in_different_date == 'yes' && two_way != 1) {
                 parent
-                    .find("#mptbm_map_return_time")
-                    .closest(".mp_input_select")
+                    .find("#mpcrbm_map_return_time")
+                    .closest(".input_select")
                     .find("input.formControl")
                     .trigger("click");
             }
@@ -262,11 +262,11 @@ jQuery(document).ready(function($) {
             end_place.focus();
         } else {
             mpcrbm_loader(parent.find(".tabsContentNext"));
-            mptbm_content_refresh(parent);
+            mpcrbm_content_refresh(parent);
             if (price_based !== "manual") {
-                mptbm_set_cookie_distance_duration(start_place.value, end_place.value);
+                mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
             }
-            //let price_based = parent.find('[name="mptbm_price_based"]').val();
+            //let price_based = parent.find('[name="mpcrbm_price_based"]').val();
             function getGeometryLocation(address, callback) {
                 var geocoder = new google.maps.Geocoder();
                 var coordinatesOfPlace = {};
@@ -304,8 +304,8 @@ jQuery(document).ready(function($) {
                 ).done(function (startCoordinates, endCoordinates) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
-                        if (!mptbm_enable_view_search_result_page) {
-                            actionValue = "get_mptbm_map_search_result";
+                        if (!mpcrbm_enable_view_search_result_page) {
+                            actionValue = "get_mpcrbm_map_search_result";
                             
                             $.ajax({
                                 type: "POST",
@@ -342,7 +342,7 @@ jQuery(document).ready(function($) {
                                 },
                             });
                         } else {
-                            actionValue = "get_mptbm_map_search_result_redirect";
+                            actionValue = "get_mpcrbm_map_search_result_redirect";
                             $.ajax({
                                 type: "POST",
                                 url: mpcrbm_ajax_url,
@@ -360,8 +360,8 @@ jQuery(document).ready(function($) {
                                     fixed_time: fixed_time,
                                     return_date: return_date,
                                     return_time: return_time,
-                                    mptbm_enable_view_search_result_page: mptbm_enable_view_search_result_page,
-                                    mptbm_transportation_type_nonce: mptbm_ajax.nonce
+                                    mpcrbm_enable_view_search_result_page: mpcrbm_enable_view_search_result_page,
+                                    mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                                 },
                                 beforeSend: function () {
                                     mpcrbm_loader(target);
@@ -381,8 +381,8 @@ jQuery(document).ready(function($) {
                 if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                     
                     let actionValue;
-                    if (!mptbm_enable_view_search_result_page) {
-                        actionValue = "get_mptbm_map_search_result";
+                    if (!mpcrbm_enable_view_search_result_page) {
+                        actionValue = "get_mpcrbm_map_search_result";
                        
                         $.ajax({
                             type: "POST",
@@ -399,7 +399,7 @@ jQuery(document).ready(function($) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
-                                mptbm_transportation_type_nonce: mptbm_ajax.nonce
+                                mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
                             beforeSend: function () {
                                 //mpcrbm_loader(target);
@@ -418,7 +418,7 @@ jQuery(document).ready(function($) {
                             },
                         });
                     } else {
-                        actionValue = "get_mptbm_map_search_result_redirect";
+                        actionValue = "get_mpcrbm_map_search_result_redirect";
                         $.ajax({
                             type: "POST",
                             url: mpcrbm_ajax_url,
@@ -434,8 +434,8 @@ jQuery(document).ready(function($) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
-                                mptbm_enable_view_search_result_page: mptbm_enable_view_search_result_page,
-                                mptbm_transportation_type_nonce: mptbm_ajax.nonce
+                                mpcrbm_enable_view_search_result_page: mpcrbm_enable_view_search_result_page,
+                                mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
                             beforeSend: function () {
                                 mpcrbm_loader(target);
@@ -455,14 +455,14 @@ jQuery(document).ready(function($) {
     });
 
     // Handle date and time changes
-    $(document).on("change", "#mptbm_map_start_date", function() {
+    $(document).on("change", "#mpcrbm_map_start_date", function() {
         // Clear the time slots list
-        $('#mptbm_map_start_time').siblings('.start_time_list').empty();
-        $('.start_time_input,#mptbm_map_start_time').val('');
-        let mptbm_enable_return_in_different_date = $('[name="mptbm_enable_return_in_different_date"]').val();
-        let mptbm_buffer_end_minutes = $('[name="mptbm_buffer_end_minutes"]').val();
-        let mptbm_first_calendar_date = $('[name="mptbm_first_calendar_date"]').val();
-        var selectedDate = $('#mptbm_map_start_date').val();
+        $('#mpcrbm_map_start_time').siblings('.start_time_list').empty();
+        $('.start_time_input,#mpcrbm_map_start_time').val('');
+        let mpcrbm_enable_return_in_different_date = $('[name="mpcrbm_enable_return_in_different_date"]').val();
+        let mpcrbm_buffer_end_minutes = $('[name="mpcrbm_buffer_end_minutes"]').val();
+        let mpcrbm_first_calendar_date = $('[name="mpcrbm_first_calendar_date"]').val();
+        var selectedDate = $('#mpcrbm_map_start_date').val();
         var formattedDate = $.datepicker.parseDate('yy-mm-dd', selectedDate);
         
         // Get today's date in YYYY-MM-DD format
@@ -484,22 +484,22 @@ jQuery(document).ready(function($) {
             var currentTimeFormatted = currentHour + '.' + formattedMinutes;
             $('.start_time_list-no-dsiplay li').each(function () {
                 const timeValue = parseFloat($(this).attr('data-value'));
-                if (timeValue > parseFloat(currentTimeFormatted) && timeValue >= mptbm_buffer_end_minutes / 60) {
-                    $('#mptbm_map_start_time').siblings('.start_time_list').append($(this).clone());
+                if (timeValue > parseFloat(currentTimeFormatted) && timeValue >= mpcrbm_buffer_end_minutes / 60) {
+                    $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
                 }
             });
         } else {
-            if(selectedDate  == mptbm_first_calendar_date){
-                console.log(mptbm_first_calendar_date);
+            if(selectedDate  == mpcrbm_first_calendar_date){
+                console.log(mpcrbm_first_calendar_date);
                 $('.start_time_list-no-dsiplay li').each(function () {
                     const timeValue = parseFloat($(this).attr('data-value'));
-                    if (timeValue >= mptbm_buffer_end_minutes / 60) {
-                        $('#mptbm_map_start_time').siblings('.start_time_list').append($(this).clone());
+                    if (timeValue >= mpcrbm_buffer_end_minutes / 60) {
+                        $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
                     }
                 });
             }else{
                 $('.start_time_list-no-dsiplay li').each(function () {
-                    $('#mptbm_map_start_time').siblings('.start_time_list').append($(this).clone());
+                    $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
                 });
             }
             
@@ -507,100 +507,100 @@ jQuery(document).ready(function($) {
         }
 
         // Update the return date picker if needed
-        if (mptbm_enable_return_in_different_date == 'yes') {
-            $('#mptbm_return_date').datepicker('option', 'minDate', formattedDate);
+        if (mpcrbm_enable_return_in_different_date == 'yes') {
+            $('#mpcrbm_return_date').datepicker('option', 'minDate', formattedDate);
         }
 
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
+        let parent = $(this).closest(".mpcrbm_transport_search_area");
+        mpcrbm_content_refresh(parent);
         parent
-            .find("#mptbm_map_start_time")
-            .closest(".mp_input_select")
+            .find("#mpcrbm_map_start_time")
+            .closest(".input_select")
             .find("input.formControl")
             .trigger("click");
     });
 
-    $(document).on("change", "#mptbm_map_return_date", function() {
-        let mptbm_enable_return_in_different_date = $('[name="mptbm_enable_return_in_different_date"]').val();
+    $(document).on("change", "#mpcrbm_map_return_date", function() {
+        let mpcrbm_enable_return_in_different_date = $('[name="mpcrbm_enable_return_in_different_date"]').val();
 
-        if (mptbm_enable_return_in_different_date == 'yes') {
-            var selectedTime = parseFloat($('#mptbm_map_start_time').val());
-            var selectedDate = $('#mptbm_map_start_date').val();
-            var dateValue = $('#mptbm_map_return_date').val();
+        if (mpcrbm_enable_return_in_different_date == 'yes') {
+            var selectedTime = parseFloat($('#mpcrbm_map_start_time').val());
+            var selectedDate = $('#mpcrbm_map_start_date').val();
+            var dateValue = $('#mpcrbm_map_return_date').val();
 
             // Check if the return date is the same as the pickup date
             if (selectedDate == dateValue) {
                 $('#return_time_list').show();
                 // Clear existing options
-                $('#mptbm_map_return_time').siblings('.mp_input_select_list').empty();
-                $('.mptbm_map_return_time_input').val('');
+                $('#mpcrbm_map_return_time').siblings('.input_select_list').empty();
+                $('.mpcrbm_map_return_time_input').val('');
                 // If return date is the same as the pickup date, show only times after pickup time
-                $('.mp_input_select_list li').each(function () {
+                $('.input_select_list li').each(function () {
                     var timeValue = parseFloat($(this).attr('data-value'));
                     if (timeValue > selectedTime) {
-                        $('#mptbm_map_return_time').siblings('.mp_input_select_list').append($(this).clone());
+                        $('#mpcrbm_map_return_time').siblings('.input_select_list').append($(this).clone());
                     }
                 });
             } else {
                 // Clear existing options
-                $('#mptbm_map_return_time').siblings('.mp_input_select_list').empty();
-                $('.mptbm_map_return_time_input').val('');
+                $('#mpcrbm_map_return_time').siblings('.input_select_list').empty();
+                $('.mpcrbm_map_return_time_input').val('');
                 $('.return_time_list-no-dsiplay li').each(function () {
                     var timeValue = parseFloat($(this).attr('data-value'));
-                    $('#mptbm_map_return_time').siblings('.mp_input_select_list').append($(this).clone());
+                    $('#mpcrbm_map_return_time').siblings('.input_select_list').append($(this).clone());
                 });
             }
         }
 
         // Trigger refresh and display logic
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
-        parent.find("#mptbm_map_return_time").closest(".mp_input_select").find("input.formControl").trigger("click");
+        let parent = $(this).closest(".mpcrbm_transport_search_area");
+        mpcrbm_content_refresh(parent);
+        parent.find("#mpcrbm_map_return_time").closest(".input_select").find("input.formControl").trigger("click");
     });
 
     // Handle time selection
     $(document).on("click", ".start_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
-        $('#mptbm_map_start_time').val(selectedValue).trigger('change');
+        $('#mpcrbm_map_start_time').val(selectedValue).trigger('change');
     });
 
     $(document).on("click", ".return_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
-        $('#mptbm_map_return_time').val(selectedValue).trigger('change');
+        $('#mpcrbm_map_return_time').val(selectedValue).trigger('change');
     });
 
     // Handle place changes
-    $(document).on("change", "#mptbm_map_start_place, #mptbm_map_end_place", function() {
-        let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
-        let start_place = parent.find("#mptbm_map_start_place").val();
-        let end_place = parent.find("#mptbm_map_end_place").val();
+    $(document).on("change", "#mpcrbm_map_start_place, #mpcrbm_map_end_place", function() {
+        let parent = $(this).closest(".mpcrbm_transport_search_area");
+        mpcrbm_content_refresh(parent);
+        let start_place = parent.find("#mpcrbm_map_start_place").val();
+        let end_place = parent.find("#mpcrbm_map_end_place").val();
         if (start_place || end_place) {
             if (start_place) {
-                mptbm_set_cookie_distance_duration(start_place);
-                parent.find("#mptbm_map_end_place").focus();
+                mpcrbm_set_cookie_distance_duration(start_place);
+                parent.find("#mpcrbm_map_end_place").focus();
             } else {
-                mptbm_set_cookie_distance_duration(end_place);
-                parent.find("#mptbm_map_start_place").focus();
+                mpcrbm_set_cookie_distance_duration(end_place);
+                parent.find("#mpcrbm_map_start_place").focus();
             }
         } else {
-            parent.find("#mptbm_map_start_place").focus();
+            parent.find("#mpcrbm_map_start_place").focus();
         }
     });
 
     // Handle extra service quantity changes
-    $(document).on('change', '.mptbm_transport_search_area [name="mptbm_extra_service_qty[]"]', function () {
-        $(this).closest('.mptbm_extra_service_item').find('[name="mptbm_extra_service[]"]').trigger('change');
-        let parent = $(this).closest('.mptbm_transport_search_area');
+    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service_qty[]"]', function () {
+        $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service[]"]').trigger('change');
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
         checkAndToggleBookNowButton(parent);
     });
 
     // Handle extra service selection
-    $(document).on('change', '.mptbm_transport_search_area [name="mptbm_extra_service[]"]', function () {
-        let parent = $(this).closest('.mptbm_transport_search_area');
+    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service[]"]', function () {
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
         let service_id = $(this).data('value');
         let service_value = $(this).val();
-        let $qty_input = $(this).closest('.mptbm_extra_service_item').find('[name="mptbm_extra_service_qty[]"]');
+        let $qty_input = $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service_qty[]"]');
         let qty = parseInt($qty_input.val()) || 1;
         let price_per_item = parseFloat($qty_input.data('price')) || 0;
         let total_price_for_item = price_per_item * qty;
@@ -623,7 +623,7 @@ jQuery(document).ready(function($) {
                         </p>
                     </div>
                 `;
-                parent.find('.mptbm_extra_service_summary').append(new_item_html);
+                parent.find('.mpcrbm_extra_service_summary').append(new_item_html);
             } else {
                 summary_item.find('.ex_service_qty').text('x' + qty);
                 summary_item.find('.woocommerce-Price-amount').html(mpcrbm_price_format(total_price_for_item));
@@ -649,21 +649,21 @@ jQuery(document).ready(function($) {
             }
         }
 
-        mptbm_price_calculation(parent);
+        mpcrbm_price_calculation(parent);
         checkAndToggleBookNowButton(parent);
     });
 
     // Price calculation function
-    function mptbm_price_calculation(parent) {
-        let target_summary = parent.find(".mptbm_transport_summary");
+    function mpcrbm_price_calculation(parent) {
+        let target_summary = parent.find(".mpcrbm_transport_summary");
         let total = 0;
-        let post_id = parseInt(parent.find('[name="mptbm_post_id"]').val());
+        let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
         if (post_id > 0) {
-            total = total + parseFloat(parent.find('[name="mptbm_post_id"]').attr("data-price"));
-            parent.find(".mptbm_extra_service_item").each(function () {
-                let service_name = jQuery(this).find('[name="mptbm_extra_service[]"]').val();
+            total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+            parent.find(".mpcrbm_extra_service_item").each(function () {
+                let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
                 if (service_name) {
-                    let ex_target = jQuery(this).find('[name="mptbm_extra_service_qty[]');
+                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]');
                     let ex_qty = parseInt(ex_target.val());
                     let ex_price = ex_target.data("price");
                     ex_price = ex_price && ex_price > 0 ? ex_price : 0;
@@ -671,28 +671,28 @@ jQuery(document).ready(function($) {
                 }
             });
         }
-        target_summary.find(".mptbm_product_total_price").html(mpcrbm_price_format(total));
+        target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
 
     // Handle taxi return and waiting time changes
-    $(document).on("change", ".mptbm_transport_search_area [name='mptbm_taxi_return'], .mptbm_transport_search_area [name='mptbm_waiting_time']", function() {
-            let parent = $(this).closest(".mptbm_transport_search_area");
-        mptbm_content_refresh(parent);
+    $(document).on("change", ".mpcrbm_transport_search_area [name='mpcrbm_taxi_return'], .mpcrbm_transport_search_area [name='mpcrbm_waiting_time']", function() {
+            let parent = $(this).closest(".mpcrbm_transport_search_area");
+        mpcrbm_content_refresh(parent);
     });
 
     // Handle Book Now button click
-    $(document).on("click", ".mptbm_book_now[type='button']", function() {
-        let parent = $(this).closest('.mptbm_transport_search_area');
-        let target_checkout = parent.find('.mptbm_checkout_area');
-        let start_place = parent.find('[name="mptbm_start_place"]').val();
-        let end_place = parent.find('[name="mptbm_end_place"]').val();
-        let mptbm_waiting_time = parent.find('[name="mptbm_waiting_time"]').val();
-        let mptbm_taxi_return = parent.find('[name="mptbm_taxi_return"]').val();
-        let return_target_date = parent.find("#mptbm_map_return_date").val();
-        let return_target_time = parent.find("#mptbm_map_return_time").val();
-        let mptbm_fixed_hours = parent.find('[name="mptbm_fixed_hours"]').val();
-        let post_id = parent.find('[name="mptbm_post_id"]').val();
-        let date = parent.find('[name="mptbm_date"]').val();
+    $(document).on("click", ".mpcrbm_book_now[type='button']", function() {
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
+        let target_checkout = parent.find('.mpcrbm_checkout_area');
+        let start_place = parent.find('[name="mpcrbm_start_place"]').val();
+        let end_place = parent.find('[name="mpcrbm_end_place"]').val();
+        let mpcrbm_waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
+        let mpcrbm_taxi_return = parent.find('[name="mpcrbm_taxi_return"]').val();
+        let return_target_date = parent.find("#mpcrbm_map_return_date").val();
+        let return_target_time = parent.find("#mpcrbm_map_return_time").val();
+        let mpcrbm_fixed_hours = parent.find('[name="mpcrbm_fixed_hours"]').val();
+        let post_id = parent.find('[name="mpcrbm_post_id"]').val();
+        let date = parent.find('[name="mpcrbm_date"]').val();
         let link_id = $(this).attr('data-wc_link_id');
 
         if (start_place !== '' && end_place !== '' && link_id && post_id) {
@@ -701,11 +701,11 @@ jQuery(document).ready(function($) {
             let count = 0;
             
             // Collect extra service data
-            parent.find('[name="mptbm_extra_service[]"]').each(function() {
+            parent.find('[name="mpcrbm_extra_service[]"]').each(function() {
                 let ex_name = $(this).val();
                 if (ex_name) {
                     extra_service_name[count] = ex_name;
-                    let ex_qty = parseInt($(this).closest('.mptbm_extra_service_item').find('[name="mptbm_extra_service_qty[]"]').val());
+                    let ex_qty = parseInt($(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service_qty[]"]').val());
                     ex_qty = ex_qty > 0 ? ex_qty : 1;
                     extra_service_qty[count] = ex_qty;
                     count++;
@@ -715,31 +715,31 @@ jQuery(document).ready(function($) {
             // Make AJAX request to add to cart
             $.ajax({
                 type: 'POST',
-                url: mptbm_ajax.ajax_url,
+                url: mpcrbm_ajax.ajax_url,
                 data: {
-                    action: "mpcrm_add_to_cart",
+                    action: "mpcrbm_add_to_cart",
                     link_id: link_id,
-                    mptbm_start_place: start_place,
-                    mptbm_end_place: end_place,
-                    mptbm_waiting_time: mptbm_waiting_time,
-                    mptbm_taxi_return: mptbm_taxi_return,
-                    mptbm_fixed_hours: mptbm_fixed_hours,
-                    mptbm_date: date,
-                    mptbm_return_date: return_target_date,
-                    mptbm_return_time: return_target_time,
-                    mptbm_extra_service: extra_service_name,
-                    mptbm_extra_service_qty: extra_service_qty,
-                    mptbm_transportation_type_nonce: mptbm_ajax.nonce
+                    mpcrbm_start_place: start_place,
+                    mpcrbm_end_place: end_place,
+                    mpcrbm_waiting_time: mpcrbm_waiting_time,
+                    mpcrbm_taxi_return: mpcrbm_taxi_return,
+                    mpcrbm_fixed_hours: mpcrbm_fixed_hours,
+                    mpcrbm_date: date,
+                    mpcrbm_return_date: return_target_date,
+                    mpcrbm_return_time: return_target_time,
+                    mpcrbm_extra_service: extra_service_name,
+                    mpcrbm_extra_service_qty: extra_service_qty,
+                    mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
                 beforeSend: function() {
                     mpcrbm_loader(parent.find('.tabsContentNext'));
                 },
                 success: function(data) {
                     if ($('<div />', { html: data }).find("div").length > 0) {
-                        var mptbmTemplateExists = $(".mptbm-show-search-result").length;
-                        if (mptbmTemplateExists) {
-                            $(".mptbm_map_search_result").css("display", "none");
-                            $(".mptbm_order_summary").css("display", "block");
+                        var mpcrbmTemplateExists = $(".mpcrbm-show-search-result").length;
+                        if (mpcrbmTemplateExists) {
+                            $(".mpcrbm_map_search_result").css("display", "none");
+                            $(".mpcrbm_order_summary").css("display", "block");
                             $(".step-place-order").addClass('active');
                         }
                         target_checkout.html(data).promise().done(function() {
@@ -769,9 +769,9 @@ jQuery(document).ready(function($) {
     });
 
     // Handle Previous button click
-    $(document).on("click", ".mptbm_get_vehicle_prev", function() {
-        var mptbmTemplateExists = $(".mptbm-show-search-result").length;
-        if (mptbmTemplateExists) {
+    $(document).on("click", ".mpcrbm_get_vehicle_prev", function() {
+        var mpcrbmTemplateExists = $(".mpcrbm-show-search-result").length;
+        if (mpcrbmTemplateExists) {
             // Function to retrieve cookie value by name
             function getCookie(name) {
                 var cookies = document.cookie.split(";");
@@ -796,21 +796,21 @@ jQuery(document).ready(function($) {
             deleteCookie("httpReferrer");
             window.location.href = httpReferrerValue;
         } else {
-            let parent = $(this).closest(".mptbm_transport_search_area");
+            let parent = $(this).closest(".mpcrbm_transport_search_area");
             parent.find(".get_details_next_link").slideDown("fast");
             parent.find(".nextTab_prev").trigger("click");
         }
     });
 
     // Handle Summary Previous button click
-    $(document).on("click", ".mptbm_summary_prev", function() {
-        let mptbmTemplateExists = $(".mptbm-show-search-result").length;
-        if (mptbmTemplateExists) {
-            $(".mptbm_order_summary").css("display", "none");
-            $(".mptbm_map_search_result").css("display", "block").hide().slideDown("slow");
+    $(document).on("click", ".mpcrbm_summary_prev", function() {
+        let mpcrbmTemplateExists = $(".mpcrbm-show-search-result").length;
+        if (mpcrbmTemplateExists) {
+            $(".mpcrbm_order_summary").css("display", "none");
+            $(".mpcrbm_map_search_result").css("display", "block").hide().slideDown("slow");
             $(".step-place-order").removeClass("active");
         } else {
-            let parent = $(this).closest(".mptbm_transport_search_area");
+            let parent = $(this).closest(".mpcrbm_transport_search_area");
             parent.find(".nextTab_prev").trigger("click");
         }
     });
@@ -818,17 +818,17 @@ jQuery(document).ready(function($) {
 });
 
 // Helper functions
-function mptbm_content_refresh(parent) {
-    jQuery(parent).find('[name="mptbm_post_id"]').val("");
-    jQuery(parent).find(".mptbm_map_search_result").remove();
-    jQuery(parent).find(".mptbm_order_summary").remove();
+function mpcrbm_content_refresh(parent) {
+    jQuery(parent).find('[name="mpcrbm_post_id"]').val("");
+    jQuery(parent).find(".mpcrbm_map_search_result").remove();
+    jQuery(parent).find(".mpcrbm_order_summary").remove();
     jQuery(parent).find(".get_details_next_link").slideUp("fast");
 }
 
 function checkAndToggleBookNowButton(parent) {
     var $parent = jQuery(parent);
-    var hasSelectedVehicle = $parent.find('.mptbm_transport_select.active_select').length > 0;
-    var $bookNowButton = $parent.find('.mptbm_book_now[type="button"]');
+    var hasSelectedVehicle = $parent.find('.mpcrbm_transport_select.active_select').length > 0;
+    var $bookNowButton = $parent.find('.mpcrbm_book_now[type="button"]');
     
     if (hasSelectedVehicle) {
         $bookNowButton.show();

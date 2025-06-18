@@ -9,8 +9,8 @@
 
 	// Verify nonce
 	if (
-		!isset($_POST['mptbm_transportation_type_nonce']) || 
-		!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')
+		!isset($_POST['mpcrbm_transportation_type_nonce']) || 
+		!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_transportation_type_nonce'])), 'mpcrbm_transportation_type_nonce')
 	) {
 		wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
 		wp_die();
@@ -31,11 +31,11 @@
 	if (!empty($end_locations)) {
 		?>
 		<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'car-rental-manager'); ?></span>
-		<select class="formControl mptbm_map_end_place" id="mptbm_manual_end_place">
+		<select class="formControl mpcrbm_map_end_place" id="mpcrbm_manual_end_place">
 			<option selected disabled><?php esc_html_e('Select Return Location', 'car-rental-manager'); ?></option>
 			<?php foreach ($end_locations as $location) { ?>
 				<option value="<?php echo esc_attr($location); ?>">
-					<?php echo esc_html(MPCRBM_Function::mpcrm_get_taxonomy_name_by_slug($location, 'mpcrm_locations')); ?>
+					<?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($location, 'mpcrbm_locations')); ?>
 				</option>
 			<?php } ?>
 		</select>

@@ -13,10 +13,10 @@ $days_name = array_keys($days);
 $schedule = [];
 
 
-function mpcrm_check_operation_area($post_id, $start_place, $end_place)
+function mpcrbm_check_operation_area($post_id, $start_place, $end_place)
 {
     // Retrieve saved locations from post meta
-    $saved_locations = get_post_meta($post_id, 'mptbm_terms_price_info', true);
+    $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
 
     // Ensure $saved_locations is an array
     if (!is_array($saved_locations) || empty($saved_locations)) {
@@ -53,7 +53,7 @@ function mpcrm_check_operation_area($post_id, $start_place, $end_place)
 }
 
 
-function mpcrm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
+function mpcrbm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based)
 {
     // Validate inputs
     $post_id = absint($post_id);
@@ -74,7 +74,7 @@ function mpcrm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
     $price_based = sanitize_text_field($price_based);
     
     // Check if available for all time
-    $available_all_time = get_post_meta($post_id, 'mptbm_available_for_all_time', true);
+    $available_all_time = get_post_meta($post_id, 'mpcrbm_available_for_all_time', true);
     if ($available_all_time === 'on') {
         return true;
     }
@@ -88,15 +88,15 @@ function mpcrm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
         $name = sanitize_text_field($name);
         
         // Get start time
-        $start_time = get_post_meta($post_id, "mptbm_" . $name . "_start_time", true);
+        $start_time = get_post_meta($post_id, "mpcrbm_" . $name . "_start_time", true);
         if ($start_time === '') {
-            $start_time = get_post_meta($post_id, "mptbm_default_start_time", true);
+            $start_time = get_post_meta($post_id, "mpcrbm_default_start_time", true);
         }
         
         // Get end time
-        $end_time = get_post_meta($post_id, "mptbm_" . $name . "_end_time", true);
+        $end_time = get_post_meta($post_id, "mpcrbm_" . $name . "_end_time", true);
         if ($end_time === '') {
-            $end_time = get_post_meta($post_id, "mptbm_default_end_time", true);
+            $end_time = get_post_meta($post_id, "mpcrbm_default_end_time", true);
         }
         
         // Only add to schedule if both times are set
@@ -142,8 +142,8 @@ function mpcrm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
     }
 
     if ($all_empty) {
-        $default_start_time = get_post_meta($post_id, "mptbm_default_start_time", true);
-        $default_end_time = get_post_meta($post_id, "mptbm_default_end_time", true);
+        $default_start_time = get_post_meta($post_id, "mpcrbm_default_start_time", true);
+        $default_end_time = get_post_meta($post_id, "mpcrbm_default_end_time", true);
         
         if ($default_start_time !== "" && $default_end_time !== "") {
             if ($return_time_schedule !== "") {
@@ -167,8 +167,8 @@ function mpcrm_get_schedule($post_id, $days_name, $selected_day, $start_time_sch
 
 // Verify nonce
 if (
-    !isset($_POST['mptbm_transportation_type_nonce']) || 
-    !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')
+    !isset($_POST['mpcrbm_transportation_type_nonce']) || 
+    !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_transportation_type_nonce'])), 'mpcrbm_transportation_type_nonce')
 ) {
     wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
     wp_die();
@@ -208,7 +208,7 @@ if ($start_time !== "") {
             wp_die();
         }
 
-        $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+        $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time');
         
         // Calculate minutes based on interval time
         if ($interval_time == "5" || $interval_time == "15") {
@@ -301,7 +301,7 @@ if ($two_way > 1) {
                 wp_die();
             }
 
-            $interval_time = MPCRBM_Function::mpcrm_get_general_settings('mptbm_pickup_interval_time');
+            $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time');
             
             // Calculate minutes based on interval time
             if ($interval_time == "5" || $interval_time == "15") {
@@ -345,49 +345,49 @@ if (MPCRBM_Global_Function::get_settings("mpcrbm_general_settings", "enable_filt
 }
 
 // Get available vehicles
-$mptbm_bags = [];
-$mptbm_passengers = [];
-$mptbm_all_transport_id = MPCRBM_Global_Function::mpcrm_get_all_post_id('mpcrbm_rent');
+$mpcrbm_bags = [];
+$mpcrbm_passengers = [];
+$mpcrbm_all_transport_id = MPCRBM_Global_Function::get_all_post_id('mpcrbm_rent');
 
-if (!empty($mptbm_all_transport_id)) {
-    foreach ($mptbm_all_transport_id as $value) {
+if (!empty($mpcrbm_all_transport_id)) {
+    foreach ($mpcrbm_all_transport_id as $value) {
         if ($value && get_post($value)) {
-            $mptbm_bags[] = MPCRBM_Function::mpcrm_get_feature_bag($value);
-            $mptbm_passengers[] = MPCRBM_Function::mpcrm_get_feature_passenger($value);
+            $mpcrbm_bags[] = MPCRBM_Global_Function::get_post_info($value,'mpcrbm_maximum_bag',0);
+            $mpcrbm_passengers[] = MPCRBM_Global_Function::get_post_info($value,'mpcrbm_maximum_passenger',0);
         }
     }
 }
 
-$mptbm_bags = !empty($mptbm_bags) ? max($mptbm_bags) : 0;
-$mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
+$mpcrbm_bags = !empty($mpcrbm_bags) ? max($mpcrbm_bags) : 0;
+$mpcrbm_passengers = !empty($mpcrbm_passengers) ? max($mpcrbm_passengers) : 0;
 ?>
-<div data-tabs-next="#mptbm_search_result" class="mptbm_map_search_result">
-    <input type="hidden" name="mptbm_post_id" value="" data-price="" />
-    <input type="hidden" name="mptbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
-    <input type="hidden" name="mptbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
-    <input type="hidden" name="mptbm_date" value="<?php echo esc_attr($date); ?>" />
-    <input type="hidden" name="mptbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
+<div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result">
+    <input type="hidden" name="mpcrbm_post_id" value="" data-price="" />
+    <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
+    <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
+    <input type="hidden" name="mpcrbm_date" value="<?php echo esc_attr($date); ?>" />
+    <input type="hidden" name="mpcrbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
 
-    <input type="hidden" name="mptbm_map_return_date" id="mptbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
-    <input type="hidden" name="mptbm_map_return_time" id="mptbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
+    <input type="hidden" name="mpcrbm_map_return_date" id="mpcrbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
+    <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
 
 
-    <div class="mp_sticky_section">
+    <div class="sticky_section">
         <div class="flexWrap">
 
             <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
-                <div class="mp_sticky_depend_area fdColumn">
+                <div class="sticky_depend_area fdColumn">
                     <!-- Filter area start -->
                     <?php if (MPCRBM_Global_Function::get_settings("mpcrbm_general_settings", "enable_filter_via_features") == "yes") { ?>
-                        <div class="_dLayout_dFlex_fdColumn_btLight_2 mptbm-filter-feature">
-                            <div class="mptbm-filter-feature-input">
+                        <div class="_dLayout_dFlex_fdColumn_btLight_2 mpcrbm-filter-feature">
+                            <div class="mpcrbm-filter-feature-input">
                                 <span><i class="fas fa-users _textTheme_mR_xs"></i><?php esc_html_e("Number Of Passengers", "car-rental-manager"); ?></span>
                                 <label>
-                                    <select id="mptbm_passenger_number" class="formControl" name="mptbm_passenger_number">
+                                    <select id="mpcrbm_passenger_number" class="formControl" name="mpcrbm_passenger_number">
                                         <?php
-                                        for ($i = 0; $i <= $mptbm_passengers; $i++) {
+                                        for ($i = 0; $i <= $mpcrbm_passengers; $i++) {
                                             echo '<option value="' . esc_html($i) . '">' .  esc_html($i) . '</option>';
                                         }
                                         ?>
@@ -395,12 +395,12 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
 
                                 </label>
                             </div>
-                            <div class="mptbm-filter-feature-input">
+                            <div class="mpcrbm-filter-feature-input">
                                 <span><i class="fa  fa-shopping-bag _textTheme_mR_xs"></i><?php esc_html_e("Number Of Bags", "car-rental-manager"); ?></span>
                                 <label>
-                                    <select id="mptbm_shopping_number" class="formControl" name="mptbm_shopping_number">
+                                    <select id="mpcrbm_shopping_number" class="formControl" name="mpcrbm_shopping_number">
                                         <?php
-                                        for ($i = 0; $i <= $mptbm_bags; $i++) {
+                                        for ($i = 0; $i <= $mpcrbm_bags; $i++) {
                                             echo '<option value="' . esc_html($i) . '">' .  esc_html($i) . '</option>';
                                         }
                                         ?>
@@ -414,7 +414,7 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
                     <!-- Filter area end -->
                     <?php
 
-                    $all_posts = MPTBM_Query::query_transport_list($price_based);
+                    $all_posts = MPCRBM_Query::query_transport_list($price_based);
 
                     if ($all_posts->found_posts > 0) {
                         $posts = $all_posts->posts;
@@ -423,8 +423,8 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
                         foreach ($posts as $post) {
 
                             $post_id = $post->ID;
-                            $check_schedule = mpcrm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
-                            $check_operation_area = mpcrm_check_operation_area($post_id, $start_place, $end_place);
+                            $check_schedule = mpcrbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
+                            $check_operation_area = mpcrbm_check_operation_area($post_id, $start_place, $end_place);
                             
                            
                             if ($check_schedule && $check_operation_area) {
@@ -444,18 +444,18 @@ $mptbm_passengers = !empty($mptbm_passengers) ? max($mptbm_passengers) : 0;
                     <div class="_dLayout_mT_bgWarning geo-fence-no-transport">
                         <h3><?php esc_html_e("No Transport Available !!", "car-rental-manager"); ?></h3>
                     </div>
-                    <div class="mptbm_extra_service"></div>
+                    <div class="mpcrbm_extra_service"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<div data-tabs-next="#mptbm_order_summary" class="mptbm_order_summary">
-    <div class="mp_sticky_section">
+<div data-tabs-next="#mpcrbm_order_summary" class="mpcrbm_order_summary">
+    <div class="sticky_section">
         <div class="flexWrap">
             <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
-                <div class="mp_sticky_depend_area fdColumn mptbm_checkout_area">
+                <div class="sticky_depend_area fdColumn mpcrbm_checkout_area">
                 </div>
             </div>
         </div>

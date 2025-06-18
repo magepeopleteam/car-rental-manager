@@ -5,10 +5,10 @@
     $(document).ready(function () {
       $(document).on(
         "change",
-        "#mptbm_shopping_number, #mptbm_passenger_number",
+        "#mpcrbm_shopping_number, #mpcrbm_passenger_number",
         function () {
-          let shoppingNumber = parseInt($("#mptbm_shopping_number").val());
-          let passengerNumber = parseInt($("#mptbm_passenger_number").val());
+          let shoppingNumber = parseInt($("#mpcrbm_shopping_number").val());
+          let passengerNumber = parseInt($("#mpcrbm_passenger_number").val());
 
           let elements = document.querySelectorAll(
             "*[class*='feature_passenger_']"
@@ -47,11 +47,11 @@
     });
 
 
-    var mptbmTemplateExists = $(".mptbm-show-search-result").length;
+    var mpcrbmTemplateExists = $(".mpcrbm-show-search-result").length;
     
-    if (mptbmTemplateExists) {
+    if (mpcrbmTemplateExists) {
       
-      $(".mptbm_order_summary").css("display", "none");
+      $(".mpcrbm_order_summary").css("display", "none");
       function getCookiesWithPrefix(prefix) {
         const cookies = document.cookie.split(";");
         const filteredCookies = cookies.filter((cookie) =>
@@ -59,10 +59,10 @@
         );
         return filteredCookies.map((cookie) => cookie.trim().split("=")[0]);
       }
-      const cookieIds = getCookiesWithPrefix(".mptbm_booking_item_");
+      const cookieIds = getCookiesWithPrefix(".mpcrbm_booking_item_");
 
       function addClassFromElements() {
-        $(".mptbm_booking_item").each(function () {
+        $(".mpcrbm_booking_item").each(function () {
           const $this = $(this);
           let hasCookieId = false;
           for (let i = 0; i < cookieIds.length; i++) {
@@ -73,7 +73,7 @@
             }
           }
           if (!hasCookieId) {
-            $this.addClass("mptbm_booking_item_hidden");
+            $this.addClass("mpcrbm_booking_item_hidden");
           }
         });
       }

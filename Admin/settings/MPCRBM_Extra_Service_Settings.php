@@ -7,11 +7,11 @@ if (!defined('ABSPATH')) {
     die;
 } // Cannot access pages directly.
 
-if (!class_exists('MPTBM_Extra_Service_Settings')) {
-    class MPTBM_Extra_Service_Settings {
+if (!class_exists('MPCRBM_Extra_Service_Settings')) {
+    class MPCRBM_Extra_Service_Settings {
         public function __construct() {
             add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
-            add_action('mpcrm_settings_tab_content', array($this, 'extra_service_settings_tab'), 10, 1);
+            add_action('mpcrbm_settings_tab_content', array($this, 'extra_service_settings_tab'), 10, 1);
             add_action('save_post', array($this, 'save_extra_service_settings'), 10, 1);
         }
 
@@ -20,9 +20,9 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
             $default_fields = is_array($default_fields) ? $default_fields : array();
             
             $settings_fields = array(
-                'mptbm_extra_service_settings' => array(
+                'mpcrbm_extra_service_settings' => array(
                     array(
-                        'name' => 'display_mptbm_extra_services',
+                        'name' => 'display_mpcrbm_extra_services',
                         'label' => esc_html__('Display Extra Services', 'car-rental-manager'),
                         'desc' => esc_html__('Enable/Disable extra services display', 'car-rental-manager'),
                         'type' => 'select',
@@ -33,7 +33,7 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
                         )
                     ),
                     array(
-                        'name' => 'mptbm_extra_services_id',
+                        'name' => 'mpcrbm_extra_services_id',
                         'label' => esc_html__('Extra Services', 'car-rental-manager'),
                         'desc' => esc_html__('Select predefined extra services or create custom ones', 'car-rental-manager'),
                         'type' => 'select',
@@ -52,7 +52,7 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
             );
             
             $extra_services = get_posts(array(
-                'post_type' => 'mpcrm_extra_services',
+                'post_type' => 'mpcrbm_extra_services',
                 'posts_per_page' => -1,
                 'post_status' => 'publish'
             ));
@@ -69,14 +69,14 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
                 return;
             }
 
-            wp_nonce_field('mptbm_save_extra_service_settings', 'mptbm_extra_service_nonce');
+            wp_nonce_field('mpcrbm_save_extra_service_settings', 'mpcrbm_extra_service_nonce');
             
-            $display = get_post_meta($post_id, 'display_mptbm_extra_services', true) ?: 'on';
-            $service_id = get_post_meta($post_id, 'mptbm_extra_services_id', true) ?: '';
+            $display = get_post_meta($post_id, 'display_mpcrbm_extra_services', true) ?: 'on';
+            $service_id = get_post_meta($post_id, 'mpcrbm_extra_services_id', true) ?: '';
             $active = $display === 'off' ? '' : 'mActive';
             $checked = $display === 'off' ? '' : 'checked';
             ?>
-            <div class="tabsItem mptbm_extra_services_setting" data-tabs="#mptbm_settings_ex_service">
+            <div class="tabsItem mpcrbm_extra_services_setting" data-tabs="#mpcrbm_settings_ex_service">
                 <h2><?php esc_html_e('Extra Service Settings', 'car-rental-manager'); ?></h2>
                 <p><?php esc_html_e('Configure extra services for this vehicle', 'car-rental-manager'); ?></p>
 
@@ -91,18 +91,18 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
                             <h6><?php esc_html_e('Display Extra Services', 'car-rental-manager'); ?></h6>
                             <span class="desc"><?php esc_html_e('Enable or disable extra services for this vehicle', 'car-rental-manager'); ?></span>
                         </div>
-                        <?php MPCRBM_Custom_Layout::switch_button('display_mptbm_extra_services', $checked); ?>
+                        <?php MPCRBM_Custom_Layout::switch_button('display_mpcrbm_extra_services', $checked); ?>
                     </label>
                 </section>
 
-                <div data-collapse="#display_mptbm_extra_services" class="mp_settings_area <?php echo esc_attr($active); ?>">
+                <div data-collapse="#display_mpcrbm_extra_services" class="settings_area <?php echo esc_attr($active); ?>">
                     <section>
                         <label class="label">
                             <div>
                                 <h6><?php esc_html_e('Select Extra Services', 'car-rental-manager'); ?></h6>
                                 <span class="desc"><?php esc_html_e('Choose from predefined extra services or create custom ones', 'car-rental-manager'); ?></span>
                             </div>
-                            <select class="formControl" name="mptbm_extra_services_id">
+                            <select class="formControl" name="mpcrbm_extra_services_id">
                                 <?php foreach ($this->get_extra_services_options() as $value => $label) : ?>
                                     <option value="<?php echo esc_attr($value); ?>" <?php selected($service_id, $value); ?>>
                                         <?php echo esc_html($label); ?>
@@ -129,21 +129,21 @@ if (!class_exists('MPTBM_Extra_Service_Settings')) {
                 return;
             }
 
-            if (!isset($_POST['mptbm_extra_service_nonce']) || 
-                !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_extra_service_nonce'])), 'mptbm_save_extra_service_settings')) {
+            if (!isset($_POST['mpcrbm_extra_service_nonce']) ||
+                !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_extra_service_nonce'])), 'mpcrbm_save_extra_service_settings')) {
                 return;
             }
 
-            $display = isset($_POST['display_mptbm_extra_services']) ? 'on' : 'off';
-            update_post_meta($post_id, 'display_mptbm_extra_services', $display);
+            $display = isset($_POST['display_mpcrbm_extra_services']) ? 'on' : 'off';
+            update_post_meta($post_id, 'display_mpcrbm_extra_services', $display);
 
-            if (isset($_POST['mptbm_extra_services_id'])) {
-                $service_id = sanitize_text_field(wp_unslash($_POST['mptbm_extra_services_id']));
-                update_post_meta($post_id, 'mptbm_extra_services_id', $service_id);
+            if (isset($_POST['mpcrbm_extra_services_id'])) {
+                $service_id = sanitize_text_field(wp_unslash($_POST['mpcrbm_extra_services_id']));
+                update_post_meta($post_id, 'mpcrbm_extra_services_id', $service_id);
             }
         }
     }
-    new MPTBM_Extra_Service_Settings();
+    new MPCRBM_Extra_Service_Settings();
 }
 ?>
 <?php do_action('mpcrbm_settings_sec_fields'); ?> 

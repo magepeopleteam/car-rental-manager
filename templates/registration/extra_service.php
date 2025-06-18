@@ -5,8 +5,8 @@ if (!defined('ABSPATH')) {
 
 // Verify nonce
 if (
-	!isset($_POST['mptbm_transportation_type_nonce']) || 
-	!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')
+	!isset($_POST['mpcrbm_transportation_type_nonce']) || 
+	!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_transportation_type_nonce'])), 'mpcrbm_transportation_type_nonce')
 ) {
 	wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
 	wp_die();
@@ -26,10 +26,10 @@ if (!current_user_can('read_post', $post_id)) {
 }
 
 // Get service data
-$link_wc_product = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'link_wc_product');
-$display_extra_services = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-$service_id = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-$extra_services = MPCRBM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
+$link_wc_product = MPCRBM_Global_Function::get_post_info($post_id, 'link_wc_product');
+$display_extra_services = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_extra_services', 'on');
+$service_id = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_extra_services_id', $post_id);
+$extra_services = MPCRBM_Global_Function::get_post_info($service_id, 'mpcrbm_extra_service_infos', []);
 
 if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 ?>
@@ -57,11 +57,11 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 				$service_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
 				$ex_unique_id = '#ex_service_' . uniqid();
 			?>
-				<div class="dFlex mptbm_extra_service_item">
+				<div class="dFlex mpcrbm_extra_service_item">
 					<?php if ($service_image) { ?>
 						<div class="service_img_area alignCenter">
 							<div class="bg_image_area">
-								<div data-bg-image="<?php echo esc_attr(MPCRBM_Global_Function::mpcrm_get_image_url('', $service_image, 'medium')); ?>"></div>
+								<div data-bg-image="<?php echo esc_attr(MPCRBM_Global_Function::get_image_url('', $service_image, 'medium')); ?>"></div>
 							</div>
 						</div>
 					<?php } ?>
@@ -80,10 +80,10 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 							<div>
 								<div class="justifyEnd">
 									<div class="_mR_min_100" data-collapse="<?php echo esc_attr($ex_unique_id); ?>">
-										<?php MPCRBM_Custom_Layout::qty_input('mptbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
+										<?php MPCRBM_Custom_Layout::qty_input('mpcrbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
 									</div>
-									<button type="button" class="_mpBtn_dBR_min_150 mptbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">
-										<input type="hidden" name="mptbm_extra_service[]" data-value="<?php echo esc_attr($service_name); ?>" value="" />
+									<button type="button" class="_mpBtn_dBR_min_150 mpcrbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">
+										<input type="hidden" name="mpcrbm_extra_service[]" data-value="<?php echo esc_attr($service_name); ?>" value="" />
 										<span data-text><?php esc_html_e('Select', 'car-rental-manager'); ?></span>
 										<span data-icon class="mL_xs"></span>
 									</button>
@@ -99,7 +99,7 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 	<div class="divider"></div>
 	<div class="justifyBetween">
 		<div></div>
-		<button class="_successButton_min_200 mptbm_book_now" style="display:none;" type="button" data-wc_link_id="<?php echo esc_attr($link_wc_product); ?>">
+		<button class="_successButton_min_200 mpcrbm_book_now" style="display:none;" type="button" data-wc_link_id="<?php echo esc_attr($link_wc_product); ?>">
 			<span class="fas fa-cart-plus _mR_xs"></span>
 			<?php esc_html_e('Book Now', 'car-rental-manager'); ?>
 		</button>

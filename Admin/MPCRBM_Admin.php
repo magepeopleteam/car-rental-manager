@@ -6,12 +6,12 @@
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
-	if ( ! class_exists( 'MPTBM_Admin' ) ) {
-		class MPTBM_Admin {
+	if ( ! class_exists( 'MPCRBM_Admin' ) ) {
+		class MPCRBM_Admin {
 			public function __construct() {
 				if ( is_admin() ) {
 					$this->load_file();
-					add_action( 'init', [ $this, 'mpcrm_add_dummy_data' ] );
+					add_action( 'init', [ $this, 'add_dummy_data' ] );
 					add_filter( 'use_block_editor_for_post_type', [ $this, 'disable_gutenberg' ], 10, 2 );
 					add_filter( 'wp_mail_content_type', array( $this, 'email_content_type' ) );
 					add_action( 'upgrader_process_complete', [ $this, 'flush_rewrite' ], 0 );
@@ -23,27 +23,27 @@
 			}
 
 			private function load_file(): void {
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_Dummy_Import.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_Hidden_Product.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_CPT.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Dummy_Import.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Hidden_Product.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_CPT.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Quick_Setup.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_Status.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_Guideline.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_License.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Status.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Guideline.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_License.php';
 				//****************Global settings************************//
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Settings_Global.php';
 				//****************Taxi settings************************//
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPTBM_Settings.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPTBM_General_Settings.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPTBM_Price_Settings.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPTBM_Extra_Service.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPTBM_Date_Settings.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPTBM_Tax_Settings.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPTBM_Operation_Area_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_General_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Price_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Extra_Service.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Date_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Tax_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Operation_Area_Settings.php';
 			}
 
-			public function mpcrm_add_dummy_data() {
-				new MPTBM_Dummy_Import();
+			public function add_dummy_data() {
+				new MPCRBM_Dummy_Import();
 			}
 
 			//************Disable Gutenberg************************//
@@ -61,5 +61,5 @@
 				return "text/html";
 			}
 		}
-		new MPTBM_Admin();
+		new MPCRBM_Admin();
 	}

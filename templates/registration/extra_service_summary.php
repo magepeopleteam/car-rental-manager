@@ -9,8 +9,8 @@
 
 	// Verify nonce
 	if (
-		!isset($_POST['mptbm_transportation_type_nonce']) || 
-		!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mptbm_transportation_type_nonce'])), 'mptbm_transportation_type_nonce')
+		!isset($_POST['mpcrbm_transportation_type_nonce']) || 
+		!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_transportation_type_nonce'])), 'mpcrbm_transportation_type_nonce')
 	) {
 		wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
 		wp_die();
@@ -30,9 +30,9 @@
 	}
 
 	// Get service data
-	$display_extra_services = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'display_mptbm_extra_services', 'on');
-	$service_id = MPCRBM_Global_Function::mpcrm_get_post_info($post_id, 'mptbm_extra_services_id', $post_id);
-	$extra_services = MPCRBM_Global_Function::mpcrm_get_post_info($service_id, 'mptbm_extra_service_infos', []);
+	$display_extra_services = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_extra_services', 'on');
+	$service_id = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_extra_services_id', $post_id);
+	$extra_services = MPCRBM_Global_Function::get_post_info($service_id, 'mpcrbm_extra_service_infos', []);
 
 	if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 	?>

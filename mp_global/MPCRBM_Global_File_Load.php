@@ -12,8 +12,8 @@
 				$this->load_global_file();
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ), 80 );
 				add_action( 'wp_enqueue_scripts', array( $this, 'frontend_enqueue' ), 80 );
-				add_action( 'admin_head', array( $this, 'mpcrm_admin_head' ), 5 );
-				add_action( 'wp_head', array( $this, 'mpcrm_frontend_head' ), 5 );
+				add_action( 'admin_head', array( $this, 'mpcrbm_admin_head' ), 5 );
+				add_action( 'wp_head', array( $this, 'mpcrbm_frontend_head' ), 5 );
 			}
 			public function load_global_file() {
 				require_once MPCRBM_PLUGIN_DIR . '/mp_global/class/MPCRBM_Global_Function.php';
@@ -35,9 +35,9 @@
 				wp_enqueue_style('mp_owl_carousel', MPCRBM_PLUGIN_URL . '/mp_global/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4');
 				wp_enqueue_script('mp_owl_carousel', MPCRBM_PLUGIN_URL . '/mp_global/assets/owl_carousel/owl.carousel.min.js', array(), '2.3.4');
 				// Cache busting using file modification time
-				wp_enqueue_style('mpcrbm_global', MPCRBM_PLUGIN_URL . '/mp_global/assets/mp_style/mpcrbm_global.css', array(), filemtime( MPCRBM_PLUGIN_URL . '/mp_global/assets/mp_style/mpcrbm_global.css'));
-				wp_enqueue_script('mpcrbm_global', MPCRBM_PLUGIN_URL . '/mp_global/assets/mp_style/mpcrbm_global.js', array(), filemtime( MPCRBM_PLUGIN_URL . '/mp_global/assets/mp_style/mpcrbm_global.js'));
-				do_action( 'add_mpcrbm_global_enqueue' );
+				wp_enqueue_style('mpcrbm_global', MPCRBM_PLUGIN_URL . 'mp_global/assets/mp_style/mpcrbm_global.css', array(), filemtime( __DIR__ . '/assets/mp_style/mpcrbm_global.css'));
+				wp_enqueue_script('mpcrbm_global', MPCRBM_PLUGIN_URL . 'mp_global/assets/mp_style/mpcrbm_global.js', array(), filemtime( __DIR__ . '/assets/mp_style/mpcrbm_global.js'));
+				do_action( 'mpcrbm_global_enqueue' );
 			}
 
 			public function admin_enqueue() {
@@ -50,26 +50,26 @@
 				wp_enqueue_style( 'wp-codemirror' );
 				wp_enqueue_script( 'wp-codemirror' );
 				// Admin-specific styles and scripts
-				wp_enqueue_style('jquery-timepicker', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.css', array(), filemtime(MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.css'));
-				wp_enqueue_style('jquery-timepicker', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.js', array(), filemtime(MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.js'));
+				wp_enqueue_style('jquery-timepicker', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.css', array(), filemtime(__DIR__ . '/assets/admin/jquery.timepicker.min.css'));
+				wp_enqueue_style('jquery-timepicker', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.js', array(), filemtime(__DIR__ . '/assets/admin/jquery.timepicker.min.js'));
 				//=====================//
 				wp_enqueue_script('form-field-dependency', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/form-field-dependency.js', array('jquery'), null, false);
 				// admin setting global
-				wp_enqueue_script('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.js', array('jquery'), filemtime(MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.js'), true);
-				wp_enqueue_style('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.css', array(), filemtime(MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.css'));
-				do_action( 'add_mpcrbm_admin_enqueue' );
+				wp_enqueue_script('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.js', array('jquery'), filemtime(__DIR__ . '/assets/admin/mpcrbm_admin_settings.js'), true);
+				wp_enqueue_style('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.css', array(), filemtime(__DIR__ . '/assets/admin/mpcrbm_admin_settings.css'));
+				do_action( 'mpcrbm_admin_enqueue' );
 			}
 
 			public function frontend_enqueue() {
 				$this->global_enqueue();
-				do_action( 'add_mpcrbm_frontend_enqueue' );
+				do_action( 'mpcrbm_frontend_enqueue' );
 			}
 
-			public function mpcrm_admin_head() {
+			public function mpcrbm_admin_head() {
 				$this->js_constant();
 			}
 
-			public function mpcrm_frontend_head() {
+			public function mpcrbm_frontend_head() {
 				$this->js_constant();
 			}
 

@@ -1,4 +1,4 @@
-#mp_meta_box_panel{
+#mpcrbm_meta_box_panel{
     .postbox-header{
         background-color: $color-primary;
         .handle-actions{
@@ -15,7 +15,7 @@
         }
       }
     }
-    .mptbm_settings{
+    .mpcrbm_settings{
       background-color:  $color-white;
       .tabLists{
         width: 20%;
@@ -132,7 +132,7 @@
     }
 } 
 @media only screen and (min-width:0px) {
-    #mp_meta_box_panel .tabLists {
+    #mpcrbm_meta_box_panel .tabLists {
       border-right: 0px solid $color-light;
     }
 
@@ -187,7 +187,7 @@
     div.mpcrbm select.formControl:focus {
       background-color: $color-white;
     }
-    .mpcrbm .mp_remove_icon {
+    .mpcrbm .remove_icon {
       position: absolute;
       top: -5px;
       right: -5px;
@@ -197,14 +197,14 @@
       opacity: 1;
     }
     // settings page css==================
-    .mp_settings_panel_header {
+    .settings_panel_header {
       background: $color-secondary;
       padding: 2em;
       color: $color-white;
       font-size: 20px;
       margin-top: 30px;
     }
-    .mp_settings_panel{
+    .settings_panel{
       padding-bottom: .5em;
      .nav-tab-wrapper {
       background:$color-sky-light;
@@ -282,7 +282,7 @@
     
   }
 }
-#mp_meta_box_panel{
+#mpcrbm_meta_box_panel{
   h1{
     padding: 0;
     color: var(--mpl-secondary);
@@ -374,14 +374,14 @@ div > .ppof-metabox {
 }
 
 @media only screen and (min-width:0px) {
-  div.mp_multi_image {
+  div.multi_image {
     display: flex;
     flex-wrap: wrap;
     justify-content: start;
     align-items: stretch;
     gap: .5em;
     margin-bottom: .5em;
-    div.mp_multi_image_item {
+    div.multi_image_item {
       width: calc(25% - 7px);
       img{
         width: 100%;
@@ -417,12 +417,12 @@ div > .ppof-metabox {
 }
 
 
-div.mpcrbm span.mp_remove_multi_image {
+div.mpcrbm span.remove_multi_image {
   background-color:$color-black;
   color: $color-white;
   box-shadow: 0 0 5px $color-white;
 }
-div.mpcrbm span.mp_remove_multi_image{
+div.mpcrbm span.remove_multi_image{
   top:-7px;
   right:-7px;
 }
@@ -449,11 +449,11 @@ div.mpcrbm span.mp_remove_multi_image{
   }
 }
 
-div.mpcrbm_global_settings label .info_text{
+div.global_settings label .info_text{
   line-height: .9rem;
 }
 
-div.mpcrbm_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists{
+div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists{
   width: 25%;
 }
 
@@ -462,7 +462,7 @@ div.mpcrbm_global_settings .mpPanel .mpPanelBody .mpTabs .tabLists{
 }
 
 @media only screen and (min-width: 10px) {
-  div.mpcrbm .mp_sticky_area.mpSticky {
+  div.mpcrbm .sticky_area.mpSticky {
     position: relative;
   }
   div.mpcrbm span.selection{

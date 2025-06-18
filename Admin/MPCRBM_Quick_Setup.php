@@ -10,7 +10,7 @@
 		class MPCRBM_Quick_Setup {
 			public function __construct() {
 				add_action( 'admin_enqueue_scripts', function () {
-					wp_enqueue_script( 'mptbm-admin-mpcrbm_loader-script', plugin_dir_url( __FILE__ ) . '../assets/admin/mptbm_admin_mpcrbm_loader.js', array( 'jquery' ), time(), true );
+					wp_enqueue_script( 'mmpcrbm_admin_loader', plugin_dir_url( __FILE__ ) . '../assets/admin/mpcrbm_admin_loader.js', array( 'jquery' ), time(), true );
 				} );
 				add_action( 'admin_menu', array( $this, 'quick_setup_menu' ) );
 			}
@@ -69,7 +69,7 @@
 					$inline_script .= 'window.location.href = mpcrbm_admin_location;';
 					$inline_script .= '});';
 					$inline_script .= '})(jQuery);';
-					wp_add_inline_script( 'mptbm-admin-mpcrbm_loader-script', $inline_script );
+					wp_add_inline_script( 'mpcrbm-admin-mpcrbm_loader-script', $inline_script );
 				}
 				if ( isset( $_POST['install_and_active_woo_btn'] ) ) {
 					?>
@@ -128,19 +128,18 @@
 					$quick_setup_script .= 'window.location.href = mpcrbm_admin_location;';
 					$quick_setup_script .= '});';
 					$quick_setup_script .= '})(jQuery);';
-					wp_add_inline_script( 'mptbm-admin-mpcrbm_loader-script', $quick_setup_script );
+					wp_add_inline_script( 'mpcrbm-admin-mpcrbm_loader-script', $quick_setup_script );
 				}
 				if ( isset( $_POST['finish_quick_setup'] ) ) {
 					$label                       = isset( $_POST['mpcrbm_label'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_label'] ) ) : 'Car';
 					$slug                        = isset( $_POST['mpcrbm_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_slug'] ) ) : 'Car';
 					$general_settings_data       = get_option( 'mpcrbm_general_settings' );
 					$update_general_settings_arr = [
-						'mpcrbm_rent_label' => $label,
-						'mpcrbm_rent_slug'  => $slug
+						'label' => $label,
+						'slug'  => $slug
 					];
 					$new_general_settings_data   = is_array( $general_settings_data ) ? array_replace( $general_settings_data, $update_general_settings_arr ) : $update_general_settings_arr;
 					update_option( 'mpcrbm_general_settings', $new_general_settings_data );
-					update_option( 'mpcrbm_basic_gen_settings', $new_general_settings_data );
 					update_option( 'mpcrbm_quick_setup_done', 'yes' );
 					wp_redirect( admin_url( 'edit.php?post_type=mpcrbm_rent' ) );
 				}
@@ -149,7 +148,7 @@
                 <div class="mpcrbm">
                     <div class="_dShadow_6_adminLayout">
                         <form method="post" action="">
-                            <div class="mpTabsNext">
+                            <div class="mpcrbm_tab_next">
                                 <div class="tabListsNext _max_700_mAuto">
                                     <div data-tabs-target-next="#mpcrbm_qs_welcome" class="tabItemNext" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                                         <h4 class="circleIcon" data-class>

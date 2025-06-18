@@ -128,12 +128,12 @@
 				<?php
 			}
 
-			function callback_mp_select2( $args ) {
+			function callback_mpcrbm_select2( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
 				?>
                 <label>
-                    <select name="<?php echo esc_attr( $name ); ?>" class="formControl mp_select2">
+                    <select name="<?php echo esc_attr( $name ); ?>" class="formControl mpcrbm_select2">
 						<?php foreach ( $args['options'] as $key => $label ) { ?>
                             <option value="<?php echo esc_attr( $key ); ?>" <?php echo esc_attr( $key == $value ? 'selected' : '' ); ?>><?php echo esc_html( $label ); ?></option>
 						<?php } ?>
@@ -142,14 +142,14 @@
 				<?php
 			}
 
-			function callback_mp_select2_role( $args ) {
+			function callback_mpcrbm_select2_role( $args ) {
 				global $wp_roles;
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . '][]';
 				$value = is_array( $value ) ? $value : [ $value ];
 				?>
                 <label>
-                    <select name="<?php echo esc_attr( $name ); ?>" class="formControl mp_select2" multiple>
+                    <select name="<?php echo esc_attr( $name ); ?>" class="formControl mpcrbm_select2" multiple>
 						<?php foreach ( $wp_roles->roles as $key => $label ) { ?>
                             <option value="<?php echo esc_attr( $key ); ?>" <?php echo in_array( $key, $value ) ? 'selected' : ''; ?>><?php echo esc_html( $label['name'] ); ?></option>
 						<?php } ?>
@@ -303,7 +303,7 @@
 				$name        = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
 				$label       = $args['options']['button_label'] ?? esc_html__( 'Choose File', 'car-rental-manager' );
-				do_action( 'mpcrm_mp_add_single_image', $name, $value );
+				do_action( 'mpcrbm_add_single_image', $name, $value );
 			}
 
 			function callback_password( $args ) {
@@ -393,10 +393,10 @@
                     <div class="tabsItem" data-tabs="#<?php echo esc_attr( $form['id'] ); ?>">
                         <form method="post" action="options.php">
 							<?php
-								do_action( 'mpcrm_wsa_form_top_' . $form['id'], $form );
+								do_action( 'mpcrbm_wsa_form_top_' . $form['id'], $form );
 								settings_fields( $form['id'] );
 								do_settings_sections( $form['id'] );
-								do_action( 'mpcrm_wsa_form_bottom_' . $form['id'], $form );
+								do_action( 'mpcrbm_wsa_form_bottom_' . $form['id'], $form );
 								if ( isset( $this->settings_fields[ $form['id'] ] ) ):
 									?>
                                     <div class="justifyBetween _mT">

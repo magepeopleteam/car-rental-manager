@@ -7,7 +7,7 @@ let lastElemen;
 var geoLocationOne;
 var formattedAddress;
 function InitMapOne(geoLocationOne) {
-    var mapCanvas1 = document.getElementById('mptbm-map-canvas-one');
+    var mapCanvas1 = document.getElementById('mpcrbm-map-canvas-one');
     if (mapCanvas1) {
         if(geoLocationOne===undefined){
             geoLocationOne = new google.maps.LatLng(23.8103, 90.4125);
@@ -114,8 +114,8 @@ function InitMapOne(geoLocationOne) {
             for (var i = 0; i < len; i++) {
                 coordinates.push(newShape.getPath().getAt(i).toUrlValue(6));
             }
-            document.getElementById('mptbm-starting-location-one-hidden').value = formattedAddress;
-            document.getElementById('mptbm-coordinates-one').value = coordinates;
+            document.getElementById('mpcrbm-starting-location-one-hidden').value = formattedAddress;
+            document.getElementById('mpcrbm-coordinates-one').value = coordinates;
         };
 
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function (event) {
@@ -149,7 +149,7 @@ function InitMapOne(geoLocationOne) {
     }
 }
 function InitMapTwo(geoLocationOne) {
-    var mapCanvas1 = document.getElementById('mptbm-map-canvas-two');
+    var mapCanvas1 = document.getElementById('mpcrbm-map-canvas-two');
     if (mapCanvas1) {
         if(geoLocationOne===undefined){
             geoLocationOne = new google.maps.LatLng(23.8103, 90.4125);
@@ -256,8 +256,8 @@ function InitMapTwo(geoLocationOne) {
             for (var i = 0; i < len; i++) {
                 coordinates.push(newShape.getPath().getAt(i).toUrlValue(6));
             }
-            document.getElementById('mptbm-starting-location-two-hidden').value = formattedAddress;
-            document.getElementById('mptbm-coordinates-two').value = coordinates;
+            document.getElementById('mpcrbm-starting-location-two-hidden').value = formattedAddress;
+            document.getElementById('mpcrbm-coordinates-two').value = coordinates;
         };
 
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function (event) {
@@ -291,7 +291,7 @@ function InitMapTwo(geoLocationOne) {
     }
 }
 function InitMapFixed(geoLocationOne) {
-    var mapCanvas3 = document.getElementById('mptbm-map-canvas-three');
+    var mapCanvas3 = document.getElementById('mpcrbm-map-canvas-three');
     if (mapCanvas3) {
         if(geoLocationOne===undefined){
             geoLocationOne = new google.maps.LatLng(23.8103, 90.4125);
@@ -398,8 +398,8 @@ function InitMapFixed(geoLocationOne) {
             for (var i = 0; i < len; i++) {
                 coordinates.push(newShape.getPath().getAt(i).toUrlValue(6));
             }
-            document.getElementById('mptbm-starting-location-three-hidden').value = formattedAddress;
-            document.getElementById('mptbm-coordinates-three').value = coordinates;
+            document.getElementById('mpcrbm-starting-location-three-hidden').value = formattedAddress;
+            document.getElementById('mpcrbm-coordinates-three').value = coordinates;
         };
 
         google.maps.event.addListener(drawingManager, 'polygoncomplete', function (event) {
@@ -622,8 +622,8 @@ function iniSavedtMap(coordinates,mapCanvasId,mapAppendId) {
     $(document).ready(function () {
         
         // Register event listener for input change
-        $('#mptbm-starting-location-one').on('input', function () {
-            var input = document.getElementById('mptbm-starting-location-one');
+        $('#mpcrbm-starting-location-one').on('input', function () {
+            var input = document.getElementById('mpcrbm-starting-location-one');
             var autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
             
             autocomplete.addListener('place_changed', function() {
@@ -635,8 +635,8 @@ function iniSavedtMap(coordinates,mapCanvasId,mapAppendId) {
                 }
             });
         });
-        $('#mptbm-starting-location-two').on('input', function () {
-            var input = document.getElementById('mptbm-starting-location-two');
+        $('#mpcrbm-starting-location-two').on('input', function () {
+            var input = document.getElementById('mpcrbm-starting-location-two');
             var autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
             
             autocomplete.addListener('place_changed', function() {
@@ -648,8 +648,8 @@ function iniSavedtMap(coordinates,mapCanvasId,mapAppendId) {
                 }
             });
         });
-        $('#mptbm-starting-location-three').on('input', function () {
-            var input = document.getElementById('mptbm-starting-location-three');
+        $('#mpcrbm-starting-location-three').on('input', function () {
+            var input = document.getElementById('mpcrbm-starting-location-three');
             var autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
             
             autocomplete.addListener('place_changed', function() {
