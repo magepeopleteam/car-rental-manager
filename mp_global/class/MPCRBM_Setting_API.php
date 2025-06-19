@@ -9,25 +9,25 @@
 
 			public function __construct() { }
 
-			function set_sections( $sections ) {
+			public function set_sections( $sections ) {
 				$this->settings_sections = $sections;
 
 				return $this;
 			}
 
-			function add_section( $section ) {
+			public function add_section( $section ) {
 				$this->settings_sections[] = $section;
 
 				return $this;
 			}
 
-			function set_fields( $fields ) {
+			public function set_fields( $fields ) {
 				$this->settings_fields = $fields;
 
 				return $this;
 			}
 
-			function add_field( $section, $field ) {
+			public function add_field( $section, $field ) {
 				$defaults                            = array(
 					'name'  => '',
 					'label' => '',
@@ -40,7 +40,7 @@
 				return $this;
 			}
 
-			function admin_init() {
+			public function admin_init() {
 				//register settings sections
 				foreach ( $this->settings_sections as $section ) {
 					if ( false == get_option( $section['id'] ) ) {
@@ -102,7 +102,7 @@
 				return $desc;
 			}
 
-			function callback_text( $args ) {
+			public function callback_text( $args ) {
 				$value       = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name        = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
@@ -113,7 +113,7 @@
 				<?php
 			}
 
-			function callback_datepicker( $args ) {
+			public function callback_datepicker( $args ) {
 				$date_format  = MPCRBM_Global_Function::date_picker_format();
 				$now          = date_i18n( $date_format, strtotime( current_time( 'Y-m-d' ) ) );
 				$date         = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
@@ -128,7 +128,7 @@
 				<?php
 			}
 
-			function callback_mpcrbm_select2( $args ) {
+			public function callback_mpcrbm_select2( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -142,7 +142,7 @@
 				<?php
 			}
 
-			function callback_mpcrbm_select2_role( $args ) {
+			public function callback_mpcrbm_select2_role( $args ) {
 				global $wp_roles;
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . '][]';
@@ -158,11 +158,11 @@
 				<?php
 			}
 
-			function callback_url( $args ) {
+			public function callback_url( $args ) {
 				$this->callback_text( $args );
 			}
 
-			function callback_number( $args ) {
+			public function callback_number( $args ) {
 				$value       = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name        = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
@@ -177,7 +177,7 @@
 				<?php
 			}
 
-			function callback_checkbox( $args ) {
+			public function callback_checkbox( $args ) {
 				$value   = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name    = $args['section'] . '[' . $args['id'] . ']';
 				$checked = checked( $value, 'on', false );
@@ -192,7 +192,7 @@
 				<?php
 			}
 
-			function callback_switch_button( $args ) {
+			public function callback_switch_button( $args ) {
 				$value   = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name    = $args['section'] . '[' . $args['id'] . ']';
 				$checked = checked( $value, 'on', false );
@@ -206,7 +206,7 @@
 				<?php
 			}
 
-			function callback_multicheck( $args ) {
+			public function callback_multicheck( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -227,7 +227,7 @@
 				<?php
 			}
 
-			function callback_radio( $args ) {
+			public function callback_radio( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -243,7 +243,7 @@
 				<?php
 			}
 
-			function callback_select( $args ) {
+			public function callback_select( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -257,7 +257,7 @@
 				<?php
 			}
 
-			function callback_textarea( $args ) {
+			public function callback_textarea( $args ) {
 				$value       = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name        = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
@@ -268,7 +268,7 @@
 				<?php
 			}
 
-			function callback_html( $args ) {
+			public function callback_html( $args ) {
 				if ( ! empty( $args['desc'] ) ) {
 					?>
                     <i class="info_text">
@@ -279,7 +279,7 @@
 				}
 			}
 
-			function callback_wysiwyg( $args ) {
+			public function callback_wysiwyg( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				?>
                 <div>
@@ -298,7 +298,7 @@
 				<?php
 			}
 
-			function callback_file( $args ) {
+			public function callback_file( $args ) {
 				$value       = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name        = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
@@ -306,7 +306,7 @@
 				do_action( 'mpcrbm_add_single_image', $name, $value );
 			}
 
-			function callback_password( $args ) {
+			public function callback_password( $args ) {
 				$value       = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name        = $args['section'] . '[' . $args['id'] . ']';
 				$placeholder = empty( $args['placeholder'] ) ? '' : $args['placeholder'];
@@ -317,7 +317,7 @@
 				<?php
 			}
 
-			function callback_color( $args ) {
+			public function callback_color( $args ) {
 				$value = MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] );
 				$name  = $args['section'] . '[' . $args['id'] . ']';
 				?>
@@ -327,7 +327,7 @@
 				<?php
 			}
 
-			function callback_pages( $args ) {
+			public function callback_pages( $args ) {
 				$dropdown_args = array(
 					'selected' => MPCRBM_Global_Function::get_settings( $args['section'], $args['id'], $args['std'] ),
 					'name'     => $args['section'] . '[' . $args['id'] . ']',
@@ -337,7 +337,7 @@
 				echo wp_kses_post( wp_dropdown_pages( $dropdown_args ) );
 			}
 
-			function sanitize_options( $options ) {
+			public function sanitize_options( $options ) {
 				if ( ! $options ) {
 					return $options;
 				}
@@ -353,7 +353,7 @@
 				return $options;
 			}
 
-			function get_sanitize_callback( $slug = '' ) {
+			public function get_sanitize_callback( $slug = '' ) {
 				if ( empty( $slug ) ) {
 					return false;
 				}
@@ -372,7 +372,7 @@
 				return false;
 			}
 
-			function show_navigation() {
+			public function show_navigation() {
 				$count = count( $this->settings_sections );
 				if ( $count > 1 ) {
 					?>
@@ -387,7 +387,7 @@
 				}
 			}
 
-			function show_forms() {
+			public function show_forms() {
 				?>
 				<?php foreach ( $this->settings_sections as $form ) { ?>
                     <div class="tabsItem" data-tabs="#<?php echo esc_attr( $form['id'] ); ?>">
@@ -411,7 +411,7 @@
 				$this->enqueue_scripts();
 			}
 
-			function enqueue_scripts() {
+			public function enqueue_scripts() {
 				// Register the JS file
 				wp_register_script(
 					'mage-settings-admin-script',
