@@ -10,6 +10,7 @@
 	 * License URI: https://www.gnu.org/licenses/gpl-2.0.html
 	 * Text Domain: car-rental-manager
 	 * Domain Path: /languages/
+	 * Tested up: 6.7
 	 */
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
@@ -77,7 +78,7 @@
 						'post_type'    => 'page',
 						'post_name'    => 'mpcrbm-search',
 						'post_title'   => 'Search Transport',
-						'post_content' => '',
+						'post_content' => '[mpcrbm_booking]',
 						'post_status'  => 'publish'
 					);
 					wp_insert_post( $search_page );
