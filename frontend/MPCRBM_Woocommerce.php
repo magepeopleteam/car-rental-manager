@@ -1,6 +1,6 @@
 <?php
 	/*
-	* @Author 		engr.sumonazma@gmail.com
+	* @Author 		MagePeople Team
 	* Copyright: 	mage-people.com
 	*/
 	if ( ! defined( 'ABSPATH' ) ) {
@@ -390,7 +390,7 @@
 									'mpcrbm_billing_phone'               => $order->get_billing_phone(),
 									'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
 								] );
-								$booking_data = apply_filters( 'add_mpcrbm_booking_data', $data, $post_id );
+								$booking_data = apply_filters( 'mpcrbm_add_booking_data', $data, $post_id );
 								self::mpcrbm_cpt_data( 'mpcrbm_booking', $booking_data['mpcrbm_billing_name'], $booking_data );
 								if ( sizeof( $service_info ) > 0 ) {
 									foreach ( $service_info as $service ) {
