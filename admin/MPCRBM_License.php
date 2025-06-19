@@ -3,7 +3,7 @@
 		die;
 	} // Cannot access pages directly.
 	/*
-	* @Author 		engr.sumonazma@gmail.com
+	* @Author 		MagePeople Team
 	* Copyright: 	mage-people.com
 	*/
 	if ( ! class_exists( 'MPCRBM_License' ) ) {

@@ -1,6 +1,6 @@
 <?php
 	/*
-	* @Author 		engr.sumonazma@gmail.com
+	* @Author 		MagePeople Team
 	* Copyright: 	mage-people.com
 	*/
 	if ( ! defined( 'ABSPATH' ) ) {
@@ -141,7 +141,8 @@
 					$new_general_settings_data   = is_array( $general_settings_data ) ? array_replace( $general_settings_data, $update_general_settings_arr ) : $update_general_settings_arr;
 					update_option( 'mpcrbm_general_settings', $new_general_settings_data );
 					update_option( 'mpcrbm_quick_setup_done', 'yes' );
-					wp_redirect( admin_url( 'edit.php?post_type=mpcrbm_rent' ) );
+					wp_safe_redirect( admin_url( 'edit.php?post_type=mpcrbm_rent' ) );
+                    exit();
 				}
 				wp_nonce_field( 'mpcrbm_transportation_quick_setup_nonce', 'mpcrbm_transportation_quick_setup_nonce' );
 				?>

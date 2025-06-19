@@ -3,7 +3,7 @@
 		die; // Exit if accessed directly
 	}
 	/*
-	 * @Author 		engr.sumonazma@gmail.com
+	 * @Author 		MagePeople Team
 	 * Copyright: 	mage-people.com
 	 */
 	if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
@@ -12,19 +12,19 @@
 				add_action( 'mpcrbm_transport_search', [ $this, 'transport_search' ], 10, 1 );
 				//add_action('mpcrbm_transport_search_form', [$this, 'transport_search_form'], 10, 2);
 				/*******************/
-				add_action( 'wp_ajax_get_mpcrbm_map_search_result', [ $this, 'mpcrbm_get_map_search_result' ] );
-				add_action( 'wp_ajax_nopriv_get_mpcrbm_map_search_result', [ $this, 'mpcrbm_get_map_search_result' ] );
-				add_action( 'wp_ajax_get_mpcrbm_map_search_result_redirect', [ $this, 'get_mpcrbm_map_search_result_redirect' ] );
-				add_action( 'wp_ajax_nopriv_get_mpcrbm_map_search_result_redirect', [ $this, 'get_mpcrbm_map_search_result_redirect' ] );
+				add_action( 'wp_ajax_mpcrbm_get_map_search_result', [ $this, 'mpcrbm_get_map_search_result' ] );
+				add_action( 'wp_ajax_nopriv_mpcrbm_get_map_search_result', [ $this, 'mpcrbm_get_map_search_result' ] );
+				add_action( 'wp_ajax_mpcrbm_get_map_search_result_redirect', [ $this, 'mpcrbm_get_map_search_result_redirect' ] );
+				add_action( 'wp_ajax_nopriv_mpcrbm_get_map_search_result_redirect', [ $this, 'mpcrbm_get_map_search_result_redirect' ] );
 				/*********************/
-				add_action( 'wp_ajax_get_mpcrbm_end_place', [ $this, 'get_mpcrbm_end_place' ] );
-				add_action( 'wp_ajax_nopriv_get_mpcrbm_end_place', [ $this, 'get_mpcrbm_end_place' ] );
+				add_action( 'wp_ajax_mpcrbm_get_end_place', [ $this, 'mpcrbm_get_end_place' ] );
+				add_action( 'wp_ajax_nopriv_mpcrbm_get_end_place', [ $this, 'mpcrbm_get_end_place' ] );
 				/**************************/
-				add_action( 'wp_ajax_get_mpcrbm_extra_service', [ $this, 'mpcrbm_get_extra_service' ] );
-				add_action( 'wp_ajax_nopriv_get_mpcrbm_extra_service', [ $this, 'mpcrbm_get_extra_service' ] );
+				add_action( 'wp_ajax_mpcrbm_get_extra_service', [ $this, 'mpcrbm_get_extra_service' ] );
+				add_action( 'wp_ajax_nopriv_mpcrbm_get_extra_service', [ $this, 'mpcrbm_get_extra_service' ] );
 				/*******************************/
-				add_action( 'wp_ajax_get_mpcrbm_extra_service_summary', [ $this, 'mpcrbm_get_extra_service_summary' ] );
-				add_action( 'wp_ajax_nopriv_get_mpcrbm_extra_service_summary', [ $this, 'mpcrbm_get_extra_service_summary' ] );
+				add_action( 'wp_ajax_mpcrbm_get_extra_service_summary', [ $this, 'mpcrbm_get_extra_service_summary' ] );
+				add_action( 'wp_ajax_nopriv_mpcrbm_get_extra_service_summary', [ $this, 'mpcrbm_get_extra_service_summary' ] );
 			}
 
 			public function transport_search( $params ) {
@@ -115,8 +115,8 @@
 				}
 				// Redirect to search results
 				$redirect_url = 'mpcrbm-search';
-				wp_redirect( home_url( $redirect_url ) );
-				exit;
+				wp_safe_redirect( home_url( $redirect_url ) );
+				exit();
 			}
 		}
 		new MPCRBM_Transport_Search();

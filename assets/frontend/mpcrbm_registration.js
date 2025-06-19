@@ -183,7 +183,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 url: mpcrbm_ajax.ajax_url,
                 data: {
-                    action: 'get_mpcrbm_extra_service',
+                    action: 'mpcrbm_get_extra_service',
                     post_id: post_id,
                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
@@ -305,7 +305,7 @@ jQuery(document).ready(function($) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
                         if (!mpcrbm_enable_view_search_result_page) {
-                            actionValue = "get_mpcrbm_map_search_result";
+                            actionValue = "mpcrbm_get_map_search_result";
                             
                             $.ajax({
                                 type: "POST",
@@ -342,7 +342,7 @@ jQuery(document).ready(function($) {
                                 },
                             });
                         } else {
-                            actionValue = "get_mpcrbm_map_search_result_redirect";
+                            actionValue = "mpcrbm_get_map_search_result_redirect";
                             $.ajax({
                                 type: "POST",
                                 url: mpcrbm_ajax_url,
@@ -382,7 +382,7 @@ jQuery(document).ready(function($) {
                     
                     let actionValue;
                     if (!mpcrbm_enable_view_search_result_page) {
-                        actionValue = "get_mpcrbm_map_search_result";
+                        actionValue = "mpcrbm_get_map_search_result";
                        
                         $.ajax({
                             type: "POST",
@@ -418,7 +418,7 @@ jQuery(document).ready(function($) {
                             },
                         });
                     } else {
-                        actionValue = "get_mpcrbm_map_search_result_redirect";
+                        actionValue = "mpcrbm_get_map_search_result_redirect";
                         $.ajax({
                             type: "POST",
                             url: mpcrbm_ajax_url,

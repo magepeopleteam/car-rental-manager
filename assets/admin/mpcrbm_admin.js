@@ -11,7 +11,7 @@
 				type: 'POST',
 				url: mpcrbm_ajax_url,
 				data: {
-					action: 'get_mpcrbm_ex_service',
+					action: 'mpcrbm_get_ex_service',
 					ex_id: ex_id,
 					post_id: post_id,
 					nonce: mpcrbm_admin_nonce.nonce
