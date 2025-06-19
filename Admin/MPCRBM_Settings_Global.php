@@ -92,7 +92,7 @@
 				$label           = MPCRBM_Function::get_name();
 				$current_date    = current_time( 'Y-m-d' );
 				$settings_fields = array(
-					'mpcrbm_general_settings' => apply_filters( 'filter_mpcrbm_general_settings', array(
+					'mpcrbm_general_settings' => apply_filters( 'mpcrbm_filter_general_settings', array(
 						array(
 							'name'    => 'payment_system',
 							'label'   => esc_html__( 'Payment System', 'car-rental-manager' ),
@@ -271,7 +271,7 @@
 							)
 						)
 					) ),
-					'mpcrbm_global_settings'  => apply_filters( 'filter_mpcrbm_global_settings', array(
+					'mpcrbm_global_settings'  => apply_filters( 'mpcrbm_filter_global_settings', array(
 						array(
 							'name'    => 'disable_block_editor',
 							'label'   => esc_html__( 'Disable Block/Gutenberg Editor', 'car-rental-manager' ),
@@ -438,7 +438,7 @@
 							)
 						)
 					),
-					'mpcrbm_style_settings'   => apply_filters( 'filter_mpcrbm_style_settings', array(
+					'mpcrbm_style_settings'   => apply_filters( 'mpcrbm_filter_style_settings', array(
 						array(
 							'name'    => 'theme_color',
 							'label'   => esc_html__( 'Theme Color', 'car-rental-manager' ),
