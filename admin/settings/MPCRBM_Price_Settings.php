@@ -60,35 +60,6 @@
 					update_post_meta( $post_id, 'mpcrbm_price_based', $price_based );
 					$hour_price = isset( $_POST['mpcrbm_day_price'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) ) : 0;
 					update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
-					$manual_price_infos = array();
-					$start_location     = isset( $_POST['mpcrbm_manual_start_location'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_manual_start_location'] ) ) : [];
-					$end_location       = isset( $_POST['mpcrbm_manual_end_location'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_manual_end_location'] ) ) : [];
-					$manual_price       = isset( $_POST['mpcrbm_manual_price'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_manual_price'] ) ) : [];
-					if ( sizeof( $start_location ) > 1 && sizeof( $end_location ) > 1 ) {
-						$count = 0;
-						foreach ( $start_location as $key => $location ) {
-							if ( $location && $end_location[ $key ] && $manual_price[ $key ] ) {
-								$manual_price_infos[ $count ]['start_location'] = $location;
-								$manual_price_infos[ $count ]['end_location']   = $end_location[ $key ];
-								$count ++;
-							}
-						}
-					}
-					update_post_meta( $post_id, 'mpcrbm_manual_price_info', $manual_price_infos );
-					$terms_price_infos    = array();
-					$start_terms_location = isset( $_POST['mpcrbm_terms_start_location'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_terms_start_location'] ) ) : [];
-					$end_terms_location   = isset( $_POST['mpcrbm_terms_end_location'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_terms_end_location'] ) ) : [];
-					if ( sizeof( $start_terms_location ) > 1 && sizeof( $end_terms_location ) > 1 ) {
-						$count = 0;
-						foreach ( $start_terms_location as $key => $location ) {
-							if ( $location && $end_terms_location[ $key ] ) {
-								$terms_price_infos[ $count ]['start_location'] = $location;
-								$terms_price_infos[ $count ]['end_location']   = $end_terms_location[ $key ];
-								$count ++;
-							}
-						}
-					}
-					update_post_meta( $post_id, 'mpcrbm_terms_price_info', $terms_price_infos );
 				}
 			}
 

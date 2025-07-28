@@ -13,9 +13,9 @@
 				add_filter('single_template', array($this, 'load_single_template'));
 			}
 			private function load_file(): void {
-				require_once MPCRBM_PLUGIN_DIR . '/Frontend/MPCRBM_Shortcodes.php';
-				require_once MPCRBM_PLUGIN_DIR . '/Frontend/MPCRBM_Transport_Search.php';
-				require_once MPCRBM_PLUGIN_DIR . '/Frontend/MPCRBM_Woocommerce.php';
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Shortcodes.php';
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Transport_Search.php';
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Woocommerce.php';
 			}
 			public function load_single_template($template): string {
 				global $post;
