@@ -18,8 +18,11 @@
 	<div class="leftSidebar">
 		<div class="">
 			<div class="sticky_on_scroll">
-				<div class="_dLayout_dFlex_fdColumn_btLight_2">
-					<h3><?php esc_html_e('SUMMARY', 'car-rental-manager'); ?></h3>
+				<div class="mpcrbm_dFlex_fdColumn_btLight">
+<!--					<h3>--><?php //esc_html_e('SUMMARY', 'car-rental-manager'); ?><!--</h3>-->
+                    <div class="mpcrbm_summary_title">
+                        📋 Booking Summary
+                    </div>
 					<div class="dividerL"></div>
 
 					<h6 class="_mB_xs"><?php esc_html_e('Pickup Date', 'car-rental-manager'); ?></h6>
@@ -71,8 +74,8 @@
 						</div>
 					</div>
 				</div>
-				<div class="divider"></div>
-				<button type="button" class="_mpBtn_fullWidth mpcrbm_get_vehicle_prev">
+<!--				<div class="divider"></div>-->
+				<button type="button" class="mpcrbm_next_button mpcrbm_get_vehicle_prev">
 					<span>&longleftarrow; &nbsp;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
 				</button>
 			</div>

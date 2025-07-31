@@ -7,9 +7,9 @@
 	--fw-medium: 600; /*font weight medium*/
 	--fw-bold: bold; /*font weight bold*/
 	--dcontainer_width: 1320px;
-	--sidebarleft: 280px;
+	--sidebarleft: 300px;
 	--sidebarright: 300px;
-	--mainsection: calc(100% - 300px);
+	--mainsection: calc(100% - 320px);
 	--dmpl: 40px;
 	--dmp: 20px;
 	--dmp_negetive: -20px;
@@ -469,6 +469,7 @@
 		display: flex;
 		-webkit-flex-direction: column;
 		flex-direction: column;
+		gap: 15px
 	}
 	[data-bg-image],
 	[class*="_fdColumn"] {
@@ -1362,7 +1363,7 @@
 		width: 100%;
 		overflow: hidden;
 		position: relative;
-		height: 200px;
+		height: 150px;
 	}
 	[data-bg-image] {
 		background-size: 100% 100%;
@@ -2050,6 +2051,7 @@
 		max-width: 500px;
 		width: 100%;
 		margin: 0 auto;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 	}
 	/**********Checkbox Radio*********/
 	div.mpcrbm .customRadioLabel {
@@ -2871,6 +2873,11 @@
 	div.mpcrbm .max_150,
 	div.mpcrbm [class*="_max_150"] {
 		max-width: 150px;
+		width: 100%;
+	}
+	div.mpcrbm .max_180,
+	div.mpcrbm [class*="_max_180"] {
+		max-width: 180px;
 		width: 100%;
 	}
 	div.mpcrbm .max_200,

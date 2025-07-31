@@ -80,8 +80,8 @@ if ($post_id) {
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
     ?>
-    <div class="_dLayout_dFlex mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
-        <div class="_max_200_mR">
+    <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
+        <div class="_max_180_mR">
             <div class="bg_image_area" data-placeholder>
                 <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
             </div>
@@ -115,7 +115,7 @@ if ($post_id) {
                 <div class="_min_150_mL_xs">
                     <h4 class="textCenter"><?php echo wp_kses_post(wc_price($raw_price)); ?></h4>
                     <button type="button" 
-                        class="_mpBtn_xs_w_150 mpcrbm_transport_select" 
+                        class="_mpBtn_xs_w_150 mpcrbm_transport_select"
                         data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" 
                         data-transport-price="<?php echo esc_attr($raw_price); ?>" 
                         data-post-id="<?php echo esc_attr($post_id); ?>" 
