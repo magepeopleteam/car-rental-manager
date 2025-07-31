@@ -62,12 +62,25 @@
 	div.mpcrbm_booking_item h5 {color: #000;font-size: 24px;font-weight: 600}
 	div.mpcrbm_booking_item h4 {color: #000;font-size: 36px;font-weight: 600;margin: 0 0 var(--dmp_xs) 0;}
 	.mpcrbm_booking_item_hidden{display: none !important;}
-	div.mpcrbm_transport_search_area ul.list_inline_two li {border: none;color: #626262;font-weight: 400;font-size: 12px;}
+	div.mpcrbm_transport_search_area ul.list_inline_two li {border: none;color: #626262;font-weight: 400;font-size: 14px;}
 	div.mpcrbm_transport_search_area button.mpcrbm_price_calculation,
-	div.mpcrbm_transport_search_area button.mpcrbm_transport_select {background-color: #EAECEE;color: #666;border-radius: var(--dbr);}
+	div.mpcrbm_transport_search_area button.mpcrbm_transport_select {
+		background-color: #EAECEE;
+		/*background: linear-gradient(135deg, #4CAF50, #45a049);*/
+		color: #666;
+		border-radius: var(--dbr);
+	}
 	div.mpcrbm_transport_search_area button.mpcrbm_price_calculation.active_select,
 	div.mpcrbm_transport_search_area button.mpcrbm_transport_select.active_select {background-color: var(--color_theme);color: var(--color_theme_alter);}
-	div.mpcrbm_transport_search_area div.sticky_on_scroll {min-height: 400px;overflow: auto;}
+	div.mpcrbm_transport_search_area div.sticky_on_scroll {
+		min-height: 400px;
+		overflow: auto;
+		/*border: 1px solid var(--color_border);*/
+		border: 1px solid #e5e7eb;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		border-radius: 20px;
+		padding-bottom: 10px;
+	}
 }
 /******************************************************************** Responsive ************************************************/
 @media only screen and (max-width: 1000px) {
@@ -129,4 +142,41 @@
  .mpcrbm_horizontal_booking_title{
 	 color: #666666;
 	 text-align: center;
+ }
+
+ .mpcrbm_next_button{
+	 width: 90% !important;
+	 max-width: 90% !important;
+	 padding: 12px !important;
+	 margin: 10px !important;
+ }
+
+ .mpcrbm_dFlex_fdColumn_btLight{
+	 background: white;
+	 /*border: 1px solid #e5e7eb;*/
+	 border-radius: 20px;
+	 padding: 10px 30px;
+	 height: fit-content;
+	 /*box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);*/
+ }
+ .mpcrbm_summary_title{
+	 font-size: 22px;
+	 font-weight: 600;
+	 margin: 15px 0px 1px 0;
+	 color: #2c3e50;
+	 display: flex;
+	 align-items: center;
+	 gap: 5px;
+ }
+ .mpcrbm_booking_vehicle {
+	 background: white;
+	 border: 1px solid #e5e7eb;
+	 border-radius: 20px;
+	 padding: 20px;
+	 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	 transition: all 0.3s ease;
+	 display: flex;
+	 grid-template-columns: 200px 1fr auto;
+	 gap: 15px;
+	 align-items: center;
  }
