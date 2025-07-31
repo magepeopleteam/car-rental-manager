@@ -89,6 +89,14 @@ while ($buffer_end_minutes > 1440) {
 	array_shift($all_dates);
 	$buffer_end_minutes -= 1440;
 }
+
+if( $form_style === 'horizontal' ){
+    $type_text_pickup = $type_text_pickup = '';
+}else{
+    $type_text_pickup = 'Pickup';
+    $type_text_pickup = 'Return';
+}
+
 if (sizeof($all_dates) > 0) {
 	$taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
 	$interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time', '30');
@@ -97,6 +105,9 @@ if (sizeof($all_dates) > 0) {
 ?>
 	<div class="<?php echo esc_attr($area_class); ?> ">
 		<div class="_dLayout mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
+            <?php if( $form_style === 'horizontal' ){?>
+            <h2 class="mpcrbm_horizontal_booking_title"><?php esc_attr_e( 'Car Rental', 'car-rental-manager');?></h2>
+            <?php }?>
 			<div class="mpForm">
 				<?php wp_nonce_field('mpcrbm_transportation_type_nonce', 'mpcrbm_transportation_type_nonce'); ?>
 				<input type="hidden" id="mpcrbm_km_or_mile" name="mpcrbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
@@ -107,22 +118,25 @@ if (sizeof($all_dates) > 0) {
 				<input type="hidden" id="mpcrbm_enable_filter_via_features" name="mpcrbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
 				<input type="hidden" id="mpcrbm_buffer_end_minutes" name="mpcrbm_buffer_end_minutes" value="<?php echo esc_attr( $buffer_end_minutes ); ?>" />
 				<input type="hidden" id="mpcrbm_first_calendar_date" name="mpcrbm_first_calendar_date" value="<?php echo esc_attr( $all_dates[0] ); ?>" />
+                <?php if( $form_style === 'horizontal' ){?>
+                <div class="mpcrbm_horizontal_section_label"><?php esc_attr_e( 'Pickup', 'car-rental-manager');?></div>
+                <div class="mpcrbm_horizontal_date_time_input">
+                <?php } ?>
+                    <div class="inputList">
+                        <label class="fdColumn">
+                            <input type="hidden" id="mpcrbm_map_start_date" value="" />
+                            <span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e($type_text_pickup.' Date', 'car-rental-manager'); ?></span>
+                            <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="" readonly />
+    <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
+                        </label>
+                    </div>
 
-				<div class="inputList">
-					<label class="fdColumn">
-						<input type="hidden" id="mpcrbm_map_start_date" value="" />
-						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Date', 'car-rental-manager'); ?></span>
-						<input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="" readonly />
-						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>
-					</label>
-				</div>
-
-				<div class="inputList input_select">
+                    <div class="inputList input_select">
 					<input type="hidden" id="mpcrbm_map_start_time" value="" />
 					<label class="fdColumn">
-						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Pickup Time', 'car-rental-manager'); ?></span>
+						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e($type_text_pickup.' Time', 'car-rental-manager'); ?></span>
 						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'car-rental-manager'); ?>" value="" readonly />
-						<span class="far fa-clock mpcrbm_left_icon allCenter"></span>
+<!--						<span class="far fa-clock mpcrbm_left_icon allCenter"></span>-->
 					</label>
 
 					<ul class="input_select_list start_time_list">
@@ -166,9 +180,14 @@ if (sizeof($all_dates) > 0) {
 					</ul>
 
 				</div>
+
+                <?php if( $form_style === 'horizontal' ) {?>
+                </div>
+                <?php }?>
+
 				<div class="inputList">
 					<label class="fdColumn ">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e($type_text_pickup.' Location', 'car-rental-manager'); ?></span>
 						<?php if ($price_based == 'manual') {
 						?>
 							<?php $all_start_locations = MPCRBM_Function::get_all_start_location(); ?>
@@ -193,9 +212,15 @@ if (sizeof($all_dates) > 0) {
 				<?php
 				}
 				?>
+
+                <?php if( $form_style === 'horizontal' ){?>
+                    <div class="mpcrbm_horizontal_section_divider"></div>
+                    <div class="mpcrbm_horizontal_section_label"><?php esc_attr_e( 'Return', 'car-rental-manager');?></div>
+                <?php }?>
+
 				<div class="inputList">
 					<label class="fdColumn mpcrbm_manual_end_place">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Location', 'car-rental-manager'); ?></span>
+						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e($type_text_pickup.' Location', 'car-rental-manager'); ?></span>
 						<?php if ($price_based == 'manual') { ?>
 							<select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
 								<option selected disabled><?php esc_html_e(' Select Return Location', 'car-rental-manager'); ?></option>
@@ -220,20 +245,24 @@ if (sizeof($all_dates) > 0) {
 				?>
 			</div>
 			<div class="mpForm">
-				<div class="inputList" >
-					<label class="fdColumn">
-						<input type="hidden" id="mpcrbm_map_return_date" value="" />
-						<span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e('Return Date', 'car-rental-manager'); ?></span>
-						<input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="" readonly name="return_date"/>
-						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>
-					</label>
-				</div>
-				<div class="inputList input_select">
+
+                <?php  if( $form_style === 'horizontal' ){ ?>
+                <div class="mpcrbm_horizontal_date_time_input">
+                <?php }?>
+                    <div class="inputList" >
+                        <label class="fdColumn">
+                            <input type="hidden" id="mpcrbm_map_return_date" value="" />
+                            <span><i class="fas fa-calendar-alt _textTheme_mR_xs"></i><?php esc_html_e($type_text_pickup.' Date', 'car-rental-manager'); ?></span>
+                            <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="" readonly name="return_date"/>
+    <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
+                        </label>
+                    </div>
+                    <div class="inputList input_select">
 					<input type="hidden" id="mpcrbm_map_return_time" value="" />
 					<label class="fdColumn">
-						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e('Return Time', 'car-rental-manager'); ?></span>
+						<span><i class="far fa-clock _textTheme_mR_xs"></i><?php esc_html_e($type_text_pickup.' Time', 'car-rental-manager'); ?></span>
 						<input type="text" class="formControl" placeholder="<?php esc_html_e('Please Select Time', 'car-rental-manager'); ?>" value="" readonly name="return_time" />
-						<span class="far fa-clock mpcrbm_left_icon allCenter"></span>
+<!--						<span class="far fa-clock mpcrbm_left_icon allCenter"></span>-->
 					</label>
 					<ul class="return_time_list-no-dsiplay" style="display:none">
 						<?php
@@ -272,10 +301,10 @@ if (sizeof($all_dates) > 0) {
 						<?php } ?>
 					</ul>
 				</div>
+                <?php  if( $form_style === 'horizontal' ){ ?>
+                </div>
+                <?php }?>
 
-				<?php if ($form_style == 'horizontal') { ?>
-					<div class="divider"></div>
-				<?php } ?>
 				<div class="inputList justifyBetween _fdColumn">
 					<span>&nbsp;</span>
 					<button type="button" class="_themeButton_fullWidth" id="mpcrbm_get_vehicle">
@@ -299,7 +328,7 @@ if (sizeof($all_dates) > 0) {
 		</div>
 	</div>
 	<div class="_fullWidth get_details_next_link">
-		<div class="divider"></div>
+<!--		<div class="divider"></div>-->
 		<div class="justifyBetween">
 			<button type="button" class="mpBtn nextTab_prev">
 				<span>&larr; &nbsp;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
