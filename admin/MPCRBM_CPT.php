@@ -148,7 +148,7 @@
 					'meta_box_cb'  => false,
 				);
 				register_taxonomy( 'mpcrbm_locations', $cpt, $taxonomy_args );  // Updated taxonomy name
-				register_post_type( 'mpcrbm_extra_services', $ex_args );
+				register_post_type( 'crm_extra_services', $ex_args );
 				if ( class_exists( 'MPCRBM_Plugin_Pro' ) ) {
 					register_post_type( 'mpcrbm_operate_areas', $dx_args );
 				}
