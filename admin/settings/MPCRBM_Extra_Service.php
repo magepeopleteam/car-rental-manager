@@ -149,7 +149,8 @@
 					return;
 				}
 				// Handle both custom post type and regular post type
-				if ( get_post_type( $post_id ) == 'crm_extra_services' || get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+//				if ( get_post_type( $post_id ) == 'crm_extra_services' || get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+				if ( get_post_type( $post_id ) == 'mpcrbm_extra_services' || get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 					// Save display setting
 					$display = isset( $_POST['display_mpcrbm_extra_services'] ) ? 'on' : 'off';
 					update_post_meta( $post_id, 'display_mpcrbm_extra_services', $display );
@@ -159,7 +160,8 @@
 						update_post_meta( $post_id, 'mpcrbm_extra_services_id', $service_id );
 					}
 					// Save extra service data if this is a custom service
-					if ( get_post_type( $post_id ) == 'crm_extra_services' || 1 ) {
+//					if ( get_post_type( $post_id ) == 'crm_extra_services' || 1 ) {
+					if ( get_post_type( $post_id ) == 'mpcrbm_extra_services' || 1 ) {
 						$extra_service_data = $this->ex_service_data( $post_id );
 						if ( ! empty( $extra_service_data ) ) {
 							update_post_meta( $post_id, 'mpcrbm_extra_service_infos', $extra_service_data );
