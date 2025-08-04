@@ -52,7 +52,8 @@ if (!class_exists('MPCRBM_Extra_Service_Settings')) {
             );
             
             $extra_services = get_posts(array(
-                'post_type' => 'mpcrbm_extra_services',
+//                'post_type' => 'crm_extra_services',
+                'post_type' => 'mpcrbm_ex_services',
                 'posts_per_page' => -1,
                 'post_status' => 'publish'
             ));

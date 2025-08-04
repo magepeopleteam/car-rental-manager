@@ -149,7 +149,8 @@
 					return;
 				}
 				// Handle both custom post type and regular post type
-				if ( get_post_type( $post_id ) == 'mpcrbm_extra_services' || get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+//				if ( get_post_type( $post_id ) == 'crm_extra_services' || get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+				if ( get_post_type( $post_id ) == 'mpcrbm_ex_services' || get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 					// Save display setting
 					$display = isset( $_POST['display_mpcrbm_extra_services'] ) ? 'on' : 'off';
 					update_post_meta( $post_id, 'display_mpcrbm_extra_services', $display );
@@ -159,7 +160,8 @@
 						update_post_meta( $post_id, 'mpcrbm_extra_services_id', $service_id );
 					}
 					// Save extra service data if this is a custom service
-					if ( get_post_type( $post_id ) == 'mpcrbm_extra_services' ) {
+//					if ( get_post_type( $post_id ) == 'crm_extra_services' || 1 ) {
+					if ( get_post_type( $post_id ) == 'mpcrbm_ex_services' || 1 ) {
 						$extra_service_data = $this->ex_service_data( $post_id );
 						if ( ! empty( $extra_service_data ) ) {
 							update_post_meta( $post_id, 'mpcrbm_extra_service_infos', $extra_service_data );
@@ -175,7 +177,7 @@
 				$service_id         = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_services_id', $post_id );
 				$active             = $display == 'off' ? '' : 'mActive';
 				$checked            = $display == 'off' ? '' : 'checked';
-				$all_ex_services_id = MPCRBM_Query::query_post_id( 'mpcrbm_extra_services' );
+				$all_ex_services_id = MPCRBM_Query::query_post_id( 'mpcrbm_ex_services' );
 				?>
                 <div class="tabsItem mpcrbm_extra_services_setting" data-tabs="#mpcrbm_settings_ex_service">
                     <h2><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></h2>
@@ -335,7 +337,7 @@
 					wp_die();
 				}
 				// Verify the service exists and is of correct type
-				if ( ! get_post( $service_id ) || get_post_type( $service_id ) !== 'mpcrbm_extra_services' ) {
+				if ( ! get_post( $service_id ) || get_post_type( $service_id ) !== 'mpcrbm_ex_services' ) {
 					wp_send_json_error( array( 'message' => esc_html__( 'Invalid service', 'car-rental-manager' ) ) );
 					wp_die();
 				}
