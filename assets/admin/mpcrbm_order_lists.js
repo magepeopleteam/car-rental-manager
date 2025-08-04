@@ -24,12 +24,9 @@
         let selectedDate = $('#mpcrbm_order_list__start_date').val();
         let selectedPlace = $('#mpcrbm_order_list__pickup_place').val();
         let selectedPost = $('#mpcrbm_order_list__post_name').val();
+        let order_status = $('#mpcrbm_order_list__order_status').val();
         let userFilterKey = $('#mpcrbm_user_info_filter_by').val();
         let userFilterVal = $('#mpcrbm_user_info_value').val();
-
-        // alert( selectedDate );
-
-
 
         $('tbody tr').each(function () {
             var $row = $(this);
@@ -37,6 +34,7 @@
             var pickupDate = $row.data('filtar-pickup-date') || '';
             var pickupPlace = ($row.data('filtar-pickup-place') || '').toString();
             var postName = ($row.data('filtar-post-name') || '').toString();
+            var orderStatus = ($row.data('filtar-order-status') || '').toString();
             var userInfoRaw = userFilterKey && userFilterKey !== 'all' ? $row.data('filtar-user-' + userFilterKey) : null;
 
 
@@ -57,14 +55,16 @@
                 match = true;
             }
 
-            console.log( userInfo, userFilterVal );
-
-            if (userFilterKey && userFilterKey !== 'all' && userFilterVal && userInfo.includes(userFilterVal)) {
+            if ( order_status &&  order_status === orderStatus ) {
                 match = true;
             }
 
+            if ( userFilterKey && userFilterKey !== 'all' && userFilterVal && userInfo.includes(userFilterVal)) {
+                match = true;
+            }
             // সব ফিল্ড ফাঁকা হলে সব রো দেখাও
-            if (!selectedDate && !selectedPlace && !selectedPost && (!userFilterKey || userFilterKey === 'all' || !userFilterVal)) {
+
+            if ( selectedDate === '' && selectedPlace === 'all' && selectedPost === 'all'  && order_status === 'all' && userFilterKey === 'all' ) {
                 match = true;
             }
 
@@ -80,7 +80,7 @@
     });
 
 // Separate `change` events for others
-    $(document).on('change', '#mpcrbm_order_list__start_date, #mpcrbm_order_list__pickup_place, #mpcrbm_order_list__post_name' , function () {
+    $(document).on('change', '#mpcrbm_order_list__start_date, #mpcrbm_order_list__pickup_place, #mpcrbm_order_list__order_status, #mpcrbm_order_list__post_name' , function () {
         filterOrderRows();
     });
 
@@ -126,9 +126,5 @@
             $(this).toggle(show);
         });
     });
-
-
-
-    // $('#mpcrbm_order_list__start_date').datepicker('show');
 
 })(jQuery);
