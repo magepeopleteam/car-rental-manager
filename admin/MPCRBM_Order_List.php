@@ -7,6 +7,45 @@ if (!defined('ABSPATH')) {
 if (!class_exists('MPCRBM_Order_List')) {
     class MPCRBM_Order_List
     {
+        public static function get_unique_places_and_car_names() {
+            $places = [];
+            $car_ids = [];
+            $car_names = [];
+
+            $booking_posts = get_posts([
+                'post_type'      => 'mpcrbm_booking',
+                'post_status'    => 'publish',
+                'numberposts'    => -1,
+                'fields'         => 'ids',
+            ]);
+
+            foreach ($booking_posts as $post_id) {
+                $start_place = get_post_meta($post_id, 'mpcrbm_start_place', true);
+                $car_id = get_post_meta($post_id, 'mpcrbm_id', true);
+
+                if (!empty($start_place) && !in_array($start_place, $places)) {
+                    $places[] = $start_place;
+                }
+
+                if (!empty($car_id) && !in_array($car_id, $car_ids)) {
+                    $car_ids[] = $car_id;
+                }
+            }
+
+            foreach ($car_ids as $car_post_id) {
+                $car_post = get_post($car_post_id);
+
+                if ($car_post && $car_post->post_type === 'mpcrbm_rent') {
+                    $car_names[] = $car_post->post_title;
+                }
+            }
+
+            return [
+                'places'    => $places,
+                'car_names' => $car_names,
+            ];
+        }
+
         public function __construct() {
             add_action('admin_menu', array($this, 'order_menu'));
         }
@@ -100,6 +139,8 @@ if (!class_exists('MPCRBM_Order_List')) {
                             $billing_email = get_post_meta($order_id, 'mpcrbm_billing_email', true);
                             $billing_phone = get_post_meta($order_id, 'mpcrbm_billing_phone', true);
 
+                            $order_status = get_post_meta($order_id, 'mpcrbm_order_status', true);
+
 
                             $row = array(
                                 'name'                          => $name,
@@ -113,7 +154,7 @@ if (!class_exists('MPCRBM_Order_List')) {
                                 'mpcrbm_start_place'            => $pickup_place,
                                 'mpcrbm_end_place'              => get_post_meta($order_id, 'mpcrbm_end_place', true),
                                 'mpcrbm_base_price'             => get_post_meta($order_id, 'mpcrbm_base_price', true),
-                                'mpcrbm_order_status'           => get_post_meta($order_id, 'mpcrbm_order_status', true),
+                                'mpcrbm_order_status'           => $order_status,
                                 'mpcrbm_payment_method'         => get_post_meta($order_id, 'mpcrbm_payment_method', true),
                                 'mpcrbm_tp'                     => get_post_meta($order_id, 'mpcrbm_tp', true),
                             );
@@ -125,6 +166,7 @@ if (!class_exists('MPCRBM_Order_List')) {
                                     data-filtar-user-name="<?php echo esc_attr( $billing_name )?>"
                                     data-filtar-user-email="<?php echo esc_attr( $billing_email )?>"
                                     data-filtar-user-phone="<?php echo esc_attr( $billing_phone )?>"
+                                    data-filtar-order-status="<?php echo esc_attr( $order_status )?>"
                             >
                                 <?php foreach ($row as $value): ?>
                                     <td><?php echo esc_html($value); ?></td>
@@ -145,64 +187,85 @@ if (!class_exists('MPCRBM_Order_List')) {
              <div class="mpcrbm_order_list_wrapper">
              <h2 class="mpcrbm_order_list_title"><?php esc_attr_e( 'All Booking Orders', 'car-rental-manager' );?></h2>
              <?php
-                echo self:: filter_selection();
+                echo self::filter_selection();
                 echo self::mpcrbm_display_orders_with_specific_meta(); ?>
              </div>
             <?php
         }
 
-        public static function filter_Selection(){ ?>
+        public static function filter_Selection(){
+
+            $data = self::get_unique_places_and_car_names();
+//            error_log( print_r( [ '$data' => $data ], true ) );
+            ?>
             <div class="mpcrbm_order_list__filter-wrapper">
 
-                <h2 class="mpcrbm_order_list__filter-title">Filter</h2>
+                <h2 class="mpcrbm_order_list__filter-title"><?php esc_attr_e( 'Filter', 'car-rental-manager' );?></h2>
                 <div class="mpcrbm_filter_by_date">
-                    <div class="mpcrbm_filter_date mpcrbm_data_selected" id="all">All</div>
-                    <div class="mpcrbm_filter_date" id="today">Today</div>
-                    <div class="mpcrbm_filter_date" id="week">This Week</div>
-                    <div class="mpcrbm_filter_date" id="month">This Month</div>
+                    <div class="mpcrbm_filter_date mpcrbm_data_selected" id="all"><?php esc_attr_e( 'All', 'car-rental-manager' );?></div>
+                    <div class="mpcrbm_filter_date" id="today"><?php esc_attr_e( 'Today', 'car-rental-manager' );?></div>
+                    <div class="mpcrbm_filter_date" id="week"><?php esc_attr_e( 'This Week', 'car-rental-manager' );?></div>
+                    <div class="mpcrbm_filter_date" id="month"><?php esc_attr_e( 'This Month', 'car-rental-manager' );?></div>
                 </div>
 
                 <div class="mpcrbm_order_list__filter-row">
 
                     <div class="mpcrbm_order_list__filter-item">
-                        <label for="mpcrbm_order_list__pickup_place">Pickup Place</label>
+                        <label for="mpcrbm_order_list__pickup_place"><?php esc_attr_e( 'Pickup Place', 'car-rental-manager' );?></label>
                         <select id="mpcrbm_order_list__pickup_place" class="mpcrbm_order_list__select" >
-                            <option value="all">All</option>
-                            <option value="dhaka">Dhaka</option>
-                            <option value="chittagong">Chittagong</option>
-                            <option value="sylhet">Sylhet</option>
+                            <option value="all"><?php esc_attr_e( 'All', 'car-rental-manager' );?></option>
+                            <?php if( is_array( $data['places'] ) && !empty( $data['places'] ) ){
+                                foreach ( $data['places'] as $place ){
+                                ?>
+                                <option value="<?php echo esc_attr( strtolower( $place ) );?>"><?php echo esc_attr( $place );?></option>
+                            <?php } }?>
                         </select>
                     </div>
 
                     <div class="mpcrbm_order_list__filter-item">
-                        <label for="mpcrbm_order_list__post_name">Filter by Post Name</label>
+                        <label for="mpcrbm_order_list__post_name"><?php esc_attr_e( 'Filter by Post Name', 'car-rental-manager' );?></label>
                         <select id="mpcrbm_order_list__post_name" class="mpcrbm_order_list__select" >
-                            <option value="all">All</option>
-                            <option value="Fiat Panda">Fiat Panda</option>
-                            <option value="Cadillac Escalade SUV">Cadillac Escalade SUV</option>
-                            <option value="Mercedes-Benz E220">Mercedes-Benz E220</option>
+                            <option value="all"><?php esc_attr_e( 'All', 'car-rental-manager' );?></option>
+                            <?php if( is_array( $data['car_names'] ) && !empty( $data['car_names'] ) ){
+                                foreach ( $data['car_names'] as $car_name ){
+                                    ?>
+                                    <option value="<?php echo esc_attr( $car_name );?>"><?php echo esc_attr( $car_name );?></option>
+                                <?php } }?>
                         </select>
                     </div>
 
                     <div class="mpcrbm_order_list__filter-item">
-                        <label for="mpcrbm_order_list__start_date">Pickup Date</label>
+                        <label for="mpcrbm_order_list__post_name"><?php esc_attr_e( 'Filter by Order Status', 'car-rental-manager' );?></label>
+                        <select id="mpcrbm_order_list__order_status" class="mpcrbm_order_list__select" >
+                            <option value="all"><?php esc_attr_e( 'All', 'car-rental-manager' );?></option>
+                            <?php
+                            $order_statuses = wc_get_order_statuses();
+                            foreach ( $order_statuses as $slug => $label ) { ?>
+
+                                <option value="<?php echo esc_attr( strtolower( $label ) );?>"><?php echo esc_attr( $label );?></option>
+                                <?php
+                            } ?>
+                        </select>
+                    </div>
+
+                    <div class="mpcrbm_order_list__filter-item">
+                        <label for="mpcrbm_order_list__start_date"><?php esc_attr_e( 'Pickup Date', 'car-rental-manager' );?></label>
                         <input type="date" id="mpcrbm_order_list__start_date" class="mpcrbm_order_list__input">
                     </div>
 
                       <div class="mpcrbm_order_list_name_filter-item">
-                        <label for="mpcrbm_order_list__post_name">Filter by User Info</label>
+                        <label for="mpcrbm_order_list__post_name"><?php esc_attr_e( 'Filter by User Info', 'car-rental-manager' );?></label>
                         <select name="mpcrbm_user_info_filter_by" id="mpcrbm_user_info_filter_by" class="mpcrbm_order_list_user_info_filter">
-                            <option value="all">All</option>
-                            <option value="name">Name</option>
-                            <option value="email">Email</option>
-                            <option value="phone">Phone</option>
+                            <option value="all"><?php esc_attr_e( 'All', 'car-rental-manager' );?></option>
+                            <option value="name"><?php esc_attr_e( 'Name', 'car-rental-manager' );?></option>
+                            <option value="email"><?php esc_attr_e( 'Email', 'car-rental-manager' );?></option>
+                            <option value="phone"><?php esc_attr_e( 'Phone', 'car-rental-manager' );?></option>
                         </select>
                       </div>
 
                     <div class="mpcrbm_order_list__filter-item" id="mpcrbm_order_list__user_input_container" style="margin-top: 22px">
                         <input type="text" placeholder="Enter name" id="mpcrbm_user_info_value" class="mpcrbm_order_list__input">
                     </div>
-
 
                 </div>
             </div>
