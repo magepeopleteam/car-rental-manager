@@ -14,7 +14,7 @@ if (!class_exists('MPCRBM_Order_List')) {
         public function order_menu() {
             add_submenu_page('edit.php?post_type=mpcrbm_rent', __('Order List', 'car-rental-manager'), __('Order List', 'car-rental-manager'), 'manage_options', 'mpcrbm_order_list', array($this, 'order_list'));
         }
-        public function filter_selection() {
+        public function filter_selection1() {
             $tour_label = MPCRBM_Function::get_name();
             ?>
             <div class="ttbm_order_filter_area">
@@ -59,55 +59,72 @@ if (!class_exists('MPCRBM_Order_List')) {
 
             ob_start();
             ?>
-            <div class="mpcrbm_order_list_wrapper">
-                <h2 class="mpcrbm_order_list_title">All Booking Orders</h2>
+
                 <div class="mpcrbm_order_list_table_wrap">
                     <table class="mpcrbm_order_list_table">
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>ID</th>
-                            <th>Order No</th>
-                            <th>Pickup Date Time</th>
-                            <th>Return Date Time</th>
-                            <th>Start Place</th>
-                            <th>End Place</th>
-                            <th>Base Price</th>
-                            <th>Status</th>
-                            <th>Payment</th>
-                            <th>Total Price</th>
+                            <th><?php esc_attr_e( 'Name', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'ID', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Order No', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Order User name', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Order User Email', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Order User Phone', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Pickup Date Time', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Return Date Time', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Start Place', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'End Place', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Status', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Payment', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Total Price', 'car-rental-manager' );?></th>
                         </tr>
                         </thead>
                         <tbody>
                         <?php foreach ($orders as $order):
                             $order_id = $order->ID;
-                            $date_raw = get_post_meta($order_id, 'mpcrbm_date', true);
+                            $pickup_date_raw = get_post_meta($order_id, 'mpcrbm_date', true);
+                            $pickup_date_only = date('Y-m-d', strtotime($pickup_date_raw));
+//                            error_log( print_r( [ '$pickup_date_only' => $pickup_date_only ], true ) );
+
                             $return_raw = get_post_meta($order_id, 'return_date_time', true);
 
                             // Format them
-                            $mpcrbm_date = $date_raw ? date('j M Y, g:ia', strtotime($date_raw)) : '';
+                            $mpcrbm_date = $pickup_date_raw ? date('j M Y, g:ia', strtotime($pickup_date_raw)) : '';
                             $return_date_time = $return_raw ? date('j M Y, g:ia', strtotime($return_raw)) : '';
                             $post_id = get_post_meta($order_id, 'mpcrbm_id', true);
                             $name = get_the_title( $post_id );
 
+                            $pickup_place = get_post_meta($order_id, 'mpcrbm_start_place', true);
+                            $billing_name = get_post_meta($order_id, 'mpcrbm_billing_name', true);
+                            $billing_email = get_post_meta($order_id, 'mpcrbm_billing_email', true);
+                            $billing_phone = get_post_meta($order_id, 'mpcrbm_billing_phone', true);
+
 
                             $row = array(
-                                'name'                      => $name,
-                                'mpcrbm_id'                 => get_post_meta($order_id, 'mpcrbm_id', true),
-                                'mpcrbm_order_id'           => get_post_meta($order_id, 'mpcrbm_order_id', true),
-                                'mpcrbm_date'               => $mpcrbm_date,
-                                'return_date_time'          => $return_date_time,
-                                'mpcrbm_start_place'        => get_post_meta($order_id, 'mpcrbm_start_place', true),
-                                'mpcrbm_end_place'          => get_post_meta($order_id, 'mpcrbm_end_place', true),
-                                'mpcrbm_base_price'         => get_post_meta($order_id, 'mpcrbm_base_price', true),
-                                'mpcrbm_order_status'       => get_post_meta($order_id, 'mpcrbm_order_status', true),
-                                'mpcrbm_payment_method'     => get_post_meta($order_id, 'mpcrbm_payment_method', true),
-                                'mpcrbm_tp'                 => get_post_meta($order_id, 'mpcrbm_tp', true),
+                                'name'                          => $name,
+                                'mpcrbm_id'                     => get_post_meta($order_id, 'mpcrbm_id', true),
+                                'mpcrbm_order_id'               => get_post_meta($order_id, 'mpcrbm_order_id', true),
+                                'mpcrbm_billing_name'           => get_post_meta($order_id, 'mpcrbm_billing_name', true),
+                                'mpcrbm_billing_email'          => get_post_meta($order_id, 'mpcrbm_billing_email', true),
+                                'mpcrbm_billing_phone'          => get_post_meta($order_id, 'mpcrbm_billing_phone', true),
+                                'mpcrbm_date'                   => $mpcrbm_date,
+                                'return_date_time'              => $return_date_time,
+                                'mpcrbm_start_place'            => $pickup_place,
+                                'mpcrbm_end_place'              => get_post_meta($order_id, 'mpcrbm_end_place', true),
+                                'mpcrbm_base_price'             => get_post_meta($order_id, 'mpcrbm_base_price', true),
+                                'mpcrbm_order_status'           => get_post_meta($order_id, 'mpcrbm_order_status', true),
+                                'mpcrbm_payment_method'         => get_post_meta($order_id, 'mpcrbm_payment_method', true),
+                                'mpcrbm_tp'                     => get_post_meta($order_id, 'mpcrbm_tp', true),
                             );
                             ?>
                             <tr
-                                    data-filtar-name="<?php echo esc_attr( $name )?>"
-                                    data-filtar-pickup-date="<?php echo esc_attr( $name )?>"
+                                    data-filtar-post-name="<?php echo esc_attr( $name )?>"
+                                    data-filtar-pickup-date="<?php echo esc_attr( $pickup_date_only )?>"
+                                    data-filtar-pickup-place="<?php echo esc_attr( $pickup_place )?>"
+                                    data-filtar-user-name="<?php echo esc_attr( $billing_name )?>"
+                                    data-filtar-user-email="<?php echo esc_attr( $billing_email )?>"
+                                    data-filtar-user-phone="<?php echo esc_attr( $billing_phone )?>"
                             >
                                 <?php foreach ($row as $value): ?>
                                     <td><?php echo esc_html($value); ?></td>
@@ -117,7 +134,6 @@ if (!class_exists('MPCRBM_Order_List')) {
                         </tbody>
                     </table>
                 </div>
-            </div>
             <?php
             return ob_get_clean();
         }
@@ -125,15 +141,79 @@ if (!class_exists('MPCRBM_Order_List')) {
 
 
 
-        public function order_result() {
-            echo self::mpcrbm_display_orders_with_specific_meta();
+        public function order_result() { ?>
+             <div class="mpcrbm_order_list_wrapper">
+             <h2 class="mpcrbm_order_list_title"><?php esc_attr_e( 'All Booking Orders', 'car-rental-manager' );?></h2>
+             <?php
+                echo self:: filter_selection();
+                echo self::mpcrbm_display_orders_with_specific_meta(); ?>
+             </div>
+            <?php
         }
+
+        public static function filter_Selection(){ ?>
+            <div class="mpcrbm_order_list__filter-wrapper">
+
+                <h2 class="mpcrbm_order_list__filter-title">Filter</h2>
+                <div class="mpcrbm_filter_by_date">
+                    <div class="mpcrbm_filter_date mpcrbm_data_selected" id="all">All</div>
+                    <div class="mpcrbm_filter_date" id="today">Today</div>
+                    <div class="mpcrbm_filter_date" id="week">This Week</div>
+                    <div class="mpcrbm_filter_date" id="month">This Month</div>
+                </div>
+
+                <div class="mpcrbm_order_list__filter-row">
+
+                    <div class="mpcrbm_order_list__filter-item">
+                        <label for="mpcrbm_order_list__pickup_place">Pickup Place</label>
+                        <select id="mpcrbm_order_list__pickup_place" class="mpcrbm_order_list__select" >
+                            <option value="all">All</option>
+                            <option value="dhaka">Dhaka</option>
+                            <option value="chittagong">Chittagong</option>
+                            <option value="sylhet">Sylhet</option>
+                        </select>
+                    </div>
+
+                    <div class="mpcrbm_order_list__filter-item">
+                        <label for="mpcrbm_order_list__post_name">Filter by Post Name</label>
+                        <select id="mpcrbm_order_list__post_name" class="mpcrbm_order_list__select" >
+                            <option value="all">All</option>
+                            <option value="Fiat Panda">Fiat Panda</option>
+                            <option value="Cadillac Escalade SUV">Cadillac Escalade SUV</option>
+                            <option value="Mercedes-Benz E220">Mercedes-Benz E220</option>
+                        </select>
+                    </div>
+
+                    <div class="mpcrbm_order_list__filter-item">
+                        <label for="mpcrbm_order_list__start_date">Pickup Date</label>
+                        <input type="date" id="mpcrbm_order_list__start_date" class="mpcrbm_order_list__input">
+                    </div>
+
+                      <div class="mpcrbm_order_list_name_filter-item">
+                        <label for="mpcrbm_order_list__post_name">Filter by User Info</label>
+                        <select name="mpcrbm_user_info_filter_by" id="mpcrbm_user_info_filter_by" class="mpcrbm_order_list_user_info_filter">
+                            <option value="all">All</option>
+                            <option value="name">Name</option>
+                            <option value="email">Email</option>
+                            <option value="phone">Phone</option>
+                        </select>
+                      </div>
+
+                    <div class="mpcrbm_order_list__filter-item" id="mpcrbm_order_list__user_input_container" style="margin-top: 22px">
+                        <input type="text" placeholder="Enter name" id="mpcrbm_user_info_value" class="mpcrbm_order_list__input">
+                    </div>
+
+
+                </div>
+            </div>
+
+        <?php }
 
         public function order_list() {
             ?>
             <div class="wrap">
                 <div class="ttbm_style">
-<!--                    --><?php //$this->filter_selection(); ?>
+
                     <div id="ttbm_order_list_result">
                         <?php $this->order_result(); ?>
                     </div>
