@@ -49,7 +49,7 @@
 								$post_id             = wp_insert_post( $args );
 								$ex_id               = 0;
 //								if ( $custom_post == 'crm_extra_services' ) {
-								if ( $custom_post == 'mpcrbm_extra_services' ) {
+								if ( $custom_post == 'mpcrbm_ex_services' ) {
 									$ex_id = $post_id;
 								}
 								if ( array_key_exists( 'post_data', $dummy_data ) ) {
