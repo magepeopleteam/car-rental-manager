@@ -47,7 +47,9 @@ if (!class_exists('MPCRBM_Order_List')) {
         }
 
         public function __construct() {
-            add_action('admin_menu', array($this, 'order_menu'));
+            if ( is_plugin_active( 'wpcarrentpro/MPCRM_Plugin_Pro.php' ) ) {
+                add_action('admin_menu', array($this, 'order_menu'));
+            }
         }
 
         public function order_menu() {
@@ -93,7 +95,7 @@ if (!class_exists('MPCRBM_Order_List')) {
             $orders = get_posts($args);
 
             if (empty($orders)) {
-                return '<div class="mpcrbm_order_list_wrapper">No bookings found.</div>';
+                return '<div class="mpcrbm_order_list_wrapper">'.esc_attr_e( 'No bookings found.', 'car-rental-manager' ).'</div>';
             }
 
             ob_start();
