@@ -199,7 +199,7 @@ jQuery(document).ready(function($) {
 
                     const targetOffset = $('.mpcrbm_book_now').offset().top;
                     const distance = Math.abs(targetOffset - buttonOffset);
-                    const duration = Math.min(Math.max(distance * 0.5, 300), 1500); // Clamp between 300ms and 1500ms
+                    const duration = Math.min(Math.max(distance * 0.5, 300), 1500);
                     $('html, body').animate({
                         scrollTop: $(window).scrollTop() + distance
                     }, duration);

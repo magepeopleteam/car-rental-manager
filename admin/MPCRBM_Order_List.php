@@ -105,7 +105,7 @@ if (!class_exists('MPCRBM_Order_List')) {
                     <table class="mpcrbm_order_list_table">
                         <thead>
                         <tr>
-                            <th><?php esc_attr_e( 'Name', 'car-rental-manager' );?></th>
+                            <th><?php esc_attr_e( 'Booked Car Details', 'car-rental-manager' );?></th>
                             <th><?php esc_attr_e( 'ID', 'car-rental-manager' );?></th>
                             <th><?php esc_attr_e( 'Order No', 'car-rental-manager' );?></th>
                             <th><?php esc_attr_e( 'Order User name', 'car-rental-manager' );?></th>
@@ -143,9 +143,16 @@ if (!class_exists('MPCRBM_Order_List')) {
                             $order_status = get_post_meta($order_id, 'mpcrbm_order_status', true);
                             $mpcrbm_order_id = get_post_meta($order_id, 'mpcrbm_order_id', true);
 
+                            $extra_service_info = get_post_meta($order_id, 'mpcrbm_service_info', array());
+
+                            $is_extra_service = false;
+                            if( is_array( $extra_service_info[0] ) && !empty( $extra_service_info[0] ) ){
+                                $is_extra_service = true;
+                            }
+
 
                             $row = array(
-                                'name'                          => $name,
+                                'mpcrbm_car_name'                          => $name,
                                 'mpcrbm_id'                     => get_post_meta($order_id, 'mpcrbm_id', true),
                                 'mpcrbm_order_id'               => get_post_meta($order_id, 'mpcrbm_order_id', true),
                                 'mpcrbm_billing_name'           => get_post_meta($order_id, 'mpcrbm_billing_name', true),
@@ -186,7 +193,32 @@ if (!class_exists('MPCRBM_Order_List')) {
                                             } ?>
                                         </select>
                                         </td>
-                                    <?php } else{
+                                    <?php } else if( $key === 'mpcrbm_car_name' ) {
+                                        ?>
+                                            <td>
+                                                <div class="mpcrbm_car_oder_details">
+                                                    <div class="mpcrbm_car_name"><?php echo esc_html($value); ?></div>
+                                                    <?php if( $is_extra_service ){?>
+                                                        <div class="mpcrbm_order_extra_btn_details">
+                                                            <div class="mpcrbm_order_extra_service_btn_holder"><span class="pcrbm_order_extra_service_btn" >Extra Service</span></div>
+                                                            <div class="mpcrbm_order_extra_service_holder" style="display: none">
+                                                                <?php
+                                                                $i = 1;
+                                                                foreach ( $extra_service_info[0] as $val ){
+                                                                    $data = $i.'. '. $val['service_name'].'('.$val['service_quantity'].'X'.$val['service_price'].') ';
+                                                                    ?>
+                                                                    <span class=""><?php echo esc_attr( $data )?></span>
+                                                                    <?php
+                                                                    $i++;
+                                                                }?>
+                                                            </div>
+                                                        </div>
+
+                                                    <?php }?>
+                                                </div>
+
+                                            </td>
+                                   <?php } else{
                                     ?>
                                     <td><?php echo esc_html($value); ?></td>
                                 <?php } endforeach; ?>
