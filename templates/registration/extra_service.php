@@ -20,10 +20,10 @@ if (!$post_id || !get_post($post_id)) {
 }
 
 // Verify user has permission
-if (!current_user_can('read_post', $post_id)) {
+/*if (!current_user_can('read_post', $post_id)) {
 	wp_send_json_error(array('message' => esc_html__('Permission denied', 'car-rental-manager')));
 	wp_die();
-}
+}*/
 
 // Get service data
 $link_wc_product = MPCRBM_Global_Function::get_post_info($post_id, 'link_wc_product');
