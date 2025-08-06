@@ -47,7 +47,9 @@ if (!class_exists('MPCRBM_Order_List')) {
         }
 
         public function __construct() {
-            add_action('admin_menu', array($this, 'order_menu'));
+            if ( is_plugin_active( 'wpcarrentpro/MPCRM_Plugin_Pro.php' ) ) {
+                add_action('admin_menu', array($this, 'order_menu'));
+            }
         }
 
         public function order_menu() {
@@ -93,7 +95,7 @@ if (!class_exists('MPCRBM_Order_List')) {
             $orders = get_posts($args);
 
             if (empty($orders)) {
-                return '<div class="mpcrbm_order_list_wrapper">No bookings found.</div>';
+                return '<div class="mpcrbm_order_list_wrapper">'.esc_attr_e( 'No bookings found.', 'car-rental-manager' ).'</div>';
             }
 
             ob_start();
@@ -124,7 +126,6 @@ if (!class_exists('MPCRBM_Order_List')) {
                             $order_id = $order->ID;
                             $pickup_date_raw = get_post_meta($order_id, 'mpcrbm_date', true);
                             $pickup_date_only = date('Y-m-d', strtotime($pickup_date_raw));
-//                            error_log( print_r( [ '$pickup_date_only' => $pickup_date_only ], true ) );
 
                             $return_raw = get_post_meta($order_id, 'return_date_time', true);
 
@@ -140,6 +141,7 @@ if (!class_exists('MPCRBM_Order_List')) {
                             $billing_phone = get_post_meta($order_id, 'mpcrbm_billing_phone', true);
 
                             $order_status = get_post_meta($order_id, 'mpcrbm_order_status', true);
+                            $mpcrbm_order_id = get_post_meta($order_id, 'mpcrbm_order_id', true);
 
 
                             $row = array(
@@ -159,8 +161,10 @@ if (!class_exists('MPCRBM_Order_List')) {
                                 'mpcrbm_tp'                     => get_post_meta($order_id, 'mpcrbm_tp', true),
                             );
                             ?>
-                            <tr
+                            <tr class="mpcrbm_order_list_display"
                                     data-filtar-post-name="<?php echo esc_attr( $name )?>"
+                                    data-filtar-post-id="<?php echo esc_attr( $post_id )?>"
+                                    data-filtar-order-id="<?php echo esc_attr( $mpcrbm_order_id )?>"
                                     data-filtar-pickup-date="<?php echo esc_attr( $pickup_date_only )?>"
                                     data-filtar-pickup-place="<?php echo esc_attr( $pickup_place )?>"
                                     data-filtar-user-name="<?php echo esc_attr( $billing_name )?>"
@@ -168,9 +172,24 @@ if (!class_exists('MPCRBM_Order_List')) {
                                     data-filtar-user-phone="<?php echo esc_attr( $billing_phone )?>"
                                     data-filtar-order-status="<?php echo esc_attr( $order_status )?>"
                             >
-                                <?php foreach ($row as $value): ?>
+                                <?php foreach ( $row as $key => $value):
+                                    if( $key === 'mpcrbm_order_status' ){ ?>
+                                        <td>
+                                        <select id="mpcrbm_order_status" class="mpcrbm_order_list__select" >
+                                            <?php
+                                            $order_statuses = wc_get_order_statuses();
+                                            foreach ( $order_statuses as $slug => $label ) {
+                                                $is_selected = ( strtolower( $label )=== $order_status ) ? 'selected' : '';
+                                                ?>
+                                                <option value="<?php echo esc_attr( $slug );?> " <?php echo esc_attr( $is_selected );?>><?php echo esc_attr( $label );?></option>
+                                                <?php
+                                            } ?>
+                                        </select>
+                                        </td>
+                                    <?php } else{
+                                    ?>
                                     <td><?php echo esc_html($value); ?></td>
-                                <?php endforeach; ?>
+                                <?php } endforeach; ?>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -196,7 +215,6 @@ if (!class_exists('MPCRBM_Order_List')) {
         public static function filter_Selection(){
 
             $data = self::get_unique_places_and_car_names();
-//            error_log( print_r( [ '$data' => $data ], true ) );
             ?>
             <div class="mpcrbm_order_list__filter-wrapper">
 

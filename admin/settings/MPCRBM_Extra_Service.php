@@ -31,7 +31,7 @@
 					'mpcrbm_meta_box_panel',
 					$label . ' ' . $extra_services_label,
 					array( $this, 'mpcrbm_extra_service' ),
-					'mpcrbm_extra_services',
+					'mpcrbm_ex_services',
 					'normal',
 					'high'
 				);
@@ -39,6 +39,7 @@
 
 			public function mpcrbm_extra_service() {
 				$post_id        = get_the_id();
+
 				$extra_services = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_service_infos', array() );
 				wp_nonce_field( 'mpcrbm_save_extra_service_nonce', 'mpcrbm_ex_service_nonce' );
 				?>
@@ -330,20 +331,24 @@
 					wp_send_json_error( array( 'message' => esc_html__( 'Permission denied', 'car-rental-manager' ) ) );
 					wp_die();
 				}
+
 				// Validate and sanitize service_id
 				$service_id = isset( $_REQUEST['ex_id'] ) ? absint( $_REQUEST['ex_id'] ) : 0;
+
 				if ( ! $service_id ) {
 					wp_send_json_error( array( 'message' => esc_html__( 'Invalid service ID', 'car-rental-manager' ) ) );
 					wp_die();
 				}
 				// Verify the service exists and is of correct type
-				if ( ! get_post( $service_id ) || get_post_type( $service_id ) !== 'mpcrbm_ex_services' ) {
+//				if ( ! get_post( $service_id ) || get_post_type( $service_id ) !== 'mpcrbm_ex_services' ) {
+				if ( ! get_post( $service_id ) ) {
 					wp_send_json_error( array( 'message' => esc_html__( 'Invalid service', 'car-rental-manager' ) ) );
 					wp_die();
 				}
 				// Update the selected service ID
 				update_post_meta( $post_id, 'mpcrbm_extra_services_id', $service_id );
 				ob_start();
+
 				$this->ex_service_table( $service_id, $post_id );
 				$html = ob_get_clean();
 				wp_send_json_success( array(

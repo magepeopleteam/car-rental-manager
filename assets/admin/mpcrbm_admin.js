@@ -5,7 +5,7 @@
 		let parent = $(this).closest('.mpcrbm_extra_services_setting');
 		let target = parent.find('.mpcrbm_extra_service_area');
 		let post_id = $('[name="mpcrbm_post_id"]').val();
-		
+
 		if (ex_id && post_id) {
 			$.ajax({
 				type: 'POST',
