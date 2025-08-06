@@ -203,6 +203,14 @@ jQuery(document).ready(function($) {
         }
     });
 
+    $(document).on('change', '#mpcrbm_is_drop_off', function() {
+        if ($(this).is(':checked')) {
+            $('#mpcrbm_drop_off_location').hide();
+        } else {
+            $('#mpcrbm_drop_off_location').show();
+        }
+    });
+
     // Handle get vehicle button
     $(document).on("click", "#mpcrbm_get_vehicle", function() {
         let parent = $(this).closest(".mpcrbm_transport_search_area");
@@ -224,12 +232,28 @@ jQuery(document).ready(function($) {
         let mpcrbm_enable_view_search_result_page = parent
             .find('[name="mpcrbm_enable_view_search_result_page"]')
             .val();
+
+        let same_end_place = false;
+        if ($('#mpcrbm_is_drop_off').is(':checked')) {
+            same_end_place = true;
+        }
+
         if (price_based === "manual") {
             start_place = document.getElementById("mpcrbm_manual_start_place");
-            end_place = document.getElementById("mpcrbm_manual_end_place");
+            if( same_end_place ){
+                end_place = start_place;
+            }else{
+                end_place = document.getElementById("mpcrbm_manual_end_place");
+            }
+
         } else {
             start_place = document.getElementById("mpcrbm_map_start_place");
-            end_place = document.getElementById("mpcrbm_map_end_place");
+            if( same_end_place ){
+                end_place = start_place;
+            }else{
+                end_place = document.getElementById("mpcrbm_map_end_place");
+            }
+
         }
         let start_date = target_date.val();
         let return_date = return_target_date.val();
