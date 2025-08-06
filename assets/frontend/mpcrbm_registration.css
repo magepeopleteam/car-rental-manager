@@ -1,6 +1,6 @@
  /******************************************************************** ************************************************/
 @media only screen and (min-width: 10px) {
-	div.mpcrbm_transport_search_area {width: 100%;max-width: 1200px;}
+	div.mpcrbm_transport_search_area {width: 100%;max-width: 1200px; padding-bottom: 20px; margin-bottom: 20px;}
 	div.mpcrbm_transport_search_area div.tabsContentNext {padding: 0; margin: 30px 0 0 0; }
 	div.mpcrbm_transport_search_area div.mpcrbm_distance_time { margin: var(--dmp) 0 0 0; }
 	div.mpcrbm_distance_time h6 {font-size: var(--fs);color: var(--d_color);}
