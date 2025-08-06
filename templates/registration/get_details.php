@@ -124,27 +124,25 @@ if (sizeof($all_dates) > 0) {
 
 
             <?php if( $form_style === 'inline' ){?>
-                <div class="mpcrbm_pickup_drop_off_checkbox">
+                <div class="mpcrbm_pickup_drop_off_checkbox inputList">
             <?php }?>
-				<div class="inputList">
-					<label class="fdColumn ">
-						<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pick-up Location', 'car-rental-manager'); ?></span>
-						<?php if ($price_based == 'manual') {
-						?>
-							<?php $all_start_locations = MPCRBM_Function::get_all_start_location(); ?>
-							<select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
-								<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'car-rental-manager'); ?></option>
-								<?php if (sizeof($all_start_locations) > 0) { ?>
-									<?php foreach ($all_start_locations as $start_location) { ?>
-										<option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?></option>
-									<?php } ?>
+				<label class="fdColumn ">
+					<span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pick-up Location', 'car-rental-manager'); ?></span>
+					<?php if ($price_based == 'manual') {
+					?>
+						<?php $all_start_locations = MPCRBM_Function::get_all_start_location(); ?>
+						<select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
+							<option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'car-rental-manager'); ?></option>
+							<?php if (sizeof($all_start_locations) > 0) { ?>
+								<?php foreach ($all_start_locations as $start_location) { ?>
+									<option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?></option>
 								<?php } ?>
-							</select>
-						<?php } else { ?>
-							<input type="text" id="mpcrbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'car-rental-manager'); ?>" value="" />
-						<?php } ?>
-					</label>
-				</div>
+							<?php } ?>
+						</select>
+					<?php } else { ?>
+						<input type="text" id="mpcrbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'car-rental-manager'); ?>" value="" />
+					<?php } ?>
+				</label>
             <?php if( $form_style === 'inline' ){?>
                     <div class="mpcrbm_group">
                         <input type="checkbox" name="mpcrbm_is_drop_off" id="mpcrbm_is_drop_off" class="mpcrbm_my-checkbox mpcrbm_is_drop_off" checked="">
@@ -252,7 +250,6 @@ if (sizeof($all_dates) > 0) {
 				?>
 
                 <?php if( $form_style === 'horizontal' ){?>
-                    <div class="mpcrbm_horizontal_section_divider"></div>
                     <div class="mpcrbm_horizontal_section_label"><?php esc_attr_e( 'Return', 'car-rental-manager');?></div>
                 <?php }?>
 
@@ -266,7 +263,7 @@ if (sizeof($all_dates) > 0) {
 				}
 				?>
 			</div>
-			<div class="mpForm">
+			<div class="mpForm second-row">
 
                 <?php  if( $form_style === 'horizontal' ){ ?>
                 <div class="mpcrbm_horizontal_date_time_input">
@@ -344,7 +341,7 @@ if (sizeof($all_dates) > 0) {
 					<?php if ($price_based == 'fixed_hourly') { ?>
 						<div class="inputList"></div>
 					<?php } ?>
-					<div class="inputList"></div>
+					<!-- <div class="inputList"></div> -->
 				<?php } ?>
 			</div>
 		</div>

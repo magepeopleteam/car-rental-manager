@@ -30,7 +30,7 @@
 	div.mpcrbm_transport_search_area .tabItemNext [class*="circleIcon"]::after {top: 31px;border-color: #EAECEE;left: calc(50% + 31px);}
 	/*********************/
 	div.mpcrbm_transport_search_area .mpcrbm_search_area {padding: 15px;border-radius: var(--dbrl);}
-	div.mpcrbm_transport_search_area .mpcrbm_search_area.inputHorizontal {max-width: 35%;}
+	
 	div.mpcrbm_transport_search_area .mpcrbm_search_area h3 {text-transform: uppercase;color: #152C5B;}
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label {font-weight: 400;color: #152C5B;}
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label .formControl {
@@ -133,7 +133,7 @@
 	 color: #6b7280;
 	 text-transform: uppercase;
 	 letter-spacing: 0.5px;
-	 margin-bottom: 12px;
+	 margin: 12px 0;
  }
  .mpcrbm_horizontal_date_time_input{
 	 display: flex;
