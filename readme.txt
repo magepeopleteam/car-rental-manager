@@ -41,6 +41,9 @@ The plugin is designed to be fully responsive, offering a smooth booking experie
 **⌚ Establish Operating Hours**
 Define the operational schedule for Car services, or opt for 24-hour availability.
 
+## Explore The Demo:
+&#9989;  [Live Demo for Car Rental ](https://car.wprently.com/)
+
 == Installation ==
 Download the car-rental-manager.zip file from the WordPress plugin repository.
 Log in to your WordPress admin dashboard.
