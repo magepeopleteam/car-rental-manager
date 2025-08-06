@@ -157,4 +157,4 @@
 .pcrbm_order_extra_service_btn:hover{
     background-color: #0c8cc5;
 }
-
+.mpcrbm_order_list_wrapper .error, .mpcrbm_order_list_wrapper .notice.notice-warning{ display:none; }

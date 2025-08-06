@@ -26,7 +26,7 @@ Enjoy a user-friendly interface that simplifies Car Rental Solution for administ
 Provide customers with the flexibility to choose immediate pickups or pre-scheduled rides according to their preferences.
 
 **💵 Fare Calculation** 
-Automatic fare calculation based on booking duration, distance, and other customizable parameters.
+Automatic fare calculation based on per day
 
 **💰 Multiple Payment Gateways**
 Easily integrate with popular payment gateways to offer secure and diverse payment options for customers.
@@ -37,11 +37,20 @@ Efficiently manage all car bookings from your WordPress dashboard, with the abil
 **💦 Responsive Design** 
 The plugin is designed to be fully responsive, offering a smooth booking experience across various devices.
 
-**📧 Email Customization**
-Receive order confirmations and deliver PDF receipts easily after successful payments with dual email functions.
 
 **⌚ Establish Operating Hours**
 Define the operational schedule for Car services, or opt for 24-hour availability.
+
+## Explore The Demo:
+&#9989;  [Live Demo for Car Rental ](https://car.wprently.com/)
+
+== Guideline ==
+Shortcode:
+[mpcrbm_booking form='inline' progressbar='no']
+This shortcode will show the form as an inline and  it can be also  horizontal form and progressbar can be yes or no
+[mpcrbm_booking form='horizontal' progressbar='no']
+ 
+
 
 == Installation ==
 Download the car-rental-manager.zip file from the WordPress plugin repository.
@@ -65,40 +74,5 @@ Yes you can offer extra services along with the car
 == External Services ==
 
 This plugin utilizes several external services and libraries to provide its functionality. Here's a detailed breakdown of what services are used and how:
-
-= Google Maps =
-* Service: Google Maps JavaScript API
-* Purpose: Used for location-based features and map display functionality
-* Data transmitted: Location data when maps are loaded and used
-* When: Data is transmitted when map features are accessed
-* Service Provider: Google
-* Terms of Service: https://cloud.google.com/maps-platform/terms
-* Privacy Policy: https://policies.google.com/privacy
-
-= Owl Carousel =
-* Service: Owl Carousel JavaScript Library (Version 2.3.4)
-* Purpose: Used for creating responsive carousel/slider elements in the interface
-* Data transmitted: None (locally hosted JavaScript library)
-* Service Provider: Open source library maintained by Owl Carousel team
-* Repository: https://github.com/OwlCarousel2/OwlCarousel2
-* License: MIT License
-
-= Vimeo API =
-* Service: Vimeo API
-* Purpose: Used for loading video thumbnails when Vimeo videos are embedded
-* Data transmitted: Video IDs when loading video content
-* When: Only when Vimeo video content is displayed
-* Service Provider: Vimeo
-* Terms of Service: https://vimeo.com/terms
-* Privacy Policy: https://vimeo.com/privacy
-
-= Vzaar API =
-* Service: Vzaar Video API
-* Purpose: Used for loading video thumbnails when Vzaar videos are embedded
-* Data transmitted: Video IDs when loading video content
-* When: Only when Vzaar video content is displayed
-* Service Provider: Vzaar
-* Terms of Service: https://vzaar.com/terms
-* Privacy Policy: https://vzaar.com/privacy
 
 Note: All external services are used only when necessary for the functionality requested by the user. No personal data is transmitted without user consent, and all data transmissions are done securely over HTTPS connections.

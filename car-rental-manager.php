@@ -86,6 +86,17 @@
 					);
 					wp_insert_post( $search_page );
 				}
+
+				if ( ! MPCRBM_Global_Function::get_page_by_slug( 'mpcrbm-search-inline' ) ) {
+					$search_page = array(
+						'post_type'    => 'page',
+						'post_name'    => 'mpcrbm-search-inline',
+						'post_title'   => 'Search Transport Inline',
+						'post_content' => '[mpcrbm_booking form="inline"]',
+						'post_status'  => 'publish'
+					);
+					wp_insert_post( $search_page );
+				}
 			}
 
 			public function activation_template_create( $templates ) {
