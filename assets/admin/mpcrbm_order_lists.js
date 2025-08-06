@@ -84,6 +84,12 @@
         filterOrderRows();
     });
 
+    $(document).on('click', '.pcrbm_order_extra_service_btn', function () {
+        $(".mpcrbm_order_extra_service_holder").hide();
+        $(this).parent().siblings().fadeIn();
+
+    });
+
     $(document).on('click', '.mpcrbm_filter_date', function () {
 
         $('.mpcrbm_filter_date').removeClass('mpcrbm_data_selected');

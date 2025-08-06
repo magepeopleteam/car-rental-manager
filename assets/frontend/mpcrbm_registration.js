@@ -199,7 +199,7 @@ jQuery(document).ready(function($) {
 
                     const targetOffset = $('.mpcrbm_book_now').offset().top;
                     const distance = Math.abs(targetOffset - buttonOffset);
-                    const duration = Math.min(Math.max(distance * 0.5, 300), 1500); // Clamp between 300ms and 1500ms
+                    const duration = Math.min(Math.max(distance * 0.5, 300), 1500);
                     $('html, body').animate({
                         scrollTop: $(window).scrollTop() + distance
                     }, duration);
@@ -369,6 +369,8 @@ jQuery(document).ready(function($) {
                                         .done(function () {
                                             mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                             parent.find(".nextTab_next").trigger("click");
+                                            $('#mpcrbm_progress_bar_holder').fadeIn();
+                                            alert('ok');
                                         });
                                 },
                                 error: function (response) {
@@ -403,6 +405,7 @@ jQuery(document).ready(function($) {
                                 success: function (data) {
                                     var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
                                     window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                    $('#mpcrbm_progress_bar_holder').fadeIn();
                                 },
                                 error: function (response) {
                                     console.log(response);
@@ -445,6 +448,7 @@ jQuery(document).ready(function($) {
                                     .done(function () {
                                         mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                         parent.find(".nextTab_next").trigger("click");
+                                        $('#mpcrbm_progress_bar_holder').fadeIn();
                                     });
                             },
                             error: function (response) {
@@ -477,6 +481,7 @@ jQuery(document).ready(function($) {
                             success: function (data) {
                                 var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
                                 window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                $('#mpcrbm_progress_bar_holder').fadeIn();
                             },
                             error: function (response) {
                                 console.log(response);
@@ -834,6 +839,8 @@ jQuery(document).ready(function($) {
             parent.find(".get_details_next_link").slideDown("fast");
             parent.find(".nextTab_prev").trigger("click");
         }
+
+        $('#mpcrbm_progress_bar_holder').fadeOut();
     });
 
     // Handle Summary Previous button click

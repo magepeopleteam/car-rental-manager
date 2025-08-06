@@ -122,4 +122,39 @@
     color: #fff;
     border: 1px solid #06899a;
 }
+
+.mpcrbm_car_oder_details{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.mpcrbm_order_extra_service_holder{
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border: 1px solid #d9d4d4;
+    border-radius: 5px;
+    gap: 5px;
+}
+
+.mpcrbm_order_extra_btn_details{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.mpcrbm_order_extra_service_btn_holder{
+    display: flex;
+    justify-content: center;
+}
+.pcrbm_order_extra_service_btn{
+    padding: 5px 10px;
+    background-color: #0791d0;
+    color: #fff;
+    border: 1px solid #666666;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.pcrbm_order_extra_service_btn:hover{
+    background-color: #0c8cc5;
+}
 .mpcrbm_order_list_wrapper .error, .mpcrbm_order_list_wrapper .notice.notice-warning{ display:none; }
