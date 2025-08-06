@@ -44,6 +44,14 @@ Define the operational schedule for Car services, or opt for 24-hour availabilit
 ## Explore The Demo:
 &#9989;  [Live Demo for Car Rental ](https://car.wprently.com/)
 
+== Guideline ==
+Shortcode:
+[mpcrbm_booking form='inline' progressbar='no']
+This shortcode will show the form as an inline and  it can be also  horizontal form and progressbar can be yes or no
+[mpcrbm_booking form='horizontal' progressbar='no']
+ 
+
+
 == Installation ==
 Download the car-rental-manager.zip file from the WordPress plugin repository.
 Log in to your WordPress admin dashboard.
