@@ -122,3 +122,4 @@
     color: #fff;
     border: 1px solid #06899a;
 }
+.mpcrbm_order_list_wrapper .error, .mpcrbm_order_list_wrapper .notice.notice-warning{ display:none; }
