@@ -180,3 +180,14 @@
 	 gap: 15px;
 	 align-items: center;
  }
+ .mpcrbm_group {
+	 margin: 10px 0 10px 0;
+ }
+
+ .mpcrbm_pickup_drop_off_checkbox{
+	 display: flex;
+	 flex-direction: column;
+	 margin-right: 10px;
+	 min-width: 220px;
+ }
+
