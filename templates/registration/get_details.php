@@ -250,7 +250,6 @@ if (sizeof($all_dates) > 0) {
 				?>
 
                 <?php if( $form_style === 'horizontal' ){?>
-                    <div class="mpcrbm_horizontal_section_divider"></div>
                     <div class="mpcrbm_horizontal_section_label"><?php esc_attr_e( 'Return', 'car-rental-manager');?></div>
                 <?php }?>
 
