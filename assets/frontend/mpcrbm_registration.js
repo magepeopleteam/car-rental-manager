@@ -141,7 +141,9 @@ jQuery(document).ready(function($) {
         let target_summary = parent.find('.mpcrbm_transport_summary');
         let target_extra_service = parent.find('.mpcrbm_extra_service');
         let target_extra_service_summary = parent.find('.mpcrbm_extra_service_summary');
-        
+
+        const buttonOffset = $(this).offset().top;
+
         // Clear all extra services when selecting a new vehicle
         target_extra_service_summary.empty();
         target_extra_service.empty();
@@ -194,6 +196,14 @@ jQuery(document).ready(function($) {
                     target_extra_service.html(data);
                     checkAndToggleBookNowButton(parent);
                     mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+
+                    const targetOffset = $('.mpcrbm_book_now').offset().top;
+                    const distance = Math.abs(targetOffset - buttonOffset);
+                    const duration = Math.min(Math.max(distance * 0.5, 300), 1500); // Clamp between 300ms and 1500ms
+                    $('html, body').animate({
+                        scrollTop: $(window).scrollTop() + distance
+                    }, duration);
+
                 },
                 error: function(response) {
                     console.log(response);
