@@ -180,4 +180,4 @@
 	 gap: 15px;
 	 align-items: center;
  }
-.mpcrbm_order_list_wrapper .error, .mpcrbm_order_list_wrapper .notice{display:none; }
+.mpcrbm_order_list_wrapper .error, .mpcrbm_order_list_wrapper .notice.notice-warning{ display:none; }
