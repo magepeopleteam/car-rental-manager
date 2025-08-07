@@ -179,6 +179,7 @@
 	 grid-template-columns: 200px 1fr auto;
 	 gap: 15px;
 	 align-items: center;
+	 margin-bottom:10px;
  }
  .mpcrbm_group {
 	 margin: 10px 0 10px 0;
@@ -191,4 +192,3 @@
 	 min-width: 220px;
  }
 .mpcrbm_booking_vehicle .woocommerce-Price-amount{font-size:22px;}
-.mpcrbm .mpcrbm_map_search_result .mpcrbm_list_details{gap: 5px;}
