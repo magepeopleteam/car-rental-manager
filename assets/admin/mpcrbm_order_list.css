@@ -158,3 +158,4 @@
     background-color: #0c8cc5;
 }
 .mpcrbm_order_list_wrapper .error, .mpcrbm_order_list_wrapper .notice.notice-warning{ display:none; }
+.mpcrbm_extra_service_settings textarea{width:250px;}
