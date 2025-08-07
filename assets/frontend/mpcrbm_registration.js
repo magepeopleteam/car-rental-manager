@@ -239,6 +239,7 @@ jQuery(document).ready(function($) {
         let two_way = parent.find('[name="mpcrbm_taxi_return"]').val();
         let waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let fixed_time = parent.find('[name="mpcrbm_fixed_hours"]').val();
+
         let mpcrbm_enable_view_search_result_page = parent
             .find('[name="mpcrbm_enable_view_search_result_page"]')
             .val();
@@ -369,8 +370,7 @@ jQuery(document).ready(function($) {
                                         .done(function () {
                                             mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                             parent.find(".nextTab_next").trigger("click");
-                                            $('#mpcrbm_progress_bar_holder').fadeIn();
-                                            alert('ok');
+                                            $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                         });
                                 },
                                 error: function (response) {
@@ -405,7 +405,7 @@ jQuery(document).ready(function($) {
                                 success: function (data) {
                                     var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
                                     window.location.href = cleanedURL; // Redirect to the URL received from the server
-                                    $('#mpcrbm_progress_bar_holder').fadeIn();
+                                    $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                 },
                                 error: function (response) {
                                     console.log(response);
@@ -448,7 +448,7 @@ jQuery(document).ready(function($) {
                                     .done(function () {
                                         mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                         parent.find(".nextTab_next").trigger("click");
-                                        $('#mpcrbm_progress_bar_holder').fadeIn();
+                                        $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                     });
                             },
                             error: function (response) {
@@ -481,7 +481,7 @@ jQuery(document).ready(function($) {
                             success: function (data) {
                                 var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
                                 window.location.href = cleanedURL; // Redirect to the URL received from the server
-                                $('#mpcrbm_progress_bar_holder').fadeIn();
+                                $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                             },
                             error: function (response) {
                                 console.log(response);
