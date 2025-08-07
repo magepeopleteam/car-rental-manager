@@ -13,10 +13,12 @@
 				add_shortcode('mpcrbm_booking_new', array($this, 'mpcrbm_booking_new'));
 			}
 
-            public function mpcrbm_booking_new(){
+            public function mpcrbm_booking_new( $attribute ){
+                $is_title = isset( $attribute['title'] ) ? sanitize_text_field( $attribute['title'] ) : 'yes';
                 ob_start();
                 ?>
                 <div class="booking-container">
+                    <?php if( $is_title === 'yes'){?>
                     <div class="booking-header">
                         <div class="header-content">
                             <div class="header-icon">
@@ -33,6 +35,7 @@
                             <?php esc_attr_e( 'Quick &amp; Easy', 'car-rental-manager' );?>
                         </div>
                     </div>
+                    <?php }?>
 
                     <form class="booking-form" id="bookingForm">
                         <div class="form-row">
