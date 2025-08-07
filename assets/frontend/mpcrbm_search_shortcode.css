@@ -1,0 +1,168 @@
+.booking-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.booking-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 2rem;
+    color: white;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+}
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-icon {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+.header-text h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.5px;
+}
+.header-text p {
+    opacity: 0.9;
+    font-size: 1rem;
+    font-weight: 400;
+}
+.header-badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+
+
+.booking-form {
+    padding: 2rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.form-group {
+    position: relative;
+}
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #374151;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+.input_width{
+    width: 100%;
+}
+.date_input_width{
+    width: calc( 100% - 20px );
+}
+.form-control {
+    padding: 0.875rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background: white;
+    color: #374151;
+    appearance: none;
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+.icon-location {
+    color: #ef4444;
+}
+.dropoff-group {
+    display: block;
+}
+.form-control[type="date"] {
+    background-image: none;
+    padding-right: 1rem;
+    padding-inline-start: unset;
+    padding-inline: 10px;
+}
+.icon-clock {
+    color: #8b5cf6;
+}
+.checkbox-container {
+    margin: 1.5rem 0;
+}
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+.checkbox-label {
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.return-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+}
+.search-button {
+    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 250px;
+    margin: 2rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.search-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
