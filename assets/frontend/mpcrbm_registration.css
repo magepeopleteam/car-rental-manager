@@ -59,7 +59,7 @@
 	div.mpcrbm_transport_search_area .leftSidebar h3 {color: #152C5B; font-size: 24px;font-weight: 700;text-transform: uppercase;}
 	div.mpcrbm_transport_search_area .leftSidebar h6 {color: #152C5B;font-size: 17px;font-weight: 600;}
 	div.mpcrbm_transport_search_area .leftSidebar p {color: #2B1818;font-size: 16px;font-weight: 400;}
-	div.mpcrbm_booking_item h5 {color: #000;font-size: 24px;font-weight: 600}
+	div.mpcrbm_booking_item h5 {color: #000;font-size: 20px;font-weight: 600}
 	div.mpcrbm_booking_item h4 {color: #000;font-size: 22px;font-weight: 600;margin: 0 0 var(--dmp_xs) 0;}
 	.mpcrbm_booking_item_hidden{display: none !important;}
 	div.mpcrbm_transport_search_area ul.list_inline_two li {border: none;color: #626262;font-weight: 400;font-size: 14px;}
