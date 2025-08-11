@@ -85,6 +85,7 @@
                 let mpcrbm_currency_thousands_separator = "";
                 let mpcrbm_num_of_decimal = "";
                 let mpcrbm_ajax_url = "' . esc_url( admin_url( 'admin-ajax.php' ) ) . '";
+                let mpcrbm_site_url = "' . esc_url( site_url() ) . '";
                 let mpcrbm_empty_image_url = "' . esc_attr( MPCRBM_PLUGIN_URL . '/mp_global/assets/images/no_image.png' ) . '";
                 let mpcrbm_date_format = "' . esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'date_format', 'D d M , yy' ) ) . '";
                 let mpcrbm_date_format_without_year = "' . esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'date_format_without_year', 'D d M' ) ) . '";

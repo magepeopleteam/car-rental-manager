@@ -480,7 +480,7 @@ jQuery(document).ready(function($) {
                             },
                             success: function (data) {
                                 var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
-                                window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                window.location.href = ''+mpcrbm_site_url+'/transport-result/'; // Redirect to the URL received from the server
                                 $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                             },
                             error: function (response) {

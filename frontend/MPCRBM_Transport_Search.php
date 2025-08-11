@@ -46,6 +46,7 @@
 			}
 
 			public function mpcrbm_get_map_search_result() {
+                $is_redirect = 'no';
 				include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 				die(); // Ensure further execution stops after outputting the JavaScript
 			}
@@ -64,6 +65,7 @@
 				$distance = isset( $_COOKIE['mpcrbm_distance'] ) ? absint( $_COOKIE['mpcrbm_distance'] ) : '';
 				$duration = isset( $_COOKIE['mpcrbm_duration'] ) ? absint( $_COOKIE['mpcrbm_duration'] ) : '';
 				// if ($distance && $duration) {
+                $is_redirect = 'yes';
 				include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 				// }
 				$content = ob_get_clean(); // Get the buffered content and clean the buffer
@@ -73,10 +75,10 @@
 				session_write_close(); // Close the session to release the lock
 				// Sanitize and validate redirect URL
 				$redirect_url = isset( $_POST['mpcrbm_enable_view_search_result_page'] )
-					? esc_url_raw( sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_view_search_result_page'] ) ) )
+					?  sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_view_search_result_page'] ) )
 					: '';
 				if ( $redirect_url == '' ) {
-					$redirect_url = 'mpcrbm-search';
+					$redirect_url = 'transport-result';
 				}
 				echo wp_json_encode( $redirect_url );
 				die(); // Ensure further execution stops after outputting the JavaScript
