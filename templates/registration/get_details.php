@@ -23,6 +23,20 @@ $mpcrbm_schedule = [];
 $min_schedule_value = 0;
 $max_schedule_value = 24;
 $loop = 1;
+
+$general_settings_data       = get_option( 'mpcrbm_general_settings' );
+error_log( print_r( [ 'search_title_display' => $general_settings_data['search_title_display'], 'search_subtitle_display' => $general_settings_data['search_subtitle_display'] ], true ) );
+
+$title = 'Car Rental Booking';
+$sub_title = 'Find and reserve your perfect vehicle';
+if( isset( $general_settings_data['search_title_display'] ) &&  !empty( $general_settings_data['search_title_display']  ) ){
+    $title = $general_settings_data['search_title_display']  ;
+}
+if( isset( $general_settings_data['search_subtitle_display'] ) &&  !empty( $general_settings_data['search_subtitle_display']  ) ){
+    $sub_title = isset( $general_settings_data['search_subtitle_display'] ) ;
+}
+
+
 foreach ($mpcrbm_all_transport_id as $key => $value) {
 	if (MPCRBM_Global_Function::get_post_info($value, 'mpcrbm_available_for_all_time') == 'on') {
 		$mpcrbm_available_for_all_time = true;
@@ -125,12 +139,12 @@ if (sizeof($all_dates) > 0) {
                             </svg>
                         </div>
                         <div class="header-text">
-                            <h2><?php esc_attr_e( 'Car Rental Booking', 'car-rental-manager' );?></h2>
+                            <h2 id="mpcrbm_title_change"><?php echo esc_attr( $title  );?></h2>
                             <p><?php esc_attr_e( 'Find and reserve your perfect vehicle', 'car-rental-manager' );?></p>
                         </div>
                     </div>
                     <div class="header-badge">
-                        <?php esc_attr_e( 'Quick &amp; Easy', 'car-rental-manager' );?>
+                        <?php echo esc_attr( $sub_title );?>
                     </div>
                 </div>
             <?php }?>
@@ -371,12 +385,6 @@ if (sizeof($all_dates) > 0) {
                 </div>
 
                 <div class="mprcbm_search_button_holder inputList ">
-<!--                    <span>&nbsp;</span>-->
-                   <!-- <button type="button" class="_themeButton_fullWidth" id="mpcrbm_get_vehicle">
-                        <span class="fas fa-search-location mR_xs"></span>
-                        <?php /*esc_html_e('Search', 'car-rental-manager'); */?>
-                    </button>-->
-
                     <button type="button" class="mpcrbm_search-button" id="mpcrbm_get_vehicle">
                         <svg class="mprcbm_search_icon " viewBox="0 0 24 24">
                             <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>

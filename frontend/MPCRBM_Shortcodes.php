@@ -36,7 +36,7 @@
 					'progressbar'=>'yes',
 					'map'=>'yes',
 					'form'=>'horizontal',
-					'title'=>'no',
+					'title'=>'yes',
 				);
 			}
 		}
