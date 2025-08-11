@@ -9,7 +9,6 @@
     align-items: center;
     justify-content: space-between;
     min-height: 80px;
-    margin-bottom: 20px;
     border-top-left-radius: var(--dbrl);
     border-top-right-radius: var(--dbrl);
 }
