@@ -269,7 +269,23 @@
 								'on'  => esc_html__( 'On', 'car-rental-manager' ),
 								'off' => esc_html__( 'Off', 'car-rental-manager' )
 							)
-						)
+						),
+						array(
+							'name'    => 'search_title_display',
+							'label'   => esc_html__( 'Search form title', 'car-rental-manager' ),
+							'desc'    => esc_html__( 'Search form title Edit', 'car-rental-manager' ),
+                            'type'        => 'text',
+                            'default' => 'Car Rental Booking',
+                            'placeholder' => 'Car Rental Booking'
+						),
+						array(
+							'name'    => 'search_subtitle_display',
+							'label'   => esc_html__( 'Search form subtitle', 'car-rental-manager' ),
+							'desc'    => esc_html__( 'Search form subtitle Edit', 'car-rental-manager' ),
+                            'type'        => 'text',
+                            'default' => 'Find and Reserve your Perfect vehicle',
+                            'placeholder' => 'Find and Reserve your Perfect vehicle'
+						),
 					) ),
 					'mpcrbm_global_settings'  => apply_filters( 'mpcrbm_filter_global_settings', array(
 						array(

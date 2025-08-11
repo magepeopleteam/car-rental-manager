@@ -1,0 +1,93 @@
+
+
+.booking-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 2rem;
+    color: white;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 80px;
+    margin-bottom: 20px;
+    border-top-left-radius: var(--dbrl);
+    border-top-right-radius: var(--dbrl);
+}
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-icon {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+.header-text h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.5px;
+}
+.header-text p {
+    opacity: 0.9;
+    font-size: 1rem;
+    font-weight: 400;
+}
+.header-badge {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.mpcrbm_search_holder{
+    padding: var(--dmp);
+    background-color: var(--color_white);
+    margin-top: -1px;
+    border-bottom-left-radius: var(--dbrl);
+    border-bottom-right-radius: var(--dbrl);
+}
+.mprcbm_search_button_holder{
+    display: flex;
+    justify-content: center;
+}
+
+.mpcrbm_search-button {
+    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 250px;
+    margin: 2rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.mprcbm_search_icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.mprcbm_checkbox_group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-top: 15px;
+}

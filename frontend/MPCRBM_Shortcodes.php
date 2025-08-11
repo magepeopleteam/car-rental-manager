@@ -11,6 +11,7 @@
 			public function __construct() {
 				add_shortcode('mpcrbm_booking', array($this, 'mpcrbm_booking'));
 			}
+
 			public function mpcrbm_booking($attribute) {
 				$defaults = $this->default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
@@ -35,6 +36,7 @@
 					'progressbar'=>'yes',
 					'map'=>'yes',
 					'form'=>'horizontal',
+					'title'=>'yes',
 				);
 			}
 		}

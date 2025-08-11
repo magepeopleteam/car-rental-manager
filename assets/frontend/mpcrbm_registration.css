@@ -29,7 +29,11 @@
 	div.mpcrbm_transport_search_area .tabItemNext.active .circleTitle {font-weight: 600;color: #152C5B;}
 	div.mpcrbm_transport_search_area .tabItemNext [class*="circleIcon"]::after {top: 31px;border-color: #EAECEE;left: calc(50% + 31px);}
 	/*********************/
-	div.mpcrbm_transport_search_area .mpcrbm_search_area {padding: 15px;border-radius: var(--dbrl);}
+	div.mpcrbm_transport_search_area .mpcrbm_search_area {
+		/*padding: 15px;*/
+		border-radius: var(--dbrl);
+		border: 1px solid var(--color_border);
+	}
 	
 	div.mpcrbm_transport_search_area .mpcrbm_search_area h3 {text-transform: uppercase;color: #152C5B;}
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label {font-weight: 400;color: #152C5B;}
@@ -182,7 +186,7 @@
 	 margin-bottom:10px;
  }
  .mpcrbm_group {
-	 margin: 10px 0 10px 0;
+	 margin: 20px 0 10px 0;
  }
 
  .mpcrbm_pickup_drop_off_checkbox{
