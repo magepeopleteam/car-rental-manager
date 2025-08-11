@@ -25,15 +25,14 @@ $max_schedule_value = 24;
 $loop = 1;
 
 $general_settings_data       = get_option( 'mpcrbm_general_settings' );
-error_log( print_r( [ 'search_title_display' => $general_settings_data['search_title_display'], 'search_subtitle_display' => $general_settings_data['search_subtitle_display'] ], true ) );
 
 $title = 'Car Rental Booking';
 $sub_title = 'Find and reserve your perfect vehicle';
 if( isset( $general_settings_data['search_title_display'] ) &&  !empty( $general_settings_data['search_title_display']  ) ){
-    $title = $general_settings_data['search_title_display']  ;
+    $title = $general_settings_data['search_title_display'];
 }
 if( isset( $general_settings_data['search_subtitle_display'] ) &&  !empty( $general_settings_data['search_subtitle_display']  ) ){
-    $sub_title = isset( $general_settings_data['search_subtitle_display'] ) ;
+    $sub_title = $general_settings_data['search_subtitle_display'];
 }
 
 
@@ -125,7 +124,7 @@ if (sizeof($all_dates) > 0) {
 ?>
 	<div class="<?php echo esc_attr($area_class); ?> ">
 
-		<div class=" <?php echo esc_attr( $d_class );?> mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
+		<div class=" <?php echo esc_attr( $d_class );?> mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>" style="width: 100%">
             <?php if( $form_style === 'horizontal' ){?>
 <!--            <h2 class="mpcrbm_horizontal_booking_title">--><?php //esc_attr_e( 'Car Rental', 'car-rental-manager');?><!--</h2>-->
             <?php }?>
@@ -140,11 +139,11 @@ if (sizeof($all_dates) > 0) {
                         </div>
                         <div class="header-text">
                             <h2 id="mpcrbm_title_change"><?php echo esc_attr( $title  );?></h2>
-                            <p><?php esc_attr_e( 'Find and reserve your perfect vehicle', 'car-rental-manager' );?></p>
+                            <p><?php echo esc_attr( $sub_title );?></p>
                         </div>
                     </div>
                     <div class="header-badge">
-                        <?php echo esc_attr( $sub_title );?>
+                        <?php esc_attr_e( 'Quick &amp; Easy', 'car-rental-manager' );?>
                     </div>
                 </div>
             <?php }?>
