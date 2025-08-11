@@ -37,6 +37,7 @@
 					'map'=>'yes',
 					'form'=>'horizontal',
 					'title'=>'yes',
+					'result_page'=>'no',
 				);
 			}
 		}

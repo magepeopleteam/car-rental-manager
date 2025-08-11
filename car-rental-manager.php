@@ -98,6 +98,16 @@
 					);
 					wp_insert_post( $search_page );
 				}
+
+				if ( ! MPCRBM_Global_Function::get_page_by_slug( 'transport-result' ) ) {
+					$search_page = array(
+						'post_type'    => 'page',
+						'post_name'    => 'transport-result',
+						'post_title'   => 'Car Search Result',
+						'post_status'  => 'publish'
+					);
+					wp_insert_post( $search_page );
+				}
 			}
 
 			public function activation_template_create( $templates ) {

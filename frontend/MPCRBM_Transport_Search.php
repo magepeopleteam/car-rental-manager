@@ -37,6 +37,7 @@
 				$map         = $display_map == 'disable' ? 'no' : $map;
 
                 $is_title    = $params['title'] ?: 'no';;
+                $is_result_page    = $params['result_page'] ?: 'no';;
 
 				ob_start();
 				do_shortcode( '[shop_messages]' );
