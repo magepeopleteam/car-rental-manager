@@ -16,6 +16,7 @@
     align-items: center;
     justify-content: space-between;
     min-height: 80px;
+    margin-bottom: 20px;
 }
 .header-content {
     display: flex;

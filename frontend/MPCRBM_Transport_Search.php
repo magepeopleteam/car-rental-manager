@@ -35,6 +35,9 @@
 				$form_style  = $params['form'] ?: 'horizontal';
 				$map         = $params['map'] ?: 'yes';
 				$map         = $display_map == 'disable' ? 'no' : $map;
+
+                $is_title    = $params['title'] ?: 'no';;
+
 				ob_start();
 				do_shortcode( '[shop_messages]' );
 				echo wp_kses_post( ob_get_clean() );

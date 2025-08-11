@@ -104,10 +104,31 @@ if (sizeof($all_dates) > 0) {
 	$waiting_time_check = MPCRBM_Function::get_general_settings('taxi_waiting_time', 'enable');
 ?>
 	<div class="<?php echo esc_attr($area_class); ?> ">
+
 		<div class="_dLayout mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
             <?php if( $form_style === 'horizontal' ){?>
             <h2 class="mpcrbm_horizontal_booking_title"><?php esc_attr_e( 'Car Rental', 'car-rental-manager');?></h2>
             <?php }?>
+
+            <?php if( $is_title === 'yes'){?>
+                <div class="booking-header">
+                    <div class="header-content">
+                        <div class="header-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"></path>
+                            </svg>
+                        </div>
+                        <div class="header-text">
+                            <h2><?php esc_attr_e( 'Car Rental Booking', 'car-rental-manager' );?></h2>
+                            <p><?php esc_attr_e( 'Find and reserve your perfect vehicle', 'car-rental-manager' );?></p>
+                        </div>
+                    </div>
+                    <div class="header-badge">
+                        <?php esc_attr_e( 'Quick &amp; Easy', 'car-rental-manager' );?>
+                    </div>
+                </div>
+            <?php }?>
+
 			<div class="mpForm">
 				<?php wp_nonce_field('mpcrbm_transportation_type_nonce', 'mpcrbm_transportation_type_nonce'); ?>
 				<input type="hidden" id="mpcrbm_km_or_mile" name="mpcrbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
