@@ -342,7 +342,7 @@ jQuery(document).ready(function($) {
                 ).done(function (startCoordinates, endCoordinates) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
-                        if ( !mpcrbm_enable_view_search_result_page) {
+                        if ( mpcrbm_enable_view_search_result_page == 'No' ) {
                             actionValue = "mpcrbm_get_map_search_result";
                             
                             $.ajax({
@@ -428,7 +428,7 @@ jQuery(document).ready(function($) {
                 if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                     
                     let actionValue;
-                    if ( !mpcrbm_enable_view_search_result_page) {
+                    if ( mpcrbm_enable_view_search_result_page === 'No' ) {
                         actionValue = "mpcrbm_get_map_search_result";
                        
                         $.ajax({
