@@ -123,12 +123,7 @@ if (sizeof($all_dates) > 0) {
 	$waiting_time_check = MPCRBM_Function::get_general_settings('taxi_waiting_time', 'enable');
 ?>
 	<div class="<?php echo esc_attr($area_class); ?> ">
-
 		<div class=" <?php echo esc_attr( $d_class );?> mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>" style="width: 100%">
-            <?php if( $form_style === 'horizontal' ){?>
-<!--            <h2 class="mpcrbm_horizontal_booking_title">--><?php //esc_attr_e( 'Car Rental', 'car-rental-manager');?><!--</h2>-->
-            <?php }?>
-
             <?php if( $is_title === 'yes'){?>
                 <div class="booking-header">
                     <div class="header-content">
@@ -154,7 +149,7 @@ if (sizeof($all_dates) > 0) {
                     <input type="hidden" id="mpcrbm_km_or_mile" name="mpcrbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
                     <input type="hidden" name="mpcrbm_price_based" value="<?php echo esc_attr($price_based); ?>" />
                     <input type="hidden" name="mpcrbm_post_id" value="" />
-                    <input type="hidden" id="mpcrbm_enable_view_search_result_page" name="mpcrbm_enable_view_search_result_page" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_view_search_result_page' ) ); ?>" />
+                    <input type="hidden" id="mpcrbm_enable_view_search_result_page" name="mpcrbm_enable_view_search_result_page" value="<?php echo MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page') ?>" />
                     <input type='hidden' id="mpcrbm_enable_return_in_different_date" name="mpcrbm_enable_return_in_different_date" value="yes" />
                     <input type="hidden" id="mpcrbm_enable_filter_via_features" name="mpcrbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
                     <input type="hidden" id="mpcrbm_buffer_end_minutes" name="mpcrbm_buffer_end_minutes" value="<?php echo esc_attr( $buffer_end_minutes ); ?>" />

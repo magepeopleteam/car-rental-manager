@@ -339,7 +339,7 @@ jQuery(document).ready(function($) {
                 ).done(function (startCoordinates, endCoordinates) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
-                        if (!mpcrbm_enable_view_search_result_page) {
+                        if ( mpcrbm_enable_view_search_result_page == 'no' ) {
                             actionValue = "mpcrbm_get_map_search_result";
                             
                             $.ajax({
@@ -418,7 +418,7 @@ jQuery(document).ready(function($) {
                 if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                     
                     let actionValue;
-                    if (!mpcrbm_enable_view_search_result_page) {
+                    if ( mpcrbm_enable_view_search_result_page == 'no' ) {
                         actionValue = "mpcrbm_get_map_search_result";
                        
                         $.ajax({
@@ -479,8 +479,8 @@ jQuery(document).ready(function($) {
                                 mpcrbm_loader(target);
                             },
                             success: function (data) {
-                                var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
-                                window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                window.location.href = data.replace(/"/g, ""); // Remove all double quotes from the string
+                                // window.location.href = cleanedURL; // Redirect to the URL received from the server
                                 $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                             },
                             error: function (response) {

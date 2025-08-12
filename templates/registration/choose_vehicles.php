@@ -360,8 +360,13 @@ if (!empty($mpcrbm_all_transport_id)) {
 
 $mpcrbm_bags = !empty($mpcrbm_bags) ? max($mpcrbm_bags) : 0;
 $mpcrbm_passengers = !empty($mpcrbm_passengers) ? max($mpcrbm_passengers) : 0;
+
+if( $is_redirect === 'yes' ){
 ?>
+<div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result">
+<?php } else {?>
 <div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result">
+<?php }?>
     <input type="hidden" name="mpcrbm_post_id" value="" data-price="" />
     <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
     <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
@@ -453,7 +458,8 @@ $mpcrbm_passengers = !empty($mpcrbm_passengers) ? max($mpcrbm_passengers) : 0;
 <div data-tabs-next="#mpcrbm_order_summary" class="mpcrbm_order_summary">
     <div class="sticky_section">
         <div class="flexWrap">
-            <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
+            <?php
+            include MPCRBM_Function::template_path("registration/summary.php"); ?>
             <div class="mainSection ">
                 <div class="sticky_depend_area fdColumn mpcrbm_checkout_area">
                 </div>

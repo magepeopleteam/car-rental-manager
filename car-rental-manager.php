@@ -25,6 +25,7 @@
 				add_filter( 'theme_page_templates', array( $this, 'activation_template_create' ), 10, 3 );
 				add_filter( 'template_include', array( $this, 'change_page_template' ), 99 );
 				add_action( 'admin_init', array( $this, 'assign_template_to_page' ) );
+                add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
 			}
 
 			private function load_plugin(): void {
@@ -97,11 +98,21 @@
 					);
 					wp_insert_post( $search_page );
 				}
+
+				if ( ! MPCRBM_Global_Function::get_page_by_slug( 'transport-result' ) ) {
+					$search_page = array(
+						'post_type'    => 'page',
+						'post_name'    => 'transport-result',
+						'post_title'   => 'Car Search Result',
+						'post_status'  => 'publish'
+					);
+					wp_insert_post( $search_page );
+				}
 			}
 
 			public function activation_template_create( $templates ) {
 				$template_path                    = 'transport_result.php';
-				$page_templates[ $template_path ] = 'Transport Result';
+				$page_templates[ $template_path ] = 'Car Result';
 				foreach ( $page_templates as $tk => $tv ) {
 					$templates[ $tk ] = $tv;
 				}
@@ -113,7 +124,7 @@
 			public function change_page_template( $template ) {
 				$page_temp_slug                   = get_page_template_slug( get_the_ID() );
 				$template_path                    = 'transport_result.php';
-				$page_templates[ $template_path ] = 'Transport Result';
+				$page_templates[ $template_path ] = 'Car Result';
 				if ( isset( $page_templates[ $page_temp_slug ] ) ) {
 					$template = plugin_dir_path( __FILE__ ) . '/' . $page_temp_slug;
 				}
@@ -129,6 +140,21 @@
 					update_post_meta( $page->ID, '_wp_page_template', 'transport_result.php' );
 				}
 			}
+
+            /**
+             * Enqueue frontend assets
+             */
+            public function enqueue_frontend_assets() {
+                if (is_page_template('transport-result.php')) {
+                    wp_enqueue_style(
+                        'mptbm-file-upload',
+                        MPCRBM_PLUGIN_URL . '/assets/css/file-upload.css',
+                        array(),
+                        MPTBM_PLUGIN_VERSION
+                    );
+                }
+            }
+
 		}
 		new MPCRBM_Plugin();
 	}
