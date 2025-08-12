@@ -37,7 +37,6 @@
 				$map         = $display_map == 'disable' ? 'no' : $map;
 
                 $is_title    = $params['title'] ?: 'no';;
-                $is_result_page    = $params['result_page'] ?: 'no';;
 
 				ob_start();
 				do_shortcode( '[shop_messages]' );
@@ -52,7 +51,7 @@
 				die(); // Ensure further execution stops after outputting the JavaScript
 			}
 
-			public function mpcrbm_get_map_search_result_redirect() {
+			public function mpcrbm_get_map_search_result_redirect_old() {
 				ob_start(); // Start output buffering
 				// Check if nonce is set
 				if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
@@ -85,7 +84,55 @@
 				die(); // Ensure further execution stops after outputting the JavaScript
 			}
 
-			public function mpcrbm_get_end_place() {
+            public static function is_valid_page_slug( $slug ) {
+                if ( empty( $slug ) ) {
+                    return false;
+                }
+                $page = get_page_by_path( $slug );
+                return ( $page !== null );
+            }
+
+            public function mpcrbm_get_map_search_result_redirect() {
+                ob_start(); // Output buffering শুরু
+
+                // Security check - nonce verify
+                if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
+                    wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
+                }
+                $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
+                if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
+                    wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
+                }
+
+                // Cookie থেকে distance/duration
+                $distance = isset( $_COOKIE['mpcrbm_distance'] ) ? absint( $_COOKIE['mpcrbm_distance'] ) : '';
+                $duration = isset( $_COOKIE['mpcrbm_duration'] ) ? absint( $_COOKIE['mpcrbm_duration'] ) : '';
+
+                $is_redirect = 'yes';
+                include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
+
+                $content = ob_get_clean(); // Buffer content get & clean
+
+                session_start();
+                $_SESSION['custom_content'] = $content;
+                session_write_close();
+
+                // Plugin settings থেকে search result page slug আনো
+                $search_page_slug = isset( $_POST['mpcrbm_enable_view_search_result_page'] )
+                    ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_view_search_result_page'] ) )
+                    : '';
+
+                if ( ! self::is_valid_page_slug( $search_page_slug ) ) {
+                    $search_page_slug = 'transport-result';
+                }
+                $redirect_url = home_url( '/' . $search_page_slug . '/' );
+
+                echo wp_json_encode( $redirect_url );
+                wp_die();
+            }
+
+
+            public function mpcrbm_get_end_place() {
 				include( MPCRBM_Function::template_path( 'registration/get_end_place.php' ) );
 				die();
 			}

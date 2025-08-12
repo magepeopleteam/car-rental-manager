@@ -183,7 +183,7 @@
 							'label'       => $label . ' ' . esc_html__( 'Show Search Result In A Different Page', 'car-rental-manager' ),
 							'desc'        => esc_html__( 'Enter page slug. Leave blank if you dont want to enable this setting', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
 							'type'        => 'text',
-							'placeholder' => 'yes'
+							'placeholder' => 'mpcrbm-search'
 						),
 						array(
 							'name'        => 'enable_view_find_location_page',
