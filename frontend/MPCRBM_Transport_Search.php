@@ -100,6 +100,8 @@
                     wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
                 }
                 $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
+                $progress_bar = isset( $_POST['progress_bar'] ) ? sanitize_text_field( wp_unslash( $_POST['progress_bar'] ) ) : '';
+
                 if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                     wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
                 }
@@ -115,6 +117,7 @@
 
                 session_start();
                 $_SESSION['custom_content'] = $content;
+                $_SESSION['progress_bar'] = $progress_bar;
                 session_write_close();
 
                 // Plugin settings থেকে search result page slug আনো

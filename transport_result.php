@@ -10,14 +10,19 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Get stored content
 $content = $_SESSION['custom_content'] ?? '';
+$progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
+if( $progress_bar === 'no' ){
+    $progressbar_class = 'dNone';
+}else{
+    $progressbar_class = '';
+}
 
 // Redirect to homepage if empty
 if (empty($content)) {
     wp_redirect(home_url());
     exit;
 }
-$progressbar = $progressbar ?? 'yes';
-$progressbar_class = $progressbar == 'yes' ? '' : 'dNone';
+
 // Remove content from session after use
 unset($_SESSION['custom_content']);
 
@@ -35,7 +40,7 @@ get_header();
     <main id="maincontent" class="transport-result-page">
         <div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto">
             <div class="mpcrbm_tab_next _mT">
-                <div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" style="display: flex">
+                <div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
                     <div data-tabs-target-next="#mpcrbm_pick_up_details" class="tabItemNext active" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                         <h4 class="circleIcon" data-class>
                             <span class="mp_zero" data-icon></span>

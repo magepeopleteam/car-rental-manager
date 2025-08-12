@@ -38,8 +38,10 @@
 
                     session_start();
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
-                    if (isset($_SESSION['custom_content'])) {
+                    $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
+                    if ( isset($_SESSION['custom_content'] ) ) {
                         unset($_SESSION['custom_content']);
+                        unset($_SESSION['progress_bar']);
                     }
                     session_write_close();
 
@@ -48,11 +50,16 @@
                     if ( !empty( $result_data) ) {
                         $progressbar_class = '';
 
-                        $content = '<main id="maincontent" class="transport-result-page" style="min-width: 1200px">';
-                        $content .= '<div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto">';
+                        $content = '<main id="maincontent" class="transport-result-page" style=" max-width: 1200px;">';
+                        $content .= '<div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto; width: 100%">';
                         $content .= '<div class="mpcrbm_tab_next _mT">';
 
-                        $content .= '<div class="tabListsNext ' . esc_attr($progressbar_class) . '" id="mpcrbm_progress_bar_holder" style="display: flex">';
+                        if( $progress_bar === 'no' ){
+                            $progressbar_class = 'dNone';
+                        }else{
+                            $progressbar_class = '';
+                        }
+                        $content .= '<div class="tabListsNext ' . esc_attr($progressbar_class) . '" id="mpcrbm_progress_bar_holder">';
                         $content .= '<div data-tabs-target-next="#mpcrbm_pick_up_details" class="tabItemNext active" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                                     <h4 class="circleIcon" data-class>
                                         <span class="mp_zero" data-icon></span>

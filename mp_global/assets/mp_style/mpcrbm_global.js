@@ -440,7 +440,12 @@ function mpcrbm_sticky_management() {
         let num_of_tab = target.children('[data-tabs-target-next].active').length + 1;
         let targetTab = target.children('[data-tabs-target-next]:nth-child(' + num_of_tab + ')').data('tabs-target-next');
         active_next_tab(parent, targetTab);
-        $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+
+        let progress_bar = $("#mpcrbm_progress_bar_display").val().trim();
+        let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
+        if( progress_bar === 'yes' && redirect_another === 'no' ) {
+            $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+        }
     });
     $(document).on('click', '.mpcrbm .mpcrbm_tab_next .nextTab_prev', function () {
         let parent = $(this).closest('.mpcrbm_tab_next');
