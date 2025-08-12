@@ -8,9 +8,20 @@
 	}
 	$progressbar = $progressbar ?? 'yes';
 	$progressbar_class = $progressbar == 'yes' ? '' : 'dNone';
+
+    $search_page_slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page');
+    $redirect = 'yes';
+    if( $search_page_slug === '' ){
+        $redirect = 'no';
+    }
+
 ?>
 	<div class="mpcrbm mpcrbm_transport_search_area">
 		<div class="mpcrbm_tab_next _mT">
+
+            <input type="hidden" name="mpcrbm_progress_bar_display" id="mpcrbm_progress_bar_display" value="<?php echo esc_attr( $progressbar ); ?>">
+            <input type="hidden" name="mpcrbm_redirect_another_page" id="mpcrbm_redirect_another_page" value="<?php echo esc_attr( $redirect ); ?>">
+
 			<div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" style="display: none">
 				<div data-tabs-target-next="#mpcrbm_pick_up_details" class="tabItemNext active" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
 					<h4 class="circleIcon" data-class>
@@ -34,6 +45,7 @@
 					<h6 class="circleTitle" data-class><?php esc_html_e('Place Order', 'car-rental-manager'); ?></h6>
 				</div>
 			</div>
+
 			<div class="tabsContentNext">
 				<div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
                     <?php //echo MPCRBM_Function::template_path('registration/get_details.php'); ?>

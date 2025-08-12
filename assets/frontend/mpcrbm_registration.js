@@ -240,6 +240,9 @@ jQuery(document).ready(function($) {
         let waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let fixed_time = parent.find('[name="mpcrbm_fixed_hours"]').val();
 
+        let progress_bar = $("#mpcrbm_progress_bar_display").val();
+        let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
+
         let mpcrbm_enable_view_search_result_page = parent
             .find('[name="mpcrbm_enable_view_search_result_page"]')
             .val();
@@ -339,7 +342,7 @@ jQuery(document).ready(function($) {
                 ).done(function (startCoordinates, endCoordinates) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
-                        if ( mpcrbm_enable_view_search_result_page == 'no' ) {
+                        if ( !mpcrbm_enable_view_search_result_page) {
                             actionValue = "mpcrbm_get_map_search_result";
                             
                             $.ajax({
@@ -370,7 +373,10 @@ jQuery(document).ready(function($) {
                                         .done(function () {
                                             mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                             parent.find(".nextTab_next").trigger("click");
-                                            $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+
+                                            if( progress_bar === 'yes' ) {
+                                                $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+                                            }
                                         });
                                 },
                                 error: function (response) {
@@ -396,6 +402,7 @@ jQuery(document).ready(function($) {
                                     fixed_time: fixed_time,
                                     return_date: return_date,
                                     return_time: return_time,
+                                    progress_bar: progress_bar,
                                     mpcrbm_enable_view_search_result_page: mpcrbm_enable_view_search_result_page,
                                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                                 },
@@ -405,7 +412,10 @@ jQuery(document).ready(function($) {
                                 success: function (data) {
                                     var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
                                     window.location.href = cleanedURL; // Redirect to the URL received from the server
-                                    $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+
+                                    if( progress_bar === 'yes' && redirect_another === 'no' ) {
+                                        $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+                                    }
                                 },
                                 error: function (response) {
                                     console.log(response);
@@ -418,7 +428,7 @@ jQuery(document).ready(function($) {
                 if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                     
                     let actionValue;
-                    if ( mpcrbm_enable_view_search_result_page == 'no' ) {
+                    if ( !mpcrbm_enable_view_search_result_page) {
                         actionValue = "mpcrbm_get_map_search_result";
                        
                         $.ajax({
@@ -448,7 +458,9 @@ jQuery(document).ready(function($) {
                                     .done(function () {
                                         mpcrbm_loader_remove(parent.find(".tabsContentNext"));
                                         parent.find(".nextTab_next").trigger("click");
-                                        $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+                                        if( progress_bar === 'yes') {
+                                            $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+                                        }
                                     });
                             },
                             error: function (response) {
@@ -472,6 +484,7 @@ jQuery(document).ready(function($) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
+                                progress_bar: progress_bar,
                                 mpcrbm_enable_view_search_result_page: mpcrbm_enable_view_search_result_page,
                                 mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
@@ -481,7 +494,10 @@ jQuery(document).ready(function($) {
                             success: function (data) {
                                 window.location.href = data.replace(/"/g, ""); // Remove all double quotes from the string
                                 // window.location.href = cleanedURL; // Redirect to the URL received from the server
-                                $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+
+                                if( progress_bar === 'yes' && redirect_another === 'no' ) {
+                                    $('#mpcrbm_progress_bar_holder').css('display', 'flex');
+                                }
                             },
                             error: function (response) {
                                 console.log(response);
@@ -810,6 +826,8 @@ jQuery(document).ready(function($) {
     // Handle Previous button click
     $(document).on("click", ".mpcrbm_get_vehicle_prev", function() {
         var mpcrbmTemplateExists = $(".mpcrbm-show-search-result").length;
+
+        let progress_bar = $("#mpcrbm_progress_bar_display").val();
         if (mpcrbmTemplateExists) {
             // Function to retrieve cookie value by name
             function getCookie(name) {
@@ -840,7 +858,9 @@ jQuery(document).ready(function($) {
             parent.find(".nextTab_prev").trigger("click");
         }
 
-        $('#mpcrbm_progress_bar_holder').fadeOut();
+        if( progress_bar === 'yes') {
+            $('#mpcrbm_progress_bar_holder').fadeOut();
+        }
     });
 
     // Handle Summary Previous button click
