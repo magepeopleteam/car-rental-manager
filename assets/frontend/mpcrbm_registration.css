@@ -63,8 +63,8 @@
 	div.mpcrbm_transport_search_area .leftSidebar h3 {color: #152C5B; font-size: 24px;font-weight: 700;text-transform: uppercase;}
 	div.mpcrbm_transport_search_area .leftSidebar h6 {color: #152C5B;font-size: 17px;font-weight: 600;}
 	div.mpcrbm_transport_search_area .leftSidebar p {color: #2B1818;font-size: 16px;font-weight: 400;}
-	div.mpcrbm_booking_item h5 {color: #000;font-size: 24px;font-weight: 600}
-	div.mpcrbm_booking_item h4 {color: #000;font-size: 36px;font-weight: 600;margin: 0 0 var(--dmp_xs) 0;}
+	div.mpcrbm_booking_item h5 {color: #000;font-size: 20px;font-weight: 600}
+	div.mpcrbm_booking_item h4 {color: #000;font-size: 22px;font-weight: 600;margin: 0 0 var(--dmp_xs) 0;}
 	.mpcrbm_booking_item_hidden{display: none !important;}
 	div.mpcrbm_transport_search_area ul.list_inline_two li {border: none;color: #626262;font-weight: 400;font-size: 14px;}
 	div.mpcrbm_transport_search_area button.mpcrbm_price_calculation,
@@ -183,6 +183,7 @@
 	 grid-template-columns: 200px 1fr auto;
 	 gap: 15px;
 	 align-items: center;
+	 margin-bottom:10px;
  }
  .mpcrbm_group {
 	 margin: 20px 0 10px 0;
@@ -194,4 +195,7 @@
 	 margin-right: 10px;
 	 min-width: 220px;
  }
-
+.mpcrbm_booking_vehicle .woocommerce-Price-amount{font-size:22px;}
+.mpcrbm .mpcrbm_extra_service .dLayout{border-radius:20px; background-color: #f7f5f5;}
+div.mpcrbm .mpcrbm_extra_service h3{margin:0px 0 12px 0;}
+h2#mpcrbm_title_change{color:white;}
