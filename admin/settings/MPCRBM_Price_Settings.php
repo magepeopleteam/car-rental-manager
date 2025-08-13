@@ -15,7 +15,126 @@
 				add_action( 'mpcrbm_settings_sec_fields', array( $this, 'settings_sec_fields' ), 10, 1 );
 			}
 
-			public function price_settings( $post_id ) {
+            public function set_price_meta_box( $post_id ) {
+                wp_nonce_field( 'mpcrbm_set_price_save', 'mpcrbm_set_price_nonce' );
+
+//                $base_price = get_post_meta( $post_id, 'mpcrbm_base_daily_price', true );
+                $daywise    = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
+                $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
+                $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
+
+                error_log(print_r( [ '$seasonal' => $seasonal ], true ) );
+
+                ?>
+
+                <!--<div class="mpcrbm-section">
+                    <div class="mpcrbm-heading"><?php /*_e('Base Daily Price', 'mpcrbm'); */?></div>
+                    <div class="mpcrbm-price-content-container">
+                        <input type="number" name="mpcrbm_base_daily_price" step="0.01" value="<?php /*echo esc_attr($base_price); */?>" />
+                    </div>
+                </div>-->
+
+                <div class="mpcrbm-section">
+                    <div class="mpcrbm-heading"><?php _e('Tiered Discount Rules', 'mpcrbm'); ?></div>
+                        <div class="mpcrbm-price-content-container">
+                            <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
+                                <?php if ( is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
+                                    foreach ( $tiered as $t ) : ?>
+                                        <div class="mpcrbm-item mpcrbm-price-discount-tier">
+                                            <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php echo esc_attr($t['min']); ?>" class="mpcrbm-input" placeholder="Min Days">
+                                            <span class="separator">–</span>
+                                            <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php echo esc_attr($t['max']); ?>" class="mpcrbm-input" placeholder="Max Days">
+                                            <span>days</span>
+                                            <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php echo esc_attr($t['percent']); ?>" class="mpcrbm-input" placeholder="% Discount">
+                                            <span>% discount</span>
+                                            <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>
+                                        </div>
+                                    <?php endforeach;
+                                endif; ?>
+                            </div>
+                            <button type="button" id="mpcrbm-add-tier" class="mpcrbm-price-add-btn">+ Add Tier</button>
+                            <p class="mpcrbm-price-info-text">Set discount percentages based on rental duration. Longer rentals get better rates.</p>
+                        </div>
+                </div>
+
+                <div class="mpcrbm-section">
+                    <div class="mpcrbm-heading"><?php _e('Day-wise Pricing', 'mpcrbm'); ?></div>
+                    <div class="mpcrbm-price-content-container">
+
+                        <div class="mpcrbm-price-info-banner ">
+                            <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20" style="margin-right: 8px;">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            Set specific rates for each day of the week. Leave empty to use base daily price.
+                        </div>
+                        <div class="mpcrbm-grid">
+                            <?php
+                            $days = [
+                                'mon' => 'Monday',
+                                'tue' => 'Tuesday',
+                                'wed' => 'Wednesday',
+                                'thu' => 'Thursday',
+                                'fri' => 'Friday',
+                                'sat' => 'Saturday',
+                                'sun' => 'Sunday'
+                            ];
+                            foreach ( $days as $k => $label ) :
+                                $val = isset($daywise[$k]) ? $daywise[$k] : '';
+
+                                if( $k === 'fri' || $k === 'sat' || $k === 'sun' ){
+                                    $weekend_class = 'weekend';
+                                }else{
+                                    $weekend_class = '';
+                                }
+                                ?>
+                                <div class="mpcrbm-grid-item mpcrbm-price-day-card <?php echo esc_attr( $weekend_class );?>">
+                                    <span class="mpcrbm-price-day-label"><?php echo $label; ?></span>
+                                    <input type="number" name="mpcrbm_daywise_pricing[<?php echo $k; ?>]" step="0.01" value="<?php echo esc_attr($val); ?>" class="mpcrbm-input">
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <p class="mpcrbm-price-info-text">Override the base daily price for specific days of the week. Weekend rates are highlighted.</p>
+                    </div>
+                </div>
+
+                <div class="mpcrbm-section">
+                     <div class="mpcrbm-heading"><?php _e('Seasonal Pricing', 'mpcrbm'); ?></div>
+                     <div class="mpcrbm-price-content-container">
+                        <div class="mpcrbm-warning-banner">
+                            <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            Set special pricing for holidays, peak seasons, and special events throughout the year.
+                        </div>
+                        <div id="mpcrbm-season-rows" class="mpcrbm-list">
+                            <?php if ( is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
+                                foreach ( $seasonal as $s ) : ?>
+                                    <div class="mpcrbm-item mpcrbm-season-row">
+                                        <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($s['name']); ?>" placeholder="Name">
+                                        <input type="date" name="mpcrbm_seasonal_pricing[start][]" value="<?php echo esc_attr($s['start']); ?>">
+                                        <input type="date" name="mpcrbm_seasonal_pricing[end][]" value="<?php echo esc_attr($s['end']); ?>">
+                                        <select name="mpcrbm_seasonal_pricing[type][]">
+                                            <option value="percentage_increase" <?php selected($s['type'], 'percentage_increase'); ?>>% Increase</option>
+                                            <option value="percentage_decrease" <?php selected($s['type'], 'percentage_decrease'); ?>>% Decrease</option>
+                                            <option value="fixed" <?php selected($s['type'], 'fixed'); ?>>Fixed</option>
+                                        </select>
+                                        <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($s['value']); ?>" placeholder="Value">
+                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>
+                                    </div>
+                                <?php endforeach;
+                            endif; ?>
+                        </div>
+                        <button type="button" id="mpcrbm-add-season" class="mpcrbm-price-add-btn">+ Add Season</button>
+                        <p class="mpcrbm-price-info-text">Create seasonal pricing rules that override base rates during specific date ranges. Choose between fixed prices or percentage adjustments.</p>
+                    </div>
+                </div>
+
+                <?php
+            }
+
+
+
+            public function price_settings( $post_id ) {
 				$time_price            = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price' );
 				$manual_prices         = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_manual_price_info', [] );
 				$terms_location_prices = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_terms_price_info', [] );
@@ -42,6 +161,8 @@
                         <h6><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></h6>
                         <span><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></span>
                     </section>
+
+                    <?php echo $this->set_price_meta_box( $post_id )?>
                 </div>
 				<?php
 			}
@@ -60,6 +181,68 @@
 					update_post_meta( $post_id, 'mpcrbm_price_based', $price_based );
 					$hour_price = isset( $_POST['mpcrbm_day_price'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) ) : 0;
 					update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
+
+
+
+                    if ( ! isset( $_POST['mpcrbm_set_price_nonce'] ) || ! wp_verify_nonce( $_POST['mpcrbm_set_price_nonce'], 'mpcrbm_set_price_save' ) ) return;
+                    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+                    if ( get_post_type( $post_id ) !== MPCRBM_Function::get_cpt() ) return;
+
+                    // Base price
+                    if ( isset( $_POST['mpcrbm_base_daily_price'] ) ) {
+                        update_post_meta( $post_id, 'mpcrbm_base_daily_price', floatval($_POST['mpcrbm_base_daily_price']) );
+                    }
+
+                    // Day-wise pricing
+                    if ( isset( $_POST['mpcrbm_daywise_pricing'] ) && is_array($_POST['mpcrbm_daywise_pricing']) ) {
+                        $clean = [];
+                        foreach ($_POST['mpcrbm_daywise_pricing'] as $day=>$val){
+                            $clean[$day] = floatval($val);
+                        }
+                        update_post_meta( $post_id, 'mpcrbm_daywise_pricing', $clean );
+                    }
+
+                    // Tiered Discounts
+                    if ( isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts']) ) {
+                        $tiers = [];
+                        $mins = $_POST['mpcrbm_tiered_discounts']['min'];
+                        $maxs = $_POST['mpcrbm_tiered_discounts']['max'];
+                        $perc = $_POST['mpcrbm_tiered_discounts']['percent'];
+                        for ($i=0; $i < count($mins); $i++){
+                            if ($mins[$i] && $maxs[$i] && $perc[$i] !== ''){
+                                $tiers[] = [
+                                    'min'=>intval($mins[$i]),
+                                    'max'=>intval($maxs[$i]),
+                                    'percent'=>floatval($perc[$i])
+                                ];
+                            }
+                        }
+                        update_post_meta( $post_id, 'mpcrbm_tiered_discounts', $tiers );
+                    }
+
+                    // Seasonal Pricing
+                    if ( isset($_POST['mpcrbm_seasonal_pricing']) && is_array($_POST['mpcrbm_seasonal_pricing']) ) {
+                        $seasons = [];
+                        $names = $_POST['mpcrbm_seasonal_pricing']['name'];
+                        $starts = $_POST['mpcrbm_seasonal_pricing']['start'];
+                        $ends   = $_POST['mpcrbm_seasonal_pricing']['end'];
+                        $types  = $_POST['mpcrbm_seasonal_pricing']['type'];
+                        $values = $_POST['mpcrbm_seasonal_pricing']['value'];
+
+                        for ($i=0; $i < count($names); $i++){
+                            if ($names[$i] && $starts[$i] && $ends[$i]){
+                                $seasons[] = [
+                                    'name'=>sanitize_text_field($names[$i]),
+                                    'start'=>$starts[$i],
+                                    'end'=>$ends[$i],
+                                    'type'=>$types[$i],
+                                    'value'=>floatval($values[$i])
+                                ];
+                            }
+                        }
+                        update_post_meta( $post_id, 'mpcrbm_seasonal_pricing', $seasons );
+                    }
+
 				}
 			}
 

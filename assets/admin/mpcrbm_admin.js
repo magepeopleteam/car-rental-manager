@@ -91,5 +91,41 @@
 				window.location.href = mpcrbm_admin_location; // Redirect only if needed
 			}
 		}
+
+		$('#mpcrbm-add-tier').on('click', function(){
+			$('#mpcrbm-tiered-rows').append(
+				'<div class="mpcrbm-item mpcrbm-price-discount-tier">\
+					<input type="number" name="mpcrbm_tiered_discounts[min][]" class="mpcrbm-input" placeholder="Min Days">\
+					<span class="separator">–</span>\
+					<input type="number" name="mpcrbm_tiered_discounts[max][]" class="mpcrbm-input" placeholder="Max Days">\
+					 <span>days</span>\
+					<input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" class="mpcrbm-input" placeholder="% Discount">\
+					<span>% discount</span>\
+					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
+				</div>'
+			);
+		});
+
+		$('#mpcrbm-add-season').on('click', function(){
+			$('#mpcrbm-season-rows').append(
+				'<div class="mpcrbm-item mpcrbm-season-row">\
+					<input type="text" name="mpcrbm_seasonal_pricing[name][]" placeholder="Name">\
+					<input type="date" name="mpcrbm_seasonal_pricing[start][]">\
+					<input type="date" name="mpcrbm_seasonal_pricing[end][]">\
+						<select name="mpcrbm_seasonal_pricing[type][]">\
+						<option value="percentage_increase">% Increase</option>\
+						<option value="percentage_decrease">% Decrease</option>\
+						<option value="fixed">Fixed</option>\
+					</select>\
+					<input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" placeholder="Value">\
+					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
+				</div>'
+			);
+		});
+
+		$(document).on('click', '.mpcrbm-remove-row', function(){
+			$(this).closest('.mpcrbm-item').remove();
+		});
+
 	});
 })(jQuery);
