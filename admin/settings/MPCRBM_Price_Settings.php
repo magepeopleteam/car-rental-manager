@@ -23,7 +23,6 @@
                 $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
                 $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
 
-                error_log(print_r( [ '$seasonal' => $seasonal ], true ) );
 
                 ?>
 
@@ -119,7 +118,7 @@
                                             <option value="fixed" <?php selected($s['type'], 'fixed'); ?>>Fixed</option>
                                         </select>
                                         <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($s['value']); ?>" placeholder="<?php esc_html_e('Value', 'car-rental-manager'); ?>">
-                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>
+                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php esc_html_e('Remove', 'car-rental-manager'); ?></button>
                                     </div>
                                 <?php endforeach;
                             endif; ?>
