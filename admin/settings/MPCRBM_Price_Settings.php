@@ -28,44 +28,44 @@
                 ?>
 
                 <!--<div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php /*_e('Base Daily Price', 'mpcrbm'); */?></div>
+                    <div class="mpcrbm-heading"><?php /*esc_html_e('Base Daily Price', 'mpcrbm'); */?></div>
                     <div class="mpcrbm-price-content-container">
                         <input type="number" name="mpcrbm_base_daily_price" step="0.01" value="<?php /*echo esc_attr($base_price); */?>" />
                     </div>
                 </div>-->
 
                 <div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php _e('Tiered Discount Rules', 'mpcrbm'); ?></div>
+                    <div class="mpcrbm-heading"><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></div>
                         <div class="mpcrbm-price-content-container">
                             <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
                                 <?php if ( is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
                                     foreach ( $tiered as $t ) : ?>
                                         <div class="mpcrbm-item mpcrbm-price-discount-tier">
-                                            <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php echo esc_attr($t['min']); ?>" class="mpcrbm-input" placeholder="Min Days">
+                                            <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php echo esc_attr($t['min']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( 'Min Days', 'car-rental-manager' ); ?>">
                                             <span class="separator">–</span>
-                                            <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php echo esc_attr($t['max']); ?>" class="mpcrbm-input" placeholder="Max Days">
+                                            <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php echo esc_attr($t['max']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( 'Max Days', 'car-rental-manager' ); ?>">
                                             <span>days</span>
-                                            <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php echo esc_attr($t['percent']); ?>" class="mpcrbm-input" placeholder="% Discount">
+                                            <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php echo esc_attr($t['percent']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( '% Discount', 'car-rental-manager' ); ?>">
                                             <span>% discount</span>
-                                            <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>
+                                            <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
                                         </div>
                                     <?php endforeach;
                                 endif; ?>
                             </div>
-                            <button type="button" id="mpcrbm-add-tier" class="mpcrbm-price-add-btn">+ Add Tier</button>
-                            <p class="mpcrbm-price-info-text">Set discount percentages based on rental duration. Longer rentals get better rates.</p>
+                            <button type="button" id="mpcrbm-add-tier" class="mpcrbm-price-add-btn">+ <?php esc_html_e( 'Add Tier', 'car-rental-manager' ); ?></button>
+                            <p class="mpcrbm-price-info-text"><?php esc_html_e( 'Set discount percentages based on rental duration. Longer rentals get better rates.', 'car-rental-manager' ); ?></p>
                         </div>
                 </div>
 
                 <div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php _e('Day-wise Pricing', 'mpcrbm'); ?></div>
+                    <div class="mpcrbm-heading"><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></div>
                     <div class="mpcrbm-price-content-container">
 
                         <div class="mpcrbm-price-info-banner ">
                             <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20" style="margin-right: 8px;">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                             </svg>
-                            Set specific rates for each day of the week. Leave empty to use base daily price.
+                            <?php esc_html_e( 'Set specific rates for each day of the week. Leave empty to use base daily price.', 'car-rental-manager' ); ?>
                         </div>
                         <div class="mpcrbm-grid">
                             <?php
@@ -93,39 +93,39 @@
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <p class="mpcrbm-price-info-text">Override the base daily price for specific days of the week. Weekend rates are highlighted.</p>
+                        <p class="mpcrbm-price-info-text"><?php esc_html_e( 'Override the base daily price for specific days of the week. Weekend rates are highlighted.', 'car-rental-manager' ); ?></p>
                     </div>
                 </div>
 
                 <div class="mpcrbm-section">
-                     <div class="mpcrbm-heading"><?php _e('Seasonal Pricing', 'mpcrbm'); ?></div>
+                     <div class="mpcrbm-heading"><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></div>
                      <div class="mpcrbm-price-content-container">
                         <div class="mpcrbm-warning-banner">
                             <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                             </svg>
-                            Set special pricing for holidays, peak seasons, and special events throughout the year.
+                            <?php esc_html_e( 'Set special pricing for holidays, peak seasons, and special events throughout the year.', 'car-rental-manager' ); ?>
                         </div>
                         <div id="mpcrbm-season-rows" class="mpcrbm-list">
                             <?php if ( is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
                                 foreach ( $seasonal as $s ) : ?>
                                     <div class="mpcrbm-item mpcrbm-season-row">
-                                        <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($s['name']); ?>" placeholder="Name">
+                                        <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($s['name']); ?>" placeholder="<?php esc_html_e('Name', 'car-rental-manager'); ?>">
                                         <input type="date" name="mpcrbm_seasonal_pricing[start][]" value="<?php echo esc_attr($s['start']); ?>">
                                         <input type="date" name="mpcrbm_seasonal_pricing[end][]" value="<?php echo esc_attr($s['end']); ?>">
                                         <select name="mpcrbm_seasonal_pricing[type][]">
-                                            <option value="percentage_increase" <?php selected($s['type'], 'percentage_increase'); ?>>% Increase</option>
-                                            <option value="percentage_decrease" <?php selected($s['type'], 'percentage_decrease'); ?>>% Decrease</option>
+                                            <option value="percentage_increase" <?php selected($s['type'], 'percentage_increase'); ?>><?php esc_html_e('% Increase', 'car-rental-manager'); ?></option>
+                                            <option value="percentage_decrease" <?php selected($s['type'], 'percentage_decrease'); ?>><?php esc_html_e('% Decrease', 'car-rental-manager'); ?></option>
                                             <option value="fixed" <?php selected($s['type'], 'fixed'); ?>>Fixed</option>
                                         </select>
-                                        <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($s['value']); ?>" placeholder="Value">
+                                        <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($s['value']); ?>" placeholder="<?php esc_html_e('Value', 'car-rental-manager'); ?>">
                                         <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>
                                     </div>
                                 <?php endforeach;
                             endif; ?>
                         </div>
-                        <button type="button" id="mpcrbm-add-season" class="mpcrbm-price-add-btn">+ Add Season</button>
-                        <p class="mpcrbm-price-info-text">Create seasonal pricing rules that override base rates during specific date ranges. Choose between fixed prices or percentage adjustments.</p>
+                        <button type="button" id="mpcrbm-add-season" class="mpcrbm-price-add-btn"><?php esc_html_e('+ Add Season', 'car-rental-manager'); ?></button>
+                        <p class="mpcrbm-price-info-text"><?php esc_html_e('Create seasonal pricing rules that override base rates during specific date ranges. Choose between fixed prices or percentage adjustments.', 'car-rental-manager'); ?></p>
                     </div>
                 </div>
 
