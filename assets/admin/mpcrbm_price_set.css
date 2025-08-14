@@ -37,6 +37,7 @@
     font-weight: bold;
     background-color: #eceff0;
     padding: 16px 10px;
+    cursor: pointer;
 }
 .mpcrbm-list {
     display: flex;

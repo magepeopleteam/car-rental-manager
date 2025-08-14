@@ -127,5 +127,11 @@
 			$(this).closest('.mpcrbm-item').remove();
 		});
 
+		$(document).on('click', '.mpcrbm-heading', function(){
+			// $('.mpcrbm-price-content-container').slideUp();
+			$(this).siblings().slideToggle(300);
+
+		});
+
 	});
 })(jQuery);

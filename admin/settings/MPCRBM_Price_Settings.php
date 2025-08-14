@@ -22,7 +22,7 @@
                 $daywise    = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
                 $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
                 $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
-
+                $checked = '';
 
                 ?>
 
@@ -35,7 +35,16 @@
 
                 <div class="mpcrbm-section">
                     <div class="mpcrbm-heading"><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></div>
-                        <div class="mpcrbm-price-content-container">
+                    <!--<section>
+                        <label class="label">
+                            <div>
+                                <h6><?php /*esc_html_e('Enable Tiered Discount Rules', 'car-rental-manager'); */?></h6>
+                                <span class="desc"><?php /*esc_html_e('By default tired discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); */?></span>
+                            </div>
+                            <?php /*MPCRBM_Custom_Layout::switch_button( 'enable_mpcrbm_tired_discount', $checked ); */?>
+                        </label>
+                    </section>-->
+                    <div class="mpcrbm-price-content-container">
                             <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
                                 <?php if ( is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
                                     foreach ( $tiered as $t ) : ?>
@@ -115,7 +124,8 @@
                                         <select name="mpcrbm_seasonal_pricing[type][]">
                                             <option value="percentage_increase" <?php selected($s['type'], 'percentage_increase'); ?>><?php esc_html_e('% Increase', 'car-rental-manager'); ?></option>
                                             <option value="percentage_decrease" <?php selected($s['type'], 'percentage_decrease'); ?>><?php esc_html_e('% Decrease', 'car-rental-manager'); ?></option>
-                                            <option value="fixed" <?php selected($s['type'], 'fixed'); ?>>Fixed</option>
+                                            <option value="fixed_increase" <?php selected($s['type'], 'fixed_increase'); ?>><?php esc_html_e('Fixed Increase', 'car-rental-manager'); ?></option>
+                                            <option value="fixed_decrease" <?php selected($s['type'], 'fixed_decrease'); ?>><?php esc_html_e('Fixed Decrease', 'car-rental-manager'); ?></option>
                                         </select>
                                         <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($s['value']); ?>" placeholder="<?php esc_html_e('Value', 'car-rental-manager'); ?>">
                                         <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php esc_html_e('Remove', 'car-rental-manager'); ?></button>

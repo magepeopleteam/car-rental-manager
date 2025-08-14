@@ -259,6 +259,8 @@
 				}
 				session_write_close();
 
+                $price = self::mpcrbm_calculate_price( $post_id, $start_date_time, $minutes_to_day, $price );
+
 				//delete_transient('original_price_based');
 				return $price;
 			}
@@ -393,20 +395,23 @@
              * @param int $days Number of rental days
              * @return float Final daily price
              */
-            public static function mpcrbm_calculate_price( $post_id, $start_date, $days ) {
+            public static function mpcrbm_calculate_price( $post_id, $start_date, $days, $price ) {
                 // Get metadata
-                $base_price = (float) get_post_meta($post_id, 'mpcrbm_base_daily_price', true);
+//                $base_price = (float) get_post_meta($post_id, 'mpcrbm_base_daily_price', true);
+                $base_price = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
                 $daywise    = (array) get_post_meta($post_id, 'mpcrbm_daywise_pricing', true);
                 $tiered     = (array) get_post_meta($post_id, 'mpcrbm_tiered_discounts', true);
                 $seasonal   = (array) get_post_meta($post_id, 'mpcrbm_seasonal_pricing', true);
 
                 $start_timestamp = strtotime($start_date);
+
+
                 $day_of_week = strtolower(date('D', $start_timestamp)); // mon, tue, wed, etc.
 
-                $price = $base_price;
 
                 // 1. Seasonal Pricing
-                if (!empty($seasonal)) {
+                if ( is_array( $seasonal[0] ) && !empty($seasonal[0])) {
+
                     foreach ($seasonal as $s) {
                         $season_start = strtotime($s['start']);
                         $season_end   = strtotime($s['end']);
@@ -418,38 +423,41 @@
                                 case 'percentage_decrease':
                                     $price -= $price * ($s['value'] / 100);
                                     break;
-                                case 'fixed':
-                                    $price = $s['value'];
+                                case 'fixed_increase':
+                                    $price =  $price + $s['value'];
+                                    break;
+                                case 'fixed_decrease':
+                                    $price =  $price - $s['value'];
                                     break;
                             }
-                            break; // seasonal found, stop checking others
+                            break;
                         }
                     }
                 }
 
-                // 2. Day-wise pricing (only if no seasonal applied)
-                if ($price === $base_price && !empty($daywise)) {
-                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '') {
+
+                if ( (int)$days === 1 && (float)$price === (float)$base_price ) {
+                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '' && $daywise[$day_of_week] > 0 ) {
                         $price = (float) $daywise[$day_of_week];
                     }
                 }
 
                 // 3. Tiered discount based on rental duration
-                if (!empty($tiered)) {
+                if ( is_array( $tiered[0] ) &&  !empty($tiered[0] ) && (int)$days > 1 ) {
                     foreach ($tiered as $t) {
                         $min = isset($t['min']) ? (int)$t['min'] : 0;
                         $max = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
-                        if ($days >= $min && $days <= $max) {
+                        if ( $days >= $min && $days <= $max ) {
                             $discount = isset($t['percent']) ? (float)$t['percent'] : 0;
                             $price -= $price * ($discount / 100);
-                            break; // apply only first matching tier
+
+                            break;
                         }
                     }
                 }
 
                 return round($price, 2);
             }
-
 
         }
 	}
