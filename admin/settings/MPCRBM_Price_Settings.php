@@ -99,7 +99,7 @@
                     </section>
                     <div class="mpcrbm-price-content-container" id="mpcrbm_enable_tired_discount_holder" style="display: <?php echo esc_attr( $tired_display )?>">
                             <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
-                                <?php if ( is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
+                                <?php if ( isset( $tiered[0] ) && is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
                                     foreach ( $tiered as $t ) : ?>
                                         <div class="mpcrbm-item mpcrbm-price-discount-tier">
                                             <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php echo esc_attr($t['min']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( 'Min Days', 'car-rental-manager' ); ?>">
@@ -186,7 +186,7 @@
                             <?php esc_html_e( 'Set special pricing for holidays, peak seasons, and special events throughout the year.', 'car-rental-manager' ); ?>
                         </div>
                         <div id="mpcrbm-season-rows" class="mpcrbm-list">
-                            <?php if ( is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
+                            <?php if ( isset( $tiered[0] ) && is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
                                 foreach ( $seasonal as $s ) : ?>
                                     <div class="mpcrbm-item mpcrbm-season-row">
                                         <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($s['name']); ?>" placeholder="<?php esc_html_e('Name', 'car-rental-manager'); ?>">
