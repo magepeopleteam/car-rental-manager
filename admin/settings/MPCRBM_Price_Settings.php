@@ -10,10 +10,33 @@
 		class MPCRBM_Price_Settings {
 			public function __construct() {
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'price_settings' ] );
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'price_settings' ] );
+//				add_action( 'mpcrbm_settings_tab_content', [ $this, 'price_settings' ] );
 				add_action( 'save_post', [ $this, 'save_price_settings' ] );
 				add_action( 'mpcrbm_settings_sec_fields', array( $this, 'settings_sec_fields' ), 10, 1 );
+
+
+				add_action( 'wp_ajax_mpcrbm_add_price_discount_rules', array( $this, 'mpcrbm_add_price_discount_rules' ), 10, 1 );
 			}
+
+            public function mpcrbm_add_price_discount_rules(){
+                if ( ! isset($_POST['nonce']) || ! wp_verify_nonce( $_POST['nonce'], 'mpcrbm_extra_service' ) ) {
+                    wp_send_json_error([ 'message' => 'Security check failed' ]);
+                }
+                $success =false;
+                $message = 'Update Failed';
+
+                $post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : '';
+                $enable  =  isset( $_POST['enable'] ) ? intval( wp_unslash( $_POST['enable'] ) ) : '';
+                $metaKey  =  isset( $_POST['metaKey'] ) ? sanitize_text_field( wp_unslash( $_POST['metaKey'] ) ) : '';
+
+                if( $post_id && $metaKey ){
+                    update_post_meta( $post_id, $metaKey, $enable );
+                    $success = true;
+                    $message = 'Discount setting successfully saved.';
+                }
+
+                wp_send_json_success([ 'success' => $success ,'message' => $message ]);
+            }
 
             public function set_price_meta_box( $post_id ) {
                 wp_nonce_field( 'mpcrbm_set_price_save', 'mpcrbm_set_price_nonce' );
@@ -22,7 +45,37 @@
                 $daywise    = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
                 $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
                 $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
-                $checked = '';
+
+                $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
+                $enable_day_wise    = (int)get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );
+                $enable_seasonal    = (int)get_post_meta( $post_id, 'mpcrbm_enable_seasonal_discount', true );
+
+
+
+                if( $enable_tired === 1 ) {
+                    $tired_display = 'block';
+                    $tired_checked = 'checked';
+                }else{
+                    $tired_display = 'none';
+                    $tired_checked = '';
+                }
+
+                if( $enable_day_wise === 1 ) {
+                    $day_wise_display = 'block';
+                    $day_wise_checked = 'checked';
+                }else{
+                    $day_wise_display = 'none';
+                    $day_wise_checked = '';
+                }
+
+                if( $enable_seasonal === 1 ) {
+                    $seasonal_display = 'block';
+                    $seasonal_checked = 'checked';
+                }else{
+                    $seasonal_display = 'none';
+                    $seasonal_checked = '';
+                }
+
 
                 ?>
 
@@ -35,16 +88,16 @@
 
                 <div class="mpcrbm-section">
                     <div class="mpcrbm-heading"><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></div>
-                    <!--<section>
+                    <section>
                         <label class="label">
                             <div>
-                                <h6><?php /*esc_html_e('Enable Tiered Discount Rules', 'car-rental-manager'); */?></h6>
-                                <span class="desc"><?php /*esc_html_e('By default tired discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); */?></span>
+                                <h6><?php esc_html_e('Enable Tiered Discount Rules', 'car-rental-manager'); ?></h6>
+                                <span class="desc"><?php esc_html_e('By default tired discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
                             </div>
-                            <?php /*MPCRBM_Custom_Layout::switch_button( 'enable_mpcrbm_tired_discount', $checked ); */?>
+                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_tired_discount', $tired_checked ); ?>
                         </label>
-                    </section>-->
-                    <div class="mpcrbm-price-content-container">
+                    </section>
+                    <div class="mpcrbm-price-content-container" id="mpcrbm_enable_tired_discount_holder" style="display: <?php echo esc_attr( $tired_display )?>">
                             <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
                                 <?php if ( is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
                                     foreach ( $tiered as $t ) : ?>
@@ -67,7 +120,16 @@
 
                 <div class="mpcrbm-section">
                     <div class="mpcrbm-heading"><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></div>
-                    <div class="mpcrbm-price-content-container">
+                    <section>
+                        <label class="label">
+                            <div>
+                                <h6><?php esc_html_e('Enable Day Wise Discount Rules', 'car-rental-manager'); ?></h6>
+                                <span class="desc"><?php esc_html_e('By default day wise discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
+                            </div>
+                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_day_wise_discount', $day_wise_checked ); ?>
+                        </label>
+                    </section>
+                    <div class="mpcrbm-price-content-container" id="mpcrbm_enable_day_wise_discount_holder" style="display: <?php echo esc_attr( $day_wise_display )?>">
 
                         <div class="mpcrbm-price-info-banner ">
                             <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20" style="margin-right: 8px;">
@@ -107,7 +169,16 @@
 
                 <div class="mpcrbm-section">
                      <div class="mpcrbm-heading"><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></div>
-                     <div class="mpcrbm-price-content-container">
+                    <section>
+                        <label class="label">
+                            <div>
+                                <h6><?php esc_html_e('Enable Seasonal Discount Rules', 'car-rental-manager'); ?></h6>
+                                <span class="desc"><?php esc_html_e('By default seasonal discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
+                            </div>
+                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_seasonal_discount', $seasonal_checked ); ?>
+                        </label>
+                    </section>
+                     <div class="mpcrbm-price-content-container" id="mpcrbm_enable_seasonal_discount_holder" style="display: <?php echo esc_attr( $seasonal_display )?>">
                         <div class="mpcrbm-warning-banner">
                             <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>

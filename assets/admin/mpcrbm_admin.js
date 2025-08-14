@@ -130,8 +130,40 @@
 		$(document).on('click', '.mpcrbm-heading', function(){
 			// $('.mpcrbm-price-content-container').slideUp();
 			$(this).siblings().slideToggle(300);
-
 		});
+		$(document).on('click', '.mpcrbm_switch_checkbox', function() {
+			let checked = $(this).is(':checked') ? 1 : 0;
+			let post_id = $('[name="mpcrbm_post_id"]').val();
+			let metaKey  = $(this).attr('id');
+			let containerId =metaKey+'_holder';
+			$.ajax({
+				type: 'POST',
+				url: mpcrbm_ajax_url,
+				data: {
+					action: 'mpcrbm_add_price_discount_rules',
+					post_id: post_id,
+					metaKey: metaKey,
+					enable: checked,
+					nonce: mpcrbm_admin_nonce.nonce
+				},
+				beforeSend: function() {
+					$('#mpcrbm_message').text('Saving...');
+				},
+				success: function(response) {
+
+					if( response.data.message ){
+						if( checked === 1 ){
+							$("#"+containerId).slideDown(300);
+						}else{
+							$("#"+containerId).slideUp(300);
+						}
+					}else{
+						alert( response.data.message );
+					}
+				}
+			});
+		});
+
 
 	});
 })(jQuery);
