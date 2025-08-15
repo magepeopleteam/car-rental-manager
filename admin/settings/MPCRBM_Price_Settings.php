@@ -193,7 +193,7 @@
                             <?php esc_html_e( 'Set special pricing for holidays, peak seasons, and special events throughout the year.', 'car-rental-manager' ); ?>
                         </div>
                         <div id="mpcrbm-season-rows" class="mpcrbm-list">
-                            <?php if ( isset( $tiered[0] ) && is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
+                            <?php if ( isset( $seasonal[0] ) && is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
                                 foreach ( $seasonal as $s ) : ?>
                                     <div class="mpcrbm-item mpcrbm-season-row">
                                         <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($s['name']); ?>" placeholder="<?php esc_html_e('Name', 'car-rental-manager'); ?>">

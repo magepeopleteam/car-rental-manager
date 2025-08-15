@@ -69,7 +69,7 @@ $two_way = $two_way ?? 1;
 if ($post_id) {
     // Get vehicle data
     $thumbnail = MPCRBM_Global_Function::get_image_url($post_id);
-    $price = MPCRBM_Function::get_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
+    $price = MPCRBM_Function::get_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time );
     
     if (!$price || $price <= 0) {
         return;
@@ -77,6 +77,7 @@ if ($post_id) {
     
     $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
     $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
+
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
 
@@ -87,6 +88,11 @@ if ($post_id) {
     $minutes        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
     $minutes_to_day = ceil( $minutes / 1440 );
     $price_per_day = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
+
+    $total_base_price = $minutes_to_day * $price_per_day;
+    $total_save = $total_base_price - $raw_price ;
+
+    $enable_seasonal    = (int)get_post_meta( $post_id, 'mpcrbm_enable_seasonal_discount', true );
 
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
@@ -120,8 +126,26 @@ if ($post_id) {
                 <?php } else { ?>
                     <div></div>
                 <?php } ?>
-                <div class="_min_150_mL_xs">
-                    <h4 class="textCenter"><?php echo wp_kses_post(wc_price($raw_price)); ?></h4>
+                <div class="mpcrbm_discount_info">
+                    <div class="price-breakdown"><?php echo wp_kses_post( wc_price($price_per_day ) );?> base</div>
+                    <?php
+                    if( $enable_seasonal === 1 ){
+                        $seasonal_data = MPCRBM_Function::get_seasonal_rate( $post_id, $price_per_day, $start_date, $enable_seasonal );
+                        $seasonal_price_per_day = $seasonal_data['seasonal_price_per_day'];
+                        if( isset( $seasonal_data['name'] ) && !empty( $seasonal_data['name'] ) ){
+                        ?>
+                        <div class="price-main"><?php echo wp_kses_post( wc_price($seasonal_price_per_day ) );?></div>
+                        <div class="seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?> rate</div>
+                    <?php }
+                    }?>
+                </div>
+                <div class="_min_150_mL_xs mpcrbm_booking_items">
+                    <h4 class="mpcrbm_textRight"><?php echo wp_kses_post( wc_price( $raw_price) ); ?></h4>
+                    <div class="price-total"><?php echo esc_attr($minutes_to_day); ?>-day total</div>
+
+                    <?php if( $total_save > 0 ){?>
+                        <div class="discount-info">Save <?php echo wp_kses_post( wc_price( $total_save ) );?></div>
+                    <?php }?>
                     <button type="button" 
                         class="_mpBtn_xs_w_150 mpcrbm_transport_select"
                         data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" 
