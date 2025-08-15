@@ -56,6 +56,12 @@
                             <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time,'time')); ?></p>
                         <?php } ?>
 					<?php } ?>
+
+                    <!--<div class="duration-highlight">
+                        <div class="duration-days"><?php /*echo esc_attr( 5 );*/?> <?php /*esc_html_e('Days', 'car-rental-manager'); */?></div>
+                        <div class="duration-label"><?php /*esc_html_e('Rental Period', 'car-rental-manager'); */?></div>
+                    </div>-->
+
 					<div class="mpcrbm_transport_summary">
 						<div class="dividerL"></div>
 						<h6 class="_mB_xs"><?php echo esc_html($label) . ' ' . esc_html__(' Details', 'car-rental-manager') ?></h6>

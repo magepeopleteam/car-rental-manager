@@ -107,7 +107,9 @@ if ($post_id) {
                 <?php if ($display_features === 'on' && is_array($all_features) && !empty($all_features)) { ?>
                     <div class="mpcrbm_car_specs_lists">
                         <?php
+                        $i = 1;
                         foreach ($all_features as $features) {
+
                             if (!is_array($features)) {
                                 continue;
                             }
@@ -118,10 +120,12 @@ if ($post_id) {
                             ?>
                             <div class="mpcrbm_car_spec">
                                 <?php if ($icon) { ?>
-                                    <span class="<?php echo esc_attr($icon); ?>"></span>
+                                    <span class="<?php echo esc_attr($icon); ?> mpcrbm_feature_icon_color_<?php echo esc_attr( $i);?>"></span>
                                 <?php }  echo esc_html($text); ?>
                             </div>
-                        <?php } ?>
+                        <?php
+                            $i++;
+                        } ?>
                     </div>
                 <?php } else { ?>
                     <div></div>
