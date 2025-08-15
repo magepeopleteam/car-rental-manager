@@ -36,6 +36,7 @@
 				$this->global_enqueue();
 				// custom
 				wp_enqueue_style( 'mpcrbm_admin', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_admin.css', array(), time() );
+				wp_enqueue_style( 'mpcrbm_price_set', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_price_set.css', array(), time() );
 				wp_enqueue_style( 'mpcrbm_order_list', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_order_list.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_admin', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_admin.js', array( 'jquery' ), time(), true );
 				wp_enqueue_script( 'mpcrbm_order_lists', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_order_lists.js', array( 'jquery' ), time(), true );

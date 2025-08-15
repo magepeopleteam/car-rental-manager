@@ -1,0 +1,152 @@
+.mpcrbm-input {
+    width: 100px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.mpcrbm-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.mpcrbm-price-content-container{
+    padding: 20px;
+}
+.mpcrbm-section{
+    border: 1px solid #e4e2e2;
+    margin: 20px 0px;
+}
+.mpcrbm-label {
+    min-width: 100px; font-weight: bold;
+}
+
+.mpcrbm-grid-item {
+    display: flex;
+    flex-direction: column;
+}
+.mpcrbm-remove-btn {
+    margin-left: auto;
+}
+.mpcrbm-heading {
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #eceff0;
+    padding: 16px 10px;
+    cursor: pointer;
+}
+.mpcrbm-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.mpcrbm-item {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.mpcrbm-price-info-text {
+    color: #64748b;
+    font-size: 14px !important;
+    margin-top: 15px;
+    font-style: italic;
+}
+.mpcrbm-price-info-banner {
+    background: #dbeafe;
+    border: 1px solid #93c5fd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #1e40af;
+    font-size: 14px;
+}
+.mpcrbm-price-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.mpcrbm-warning-banner {
+    background: #fef3c7;
+    border: 1px solid #fbbf24;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #92400e;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mpcrbm-price-discount-tier {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #e2e8f0;
+}
+.mpcrbm-season-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #fffbeb;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #fbbf24;
+}
+
+.mpcrbm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+.mpcrbm-price-day-card {
+    padding: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    transition: border-color 0.2s;
+}
+.mpcrbm-price-day-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mpcrbm-price-day-card.weekend {
+    background: #fffbeb;
+    border-color: #fbbf24;
+}
+
+.mpcrbm-price-add-btn {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 15px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.separator {
+    color: #64748b;
+    font-weight: 500;
+}
+

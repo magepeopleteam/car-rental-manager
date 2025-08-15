@@ -181,8 +181,9 @@
 						array(
 							'name'        => 'enable_view_search_result_page',
 							'label'       => $label . ' ' . esc_html__( 'Show Search Result In A Different Page', 'car-rental-manager' ),
-							'desc'        => esc_html__( 'Enter page slug. Leave blank if you dont want to enable this setting', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'Yes', 'car-rental-manager' ) . '</strong>' . esc_html__( 'or to make it hidden, select', 'car-rental-manager' ) . '<strong> ' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is', 'car-rental-manager' ) . '<strong>' . esc_html__( 'No', 'car-rental-manager' ) . '</strong>',
+							'desc'        => esc_html__( 'Enter page slug. Set No if you dont want to enable this setting set your ', 'car-rental-manager' ) . '<strong> ' . esc_html__( ' Page Slug ', 'car-rental-manager' ) . '</strong>' . esc_html__( ' or to make it hidden, set ', 'car-rental-manager' ) . '<strong> ' . esc_html__( ' No ', 'car-rental-manager' ) . '</strong>' . esc_html__( '. Default is ', 'car-rental-manager' ) . '<strong>' . esc_html__( 'transport-result', 'car-rental-manager' ) . '</strong>',
 							'type'        => 'text',
+                            'default'     => 'transport-result',
 							'placeholder' => 'mpcrbm-search'
 						),
 						array(

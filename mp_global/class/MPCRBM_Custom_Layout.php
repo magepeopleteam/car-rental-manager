@@ -90,6 +90,14 @@
                 </label>
 				<?php
 			}
+			public static function switch_checkbox_button( $name, $checked = '' ) {
+				?>
+                <label class="roundSwitchLabel">
+                    <input type="checkbox" class="mpcrbm_switch_checkbox" id="<?php echo esc_attr( $name ); ?>" name="<?php echo esc_attr( $name ); ?>" <?php echo esc_attr( $checked ); ?>>
+                    <span class="roundSwitch" data-collapse-target="#<?php echo esc_attr( $name ); ?>"></span>
+                </label>
+				<?php
+			}
 
 			public static function popup_button( $target_popup_id, $text ) {
 				?>

@@ -91,5 +91,79 @@
 				window.location.href = mpcrbm_admin_location; // Redirect only if needed
 			}
 		}
+
+		$('#mpcrbm-add-tier').on('click', function(){
+			$('#mpcrbm-tiered-rows').append(
+				'<div class="mpcrbm-item mpcrbm-price-discount-tier">\
+					<input type="number" name="mpcrbm_tiered_discounts[min][]" class="mpcrbm-input" placeholder="Min Days">\
+					<span class="separator">–</span>\
+					<input type="number" name="mpcrbm_tiered_discounts[max][]" class="mpcrbm-input" placeholder="Max Days">\
+					 <span>days</span>\
+					<input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" class="mpcrbm-input" placeholder="% Discount">\
+					<span>% discount</span>\
+					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
+				</div>'
+			);
+		});
+
+		$('#mpcrbm-add-season').on('click', function(){
+			$('#mpcrbm-season-rows').append(
+				'<div class="mpcrbm-item mpcrbm-season-row">\
+					<input type="text" name="mpcrbm_seasonal_pricing[name][]" placeholder="Name">\
+					<input type="date" name="mpcrbm_seasonal_pricing[start][]">\
+					<input type="date" name="mpcrbm_seasonal_pricing[end][]">\
+						<select name="mpcrbm_seasonal_pricing[type][]">\
+						<option value="percentage_increase">% Increase</option>\
+						<option value="percentage_decrease">% Decrease</option>\
+						<option value="fixed">Fixed</option>\
+					</select>\
+					<input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" placeholder="Value">\
+					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
+				</div>'
+			);
+		});
+
+		$(document).on('click', '.mpcrbm-remove-row', function(){
+			$(this).closest('.mpcrbm-item').remove();
+		});
+
+		$(document).on('click', '.mpcrbm-heading', function(){
+			// $('.mpcrbm-price-content-container').slideUp();
+			$(this).siblings().slideToggle(300);
+		});
+		$(document).on('click', '.mpcrbm_switch_checkbox', function() {
+			let checked = $(this).is(':checked') ? 1 : 0;
+			let post_id = $('[name="mpcrbm_post_id"]').val();
+			let metaKey  = $(this).attr('id');
+			let containerId =metaKey+'_holder';
+			$.ajax({
+				type: 'POST',
+				url: mpcrbm_ajax_url,
+				data: {
+					action: 'mpcrbm_add_price_discount_rules',
+					post_id: post_id,
+					metaKey: metaKey,
+					enable: checked,
+					nonce: mpcrbm_admin_nonce.nonce
+				},
+				beforeSend: function() {
+					$('#mpcrbm_message').text('Saving...');
+				},
+				success: function(response) {
+
+					if( response.data.message ){
+						if( checked === 1 ){
+							$("#"+containerId).slideDown(300);
+						}else{
+							$("#"+containerId).slideUp(300);
+						}
+					}else{
+						alert( response.data.message );
+					}
+				}
+			});
+		});
+
+
 	});
 })(jQuery);
