@@ -119,8 +119,14 @@ if ($post_id) {
                             $image = isset($features['image']) ? sanitize_text_field($features['image']) : '';
                             ?>
                             <div class="mpcrbm_car_spec">
-                                <?php if ($icon) { ?>
-                                    <span class="<?php echo esc_attr($icon); ?> mpcrbm_feature_icon_color_<?php echo esc_attr( $i);?>"></span>
+                                <?php if ($icon) {
+                                    if( $i > 4 ){
+                                        $icon_class = 'mpcrbm_feature_icon_color';
+                                    }else{
+                                        $icon_class = 'mpcrbm_feature_icon_color_'.$i;
+                                    }
+                                    ?>
+                                    <span class="<?php echo esc_attr($icon); ?> <?php echo esc_attr( $icon_class);?>"></span>
                                 <?php }  echo esc_html($text); ?>
                             </div>
                         <?php
