@@ -79,6 +79,15 @@ if ($post_id) {
     $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
+
+
+    $startDate  = new DateTime( $start_date_time );
+    $returnDate = new DateTime( $return_date_time );
+    $interval = $startDate->diff( $returnDate );
+    $minutes        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
+    $minutes_to_day = ceil( $minutes / 1440 );
+    $price_per_day = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
+
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
         <div class="_max_180_mR">
@@ -90,7 +99,7 @@ if ($post_id) {
             <h5><?php echo esc_html(get_the_title($post_id)); ?></h5>
             <div class="justifyBetween _mT_xs">
                 <?php if ($display_features === 'on' && is_array($all_features) && !empty($all_features)) { ?>
-                    <ul class="list_inline_two">
+                    <div class="mpcrbm_car_specs_lists">
                         <?php
                         foreach ($all_features as $features) {
                             if (!is_array($features)) {
@@ -101,14 +110,13 @@ if ($post_id) {
                             $icon = isset($features['icon']) ? sanitize_text_field($features['icon']) : '';
                             $image = isset($features['image']) ? sanitize_text_field($features['image']) : '';
                             ?>
-                            <li>
+                            <div class="mpcrbm_car_spec">
                                 <?php if ($icon) { ?>
-                                    <span class="<?php echo esc_attr($icon); ?> _mR_xs"></span>
-                                <?php } ?>
-                                <?php echo esc_html($label); ?>&nbsp;:&nbsp;<?php echo esc_html($text); ?>
-                            </li>
+                                    <span class="<?php echo esc_attr($icon); ?>"></span>
+                                <?php }  echo esc_html($text); ?>
+                            </div>
                         <?php } ?>
-                    </ul>
+                    </div>
                 <?php } else { ?>
                     <div></div>
                 <?php } ?>

@@ -127,7 +127,7 @@
 			$(this).closest('.mpcrbm-item').remove();
 		});
 
-		$(document).on('click', '.mpcrbm-heading', function(){
+		$(document).on('click', '.mpcrbm_toggle_class', function(){
 			// $('.mpcrbm-price-content-container').slideUp();
 			$(this).siblings().slideToggle(300);
 		});
@@ -136,6 +136,8 @@
 			let post_id = $('[name="mpcrbm_post_id"]').val();
 			let metaKey  = $(this).attr('id');
 			let containerId =metaKey+'_holder';
+
+			var heading = $(this).closest('.mpcrbm-section').find('.mpcrbm-heading');
 			$.ajax({
 				type: 'POST',
 				url: mpcrbm_ajax_url,
@@ -154,8 +156,10 @@
 					if( response.data.message ){
 						if( checked === 1 ){
 							$("#"+containerId).slideDown(300);
+							heading.addClass('mpcrbm_toggle_class');
 						}else{
 							$("#"+containerId).slideUp(300);
+							heading.removeClass('mpcrbm_toggle_class');
 						}
 					}else{
 						alert( response.data.message );

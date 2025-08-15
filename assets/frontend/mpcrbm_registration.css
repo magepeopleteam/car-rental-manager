@@ -199,3 +199,21 @@
 .mpcrbm .mpcrbm_extra_service .dLayout{border-radius:20px; background-color: #f7f5f5;}
 div.mpcrbm .mpcrbm_extra_service h3{margin:0px 0 12px 0;}
 h2#mpcrbm_title_change{color:white;}
+.mpcrbm_car_specs_lists{
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	font-size: 12px;
+	color: #64748b;
+}
+
+.mpcrbm_car_spec{
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	background: #f8fafc;
+	padding: 4px 8px;
+	border-radius: 4px;
+	border: 1px solid #e2e8f0;
+	white-space: nowrap;
+}

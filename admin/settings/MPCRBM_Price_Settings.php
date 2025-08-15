@@ -55,25 +55,32 @@
                 if( $enable_tired === 1 ) {
                     $tired_display = 'block';
                     $tired_checked = 'checked';
+
+                    $tired_toggle_class = 'mpcrbm_toggle_class';
                 }else{
                     $tired_display = 'none';
                     $tired_checked = '';
+                    $tired_toggle_class = '';
                 }
 
                 if( $enable_day_wise === 1 ) {
                     $day_wise_display = 'block';
                     $day_wise_checked = 'checked';
+                    $day_wise_toggle_class = 'mpcrbm_toggle_class';
                 }else{
                     $day_wise_display = 'none';
                     $day_wise_checked = '';
+                    $day_wise_toggle_class = '';
                 }
 
                 if( $enable_seasonal === 1 ) {
                     $seasonal_display = 'block';
                     $seasonal_checked = 'checked';
+                    $seasonal_toggle_class = 'mpcrbm_toggle_class';
                 }else{
                     $seasonal_display = 'none';
                     $seasonal_checked = '';
+                    $seasonal_toggle_class = '';
                 }
 
 
@@ -87,7 +94,7 @@
                 </div>-->
 
                 <div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></div>
+                    <div class="mpcrbm-heading <?php echo esc_attr( $tired_toggle_class );?>"><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></div>
                     <section>
                         <label class="label">
                             <div>
@@ -119,7 +126,7 @@
                 </div>
 
                 <div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></div>
+                    <div class="mpcrbm-heading <?php echo esc_attr( $day_wise_toggle_class );?>"><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></div>
                     <section>
                         <label class="label">
                             <div>
@@ -168,7 +175,7 @@
                 </div>
 
                 <div class="mpcrbm-section">
-                     <div class="mpcrbm-heading"><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></div>
+                     <div class="mpcrbm-heading <?php echo esc_attr( $seasonal_toggle_class );?>"><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></div>
                     <section>
                         <label class="label">
                             <div>
