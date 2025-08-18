@@ -73,6 +73,8 @@ if ($post_id) {
     
     if (!$price || $price <= 0) {
         return;
+    }else{
+        $price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date_time, $minutes_to_day, $price );
     }
     
     $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
@@ -81,12 +83,13 @@ if ($post_id) {
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
 
-
-    $startDate  = new DateTime( $start_date_time );
+    /*$startDate  = new DateTime( $start_date_time );
     $returnDate = new DateTime( $return_date_time );
     $interval = $startDate->diff( $returnDate );
     $minutes        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
-    $minutes_to_day = ceil( $minutes / 1440 );
+    $minutes_to_day = ceil( $minutes / 1440 );*/
+
+
     $price_per_day = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
 
     $total_base_price = $minutes_to_day * $price_per_day;
@@ -108,7 +111,11 @@ if ($post_id) {
                     <div class="mpcrbm_car_specs_lists">
                         <?php
                         $i = 1;
-                        foreach ($all_features as $features) {
+
+                        $count_total_features = count( $all_features );
+                        $remaining_features = $count_total_features - 6;
+
+                        foreach ($all_features as $key => $features) {
 
                             if (!is_array($features)) {
                                 continue;
@@ -130,31 +137,43 @@ if ($post_id) {
                                 <?php }  echo esc_html($text); ?>
                             </div>
                         <?php
+
+                            if( $i === 6 ){
+                                break;
+                            }
                             $i++;
-                        } ?>
+                        }
+
+                        if( $remaining_features > 0 ){ ?>
+                            <div class="mpcrbm_car_spec">
+                                <span class="">+<?php echo esc_attr( $remaining_features );?> more</span>
+                            </div>
+                        <?php }?>
+
                     </div>
-                <?php } else { ?>
+                <?php
+                } else { ?>
                     <div></div>
                 <?php } ?>
                 <div class="mpcrbm_discount_info">
-                    <div class="price-breakdown"><?php echo wp_kses_post( wc_price($price_per_day ) );?> base</div>
+                    <div class="mpcrbm_price-breakdown"><?php echo wp_kses_post( wc_price($price_per_day ) );?> base</div>
                     <?php
                     if( $enable_seasonal === 1 ){
                         $seasonal_data = MPCRBM_Function::get_seasonal_rate( $post_id, $price_per_day, $start_date, $enable_seasonal );
                         $seasonal_price_per_day = $seasonal_data['seasonal_price_per_day'];
                         if( isset( $seasonal_data['name'] ) && !empty( $seasonal_data['name'] ) ){
                         ?>
-                        <div class="price-main"><?php echo wp_kses_post( wc_price($seasonal_price_per_day ) );?></div>
-                        <div class="seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?> rate</div>
+                        <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price($seasonal_price_per_day ) );?></div>
+                        <div class="mpcrbm_seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?> rate</div>
                     <?php }
                     }?>
                 </div>
                 <div class="_min_150_mL_xs mpcrbm_booking_items">
-                    <h4 class="mpcrbm_textRight"><?php echo wp_kses_post( wc_price( $raw_price) ); ?></h4>
-                    <div class="price-total"><?php echo esc_attr($minutes_to_day); ?>-day total</div>
+                    <h4 class="mpcrbm_mpcrbm_textRight"><?php echo wp_kses_post( wc_price( $raw_price) ); ?></h4>
+                    <div class="mpcrbm_price-total"><?php echo esc_attr($minutes_to_day); ?>-day total</div>
 
                     <?php if( $total_save > 0 ){?>
-                        <div class="discount-info">Save <?php echo wp_kses_post( wc_price( $total_save ) );?></div>
+                        <div class="mpcrbm_discount-info">Save <?php echo wp_kses_post( wc_price( $total_save ) );?></div>
                     <?php }?>
                     <button type="button" 
                         class="_mpBtn_xs_w_150 mpcrbm_transport_select"

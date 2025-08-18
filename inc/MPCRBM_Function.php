@@ -259,7 +259,7 @@
 				}
 				session_write_close();
 
-                $price = self::mpcrbm_calculate_price( $post_id, $start_date_time, $minutes_to_day, $price );
+//                $price = self::mpcrbm_calculate_price( $post_id, $start_date_time, $minutes_to_day, $price );
 
 				//delete_transient('original_price_based');
 				return $price;

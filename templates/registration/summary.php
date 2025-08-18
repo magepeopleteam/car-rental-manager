@@ -57,10 +57,10 @@
                         <?php } ?>
 					<?php } ?>
 
-                    <!--<div class="duration-highlight">
-                        <div class="duration-days"><?php /*echo esc_attr( 5 );*/?> <?php /*esc_html_e('Days', 'car-rental-manager'); */?></div>
-                        <div class="duration-label"><?php /*esc_html_e('Rental Period', 'car-rental-manager'); */?></div>
-                    </div>-->
+                    <div class="mpcrbm_duration-highlight">
+                        <div class="mpcrbm_duration-days"><?php echo esc_attr( $minutes_to_day );?> <?php esc_html_e('Days', 'car-rental-manager'); ?></div>
+                        <div class="mpcrbm_duration-label"><?php esc_html_e('Rental Period', 'car-rental-manager'); ?></div>
+                    </div>
 
 					<div class="mpcrbm_transport_summary">
 						<div class="dividerL"></div>
