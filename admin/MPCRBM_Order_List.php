@@ -47,7 +47,7 @@ if (!class_exists('MPCRBM_Order_List')) {
         }
 
         public function __construct() {
-            if ( is_plugin_active( 'wpcarrentpro/MPCRM_Plugin_Pro.php' ) ) {
+            if ( is_plugin_active( 'wpcarrentpro/MPCRBM_Plugin_Pro.php' ) ) {
                 add_action('admin_menu', array($this, 'order_menu'));
             }
         }
