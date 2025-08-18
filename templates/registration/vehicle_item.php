@@ -73,6 +73,8 @@ if ($post_id) {
     
     if (!$price || $price <= 0) {
         return;
+    }else{
+        $price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date_time, $minutes_to_day, $price );
     }
     
     $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
