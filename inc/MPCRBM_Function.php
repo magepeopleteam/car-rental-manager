@@ -418,9 +418,9 @@
                 if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
 
                     foreach ($seasonal as $s) {
-                        $season_start = strtotime($s['start']);
-                        $season_end   = strtotime($s['end']);
-                        if ($start_timestamp >= $season_start && $start_timestamp <= $season_end) {
+                        $season_start = strtotime( $s['start'] );
+                        $season_end   = strtotime( $s['end'] );
+                        if ( $start_timestamp >= $season_start && $start_timestamp <= $season_end ) {
                             switch ($s['type']) {
                                 case 'percentage_increase':
                                     $price += $price * ($s['value'] / 100);
@@ -462,6 +462,43 @@
                 }
 
                 return round($price, 2);
+            }
+
+            public static function get_seasonal_rate( $post_id, $price_per_day, $start_date, $enable_seasonal,  ){
+                $seasonal   = (array) get_post_meta($post_id, 'mpcrbm_seasonal_pricing', true);
+                $seasonal_price_per_day = $price_per_day;
+                $name = '';
+                if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty( $seasonal[0] ) ) {
+                    $start_timestamp = strtotime( $start_date );
+                    foreach ( $seasonal as $s ) {
+                        $season_start = strtotime( $s['start'] );
+                        $season_end   = strtotime( $s['end'] );
+
+                        $name = isset( $s['name'] ) ? $s['name'] : '';
+                        if ( $start_timestamp >= $season_start && $start_timestamp <= $season_end ) {
+                            switch ($s['type']) {
+                                case 'percentage_increase':
+                                    $seasonal_price_per_day += $price_per_day * ($s['value'] / 100);
+                                    break;
+                                case 'percentage_decrease':
+                                    $seasonal_price_per_day -= $price_per_day * ($s['value'] / 100);
+                                    break;
+                                case 'fixed_increase':
+                                    $seasonal_price_per_day =  $price_per_day + $s['value'];
+                                    break;
+                                case 'fixed_decrease':
+                                    $seasonal_price_per_day =  $price_per_day - $s['value'];
+                                    break;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                return array(
+                    'name' => $name,
+                    'seasonal_price_per_day' => $seasonal_price_per_day,
+                );
             }
 
         }
