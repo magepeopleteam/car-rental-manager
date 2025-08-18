@@ -361,6 +361,13 @@ if (!empty($mpcrbm_all_transport_id)) {
 $mpcrbm_bags = !empty($mpcrbm_bags) ? max($mpcrbm_bags) : 0;
 $mpcrbm_passengers = !empty($mpcrbm_passengers) ? max($mpcrbm_passengers) : 0;
 
+$startDate_str  = new DateTime( $date );
+$returnDate_str = new DateTime( $return_date_time );
+$interval = $startDate_str->diff( $returnDate_str );
+$minutes_all        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
+$minutes_to_day = ceil( $minutes_all / 1440 );
+;
+
 if( $is_redirect === 'yes' ){
 ?>
 <div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result">

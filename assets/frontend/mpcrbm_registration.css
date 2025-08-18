@@ -218,19 +218,19 @@ h2#mpcrbm_title_change{color:white;}
 	white-space: nowrap;
 	max-height: 30px;
 }
- .price-breakdown {
+ .mpcrbm_price-breakdown {
 	 font-size: 11px;
 	 color: #94a3b8;
 	 margin-bottom: 10px;
 	 font-weight: 500;
  }
 
- .price-main {
+ .mpcrbm_price-main {
 	 font-size: 18px;
 	 font-weight: 800;
 	 color: #1e293b;
  }
- .seasonal-info {
+ .mpcrbm_seasonal-info {
 	 font-size: 10px;
 	 color: #d97706;
 	 font-weight: 600;
@@ -251,24 +251,24 @@ h2#mpcrbm_title_change{color:white;}
 	 text-align: right;
  }
 
- .price-total {
+ .mpcrbm_price-total {
 	 font-size: 11px;
 	 color: #64748b;
 	 font-weight: 500;
 	 padding: 2px 0px;
 	 text-align: right;
  }
- .mpcrbm_booking_vehicle .discount-info .woocommerce-Price-amount {
+ .mpcrbm_booking_vehicle .mpcrbm_discount-info .woocommerce-Price-amount {
 	 font-size: 12px !important;
  }
- .mpcrbm_booking_vehicle .price-breakdown .woocommerce-Price-amount {
+ .mpcrbm_booking_vehicle .mpcrbm_price-breakdown .woocommerce-Price-amount {
 	 font-size: 16px !important;
  }
- .mpcrbm_booking_vehicle .price-main .woocommerce-Price-amount {
+ .mpcrbm_booking_vehicle .mpcrbm_price-main .woocommerce-Price-amount {
 	 font-size: 16px !important;
  }
 
- .discount-info {
+ .mpcrbm_discount-info {
 	 font-size: 10px;
 	 color: #059669;
 	 font-weight: 600;
@@ -289,7 +289,7 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_textRight{
 	 text-align: right;
  }
- .duration-highlight {
+ .mpcrbm_duration-highlight {
 	 background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
 	 color: white;
 	 border-radius: 12px;
@@ -298,12 +298,12 @@ h2#mpcrbm_title_change{color:white;}
 	 margin: 20px 0;
 	 box-shadow: 0 8px 25px rgba(79, 70, 229, 0.25);
  }
- .duration-days {
+ .mpcrbm_duration-days {
 	 font-size: 24px;
 	 font-weight: 700;
  }
 
- .duration-label {
+ .mpcrbm_duration-label {
 	 font-size: 12px;
 	 opacity: 0.9;
 	 text-transform: uppercase;
