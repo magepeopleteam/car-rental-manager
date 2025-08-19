@@ -147,10 +147,10 @@
             public function enqueue_frontend_assets() {
                 if (is_page_template('transport-result.php')) {
                     wp_enqueue_style(
-                        'mptbm-file-upload',
+                        'mpcrbm-file-upload',
                         MPCRBM_PLUGIN_URL . '/assets/css/file-upload.css',
                         array(),
-                        MPTBM_PLUGIN_VERSION
+	                    MPCRBM_PLUGIN_VERSION
                     );
                 }
             }

@@ -30,7 +30,6 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Status.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Guideline.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_License.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Order_List.php';
 				//****************Global settings************************//
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Settings_Global.php';
 				//****************Taxi settings************************//
