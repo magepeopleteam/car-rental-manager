@@ -207,7 +207,7 @@
 						$price         = $price_per_day * $minutes_to_day;
 					}
 				}
-				if ( class_exists( 'MPTBM_Datewise_Discount_Addon' ) ) {
+				if ( class_exists( 'MPCRBM_Datewise_Discount_Addon' ) ) {
 					if ( isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
 						$nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
 						if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {

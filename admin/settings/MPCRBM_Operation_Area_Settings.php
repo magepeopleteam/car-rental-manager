@@ -10,9 +10,7 @@
 		class MPCRBM_Operation_Area_Settings {
 			public function __construct() {
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'operation_area_settings' ] );
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'operation_area_settings' ] );
 				add_action( 'save_post', array( $this, 'save_operation_area_settings' ), 99, 1 );
-				add_action( 'mpcrbm_settings_sec_fields', array( $this, 'settings_sec_fields' ), 10, 1 );
 			}
 
 			public function operation_area_settings( $post_id ) {
@@ -88,31 +86,6 @@
 				}
 			}
 
-			public function settings_sec_fields( $default_fields ): array {
-				// Ensure $default_fields is an array
-				$default_fields = is_array( $default_fields ) ? $default_fields : array();
-				$settings_fields = array(
-					'mpcrbm_operation_area_settings' => array(
-						array(
-							'name'    => 'mpcrbm_terms_start_location',
-							'label'   => esc_html__( 'Operation Areas', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select the operational areas for the car rental', 'car-rental-manager' ),
-							'type'    => 'multiselect',
-							'default' => array(),
-							'options' => array()  // Will be populated dynamically from mpcrbm_locations taxonomy
-						),
-						array(
-							'name'    => 'mpcrbm_terms_price_info',
-							'label'   => esc_html__( 'Area Price Information', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Price information for different operational areas', 'car-rental-manager' ),
-							'type'    => 'array',
-							'default' => array()
-						)
-					)
-				);
-
-				return array_merge( $default_fields, $settings_fields );
-			}
 		}
 		new MPCRBM_Operation_Area_Settings();
 	}

@@ -10,9 +10,7 @@
 		class MPCRBM_Date_Settings {
 			public function __construct() {
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'date_settings' ] );
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'date_settings' ] );
 				add_action( 'save_post', [ $this, 'save_date_time_settings' ] );
-				add_action( 'mpcrbm_settings_sec_fields', array( $this, 'settings_sec_fields' ), 10, 1 );
 			}
 
 			public function default_text( $day ) {
@@ -413,42 +411,6 @@
 				$end_name = 'mpcrbm_' . $day . '_end_time';
 				$end_time = $this->get_submit_info( $end_name );
 				update_post_meta( $post_id, $end_name, $end_time );
-			}
-
-			public function settings_sec_fields( $default_fields ): array {
-				// Ensure $default_fields is an array
-				$default_fields = is_array( $default_fields ) ? $default_fields : array();
-				$settings_fields = array(
-					'mpcrbm_date_settings' => array(
-						array(
-							'name'    => 'mpcrbm_date_type',
-							'label'   => esc_html__( 'Date Type', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select date type (Repeated or Particular)', 'car-rental-manager' ),
-							'type'    => 'select',
-							'default' => 'repeated',
-							'options' => array(
-								'repeated'   => esc_html__( 'Repeated', 'car-rental-manager' ),
-								'particular' => esc_html__( 'Particular', 'car-rental-manager' )
-							)
-						),
-						array(
-							'name'    => 'mpcrbm_repeated_start_date',
-							'label'   => esc_html__( 'Repeated Start Date', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Set the start date for repeated bookings', 'car-rental-manager' ),
-							'type'    => 'date',
-							'default' => ''
-						),
-						array(
-							'name'    => 'mpcrbm_particular_dates',
-							'label'   => esc_html__( 'Particular Dates', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Set particular dates for bookings', 'car-rental-manager' ),
-							'type'    => 'array',
-							'default' => array()
-						)
-					)
-				);
-
-				return array_merge( $default_fields, $settings_fields );
 			}
 		}
 		new MPCRBM_Date_Settings();

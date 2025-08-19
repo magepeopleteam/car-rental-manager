@@ -10,9 +10,7 @@
 		class MPCRBM_Tax_Settings {
 			public function __construct() {
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'tab_content' ] );
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'tab_content' ] );
 				add_action( 'save_post', [ $this, 'settings_save' ] );
-				add_action( 'mpcrbm_settings_sec_fields', array( $this, 'settings_sec_fields' ), 10, 1 );
 			}
 
 			public function tab_content( $post_id ) {
@@ -80,7 +78,6 @@
                         </div>
 					<?php } ?>
                 </div>
-				<?php do_action( 'mpcrbm_settings_sec_fields' ); ?>
 				<?php
 			}
 
@@ -96,38 +93,6 @@
 				}
 			}
 
-			public function settings_sec_fields( $default_fields ): array {
-				// Ensure $default_fields is an array
-				$default_fields  = is_array( $default_fields ) ? $default_fields : array();
-				$settings_fields = array(
-					'mpcrbm_tax_settings' => array(
-						array(
-							'name'    => '_tax_status',
-							'label'   => esc_html__( 'Tax Status', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select tax status type', 'car-rental-manager' ),
-							'type'    => 'select',
-							'default' => 'none',
-							'options' => array(
-								'taxable'  => esc_html__( 'Taxable', 'car-rental-manager' ),
-								'shipping' => esc_html__( 'Shipping only', 'car-rental-manager' ),
-								'none'     => esc_html__( 'None', 'car-rental-manager' )
-							)
-						),
-						array(
-							'name'    => '_tax_class',
-							'label'   => esc_html__( 'Tax Class', 'car-rental-manager' ),
-							'desc'    => esc_html__( 'Select tax class', 'car-rental-manager' ),
-							'type'    => 'select',
-							'default' => 'standard',
-							'options' => array(
-								'standard' => esc_html__( 'Standard', 'car-rental-manager' )
-							)
-						)
-					)
-				);
-
-				return array_merge( $default_fields, $settings_fields );
-			}
 		}
 		new MPCRBM_Tax_Settings();
 	}

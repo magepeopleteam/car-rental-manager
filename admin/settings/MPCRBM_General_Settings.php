@@ -114,7 +114,6 @@
                         </section>
                     </div>
                 </div>
-				<?php do_action( 'mpcrbm_settings_sec_fields' ); ?>
 				<?php
 			}
 

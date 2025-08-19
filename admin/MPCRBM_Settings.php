@@ -44,16 +44,6 @@
                             <li data-tabs-target="#mpcrbm_settings_ex_service">
                                 <span class="pe-1 fas fa-puzzle-piece"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
                             </li>
-							<?php
-								if ( class_exists( 'MPCRBM_Plugin_Pro' ) ) {
-									?>
-                                    <li data-tabs-target="#mpcrbm_setting_operation_area">
-                                        <span class="pe-1 fas fa-map-marker-alt"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
-                                    </li>
-									<?php do_action( 'mpcrbm_settings_tab_after_ex_service' ); ?>
-									<?php
-								}
-							?>
                             <li data-tabs-target="#wbtm_settings_tax">
                                 <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
                             </li>

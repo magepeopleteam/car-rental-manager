@@ -10,41 +10,10 @@ if (!defined('ABSPATH')) {
 if (!class_exists('MPCRBM_Extra_Service_Settings')) {
     class MPCRBM_Extra_Service_Settings {
         public function __construct() {
-            add_action('mpcrbm_settings_sec_fields', array($this, 'settings_sec_fields'), 10, 1);
             add_action('mpcrbm_settings_tab_content', array($this, 'extra_service_settings_tab'), 10, 1);
             add_action('save_post', array($this, 'save_extra_service_settings'), 10, 1);
         }
 
-        public function settings_sec_fields($default_fields) {
-            // Ensure $default_fields is an array
-            $default_fields = is_array($default_fields) ? $default_fields : array();
-            
-            $settings_fields = array(
-                'mpcrbm_extra_service_settings' => array(
-                    array(
-                        'name' => 'display_mpcrbm_extra_services',
-                        'label' => esc_html__('Display Extra Services', 'car-rental-manager'),
-                        'desc' => esc_html__('Enable/Disable extra services display', 'car-rental-manager'),
-                        'type' => 'select',
-                        'default' => 'on',
-                        'options' => array(
-                            'on' => esc_html__('On', 'car-rental-manager'),
-                            'off' => esc_html__('Off', 'car-rental-manager')
-                        )
-                    ),
-                    array(
-                        'name' => 'mpcrbm_extra_services_id',
-                        'label' => esc_html__('Extra Services', 'car-rental-manager'),
-                        'desc' => esc_html__('Select predefined extra services or create custom ones', 'car-rental-manager'),
-                        'type' => 'select',
-                        'default' => '',
-                        'options' => $this->get_extra_services_options()
-                    )
-                )
-            );
-            
-            return array_merge($default_fields, $settings_fields);
-        }
 
         private function get_extra_services_options() {
             $options = array(
@@ -147,4 +116,3 @@ if (!class_exists('MPCRBM_Extra_Service_Settings')) {
     new MPCRBM_Extra_Service_Settings();
 }
 ?>
-<?php do_action('mpcrbm_settings_sec_fields'); ?> 
