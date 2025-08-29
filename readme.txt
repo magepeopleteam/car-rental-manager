@@ -9,7 +9,10 @@ Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	
-A comprehensive car rental booking solution, integrated with WooCommerce, offering automation for seamless management.
+Launch your car rental business effortlessly with Car Rental Manager, a powerful and free WordPress plugin that lets you create a professional car rental booking system in just a few steps!
+Whether you're renting cars, scooters, vans, or any other vehicles, Car Rental Manager offers a robust and user-friendly solution to manage your rental business directly from your WordPress website. Perfect for entrepreneurs, small businesses, or web agencies, this plugin empowers you to set up a seamless booking system without coding expertise. With WooCommerce integration, your customers can enjoy a smooth booking process and secure payments, making your rental business both accessible and trustworthy.
+The free version of Car Rental Manager includes a comprehensive set of features to get you started, with the option to upgrade to the Pro version for advanced functionality directly from your WordPress admin panel. Compatible with any WordPress theme, this plugin ensures a polished and professional booking experience that blends seamlessly into your website.
+
 
 == Description ==
 
@@ -19,27 +22,35 @@ Let's look at the key features that make the plugin more acceptable in its categ
 
 ## Key Features:
 
-**🤝 User-Friendly Interface**
-Enjoy a user-friendly interface that simplifies Car Rental Solution for administrators and customers.
+* ⚡ **Effortless Setup** – Launch your rental system in minutes with a simple guided setup—no coding skills required.  
 
-**⏱ Flexible Booking Options** 
-Provide customers with the flexibility to choose immediate pickups or pre-scheduled rides according to their preferences.
+* 🛒 **WooCommerce Integration** – Seamlessly manage bookings and accept secure payments via popular gateways.  
 
-**💵 Fare Calculation** 
-Automatic fare calculation based on per day
+* 💵 **Flexible Pricing Options**  
+   - Tiered Discounts: Automatic discounts by rental duration or booking volume.  
+   - Day-wise Pricing: Set different rates for specific weekdays.  
+   - Seasonal Pricing (Free): Adjust prices for holidays or peak seasons.  
 
-**💰 Multiple Payment Gateways**
-Easily integrate with popular payment gateways to offer secure and diverse payment options for customers.
+* 🔁 **Recurring Bookings** – Allow customers to schedule repeat rentals for consistent business.  
 
-**🤹 Booking Management**
-Efficiently manage all car bookings from your WordPress dashboard, with the ability to view, modify, or cancel bookings as needed.
+* 📅 **Advanced Booking Control** – Define how far in advance customers can book.  
 
-**💦 Responsive Design** 
-The plugin is designed to be fully responsive, offering a smooth booking experience across various devices.
+* ⏰ **24/7 Availability** – Support round-the-clock rentals for maximum convenience.  
 
+* 🚗 **Vehicle Management** – Create detailed vehicle profiles with images, features, and descriptions.  
 
-**⌚ Establish Operating Hours**
-Define the operational schedule for Car services, or opt for 24-hour availability.
+* 📆 **Availability Calendar** – Show real-time availability with an interactive monthly calendar.  
+
+* ✅ **Streamlined Booking Flow** – User-friendly, customizable front-end booking process powered by WooCommerce.  
+
+* 📦 **Order & Admin Management** – Track and manage reservations with an intuitive back-end dashboard.  
+
+* 🌍 **Multi-Language Ready** – Reach global customers with built-in translation and localization support.  
+
+* 🔗 **Shortcode Support** – Embed booking forms, calendars, and listings anywhere on your site.  
+
+* 📱 **Responsive by Design** – Optimized for desktops, tablets, and mobile devices.  
+
 
 ## Explore The Demo:
 &#9989;  [Live Demo for Car Rental ](https://car.wprently.com/)
@@ -47,9 +58,24 @@ Define the operational schedule for Car services, or opt for 24-hour availabilit
 == Guideline ==
 Shortcode:
 [mpcrbm_booking form='inline' progressbar='no']
-This shortcode will show the form as an inline and  it can be also  horizontal form and progressbar can be yes or no
+This shortcode will show the form as an inline and  it can also be a  horizontal form, and the progressbar can be yes or no
 [mpcrbm_booking form='horizontal' progressbar='no']
- 
+
+
+With **Car Rental Manager**, you can transform your WordPress site into a fully functional car rental platform in just a few steps:
+
+1. Install the free plugin from the WordPress repository.  
+2. Add your vehicles, set pricing rules, and configure WooCommerce for secure payments.  
+3. Embed the booking system on your site using shortcodes.  
+4. Start accepting bookings and managing your rental business with ease!  
+
+This free plugin provides all the tools you need to kickstart your car rental business at no cost.  
+
+* Features like **tiered discounts**, **day-wise pricing**, and **seasonal pricing** give you the flexibility to compete in any market.  
+* **WooCommerce integration** ensures secure and reliable transactions.  
+* For advanced features like **PDF export** and **form support**, the Pro version is available directly from your WordPress dashboard.
+
+
 
 
 == Installation ==
