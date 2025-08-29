@@ -80,20 +80,20 @@
 				$current_date = current_time('Y-m-d');
 				$settings_fields = array(
 					'mpcrbm_general_settings' => apply_filters('mpcrbm_filter_general_settings', array(
-						array(
-							'name' => 'payment_system',
-							'label' => esc_html__('Payment System', 'car-rental-manager'),
-							'desc' => esc_html__('Please Select Payment System.', 'car-rental-manager'),
-							'type' => 'multicheck',
-							'default' => array(
-								'direct_order' => 'direct_order',
-								'woocommerce' => 'woocommerce'
-							),
-							'options' => array(
-								'direct_order' => esc_html__('Pay on service', 'car-rental-manager'),
-								'woocommerce' => esc_html__('woocommerce Payment', 'car-rental-manager'),
-							)
-						),
+						// array(
+						// 	'name' => 'payment_system',
+						// 	'label' => esc_html__('Payment System', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Please Select Payment System.', 'car-rental-manager'),
+						// 	'type' => 'multicheck',
+						// 	'default' => array(
+						// 		'direct_order' => 'direct_order',
+						// 		'woocommerce' => 'woocommerce'
+						// 	),
+						// 	'options' => array(
+						// 		'direct_order' => esc_html__('Pay on service', 'car-rental-manager'),
+						// 		'woocommerce' => esc_html__('woocommerce Payment', 'car-rental-manager'),
+						// 	)
+						// ),
 						array(
 							'name' => 'direct_book_status',
 							'label' => esc_html__('Pay on service Booked Status', 'car-rental-manager'),
@@ -126,45 +126,45 @@
 							'type' => 'text',
 							'default' => 'dashicons-car'
 						),
-						array(
-							'name' => 'category_label',
-							'label' => $label . ' ' . esc_html__('Category Label', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to change the  category label in the dashboard menu, you can change it here.', 'car-rental-manager'),
-							'type' => 'text',
-							'default' => 'Category'
-						),
-						array(
-							'name' => 'category_slug',
-							'label' => $label . ' ' . esc_html__('Category Slug', 'car-rental-manager'),
-							'desc' => esc_html__('Please enter the slug name you want for category. Remember after change this slug you need to flush permalink, Just go to  ', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'car-rental-manager'),
-							'type' => 'text',
-							'default' => 'Car-category'
-						),
-						array(
-							'name' => 'organizer_label',
-							'label' => $label . ' ' . esc_html__('Organizer Label', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to change the  category label in the dashboard menu you can change here', 'car-rental-manager'),
-							'type' => 'text',
-							'default' => 'Organizer'
-						),
-						array(
-							'name' => 'organizer_slug',
-							'label' => $label . ' ' . esc_html__('Organizer Slug', 'car-rental-manager'),
-							'desc' => esc_html__('Please enter the slug name you want for the  organizer. Remember, after changing this slug, you need to flush the permalinks. Just go to ', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'car-rental-manager'),
-							'type' => 'text',
-							'default' => 'Car-organizer'
-						),
-						array(
-							'name' => 'expire',
-							'label' => $label . ' ' . esc_html__('Expired  Visibility', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to visible expired  ?, please select ', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
-							'type' => 'select',
-							'default' => 'no',
-							'options' => array(
-								'yes' => esc_html__('Yes', 'car-rental-manager'),
-								'no' => esc_html__('No', 'car-rental-manager')
-							)
-						),
+						// array(
+						// 	'name' => 'category_label',
+						// 	'label' => $label . ' ' . esc_html__('Category Label', 'car-rental-manager'),
+						// 	'desc' => esc_html__('If you want to change the  category label in the dashboard menu, you can change it here.', 'car-rental-manager'),
+						// 	'type' => 'text',
+						// 	'default' => 'Category'
+						// ),
+						// array(
+						// 	'name' => 'category_slug',
+						// 	'label' => $label . ' ' . esc_html__('Category Slug', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Please enter the slug name you want for category. Remember after change this slug you need to flush permalink, Just go to  ', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'car-rental-manager'),
+						// 	'type' => 'text',
+						// 	'default' => 'Car-category'
+						// ),
+						// array(
+						// 	'name' => 'organizer_label',
+						// 	'label' => $label . ' ' . esc_html__('Organizer Label', 'car-rental-manager'),
+						// 	'desc' => esc_html__('If you want to change the  category label in the dashboard menu you can change here', 'car-rental-manager'),
+						// 	'type' => 'text',
+						// 	'default' => 'Organizer'
+						// ),
+						// array(
+						// 	'name' => 'organizer_slug',
+						// 	'label' => $label . ' ' . esc_html__('Organizer Slug', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Please enter the slug name you want for the  organizer. Remember, after changing this slug, you need to flush the permalinks. Just go to ', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'car-rental-manager'),
+						// 	'type' => 'text',
+						// 	'default' => 'Car-organizer'
+						// ),
+						// array(
+						// 	'name' => 'expire',
+						// 	'label' => $label . ' ' . esc_html__('Expired  Visibility', 'car-rental-manager'),
+						// 	'desc' => esc_html__('If you want to visible expired  ?, please select ', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
+						// 	'type' => 'select',
+						// 	'default' => 'no',
+						// 	'options' => array(
+						// 		'yes' => esc_html__('Yes', 'car-rental-manager'),
+						// 		'no' => esc_html__('No', 'car-rental-manager')
+						// 	)
+						// ),
 						array(
 							'name' => 'enable_view_search_result_page',
 							'label' => $label . ' ' . esc_html__('Show Search Result In A Different Page', 'car-rental-manager'),
@@ -180,73 +180,73 @@
 							'type' => 'text',
 							'placeholder' => 'https://mysite.com/taxi'
 						),
-						array(
-							'name' => 'enable_buffer_time',
-							'label' => $label . ' ' . esc_html__('Buffer Time', 'car-rental-manager'),
-							'desc' => esc_html__('Enter buffer time per minutes. Also you have to change the timezone from', 'car-rental-manager') . '<strong style="color: red;">' . esc_html__('Settings --> General --> Timezone', 'car-rental-manager') . '</strong>',
-							'type' => 'text',
-							'placeholder' => 'Ex:10'
-						),
-						array(
-							'name' => 'pickup_interval_time',
-							'label' => $label . ' ' . esc_html__('Interval of pickup/return time in frontend', 'car-rental-manager'),
-							'desc' => esc_html__('Select frontend interval pickup and return time', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
-							'type' => 'select',
-							'default' => 30,
-							'options' => array(
-								30 => esc_html__('30', 'car-rental-manager'),
-								15 => esc_html__('15', 'car-rental-manager'),
-								10 => esc_html__('10', 'car-rental-manager'),
-								5 => esc_html__('5', 'car-rental-manager'),
-							)
-						),
-						array(
-							'name' => 'enable_return_in_different_date',
-							'label' => $label . ' ' . esc_html__('Enable return in different date', 'car-rental-manager'),
-							'desc' => esc_html__('Select yes if you want to enable different date return field', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
-							'type' => 'select',
-							'default' => 'no',
-							'options' => array(
-								'yes' => esc_html__('Yes', 'car-rental-manager'),
-								'no' => esc_html__('No', 'car-rental-manager')
-							)
-						),
-						array(
-							'name' => 'enable_filter_via_features',
-							'label' => $label . ' ' . esc_html__('Enable filter via features', 'car-rental-manager'),
-							'desc' => esc_html__('Select yes if you want to enable filter via passenger and bags', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
-							'type' => 'select',
-							'default' => 'no',
-							'options' => array(
-								'yes' => esc_html__('Yes', 'car-rental-manager'),
-								'no' => esc_html__('No', 'car-rental-manager')
-							)
-						),
-						array(
-							'name' => 'single_page_checkout',
-							'label' => esc_html__('Disable single page checkout', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to disable single page checkout, please select Yes.That means active woocommerce checkout page active', 'car-rental-manager'),
-							'type' => 'select',
-							'default' => 'no',
-							'options' => array(
-								'yes' => esc_html__('Yes', 'car-rental-manager'),
-								'no' => esc_html__('No', 'car-rental-manager')
-							)
-						),
-						array(
-							'name' => 'maximum_passenger',
-							'label' => esc_html__('Maximum Passenger', 'car-rental-manager'),
-							'desc' => esc_html__('Set maximum passenger capacity', 'car-rental-manager'),
-							'type' => 'number',
-							'default' => '4'
-						),
-						array(
-							'name' => 'maximum_bag',
-							'label' => esc_html__('Maximum Bag', 'car-rental-manager'),
-							'desc' => esc_html__('Set maximum bag capacity', 'car-rental-manager'),
-							'type' => 'number',
-							'default' => '4'
-						),
+						// array(
+						// 	'name' => 'enable_buffer_time',
+						// 	'label' => $label . ' ' . esc_html__('Buffer Time', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Enter buffer time per minutes. Also you have to change the timezone from', 'car-rental-manager') . '<strong style="color: red;">' . esc_html__('Settings --> General --> Timezone', 'car-rental-manager') . '</strong>',
+						// 	'type' => 'text',
+						// 	'placeholder' => 'Ex:10'
+						// ),
+						// array(
+						// 	'name' => 'pickup_interval_time',
+						// 	'label' => $label . ' ' . esc_html__('Interval of pickup/return time in frontend', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Select frontend interval pickup and return time', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
+						// 	'type' => 'select',
+						// 	'default' => 30,
+						// 	'options' => array(
+						// 		30 => esc_html__('30', 'car-rental-manager'),
+						// 		15 => esc_html__('15', 'car-rental-manager'),
+						// 		10 => esc_html__('10', 'car-rental-manager'),
+						// 		5 => esc_html__('5', 'car-rental-manager'),
+						// 	)
+						// ),
+						// array(
+						// 	'name' => 'enable_return_in_different_date',
+						// 	'label' => $label . ' ' . esc_html__('Enable return in different date', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Select yes if you want to enable different date return field', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
+						// 	'type' => 'select',
+						// 	'default' => 'no',
+						// 	'options' => array(
+						// 		'yes' => esc_html__('Yes', 'car-rental-manager'),
+						// 		'no' => esc_html__('No', 'car-rental-manager')
+						// 	)
+						// ),
+						// array(
+						// 	'name' => 'enable_filter_via_features',
+						// 	'label' => $label . ' ' . esc_html__('Enable filter via features', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Select yes if you want to enable filter via passenger and bags', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
+						// 	'type' => 'select',
+						// 	'default' => 'no',
+						// 	'options' => array(
+						// 		'yes' => esc_html__('Yes', 'car-rental-manager'),
+						// 		'no' => esc_html__('No', 'car-rental-manager')
+						// 	)
+						// ),
+						// array(
+						// 	'name' => 'single_page_checkout',
+						// 	'label' => esc_html__('Disable single page checkout', 'car-rental-manager'),
+						// 	'desc' => esc_html__('If you want to disable single page checkout, please select Yes.That means active woocommerce checkout page active', 'car-rental-manager'),
+						// 	'type' => 'select',
+						// 	'default' => 'no',
+						// 	'options' => array(
+						// 		'yes' => esc_html__('Yes', 'car-rental-manager'),
+						// 		'no' => esc_html__('No', 'car-rental-manager')
+						// 	)
+						// ),
+						// array(
+						// 	'name' => 'maximum_passenger',
+						// 	'label' => esc_html__('Maximum Passenger', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Set maximum passenger capacity', 'car-rental-manager'),
+						// 	'type' => 'number',
+						// 	'default' => '4'
+						// ),
+						// array(
+						// 	'name' => 'maximum_bag',
+						// 	'label' => esc_html__('Maximum Bag', 'car-rental-manager'),
+						// 	'desc' => esc_html__('Set maximum bag capacity', 'car-rental-manager'),
+						// 	'type' => 'number',
+						// 	'default' => '4'
+						// ),
 						array(
 							'name' => 'display_features',
 							'label' => esc_html__('Display Features', 'car-rental-manager'),
