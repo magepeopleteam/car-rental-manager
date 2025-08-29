@@ -99,14 +99,14 @@ if ($post_id) {
 
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
-        <div class="_max_180">
+        <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
                 <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
             </div>
         </div>
-        <div class="fdColumn _fullWidth mpcrbm_list_details">
+        <div class="mpcrbm_list_details">
             <h5><?php echo esc_html(get_the_title($post_id)); ?></h5>
-            <div class="justifyBetween _alignStart_mT_xs mpcrbm_list">
+            <div class=" mpcrbm_list">
                 <?php if ($display_features === 'on' && is_array($all_features) && !empty($all_features)) { ?>
                     <div class="mpcrbm_car_specs_lists">
                         <?php
