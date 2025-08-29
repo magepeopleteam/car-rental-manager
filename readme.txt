@@ -9,12 +9,14 @@ Requires PHP: 7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	
-Launch your car rental business effortlessly with Car Rental Manager, a powerful and free WordPress plugin that lets you create a professional car rental booking system in just a few steps!
-Whether you're renting cars, scooters, vans, or any other vehicles, Car Rental Manager offers a robust and user-friendly solution to manage your rental business directly from your WordPress website. Perfect for entrepreneurs, small businesses, or web agencies, this plugin empowers you to set up a seamless booking system without coding expertise. With WooCommerce integration, your customers can enjoy a smooth booking process and secure payments, making your rental business both accessible and trustworthy.
-The free version of Car Rental Manager includes a comprehensive set of features to get you started, with the option to upgrade to the Pro version for advanced functionality directly from your WordPress admin panel. Compatible with any WordPress theme, this plugin ensures a polished and professional booking experience that blends seamlessly into your website.
+WPCarRently – ready-to-use WordPress car rental booking plugin. Manage vehicles, WooCommerce payments, and bookings effortlessly for your business.
 
 
 == Description ==
+
+Launch your car rental business effortlessly with Car Rental Manager, a powerful and free WordPress plugin that lets you create a professional car rental booking system in just a few steps!
+Whether you're renting cars, scooters, vans, or any other vehicles, Car Rental Manager offers a robust and user-friendly solution to manage your rental business directly from your WordPress website. Perfect for entrepreneurs, small businesses, or web agencies, this plugin empowers you to set up a seamless booking system without coding expertise. With WooCommerce integration, your customers can enjoy a smooth booking process and secure payments, making your rental business both accessible and trustworthy.
+The free version of Car Rental Manager includes a comprehensive set of features to get you started, with the option to upgrade to the Pro version for advanced functionality directly from your WordPress admin panel. Compatible with any WordPress theme, this plugin ensures a polished and professional booking experience that blends seamlessly into your website.
 
 Car rental manager is an easy-to-use car rental booking management system that simplifies and streamlines car rental operations.
 
