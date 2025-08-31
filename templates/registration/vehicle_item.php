@@ -69,12 +69,12 @@ $two_way = $two_way ?? 1;
 if ($post_id) {
     // Get vehicle data
     $thumbnail = MPCRBM_Global_Function::get_image_url($post_id);
-    $price = MPCRBM_Function::get_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time );
+    
+    // Use multi-location pricing if enabled, otherwise use default pricing
+    $price = MPCRBM_Function::calculate_multi_location_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
     
     if (!$price || $price <= 0) {
         return;
-    }else{
-        $price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date_time, $minutes_to_day, $price );
     }
     
     $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);

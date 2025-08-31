@@ -57,6 +57,10 @@
 				// admin setting global
 				wp_enqueue_script('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.js', array('jquery'), filemtime(__DIR__ . '/assets/admin/mpcrbm_admin_settings.js'), true);
 				wp_enqueue_style('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.css', array(), filemtime(__DIR__ . '/assets/admin/mpcrbm_admin_settings.css'));
+				
+				// Multi-location support assets
+				wp_enqueue_style('mpcrbm_multi_location', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_multi_location.css', array(), MPCRBM_PLUGIN_VERSION);
+				wp_enqueue_script('mpcrbm_multi_location', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_multi_location.js', array('jquery'), MPCRBM_PLUGIN_VERSION, true);
 				do_action( 'mpcrbm_admin_enqueue' );
 			}
 

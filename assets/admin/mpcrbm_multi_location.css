@@ -1,0 +1,187 @@
+/* Multi-Location Settings Styles */
+
+.mpcrbm-location-price-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    gap: 15px;
+    align-items: end;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #e1e1e1;
+}
+
+.mpcrbm-location-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.mpcrbm-location-field label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mpcrbm-location-field select,
+.mpcrbm-location-field input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.mpcrbm-location-field select:focus,
+.mpcrbm-location-field input:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.mpcrbm-remove-location-price {
+    background: #dc3545 !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 12px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.mpcrbm-remove-location-price:hover {
+    background: #c82333 !important;
+}
+
+#mpcrbm-add-location-price {
+    background: #28a745 !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    margin-top: 10px !important;
+}
+
+#mpcrbm-add-location-price:hover {
+    background: #218838 !important;
+}
+
+.mpcrbm-info-box {
+    background: #f0f8ff;
+    border-left: 4px solid #0073aa;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 4px;
+}
+
+.mpcrbm-info-box h6 {
+    margin: 0 0 10px 0;
+    color: #0073aa;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.mpcrbm-info-box ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.mpcrbm-info-box li {
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 13px;
+}
+
+/* Toggle switch styling */
+.mpcrbm-toggle-multi-location {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 24px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    border: none;
+    outline: none;
+}
+
+.mpcrbm-toggle-multi-location:checked {
+    background-color: #0073aa;
+}
+
+.mpcrbm-toggle-multi-location:before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    background-color: white;
+    transition: transform 0.3s;
+}
+
+.mpcrbm-toggle-multi-location:checked:before {
+    transform: translateX(26px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .mpcrbm-location-price-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .mpcrbm-location-field {
+        margin-bottom: 10px;
+    }
+}
+
+/* Animation for adding/removing rows */
+.mpcrbm-location-price-row {
+    animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading state */
+.mpcrbm-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.mpcrbm-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #0073aa;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
