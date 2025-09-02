@@ -77,7 +77,7 @@ jQuery(document).ready(function($) {
         });
     }
     
-    // Validate location price form
+    // Validate location price form - Transfer Fee only
     function validateLocationPrices() {
         var isValid = true;
         var errors = [];
@@ -85,7 +85,7 @@ jQuery(document).ready(function($) {
         $('#mpcrbm-location-prices-container .mpcrbm-location-price-row').each(function(index) {
             var pickup = $(this).find('select[name*="[pickup_location]"]').val();
             var dropoff = $(this).find('select[name*="[dropoff_location]"]').val();
-            var dailyPrice = $(this).find('input[name*="[daily_price]"]').val();
+            // Note: Daily price validation removed - using base pricing from main settings
             
             if (!pickup) {
                 errors.push('Row ' + (index + 1) + ': Pickup location is required');
@@ -94,11 +94,6 @@ jQuery(document).ready(function($) {
             
             if (!dropoff) {
                 errors.push('Row ' + (index + 1) + ': Dropoff location is required');
-                isValid = false;
-            }
-            
-            if (!dailyPrice || dailyPrice <= 0) {
-                errors.push('Row ' + (index + 1) + ': Daily price must be greater than 0');
                 isValid = false;
             }
             
@@ -138,9 +133,9 @@ jQuery(document).ready(function($) {
         }
     });
     
-    // Auto-save functionality
+    // Auto-save functionality - Transfer Fee only
     var autoSaveTimer;
-    $('.mpcrbm-location-price-row select, .mpcrbm-location-price-row input').on('change', function() {
+    $('.mpcrbm-location-price-row select, .mpcrbm-location-price-row input[name*="[transfer_fee]"]').on('change', function() {
         clearTimeout(autoSaveTimer);
         autoSaveTimer = setTimeout(function() {
             // Show auto-save indicator
@@ -184,14 +179,12 @@ jQuery(document).ready(function($) {
         // based on the selected pickup location
     });
     
-    // Price calculation preview
-    $(document).on('input', 'input[name*="[daily_price]"], input[name*="[transfer_fee]"]', function() {
+    // Price calculation preview - Transfer Fee only
+    $(document).on('input', 'input[name*="[transfer_fee]"]', function() {
         var row = $(this).closest('.mpcrbm-location-price-row');
-        var dailyPrice = parseFloat(row.find('input[name*="[daily_price]"]').val()) || 0;
         var transferFee = parseFloat(row.find('input[name*="[transfer_fee]"]').val()) || 0;
         
-        // Show price preview (example for 1 day rental)
-        var totalPrice = dailyPrice + transferFee;
+        // Show transfer fee preview
         var previewElement = row.find('.price-preview');
         
         if (previewElement.length === 0) {
@@ -199,10 +192,10 @@ jQuery(document).ready(function($) {
             row.find('.mpcrbm-location-field').last().after(previewElement);
         }
         
-        if (dailyPrice > 0) {
-            previewElement.text('1-day total: $' + totalPrice.toFixed(2));
+        if (transferFee > 0) {
+            previewElement.text('Transfer fee: $' + transferFee.toFixed(2) + ' (added for different pickup/dropoff)');
         } else {
-            previewElement.text('');
+            previewElement.text('No transfer fee (same pickup/dropoff or free transfer)');
         }
     });
     
@@ -231,10 +224,8 @@ jQuery(document).ready(function($) {
             label.attr('title', 'Select the location where customers will pick up the vehicle');
         } else if (fieldName.includes('dropoff')) {
             label.attr('title', 'Select the location where customers will return the vehicle');
-        } else if (fieldName.includes('daily')) {
-            label.attr('title', 'Set the daily rental rate for this location combination');
         } else if (fieldName.includes('transfer')) {
-            label.attr('title', 'Additional fee for one-way rentals (pickup and dropoff at different locations)');
+            label.attr('title', 'Additional fee for rentals with different pickup and dropoff locations');
         }
     });
     

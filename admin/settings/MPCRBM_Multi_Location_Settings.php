@@ -77,8 +77,8 @@
 						<div class="mpcrbm-info-box" style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-left: 4px solid #0073aa;">
 							<h6><?php esc_html_e( 'How Multi-Location Works:', 'car-rental-manager' ); ?></h6>
 							<ul style="margin: 10px 0; padding-left: 20px;">
-								<li><?php esc_html_e( 'Set different daily rates for each pickup/dropoff location combination', 'car-rental-manager' ); ?></li>
-								<li><?php esc_html_e( 'Configure transfer fees for one-way rentals between locations', 'car-rental-manager' ); ?></li>
+								<li><?php esc_html_e( 'Daily rates are taken from the main pricing settings - no need to set them here', 'car-rental-manager' ); ?></li>
+								<li><?php esc_html_e( 'Configure transfer fees for rentals between different pickup/dropoff locations', 'car-rental-manager' ); ?></li>
 								<li><?php esc_html_e( 'Customers can select their preferred pickup and dropoff locations', 'car-rental-manager' ); ?></li>
 								<li><?php esc_html_e( 'Pricing automatically adjusts based on selected locations', 'car-rental-manager' ); ?></li>
 							</ul>
@@ -91,12 +91,12 @@
 			private function render_location_price_row( $index, $price_data, $location_terms ) {
 				$pickup_location = isset( $price_data['pickup_location'] ) ? $price_data['pickup_location'] : '';
 				$dropoff_location = isset( $price_data['dropoff_location'] ) ? $price_data['dropoff_location'] : '';
-				$daily_price = isset( $price_data['daily_price'] ) ? $price_data['daily_price'] : '';
+				// Removed daily_price - using base pricing from main settings instead
 				$transfer_fee = isset( $price_data['transfer_fee'] ) ? $price_data['transfer_fee'] : '';
 				?>
 				
 				<div class="mpcrbm-location-price-row" data-index="<?php echo esc_attr( $index ); ?>">
-					<div class="mpcrbm-location-price-grid">
+					<div class="mpcrbm-location-price-grid mpcrbm-transfer-fee-only">
 						<div class="mpcrbm-location-field">
 							<label><?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?></label>
 							<select name="mpcrbm_location_prices[<?php echo esc_attr( $index ); ?>][pickup_location]" class="mpcrbm-location-select">
@@ -121,12 +121,7 @@
 							</select>
 						</div>
 						
-						<div class="mpcrbm-location-field">
-							<label><?php esc_html_e( 'Daily Price', 'car-rental-manager' ); ?></label>
-							<input type="number" name="mpcrbm_location_prices[<?php echo esc_attr( $index ); ?>][daily_price]" 
-								   value="<?php echo esc_attr( $daily_price ); ?>" step="0.01" min="0" 
-								   placeholder="<?php esc_html_e( 'Daily Rate', 'car-rental-manager' ); ?>" />
-						</div>
+						<!-- Daily Price field removed - using base pricing from main settings -->
 						
 						<div class="mpcrbm-location-field">
 							<label><?php esc_html_e( 'Transfer Fee', 'car-rental-manager' ); ?></label>
@@ -172,7 +167,6 @@
 								$location_prices[] = array(
 									'pickup_location' => sanitize_text_field( $price_data['pickup_location'] ),
 									'dropoff_location' => sanitize_text_field( $price_data['dropoff_location'] ),
-									'daily_price' => floatval( $price_data['daily_price'] ),
 									'transfer_fee' => floatval( $price_data['transfer_fee'] )
 								);
 							}

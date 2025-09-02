@@ -1,8 +1,8 @@
-/* Multi-Location Settings Styles */
+/* Multi-Location Settings Styles - Transfer Fee Only */
 
 .mpcrbm-location-price-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1fr auto;
     gap: 15px;
     align-items: end;
     margin-bottom: 15px;
@@ -10,6 +10,11 @@
     background: #f9f9f9;
     border-radius: 5px;
     border: 1px solid #e1e1e1;
+}
+
+/* Transfer fee only layout - simplified 3-column grid */
+.mpcrbm-location-price-grid.mpcrbm-transfer-fee-only {
+    grid-template-columns: 1fr 1fr 1fr auto;
 }
 
 .mpcrbm-location-field {
@@ -133,9 +138,10 @@
     transform: translateX(26px);
 }
 
-/* Responsive design */
+/* Responsive design - Transfer Fee Only */
 @media (max-width: 768px) {
-    .mpcrbm-location-price-grid {
+    .mpcrbm-location-price-grid,
+    .mpcrbm-location-price-grid.mpcrbm-transfer-fee-only {
         grid-template-columns: 1fr;
         gap: 10px;
     }
