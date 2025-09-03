@@ -448,7 +448,8 @@
                 }
 
                 // 3. Tiered discount based on rental duration
-                if ( $enable_tired === 1 && !empty($tiered) && is_array( $tiered[0] ) &&  !empty($tiered[0] ) && (int)$days > 1 ) {
+
+                if ( $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
                     foreach ($tiered as $t) {
                         $min = isset($t['min']) ? (int)$t['min'] : 0;
                         $max = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
