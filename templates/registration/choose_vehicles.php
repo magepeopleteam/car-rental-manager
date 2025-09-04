@@ -15,41 +15,74 @@ $schedule = [];
 
 function mpcrbm_check_operation_area($post_id, $start_place, $end_place)
 {
-    // Retrieve saved locations from post meta
-    $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
+    // Check if multi-location is enabled for this vehicle
+    $multi_location_enabled = get_post_meta($post_id, 'mpcrbm_multi_location_enabled', true);
+    
+    if ($multi_location_enabled) {
+        // Use new multi-location system
+        $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
+        
+        if (!empty($location_prices) && is_array($location_prices)) {
+            // First, try to find exact match
+            foreach ($location_prices as $price_data) {
+                if ($price_data['pickup_location'] === $start_place && 
+                    $price_data['dropoff_location'] === $end_place) {
+                    return true; // Found exact matching location combination
+                }
+            }
+            
+            // If no exact match, check if both locations exist in any combination
+            $start_found = false;
+            $end_found = false;
+            
+            foreach ($location_prices as $price_data) {
+                if ($price_data['pickup_location'] === $start_place || 
+                    $price_data['dropoff_location'] === $start_place) {
+                    $start_found = true;
+                }
+                if ($price_data['pickup_location'] === $end_place || 
+                    $price_data['dropoff_location'] === $end_place) {
+                    $end_found = true;
+                }
+                
+                if ($start_found && $end_found) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    } else {
+        // Use old location system - be more flexible
+        $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
 
-    // Ensure $saved_locations is an array
-    if (!is_array($saved_locations) || empty($saved_locations)) {
-        return false; // No locations to check against
+        // If no saved locations, allow the vehicle to be shown (fallback)
+        if (!is_array($saved_locations) || empty($saved_locations)) {
+            return true; // Show vehicle even without specific location data
+        }
+
+        // Check if any of the saved locations match our search
+        foreach ($saved_locations as $location) {
+            // Check if start_place matches any location
+            if (isset($location['start_location']) && $location['start_location'] === $start_place) {
+                return true;
+            }
+            if (isset($location['end_location']) && $location['end_location'] === $start_place) {
+                return true;
+            }
+            
+            // Check if end_place matches any location
+            if (isset($location['start_location']) && $location['start_location'] === $end_place) {
+                return true;
+            }
+            if (isset($location['end_location']) && $location['end_location'] === $end_place) {
+                return true;
+            }
+        }
+
+        // If no specific matches found, still show the vehicle (more flexible approach)
+        return true;
     }
-
-    // Flags to track if start_place and end_place are found
-    $start_found = false;
-    $end_found = false;
-
-    // Iterate through saved locations to check for matches
-    foreach ($saved_locations as $location) {
-        if (
-            isset($location['start_location']) && $location['start_location'] === $start_place ||
-            isset($location['end_location']) && $location['end_location'] === $start_place
-        ) {
-            $start_found = true;
-        }
-        if (
-            isset($location['start_location']) && $location['start_location'] === $end_place ||
-            isset($location['end_location']) && $location['end_location'] === $end_place
-        ) {
-            $end_found = true;
-        }
-
-        // Break and return true once both are found
-        if ($start_found && $end_found) {
-            return true;
-        }
-    }
-
-    // Return false if either place is not found
-    return false;
 }
 
 
@@ -286,7 +319,7 @@ if ($two_way > 1) {
         if ($return_time !== "0") {
             // Validate return time format
             if (!preg_match('/^\d+(\.\d+)?$/', $return_time)) {
-                wp_send_json_error(array('message' => esc_html__('Invalid return time format', 'car-rental-manager')));
+                wp_send_json_error(array('message' => esc_html__('Invalid return time format: ' . $return_time, 'car-rental-manager')));
                 wp_die();
             }
 
@@ -297,7 +330,7 @@ if ($two_way > 1) {
 
             // Validate hours
             if ($hours < 0 || $hours > 23) {
-                wp_send_json_error(array('message' => esc_html__('Invalid return hours', 'car-rental-manager')));
+                wp_send_json_error(array('message' => esc_html__('Invalid return hours: ' . $hours . ' (must be 0-23)', 'car-rental-manager')));
                 wp_die();
             }
 
@@ -312,7 +345,7 @@ if ($two_way > 1) {
 
             // Validate minutes
             if ($minutes < 0 || $minutes > 59) {
-                wp_send_json_error(array('message' => esc_html__('Invalid return minutes', 'car-rental-manager')));
+                wp_send_json_error(array('message' => esc_html__('Invalid return minutes: ' . $minutes . ' (must be 0-59)', 'car-rental-manager')));
                 wp_die();
             }
         } else {
@@ -432,11 +465,15 @@ if( $is_redirect === 'yes' ){
                         $posts = $all_posts->posts;
                         $vehicle_item_count = 0;
                         $remove_class_item_post_id = [];
+                        
+                        
+                        
                         foreach ($posts as $post) {
 
                             $post_id = $post->ID;
                             $check_schedule = mpcrbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
                             $check_operation_area = mpcrbm_check_operation_area($post_id, $start_place, $end_place);
+                            
                             
                            
                             if ($check_schedule && $check_operation_area) {
@@ -445,6 +482,10 @@ if( $is_redirect === 'yes' ){
                                 include MPCRBM_Function::template_path("registration/vehicle_item.php");
                             }
                         }
+                        
+                                                 if ($vehicle_item_count == 0) {
+                             // No vehicles found message is handled by the existing "No Transport Available" div below
+                         }
                     } else {
                     ?>
                         <div class="_dLayout_mT_bgWarning">

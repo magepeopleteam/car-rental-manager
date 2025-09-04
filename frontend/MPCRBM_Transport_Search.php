@@ -25,6 +25,10 @@
 				/*******************************/
 				add_action( 'wp_ajax_mpcrbm_get_extra_service_summary', [ $this, 'mpcrbm_get_extra_service_summary' ] );
 				add_action( 'wp_ajax_nopriv_mpcrbm_get_extra_service_summary', [ $this, 'mpcrbm_get_extra_service_summary' ] );
+				
+				// Multi-location support
+				add_action( 'wp_ajax_mpcrbm_get_dropoff_locations', [ $this, 'mpcrbm_get_dropoff_locations' ] );
+				add_action( 'wp_ajax_nopriv_mpcrbm_get_dropoff_locations', [ $this, 'mpcrbm_get_dropoff_locations' ] );
 			}
 
 			public function transport_search( $params ) {
@@ -173,6 +177,58 @@
 				$redirect_url = 'mpcrbm-search';
 				wp_safe_redirect( home_url( $redirect_url ) );
 				exit();
+			}
+
+			/**
+			 * Get available dropoff locations for multi-location support
+			 */
+			public function mpcrbm_get_dropoff_locations() {
+				// Verify nonce
+				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'mpcrbm_nonce' ) ) {
+					wp_send_json_error( array( 'message' => esc_html__( 'Security check failed', 'car-rental-manager' ) ) );
+				}
+
+				$pickup_location = isset( $_POST['pickup_location'] ) ? sanitize_text_field( wp_unslash( $_POST['pickup_location'] ) ) : '';
+				$vehicle_ids = isset( $_POST['vehicle_ids'] ) ? array_map( 'intval', $_POST['vehicle_ids'] ) : array();
+
+				if ( empty( $pickup_location ) ) {
+					wp_send_json_error( array( 'message' => esc_html__( 'Pickup location is required', 'car-rental-manager' ) ) );
+				}
+
+				$available_locations = array();
+
+				// If specific vehicles are provided, check their multi-location settings
+				if ( ! empty( $vehicle_ids ) ) {
+					foreach ( $vehicle_ids as $vehicle_id ) {
+						$dropoff_locations = MPCRBM_Function::get_vehicle_dropoff_locations( $vehicle_id, $pickup_location );
+						$available_locations = array_merge( $available_locations, $dropoff_locations );
+					}
+				} else {
+					// Get all vehicles and their dropoff locations
+					$all_vehicles = MPCRBM_Query::query_transport_list( 'manual' );
+					if ( $all_vehicles->found_posts > 0 ) {
+						foreach ( $all_vehicles->posts as $vehicle ) {
+							$dropoff_locations = MPCRBM_Function::get_vehicle_dropoff_locations( $vehicle->ID, $pickup_location );
+							$available_locations = array_merge( $available_locations, $dropoff_locations );
+						}
+					}
+				}
+
+				// Remove duplicates and get location names
+				$available_locations = array_unique( $available_locations );
+				$location_data = array();
+
+				foreach ( $available_locations as $location_slug ) {
+					$location_name = MPCRBM_Function::get_taxonomy_name_by_slug( $location_slug, 'mpcrbm_locations' );
+					if ( $location_name ) {
+						$location_data[] = array(
+							'slug' => $location_slug,
+							'name' => $location_name
+						);
+					}
+				}
+
+				wp_send_json_success( array( 'locations' => $location_data ) );
 			}
 		}
 		new MPCRBM_Transport_Search();

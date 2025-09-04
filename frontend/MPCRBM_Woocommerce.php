@@ -79,7 +79,7 @@
 						$cart_item_data['return_date_time'] = $return_date_time;
 					}
 					$total_price = $this->mpcrbm_get_cart_total_price( $post_id );
-					$price     = MPCRBM_Function::get_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
+					$price     = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
 					$wc_price  = MPCRBM_Global_Function::wc_price( $post_id, $price );
 					$raw_price = MPCRBM_Global_Function::price_convert_raw( $wc_price );
 					$cart_item_data['mpcrbm_date'] = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
@@ -697,7 +697,7 @@
 					$return_time_formatted = sprintf( '%02d:%02d', $hours, $minutes );
 					$return_date_time      .= " " . $return_time_formatted;
 				}
-				$price            = MPCRBM_Function::get_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
+				$price            = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
 				$wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
 				$raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price );
 				$service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];

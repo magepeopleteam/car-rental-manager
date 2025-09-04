@@ -50,6 +50,13 @@
                             <li data-tabs-target="#mpcrbm_setting_operation_area">
                                 <span class="pe-1 fas fa-map-marker-alt"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
                             </li>
+                            <li data-tabs-target="#mpcrbm_setting_multi_location">
+                                <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Multi-Location', 'car-rental-manager' ); ?>
+                            </li>
+                            <?php
+                                // Allow pro plugins to add their own tabs
+                                do_action( 'mpcrbm_settings_tab_navigation' );
+                            ?>
                         </ul>
                         <div class="tabsContent">
 							<?php

@@ -166,11 +166,25 @@ if (sizeof($all_dates) > 0) {
                             <span><i class="fas fa-map-marker-alt _textTheme_mR_xs"></i><?php esc_html_e('Pick-up Location', 'car-rental-manager'); ?></span>
                             <?php if ($price_based == 'manual') {
                                 ?>
-                                <?php $all_start_locations = MPCRBM_Function::get_all_start_location(); ?>
+                                <?php 
+                                // Get all available pickup locations (supporting multi-location)
+                                $all_start_locations = MPCRBM_Function::get_all_start_location(); 
+                                
+                                // If multi-location is enabled for any vehicle, get all unique locations
+                                $multi_location_locations = array();
+                                foreach ($mpcrbm_all_transport_id as $vehicle_id) {
+                                    $vehicle_pickup_locations = MPCRBM_Function::get_vehicle_pickup_locations($vehicle_id);
+                                    $multi_location_locations = array_merge($multi_location_locations, $vehicle_pickup_locations);
+                                }
+                                $multi_location_locations = array_unique($multi_location_locations);
+                                
+                                // Combine with existing locations
+                                $all_locations = array_unique(array_merge($all_start_locations, $multi_location_locations));
+                                ?>
                                 <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
                                     <option selected disabled><?php esc_html_e(' Select Pick-Up Location', 'car-rental-manager'); ?></option>
-                                    <?php if (sizeof($all_start_locations) > 0) { ?>
-                                        <?php foreach ($all_start_locations as $start_location) { ?>
+                                    <?php if (sizeof($all_locations) > 0) { ?>
+                                        <?php foreach ($all_locations as $start_location) { ?>
                                             <option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?></option>
                                         <?php } ?>
                                     <?php } ?>
@@ -189,8 +203,8 @@ if (sizeof($all_dates) > 0) {
                             <?php if ($price_based == 'manual') { ?>
                                 <select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
                                     <option selected disabled><?php esc_html_e(' Select Return Location', 'car-rental-manager'); ?></option>
-                                    <?php if (sizeof($all_start_locations) > 0) { ?>
-                                        <?php foreach ($all_start_locations as $start_location) { ?>
+                                    <?php if (sizeof($all_locations) > 0) { ?>
+                                        <?php foreach ($all_locations as $start_location) { ?>
                                             <option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?></option>
                                         <?php } ?>
                                     <?php } ?>
@@ -235,7 +249,12 @@ if (sizeof($all_dates) > 0) {
                                     $hours = floor($i / 60);
                                     $minutes = $i % 60;
 
-                                    // Generate the data-value as hours + fraction (minutes / 60)
+                                    // Handle 24-hour case - convert 24 to 0 for midnight
+                                    if ($hours == 24) {
+                                        $hours = 0;
+                                    }
+
+                                    // Generate the data-value as hours + fraction (minutes / 100)
                                     $data_value = $hours + ($minutes / 100);
 
                                     // Format the time for display
@@ -254,7 +273,12 @@ if (sizeof($all_dates) > 0) {
                                     $hours = floor($i / 60);
                                     $minutes = $i % 60;
 
-                                    // Generate the data-value as hours + fraction (minutes / 60)
+                                    // Handle 24-hour case - convert 24 to 0 for midnight
+                                    if ($hours == 24) {
+                                        $hours = 0;
+                                    }
+
+                                    // Generate the data-value as hours + fraction (minutes / 100)
                                     $data_value = $hours + ($minutes / 100);
 
                                     // Format the time for display
@@ -333,7 +357,12 @@ if (sizeof($all_dates) > 0) {
                                     $hours = floor($i / 60);
                                     $minutes = $i % 60;
 
-                                    // Generate the data-value as hours + fraction (minutes / 60)
+                                    // Handle 24-hour case - convert 24 to 0 for midnight
+                                    if ($hours == 24) {
+                                        $hours = 0;
+                                    }
+
+                                    // Generate the data-value as hours + fraction (minutes / 100)
                                     $data_value = $hours + ($minutes / 100);
 
                                     // Format the time for display
@@ -351,7 +380,12 @@ if (sizeof($all_dates) > 0) {
                                     $hours = floor($i / 60);
                                     $minutes = $i % 60;
 
-                                    // Generate the data-value as hours + fraction (minutes / 60)
+                                    // Handle 24-hour case - convert 24 to 0 for midnight
+                                    if ($hours == 24) {
+                                        $hours = 0;
+                                    }
+
+                                    // Generate the data-value as hours + fraction (minutes / 100)
                                     $data_value = $hours + ($minutes / 100);
 
                                     // Format the time for display
