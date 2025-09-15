@@ -225,12 +225,29 @@
 						<?php } ?>
                     </div>
                 </div>
+
+<div>
+	<?php if ( $status == 1 ) { ?>
+                                    <div class="justifyBetween">
+                                        <button type="button" class="_mpBtn_dBR nextTab_prev">
+                                            <span>&longleftarrow;<?php esc_html_e( 'Previous', 'car-rental-manager' ); ?></span>
+                                        </button>
+                                        <div></div>
+                                        <button type="button" class="_themeButton_dBR nextTab_next">
+                                            <span><?php esc_html_e( 'Next', 'car-rental-manager' ); ?>&longrightarrow;</span>
+                                        </button>
+                                    </div>
+								<?php } ?>
+</div>
+
 				<?php
 			}
 
 			public function setup_general_content() {
 				$label = MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'label', 'Car' );
 				$slug  = MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'slug', 'Car' );
+				$status = MPCRBM_Global_Function::check_woocommerce();
+
 				?>
                 <div data-tabs-next="#mpcrbm_qs_general">
                     <div class="section">
