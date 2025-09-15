@@ -94,6 +94,9 @@
 		border-radius: 20px;
 		padding-bottom: 10px;
 	}
+	div.mpcrbm_transport_search_area div.mpcrbm_list_details {
+		width: 100%;
+	}
 }
 /******************************************************************** Responsive ************************************************/
 @media only screen and (max-width: 1000px) {
