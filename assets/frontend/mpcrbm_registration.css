@@ -265,6 +265,8 @@ h2#mpcrbm_title_change{color:white;}
 	 display: flex;
 	 flex-direction: column;
 	 min-width: 100px;
+	 width: 200px;
+	 text-align: center;
 	 text-align: right;
 	 gap:5px;
  }
@@ -281,9 +283,11 @@ h2#mpcrbm_title_change{color:white;}
  }
  .mpcrbm_booking_vehicle .mpcrbm_price-breakdown .woocommerce-Price-amount {
 	 font-size: 16px !important;
+	 text-decoration: line-through;
  }
  .mpcrbm_booking_vehicle .mpcrbm_price-main .woocommerce-Price-amount {
 	 font-size: 16px !important;
+	 text-decoration: line-through;
  }
 
  .mpcrbm_discount-info {
