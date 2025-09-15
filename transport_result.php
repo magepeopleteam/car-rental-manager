@@ -2,7 +2,7 @@
 /*
 Template Name: Transport Result
 */
-
+defined( 'ABSPATH' ) || exit;
 // ✅ Start session in functions.php (recommended), not in template
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -26,7 +26,35 @@ if (empty($content)) {
 // Remove content from session after use
 unset($_SESSION['custom_content']);
 
-get_header();
+
+/**
+ * --------------------------
+ * HEADER AREA
+ * --------------------------
+ */
+if ( wp_is_block_theme() ) {
+    if ( function_exists( 'block_header_area' ) ) {
+        ob_start();
+        block_header_area();
+        $header_html = trim( ob_get_clean() );
+
+        if ( $header_html ) {
+            wp_head();
+            wp_body_open();
+            echo '<div class="wp-site-blocks">';
+            echo '<header class="wp-block-template-part site-header">';
+            echo $header_html;
+            echo '</header>';
+            echo '</div>';
+        } else {
+            get_header();
+        }
+    } else {
+        get_header();
+    }
+} else {
+    get_header();
+}
 ?>
 
     <!-- Pass HTTP referrer to cookie -->
@@ -37,7 +65,7 @@ get_header();
         })();
     </script>
 
-    <main id="maincontent" class="transport-result-page">
+    <div id="maincontent" class="transport-result-page">
         <div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto">
             <div class="mpcrbm_tab_next _mT">
                 <div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
@@ -70,7 +98,17 @@ get_header();
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
 <?php
-get_footer();
+// ==============================
+// FOOTER
+// ==============================
+if ( function_exists( 'block_footer_area' ) && wp_is_block_theme() ) {
+    echo '<footer class="wp-block-template-part mep-site-footer">';
+        block_footer_area();
+    echo '</footer>';
+    wp_footer();
+} else {
+    get_footer();
+}
