@@ -98,6 +98,53 @@ function mpcrbmCreateMarker(place) {
     });
 }
 jQuery(document).ready(function($) {
+    
+    // Multi-location support functionality
+    function updateDropoffLocations(pickupLocation) {
+        if (!pickupLocation) return;
+        
+        // Get all vehicle IDs
+        let vehicleIds = [];
+        $('input[name="mpcrbm_post_id"]').each(function() {
+            let postId = $(this).val();
+            if (postId) vehicleIds.push(postId);
+        });
+        
+        // If no specific vehicles selected, get all available vehicles
+        if (vehicleIds.length === 0) {
+            // This will be populated when vehicles are loaded
+            return;
+        }
+        
+        // Get available dropoff locations for the selected pickup location
+        $.ajax({
+            type: 'POST',
+            url: mpcrbm_ajax_url,
+            data: {
+                action: 'mpcrbm_get_dropoff_locations',
+                pickup_location: pickupLocation,
+                vehicle_ids: vehicleIds,
+                nonce: mpcrbm_nonce
+            },
+            success: function(response) {
+                if (response.success && response.data.locations) {
+                    let dropoffSelect = $('#mpcrbm_manual_end_place');
+                    dropoffSelect.empty();
+                    dropoffSelect.append('<option selected disabled><?php esc_html_e(" Select Return Location", "car-rental-manager"); ?></option>');
+                    
+                    response.data.locations.forEach(function(location) {
+                        dropoffSelect.append('<option value="' + location.slug + '">' + location.name + '</option>');
+                    });
+                }
+            }
+        });
+    }
+    
+    // Handle pickup location change for multi-location support
+    $(document).on('change', '#mpcrbm_manual_start_place', function() {
+        let pickupLocation = $(this).val();
+        updateDropoffLocations(pickupLocation);
+    });
     "use strict";
 
     // Initialize map and autocomplete
@@ -410,8 +457,26 @@ jQuery(document).ready(function($) {
                                     mpcrbm_loader(target);
                                 },
                                 success: function (data) {
-                                    var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
-                                    window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                    // Check if response is an error object
+                                    if (data && typeof data === 'object' && data.success === false) {
+                                        // Handle error response
+                                        if (data.message) {
+                                            alert('Error: ' + data.message);
+                                        } else {
+                                            alert('An error occurred. Please try again.');
+                                        }
+                                        return;
+                                    }
+                                    
+                                    // Handle successful response
+                                    if (typeof data === 'string') {
+                                        var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
+                                        window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                    } else if (data && typeof data === 'object' && data.url) {
+                                        window.location.href = data.url;
+                                    } else {
+                                        console.error('Invalid response format:', data);
+                                    }
 
                                     if( progress_bar === 'yes' && redirect_another === 'no' ) {
                                         $('#mpcrbm_progress_bar_holder').css('display', 'flex');
@@ -488,12 +553,29 @@ jQuery(document).ready(function($) {
                                 mpcrbm_enable_view_search_result_page: mpcrbm_enable_view_search_result_page,
                                 mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
-                            beforeSend: function () {
+                            beforeSend: function (xhr, settings) {
                                 mpcrbm_loader(target);
                             },
                             success: function (data) {
-                                window.location.href = data.replace(/"/g, ""); // Remove all double quotes from the string
-                                // window.location.href = cleanedURL; // Redirect to the URL received from the server
+                                // Check if response is an error object
+                                if (data && typeof data === 'object' && data.success === false) {
+                                    // Handle error response
+                                    if (data.message) {
+                                        alert('Error: ' + data.message);
+                                    } else {
+                                        alert('An error occurred. Please try again.');
+                                    }
+                                    return;
+                                }
+                                
+                                // Handle successful response
+                                if (typeof data === 'string') {
+                                    window.location.href = data.replace(/"/g, ""); // Remove all double quotes from the string
+                                } else if (data && typeof data === 'object' && data.url) {
+                                    window.location.href = data.url;
+                                } else {
+                                    console.error('Invalid response format:', data);
+                                }
 
                                 if( progress_bar === 'yes' && redirect_another === 'no' ) {
                                     $('#mpcrbm_progress_bar_holder').css('display', 'flex');

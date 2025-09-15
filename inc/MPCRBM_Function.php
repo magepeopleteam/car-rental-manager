@@ -448,7 +448,8 @@
                 }
 
                 // 3. Tiered discount based on rental duration
-                if ( $enable_tired === 1 && is_array( $tiered[0] ) &&  !empty($tiered[0] ) && (int)$days > 1 ) {
+
+                if ( $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
                     foreach ($tiered as $t) {
                         $min = isset($t['min']) ? (int)$t['min'] : 0;
                         $max = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
@@ -468,7 +469,7 @@
                 $seasonal   = (array) get_post_meta($post_id, 'mpcrbm_seasonal_pricing', true);
                 $seasonal_price_per_day = $price_per_day;
                 $name = '';
-                if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty( $seasonal[0] ) ) {
+                if ( $enable_seasonal === 1 && !empty($seasonal) && is_array( $seasonal[0] ) && !empty( $seasonal[0] ) ) {
                     $start_timestamp = strtotime( $start_date );
                     foreach ( $seasonal as $s ) {
                         $season_start = strtotime( $s['start'] );
@@ -499,6 +500,140 @@
                     'name' => $name,
                     'seasonal_price_per_day' => $seasonal_price_per_day,
                 );
+            }
+
+            /**
+             * Get multi-location pricing for a specific pickup/dropoff combination
+             *
+             * @param int $post_id
+             * @param string $pickup_location
+             * @param string $dropoff_location
+             * @return array
+             */
+            /**
+             * Get multi-location transfer fee for a specific pickup/dropoff combination
+             * No longer returns daily_price - uses base pricing from main settings
+             *
+             * @param int $post_id
+             * @param string $pickup_location
+             * @param string $dropoff_location
+             * @return float Transfer fee only
+             */
+            public static function get_multi_location_price( $post_id, $pickup_location, $dropoff_location ) {
+                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
+                
+                if ( ! $multi_location_enabled ) {
+                    return 0; // No transfer fee for non-multi-location vehicles
+                }
+                
+                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
+                
+                if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
+                    foreach ( $location_prices as $price_data ) {
+                        if ( $price_data['pickup_location'] === $pickup_location && 
+                             $price_data['dropoff_location'] === $dropoff_location ) {
+                            return floatval( $price_data['transfer_fee'] );
+                        }
+                    }
+                }
+                
+                // Return 0 if no specific location transfer fee found
+                return 0;
+            }
+
+            /**
+             * Get all available pickup locations for a vehicle
+             *
+             * @param int $post_id
+             * @return array
+             */
+            public static function get_vehicle_pickup_locations( $post_id ) {
+                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
+                
+                if ( ! $multi_location_enabled ) {
+                    // Return default locations from existing system
+                    return self::get_all_start_location( $post_id );
+                }
+                
+                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
+                $pickup_locations = array();
+                
+                if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
+                    foreach ( $location_prices as $price_data ) {
+                        if ( ! empty( $price_data['pickup_location'] ) ) {
+                            $pickup_locations[] = $price_data['pickup_location'];
+                        }
+                    }
+                }
+                
+                return array_unique( $pickup_locations );
+            }
+
+            /**
+             * Get available dropoff locations for a specific pickup location
+             *
+             * @param int $post_id
+             * @param string $pickup_location
+             * @return array
+             */
+            public static function get_vehicle_dropoff_locations( $post_id, $pickup_location ) {
+                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
+                
+                if ( ! $multi_location_enabled ) {
+                    // Return default locations from existing system
+                    return self::get_end_location( $pickup_location, $post_id );
+                }
+                
+                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
+                $dropoff_locations = array();
+                
+                if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
+                    foreach ( $location_prices as $price_data ) {
+                        if ( $price_data['pickup_location'] === $pickup_location && 
+                             ! empty( $price_data['dropoff_location'] ) ) {
+                            $dropoff_locations[] = $price_data['dropoff_location'];
+                        }
+                    }
+                }
+                
+                return array_unique( $dropoff_locations );
+            }
+
+            /**
+             * Calculate price with multi-location support
+             * Uses base pricing from main settings + tiered + seasonal + day pricing + transfer fee
+             *
+             * @param int $post_id
+             * @param string $pickup_location
+             * @param string $dropoff_location
+             * @param string $start_date_time
+             * @param string $return_date_time
+             * @return float
+             */
+            public static function calculate_multi_location_price( $post_id, $pickup_location, $dropoff_location, $start_date_time, $return_date_time ) {
+                // Calculate rental duration
+                $startDate = new DateTime( $start_date_time );
+                $returnDate = new DateTime( $return_date_time );
+                $interval = $startDate->diff( $returnDate );
+                $minutes = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
+                $days = ceil( $minutes / 1440 );
+                
+                // Get base daily price from main pricing settings
+                $base_daily_price = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
+                $base_price = floatval( $base_daily_price ) * $days;
+                
+                // Apply tiered pricing, seasonal pricing, and day-wise pricing
+                $calculated_price = self::mpcrbm_calculate_price( $post_id, $start_date_time, $days, $base_price );
+                
+                // Add transfer fee if pickup and dropoff are different
+                $transfer_fee = 0;
+                if ( $pickup_location !== $dropoff_location ) {
+                    $transfer_fee = self::get_multi_location_price( $post_id, $pickup_location, $dropoff_location );
+                }
+                
+                $total_price = $calculated_price + $transfer_fee;
+                
+                return round( $total_price, 2 );
             }
 
         }
