@@ -29,6 +29,27 @@
 				}
 				return $template;
 			}
+            public function default_attribute() {
+                return array(
+                    "cat" => "0",
+                    "org" => "0",
+                    "style" => 'list',
+                    "show" => '9',
+                    "pagination" => "yes",
+                    "city" => "",
+                    "country" => "",
+                    'sort' => 'ASC',
+                    'status' => '',
+                    "pagination-style" => "load_more",
+                    "column" => 3,
+                    "price_based" => 'manual',
+                    'progressbar'=>'yes',
+                    'map'=>'yes',
+                    'form'=>'horizontal',
+                    'title'=>'yes',
+                );
+            }
+
 
             public function mpcrbm_display_search_result( $content ) {
 
@@ -46,6 +67,15 @@
                     session_write_close();
 
                     $content = '';
+                    $search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
+                    $search_defaults = MPCRBM_Shortcodes::default_attribute();
+                    $params = shortcode_atts( $search_defaults, $search_attribute );
+
+                    ob_start();
+                    do_action( 'mpcrbm_transport_search', $params );
+                    $action_output = ob_get_clean();
+
+
 
                     if ( !empty( $result_data) ) {
                         $progressbar_class = '';
@@ -88,6 +118,7 @@
 
                         $content .= '<div class="tabsContentNext">';
                         $content .= '<div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">';
+                        $content .= $action_output;
                         $content .= $result_data;
                         $content .= '</div>';
                         $content .= '</div>';
@@ -95,8 +126,10 @@
                         $content .= '</div>';
                         $content .= '</div>';
                         $content .= '</main>';
+
                     }else{
-                        $content .= '<p>No search results found.</p>';
+                        $content .= $action_output;
+                        $content .= '<p class="mpcrbm_empty_result" id="mpcrbm_empty_result">No search results found.</p>';
                     }
                 }
 

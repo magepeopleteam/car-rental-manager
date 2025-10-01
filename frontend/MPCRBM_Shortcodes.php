@@ -13,13 +13,13 @@
 			}
 
 			public function mpcrbm_booking($attribute) {
-				$defaults = $this->default_attribute();
+				$defaults = self::default_attribute();
 				$params = shortcode_atts($defaults, $attribute);
 				ob_start();
 				do_action('mpcrbm_transport_search', $params);
 				return ob_get_clean();
 			}
-			public function default_attribute() {
+			public static function default_attribute() {
 				return array(
 					"cat" => "0",
 					"org" => "0",
@@ -37,6 +37,7 @@
 					'map'=>'yes',
 					'form'=>'horizontal',
 					'title'=>'yes',
+					'ajax_search' => 'no',
 				);
 			}
 		}

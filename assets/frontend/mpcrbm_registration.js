@@ -286,6 +286,14 @@ jQuery(document).ready(function($) {
         let two_way = parent.find('[name="mpcrbm_taxi_return"]').val();
         let waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let fixed_time = parent.find('[name="mpcrbm_fixed_hours"]').val();
+        let ajax_search = parent.find('[name="mpcrbm_enable_ajax_search"]').val();
+
+        if( ajax_search === 'yes' ){
+            $("#mpcrbm_search_result").empty();
+            $("#mpcrbm_search_result").hide();
+            $("#mpcrbm_empty_result").hide();
+        }
+
 
         let progress_bar = $("#mpcrbm_progress_bar_display").val();
         let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
@@ -390,6 +398,7 @@ jQuery(document).ready(function($) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
                         if ( mpcrbm_enable_view_search_result_page == 'No' ) {
+
                             actionValue = "mpcrbm_get_map_search_result";
                             
                             $.ajax({

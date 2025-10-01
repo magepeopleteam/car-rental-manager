@@ -403,7 +403,7 @@ $minutes_to_day = ceil( $minutes_all / 1440 );
 
 if( $is_redirect === 'yes' ){
 ?>
-<div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result">
+<div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
 <?php } else {?>
 <div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result">
 <?php }?>

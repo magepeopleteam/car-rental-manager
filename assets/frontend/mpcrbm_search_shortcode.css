@@ -48,7 +48,7 @@ div.header-text h2 {
 }
 .mprcbm_search_button_holder{
     display: flex;
-    justify-content: center;
+    justify-content: right;
 }
 
 .mpcrbm_search-button {
