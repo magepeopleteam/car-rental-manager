@@ -178,17 +178,7 @@
 										$this->setup_content_done();
 									?>
                                 </div>
-								<?php if ($status == 1) { ?>
-                                    <div class="justifyBetween">
-                                        <button type="button" class="_mpBtn_dBR nextTab_prev">
-                                            <span>&longleftarrow;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
-                                        </button>
-                                        <div></div>
-                                        <button type="button" class="_themeButton_dBR nextTab_next">
-                                            <span><?php esc_html_e('Next', 'car-rental-manager'); ?>&longrightarrow;</span>
-                                        </button>
-                                    </div>
-								<?php } ?>
+
                             </div>
                         </form>
                     </div>
@@ -221,7 +211,7 @@
                             <button class="_themeButton_dBR" type="submit" name="active_woo_btn"><?php esc_html_e('Active Now', 'car-rental-manager'); ?></button>
 						<?php } ?>
                     </div>
-      
+
                 </div>
 
 				<?php
@@ -229,7 +219,7 @@
 			public function setup_general_content() {
 				$label = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'label', 'Car');
 				$slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'slug', 'Car');
-				$status = MPCRBM_Global_Function::check_woocommerce();
+
 				?>
                 <div data-tabs-next="#mpcrbm_qs_general">
                     <div class="section">
@@ -259,6 +249,7 @@
 				<?php
 			}
 			public function setup_content_done() {
+				$status = MPCRBM_Global_Function::check_woocommerce();
 				?>
                 <div data-tabs-next="#mpcrbm_qs_done">
                     <h2><?php esc_html_e('Finalize Setup', 'car-rental-manager'); ?></h2>
@@ -267,6 +258,17 @@
                         <button type="submit" name="finish_quick_setup" class="_themeButton_dBR"><?php esc_html_e('Finish & Save', 'car-rental-manager'); ?></button>
                     </div>
                 </div>
+				<?php if ($status == 1) { ?>
+                    <div class="justifyBetween">
+                        <button type="button" class="_mpBtn_dBR nextTab_prev">
+                            <span>&longleftarrow;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
+                        </button>
+                        <div></div>
+                        <button type="button" class="_themeButton_dBR nextTab_next">
+                            <span><?php esc_html_e('Next', 'car-rental-manager'); ?>&longrightarrow;</span>
+                        </button>
+                    </div>
+				<?php } ?>
 				<?php
 			}
 		}
