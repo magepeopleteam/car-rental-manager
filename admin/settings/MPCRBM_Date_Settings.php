@@ -105,17 +105,17 @@
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_settings_date">
                     <h2><?php esc_html_e( 'Date Settings', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html__( 'Here you can configure date.', 'car-rental-manager' ); ?></p>
+                    <p><?php esc_html_e( 'Here you can configure date.', 'car-rental-manager' ); ?></p>
                     <!-- General Date config -->
                     <section class="bg-light">
-                        <h6><?php esc_html__( 'General Date Configuration', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html__( 'Here you can configure general date', 'car-rental-manager' ); ?></span>
+                        <h6><?php esc_html_e( 'General Date Configuration', 'car-rental-manager' ); ?></h6>
+                        <span><?php esc_html_e( 'Here you can configure general date', 'car-rental-manager' ); ?></span>
                     </section>
                     <section>
                         <label class="label">
                             <div>
                                 <h6><?php esc_html_e( 'Date Type', 'car-rental-manager' ); ?><span class="textRequired">&nbsp;*</span></h6>
-                                <span class="desc"><?php esc_html__( 'Specifies the date type: "Repeated" for recurring dates, or "Particular" for a specific date', "car-rental-manager" ); ?></span>
+                                <span class="desc"><?php esc_html_e( 'Specifies the date type: "Repeated" for recurring dates, or "Particular" for a specific date', "car-rental-manager" ); ?></span>
                             </div>
                             <select class="formControl" name="mpcrbm_date_type" data-collapse-target required>
                                 <option disabled selected><?php esc_html_e( 'Please select ...', 'car-rental-manager' ); ?></option>
@@ -202,8 +202,8 @@
                         </label>
                     </section>
                     <section class="bg-light" style="margin-top: 20px;">
-                        <h6><?php esc_html__( 'Schedule Date Configuration', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html__( 'Here you can configure Schedule date.', 'car-rental-manager' ); ?></span>
+                        <h6><?php esc_html_e( 'Schedule Date Configuration', 'car-rental-manager' ); ?></h6>
+                        <span><?php esc_html_e( 'Here you can configure Schedule date.', 'car-rental-manager' ); ?></span>
                     </section>
                     <section>
                         <table>
@@ -227,8 +227,8 @@
                     </section>
                     <!-- End Schedule date config -->
                     <section class="bg-light" style="margin-top: 20px;">
-                        <h6><?php esc_html__( 'Off Days & Dates Configuration', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html__( 'Here you can configure Off Days & Dates.', 'car-rental-manager' ); ?></span>
+                        <h6><?php esc_html_e( 'Off Days & Dates Configuration', 'car-rental-manager' ); ?></h6>
+                        <span><?php esc_html_e( 'Here you can configure Off Days & Dates.', 'car-rental-manager' ); ?></span>
                     </section>
                     <section data-collapse="#mp_repeated" class="<?php echo esc_attr( $date_type == 'repeated' ? 'mActive' : '' ); ?>">
                         <label class="label">
