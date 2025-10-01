@@ -57,7 +57,9 @@
 
                 if ( ! empty( $search_page_slug ) && is_page( $search_page_slug ) ) {
 
-                    session_start();
+                    if ( session_status() === PHP_SESSION_NONE ) {
+                        session_start();
+                    }
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
                     $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
                     if ( isset($_SESSION['custom_content'] ) ) {
