@@ -418,6 +418,7 @@ jQuery(document).ready(function($) {
                                     fixed_time: fixed_time,
                                     return_date: return_date,
                                     return_time: return_time,
+                                    ajax_search: ajax_search,
                                 },
                                 beforeSend: function () {
                                     //mpcrbm_loader(target);
@@ -428,7 +429,10 @@ jQuery(document).ready(function($) {
                                         .promise()
                                         .done(function () {
                                             mpcrbm_loader_remove(parent.find(".tabsContentNext"));
-                                            parent.find(".nextTab_next").trigger("click");
+
+                                            if( ajax_search !== 'yes' ) {
+                                                parent.find(".nextTab_next").trigger("click");
+                                            }
 
                                             if( progress_bar === 'yes' ) {
                                                 $('#mpcrbm_progress_bar_holder').css('display', 'flex');
@@ -520,6 +524,7 @@ jQuery(document).ready(function($) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
+                                ajax_search: ajax_search,
                                 mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
                             beforeSend: function () {
@@ -531,7 +536,9 @@ jQuery(document).ready(function($) {
                                     .promise()
                                     .done(function () {
                                         mpcrbm_loader_remove(parent.find(".tabsContentNext"));
-                                        parent.find(".nextTab_next").trigger("click");
+                                        if( ajax_search !== 'yes' ) {
+                                            parent.find(".nextTab_next").trigger("click");
+                                        }
                                         if( progress_bar === 'yes') {
                                             $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                         }

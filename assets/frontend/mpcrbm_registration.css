@@ -18,6 +18,9 @@
 	div.mpcrbm_transport_search_area table th,
 	div.mpcrbm_transport_search_area table td {border: none;}
 	div.mpcrbm_transport_search_area .woocommerce form .form-row {margin-bottom: var(--dmp_xs);}
+	div.mpcrbm_map_search_result{
+		margin-top: 20px;
+	}
 }
 /******************************************************************** ************************************************/
 @media only screen and (min-width: 10px) {

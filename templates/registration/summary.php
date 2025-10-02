@@ -82,11 +82,13 @@
 				</div>
 <!--				<div class="divider"></div>-->
                 <?php
-                if( $is_redirect === 'no' ){?>
-				<button type="button" class="mpcrbm_next_button mpcrbm_get_vehicle_prev">
-					<span>&longleftarrow; &nbsp;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
-				</button>
-                <?php }?>
+                if( $is_redirect === 'no' ){
+                    if( $ajax_search !== 'yes' ){ ?>
+                    <button type="button" class="mpcrbm_next_button mpcrbm_get_vehicle_prev">
+                        <span>&longleftarrow; &nbsp;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
+                    </button>
+                    <?php }
+                }?>
 			</div>
 		</div>
 	</div>
