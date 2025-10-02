@@ -43,12 +43,12 @@
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label .formControl {
 		height: 47px;color: #222222;font-weight: 400;
 		padding: var(--dmp_xs) 35px var(--dmp_xs) var(--dmp_xs);border-color: #EBECEE;
-		background-image: url('../../mp_global/assets/images/arrow_down.png'); 
+		background-image: url('../../mp_global/assets/images/arrow_down.png');
 		background-repeat: no-repeat; background-position: calc(100% - var(--dmp_xs)); background-size: auto;
 		-webkit-appearance: none;
 
 		/*border: 2px solid var(--color_border) !important;*/
-		border-radius: 10px;
+		/*border-radius: 10px;*/
 	}
 	div.mpcrbm_transport_search_area .mpcrbm_map_area {max-width: calc(65% - 30px);width: 65%;}
 	div.mpcrbm_form_details_area div.mpcrbm_map_area{max-width: 100%;width: 100%;}
@@ -159,7 +159,7 @@
  .mpcrbm_horizontal_date_time_input{
 	 width: 33.33%;
 	 display: flex;
-	 gap: 5px;
+	 gap: 1px;
  }
  .mpcrbm_horizontal_booking_title{
 	 color: #666666;
