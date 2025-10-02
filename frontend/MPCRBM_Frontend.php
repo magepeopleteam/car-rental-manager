@@ -29,27 +29,6 @@
 				}
 				return $template;
 			}
-            public function default_attribute() {
-                return array(
-                    "cat" => "0",
-                    "org" => "0",
-                    "style" => 'list',
-                    "show" => '9',
-                    "pagination" => "yes",
-                    "city" => "",
-                    "country" => "",
-                    'sort' => 'ASC',
-                    'status' => '',
-                    "pagination-style" => "load_more",
-                    "column" => 3,
-                    "price_based" => 'manual',
-                    'progressbar'=>'yes',
-                    'map'=>'yes',
-                    'form'=>'horizontal',
-                    'title'=>'yes',
-                );
-            }
-
 
             public function mpcrbm_display_search_result( $content ) {
 

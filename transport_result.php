@@ -7,9 +7,18 @@ Template Name: Transport Result
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+$content = '';
 
-// Get stored content
-$content = $_SESSION['custom_content'] ?? '';
+$search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
+$search_defaults = MPCRBM_Shortcodes::default_attribute();
+$params = shortcode_atts( $search_defaults, $search_attribute );
+ob_start();
+do_action( 'mpcrbm_transport_search', $params );
+$action_output = ob_get_clean();
+
+$content .= $action_output;
+
+$content .= $_SESSION['custom_content'] ?? '';
 $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
 if( $progress_bar === 'no' ){
     $progressbar_class = 'dNone';
