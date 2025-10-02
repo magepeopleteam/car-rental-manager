@@ -101,7 +101,14 @@ if ($post_id) {
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
         <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
-                <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
+                <?php if( $ajax_search === 'yes' ){
+                    error_log( print_r( [ '$thumbnail' => $thumbnail ], true ) );
+                    ?>
+                    <img src="<?php echo esc_attr($thumbnail); ?>">
+                <?php }else{?>
+                    <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
+                <?php }?>
+
             </div>
         </div>
         <div class="mpcrbm_list_details">
