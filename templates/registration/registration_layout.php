@@ -49,7 +49,8 @@
 			<div class="tabsContentNext">
 				<div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
                     <?php //echo MPCRBM_Function::template_path('registration/get_details.php'); ?>
-					<?php include MPCRBM_Function::template_path('registration/get_details.php'); ?>
+<!--					--><?php //include MPCRBM_Function::template_path('registration/get_details.php'); ?>
+					<?php include MPCRBM_Function::template_path('registration/get_details_new.php'); ?>
 				</div>
 			</div>
 		</div>

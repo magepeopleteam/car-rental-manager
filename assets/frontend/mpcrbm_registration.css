@@ -103,7 +103,9 @@
 }
 /******************************************************************** Responsive ************************************************/
 @media only screen and (max-width: 1000px) {
-	div.mpcrbm_transport_search_area .mpcrbm_search_area {padding: 30px;}
+	div.mpcrbm_transport_search_area .mpcrbm_search_area {
+		/*padding: 30px;*/
+	}
 }
 @media only screen and (max-width: 800px) {
 	div.mpcrbm_transport_search_area .mpcrbm_map_area{width:100%;max-width:100%;}
@@ -155,6 +157,7 @@
 	 margin: 12px 0;
  }
  .mpcrbm_horizontal_date_time_input{
+	 width: 33.33%;
 	 display: flex;
 	 gap: 5px;
  }
@@ -209,6 +212,11 @@
 	 flex-direction: column;
 	 margin-right: 10px;
 	 min-width: 220px;
+ }
+
+ .mpcrbm_location_checkbox{
+	 display: flex;
+	 flex-direction: column;
  }
 .mpcrbm_booking_vehicle .woocommerce-Price-amount{font-size:22px;}
 .mpcrbm .mpcrbm_extra_service .dLayout{border-radius:20px; background-color: #f7f5f5;}
@@ -269,9 +277,15 @@ h2#mpcrbm_title_change{color:white;}
 	 flex-direction: column;
 	 min-width: 100px;
 	 width: 200px;
-	 text-align: center;
 	 text-align: right;
 	 gap:5px;
+ }
+
+ .mpcrbm_100_width{
+	 width: 100%;
+ }
+ .mpcrbm_width_33{
+	 width: 33.33%;
  }
 
  .mpcrbm_price-total {
@@ -351,5 +365,12 @@ h2#mpcrbm_title_change{color:white;}
  }
  .mpcrbm_feature_icon_color {
 	 color: #e67e22 !important;
+ }
+
+ @media (max-width: 815px) {
+	 .mpcrbm_horizontal_date_time_input {
+		 display: flex;
+		 flex-direction: column;
+	 }
  }
 
