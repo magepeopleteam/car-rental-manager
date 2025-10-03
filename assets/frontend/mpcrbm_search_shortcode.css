@@ -87,6 +87,11 @@ div.header-text h2 {
     margin-top: 0 !important;
 }
 
+.mpcrbm_icon_margin{
+    color: #990000;
+    margin: 2px !important;
+}
+
 .mprcbm_checkbox_group {
     display: flex;
     align-items: center;
@@ -116,3 +121,17 @@ div.header-text h2 {
     justify-content: space-between;
 }
 
+.mpcrbm_search_title{
+    font-size: 12px;
+}
+
+.custom-divider {
+    border: none;
+    border-top: 1px solid #ccc; /* change color if needed */
+    margin: 20px 0; /* space above and below */
+}
+.mpcrbm-vertical-divider {
+    width: 1px;
+    background-color: #ccc;
+    margin: 0 2px;
+}
