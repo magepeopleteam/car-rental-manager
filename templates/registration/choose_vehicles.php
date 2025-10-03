@@ -407,9 +407,9 @@ if( $is_redirect === 'yes' ){
 <div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
 <?php } else {
     if( $ajax_search === 'yes' ){?>
-        <div class="mpcrbm_map_search_result">
+        <div class="mpcrbm_map_search_result" id="mpcrbm_search_result" >
     <?php }else{?>
-        <div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result">
+        <div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
     <?php }?>
 <?php }?>
     <input type="hidden" name="mpcrbm_post_id" value="" data-price="" />

@@ -102,7 +102,6 @@ if ($post_id) {
         <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
                 <?php if( $ajax_search === 'yes' ){
-                    error_log( print_r( [ '$thumbnail' => $thumbnail ], true ) );
                     ?>
                     <img src="<?php echo esc_attr($thumbnail); ?>">
                 <?php }else{?>

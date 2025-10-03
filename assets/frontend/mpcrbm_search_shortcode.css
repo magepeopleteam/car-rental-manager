@@ -83,6 +83,9 @@ div.header-text h2 {
     flex: 1;
     gap: 10px;
 }
+.mpcrbm_manual_end_place{
+    margin-top: 0 !important;
+}
 
 .mprcbm_checkbox_group {
     display: flex;

@@ -288,12 +288,6 @@ jQuery(document).ready(function($) {
         let fixed_time = parent.find('[name="mpcrbm_fixed_hours"]').val();
         let ajax_search = parent.find('[name="mpcrbm_enable_ajax_search"]').val();
 
-        if( ajax_search === 'yes' ){
-            $("#mpcrbm_search_result").empty();
-            $("#mpcrbm_search_result").hide();
-            $("#mpcrbm_empty_result").hide();
-        }
-
 
         let progress_bar = $("#mpcrbm_progress_bar_display").val();
         let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
@@ -531,6 +525,17 @@ jQuery(document).ready(function($) {
                                 //mpcrbm_loader(target);
                             },
                             success: function (data) {
+
+                                if( ajax_search === 'yes' ){
+                                    $("#mpcrbm_search_result").empty();
+                                    // $("#mpcrbm_search_result").hide();
+                                    $("#mpcrbm_empty_result").hide();
+
+                                    // $("#mpcrbm_search_result").append('<div class="mpcrbm_search_empty_data">Search Data Loading...</div>');
+                                    jQuery(parent).find(".mpcrbm_map_search_result").remove();
+                                    jQuery(parent).find(".mpcrbm_order_summary").remove();
+                                }
+
                                 target
                                     .append(data)
                                     .promise()
@@ -978,10 +983,13 @@ jQuery(document).ready(function($) {
 
 // Helper functions
 function mpcrbm_content_refresh(parent) {
-    jQuery(parent).find('[name="mpcrbm_post_id"]').val("");
-    jQuery(parent).find(".mpcrbm_map_search_result").remove();
-    jQuery(parent).find(".mpcrbm_order_summary").remove();
-    jQuery(parent).find(".get_details_next_link").slideUp("fast");
+    let ajax_search = parent.find('[name="mpcrbm_enable_ajax_search"]').val();
+    if( ajax_search !== 'yes' ) {
+        jQuery(parent).find('[name="mpcrbm_post_id"]').val("");
+        jQuery(parent).find(".mpcrbm_map_search_result").remove();
+        jQuery(parent).find(".mpcrbm_order_summary").remove();
+        jQuery(parent).find(".get_details_next_link").slideUp("fast");
+    }
 }
 
 function checkAndToggleBookNowButton(parent) {
