@@ -35,19 +35,24 @@
 	div.mpcrbm_transport_search_area .mpcrbm_search_area {
 		/*padding: 15px;*/
 		border-radius: var(--dbrl);
-		border: 1px solid var(--color_border);
+		/*border: 1px solid var(--color_border);*/
+		box-shadow: 0px 24px 60px 0px rgba(0, 15, 63, 0.16);
+		background-color: #F5F7FF;
 	}
 	
 	div.mpcrbm_transport_search_area .mpcrbm_search_area h3 {text-transform: uppercase;color: #152C5B;}
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label {font-weight: 400;color: #152C5B;}
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label .formControl {
-		height: 47px;color: #222222;font-weight: 400;
+		/*height: 47px;*/
+		color: #222222;
+		font-weight: 400;
+		font-size: 12px;
 		padding: var(--dmp_xs) 35px var(--dmp_xs) var(--dmp_xs);border-color: #EBECEE;
-		background-image: url('../../mp_global/assets/images/arrow_down.png');
+		/*background-image: url('../../mp_global/assets/images/arrow_down.png');*/
 		background-repeat: no-repeat; background-position: calc(100% - var(--dmp_xs)); background-size: auto;
 		-webkit-appearance: none;
 
-		/*border: 2px solid var(--color_border) !important;*/
+		border: unset !important;
 		/*border-radius: 10px;*/
 	}
 	div.mpcrbm_transport_search_area .mpcrbm_map_area {max-width: calc(65% - 30px);width: 65%;}
@@ -157,6 +162,8 @@
 	 margin: 12px 0;
  }
  .mpcrbm_horizontal_date_time_input{
+	 background: #f8fafc;
+	 padding: 16px;
 	 width: 33.33%;
 	 display: flex;
 	 gap: 1px;
@@ -372,5 +379,6 @@ h2#mpcrbm_title_change{color:white;}
 		 display: flex;
 		 flex-direction: column;
 	 }
+
  }
 

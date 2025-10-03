@@ -47,6 +47,7 @@ div.header-text h2 {
 }
 .mprcbm_search_button_holder{
     display: flex;
+    width: 150px;
     justify-content: right;
 }
 
@@ -54,14 +55,14 @@ div.header-text h2 {
     background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 10px;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100%;
-    max-width: 250px;
-    margin: 2rem auto 0;
+    max-width: 150px;
+    /*margin: 2rem auto 0;*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,7 +79,9 @@ div.header-text h2 {
 }
 .mpcrbm_inline_search_form{
     display: flex;
-    gap: 20px;
+    width: 100%;
+    flex: 1;
+    gap: 10px;
 }
 
 .mprcbm_checkbox_group {
@@ -96,9 +99,17 @@ div.header-text h2 {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem;
+    padding: 10px;
     background: #f9fafb;
     border-radius: 8px;
     transition: all 0.2s ease;
-    margin: 15px 0 5px 0;
+    margin: 5px 0 5px 0;
 }
+
+.mprcbm_checkbox_search_btn_holder{
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
