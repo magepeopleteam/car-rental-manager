@@ -70,7 +70,7 @@
 								<span class="fas fa-check-square _textTheme_mR_xs"></span>
 								<span class="mpcrbm_product_name"></span>
 							</div>
-							<span class="mpcrbm_product_price _textTheme"></span>
+                            <span class="textTheme mpcrbm_car_qty_display">x1</span><span class="mpcrbm_product_price _textTheme"></span>
 						</div>
 						<div class="mpcrbm_extra_service_summary"></div>
 						<div class="dividerL"></div>

@@ -374,6 +374,11 @@ h2#mpcrbm_title_change{color:white;}
 	 color: #e67e22 !important;
  }
 
+ .mpcrbm_add_multiple_qty{
+	 display: flex;
+	 justify-content: end;
+ }
+
  @media (max-width: 815px) {
 	 .mpcrbm_inline_search_form {
 		 display: flex;
