@@ -399,13 +399,18 @@ $returnDate_str = new DateTime( $return_date_time );
 $interval = $startDate_str->diff( $returnDate_str );
 $minutes_all        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
 $minutes_to_day = ceil( $minutes_all / 1440 );
-;
+
+$ajax_search = isset( $_POST['ajax_search'] ) ? sanitize_text_field( wp_unslash( $_POST['ajax_search'] ) ) : '';
 
 if( $is_redirect === 'yes' ){
 ?>
-<div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result">
-<?php } else {?>
-<div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result">
+<div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
+<?php } else {
+    if( $ajax_search === 'yes' ){?>
+        <div class="mpcrbm_map_search_result" id="mpcrbm_search_result" >
+    <?php }else{?>
+        <div data-tabs-next="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
+    <?php }?>
 <?php }?>
     <input type="hidden" name="mpcrbm_post_id" value="" data-price="" />
     <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
@@ -416,7 +421,7 @@ if( $is_redirect === 'yes' ){
     <input type="hidden" name="mpcrbm_map_return_date" id="mpcrbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
     <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
-
+    <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
 
     <div class="sticky_section">
         <div class="flexWrap">

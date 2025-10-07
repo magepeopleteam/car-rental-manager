@@ -36,7 +36,9 @@
 
                 if ( ! empty( $search_page_slug ) && is_page( $search_page_slug ) ) {
 
-                    session_start();
+                    if ( session_status() === PHP_SESSION_NONE ) {
+                        session_start();
+                    }
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
                     $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
                     if ( isset($_SESSION['custom_content'] ) ) {
@@ -46,6 +48,15 @@
                     session_write_close();
 
                     $content = '';
+                    $search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
+                    $search_defaults = MPCRBM_Shortcodes::default_attribute();
+                    $params = shortcode_atts( $search_defaults, $search_attribute );
+
+                    ob_start();
+                    do_action( 'mpcrbm_transport_search', $params );
+                    $action_output = ob_get_clean();
+
+
 
                     if ( !empty( $result_data) ) {
                         $progressbar_class = '';
@@ -88,6 +99,7 @@
 
                         $content .= '<div class="tabsContentNext">';
                         $content .= '<div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">';
+                        $content .= $action_output;
                         $content .= $result_data;
                         $content .= '</div>';
                         $content .= '</div>';
@@ -95,8 +107,10 @@
                         $content .= '</div>';
                         $content .= '</div>';
                         $content .= '</main>';
+
                     }else{
-                        $content .= '<p>No search results found.</p>';
+                        $content .= $action_output;
+                        $content .= '<p class="mpcrbm_empty_result" id="mpcrbm_empty_result">No search results found.</p>';
                     }
                 }
 

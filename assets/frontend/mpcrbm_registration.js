@@ -184,10 +184,22 @@ jQuery(document).ready(function($) {
     // Handle vehicle selection
     $(document).on('click', '.mpcrbm_transport_select', function() {
         let $this = $(this);
+
+        $(".mpcrbm_car_quantity").fadeOut();
+
         let parent = $this.closest('.mpcrbm_transport_search_area');
+        let loader_parent = $this.closest('.mpcrbm_map_search_result');
         let target_summary = parent.find('.mpcrbm_transport_summary');
         let target_extra_service = parent.find('.mpcrbm_extra_service');
         let target_extra_service_summary = parent.find('.mpcrbm_extra_service_summary');
+
+        let car_qty_control = parent.find('.mpcrbm_add_multiple_qty');
+        $this.closest('.mpcrbm_add_multiple_qty').find( '.mpcrbm_car_quantity' ).fadeIn();
+
+        car_qty_control.each(function () {
+            let $this_qty = jQuery(this);
+            $this_qty.find('[name="mpcrbm_multiple_car_qty[]"]').val( 1 );
+        });
 
         const buttonOffset = $(this).offset().top;
 
@@ -226,6 +238,8 @@ jQuery(document).ready(function($) {
             target_summary.slideDown(400);
             target_extra_service.slideDown(400);
             target_extra_service_summary.slideDown(400);
+
+            parent.find('.mpcrbm_car_qty_display').text( 'x1' );
             
             // Fetch available extra services
             $.ajax({
@@ -237,12 +251,12 @@ jQuery(document).ready(function($) {
                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
                 beforeSend: function() {
-                    mpcrbm_loader(parent.find('.tabsContentNext'));
+                    mpcrbm_loader( loader_parent );
                 },
                 success: function(data) {
                     target_extra_service.html(data);
                     checkAndToggleBookNowButton(parent);
-                    mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                    mpcrbm_loader_remove( loader_parent );
 
                     const targetOffset = $('.mpcrbm_book_now').offset().top;
                     const distance = Math.abs(targetOffset - buttonOffset);
@@ -263,8 +277,10 @@ jQuery(document).ready(function($) {
     $(document).on('change', '#mpcrbm_is_drop_off', function() {
         if ($(this).is(':checked')) {
             $('#mpcrbm_drop_off_location').hide();
+            $('#mpcrbm-vertical-divide-location').hide();
         } else {
             $('#mpcrbm_drop_off_location').show();
+            $('#mpcrbm-vertical-divide-location').show();
         }
     });
 
@@ -286,6 +302,8 @@ jQuery(document).ready(function($) {
         let two_way = parent.find('[name="mpcrbm_taxi_return"]').val();
         let waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let fixed_time = parent.find('[name="mpcrbm_fixed_hours"]').val();
+        let ajax_search = parent.find('[name="mpcrbm_enable_ajax_search"]').val();
+
 
         let progress_bar = $("#mpcrbm_progress_bar_display").val();
         let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
@@ -390,6 +408,7 @@ jQuery(document).ready(function($) {
                     if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
                         let actionValue;
                         if ( mpcrbm_enable_view_search_result_page == 'No' ) {
+
                             actionValue = "mpcrbm_get_map_search_result";
                             
                             $.ajax({
@@ -409,6 +428,7 @@ jQuery(document).ready(function($) {
                                     fixed_time: fixed_time,
                                     return_date: return_date,
                                     return_time: return_time,
+                                    ajax_search: ajax_search,
                                 },
                                 beforeSend: function () {
                                     //mpcrbm_loader(target);
@@ -419,7 +439,10 @@ jQuery(document).ready(function($) {
                                         .promise()
                                         .done(function () {
                                             mpcrbm_loader_remove(parent.find(".tabsContentNext"));
-                                            parent.find(".nextTab_next").trigger("click");
+
+                                            if( ajax_search !== 'yes' ) {
+                                                parent.find(".nextTab_next").trigger("click");
+                                            }
 
                                             if( progress_bar === 'yes' ) {
                                                 $('#mpcrbm_progress_bar_holder').css('display', 'flex');
@@ -511,18 +534,32 @@ jQuery(document).ready(function($) {
                                 fixed_time: fixed_time,
                                 return_date: return_date,
                                 return_time: return_time,
+                                ajax_search: ajax_search,
                                 mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
                             beforeSend: function () {
                                 //mpcrbm_loader(target);
                             },
                             success: function (data) {
+
+                                if( ajax_search === 'yes' ){
+                                    $("#mpcrbm_search_result").empty();
+                                    // $("#mpcrbm_search_result").hide();
+                                    $("#mpcrbm_empty_result").hide();
+
+                                    // $("#mpcrbm_search_result").append('<div class="mpcrbm_search_empty_data">Search Data Loading...</div>');
+                                    jQuery(parent).find(".mpcrbm_map_search_result").remove();
+                                    jQuery(parent).find(".mpcrbm_order_summary").remove();
+                                }
+
                                 target
                                     .append(data)
                                     .promise()
                                     .done(function () {
                                         mpcrbm_loader_remove(parent.find(".tabsContentNext"));
-                                        parent.find(".nextTab_next").trigger("click");
+                                        if( ajax_search !== 'yes' ) {
+                                            parent.find(".nextTab_next").trigger("click");
+                                        }
                                         if( progress_bar === 'yes') {
                                             $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                         }
@@ -725,6 +762,14 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // Handle car quantity changes
+    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_multiple_car_qty[]"]', function () {
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
+        let $qty_input = $(this).closest('.mpcrbm_add_multiple_qty').find('[name="mpcrbm_multiple_car_qty[]"]');
+        let qty = parseInt($qty_input.val()) || 1;
+        mpcrbm_price_calculation( parent );
+    });
+
     // Handle extra service quantity changes
     $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service_qty[]"]', function () {
         $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service[]"]').trigger('change');
@@ -790,13 +835,45 @@ jQuery(document).ready(function($) {
         checkAndToggleBookNowButton(parent);
     });
 
+
+    function mpcrbm_number_of_car_booked(parent) {
+        let total_car_qty = 0;
+
+        parent.find(".mpcrbm_add_multiple_qty").each(function () {
+            let $this = jQuery(this);
+            let selectBtn = $this.find(".mpcrbm_transport_select");
+
+            if (selectBtn.hasClass("active_select")) {
+                let target_car_qty = $this.find('[name="mpcrbm_multiple_car_qty[]"]');
+                let qty = parseInt(target_car_qty.val()) || 0;
+                total_car_qty += qty;
+            }
+        });
+
+        parent.find('#mpcrbm_selected_car_quantity').val( total_car_qty );
+        parent.find('.mpcrbm_car_qty_display').text( 'x'+total_car_qty );
+
+        if( total_car_qty === 0 ){
+            return  1;
+        }else{
+            return total_car_qty;
+        }
+
+    }
+
     // Price calculation function
     function mpcrbm_price_calculation(parent) {
+        let number_of_car = mpcrbm_number_of_car_booked( parent );
+        console.log( number_of_car );
+
         let target_summary = parent.find(".mpcrbm_transport_summary");
         let total = 0;
         let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
         if (post_id > 0) {
             total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+
+            total = total * number_of_car;
+
             parent.find(".mpcrbm_extra_service_item").each(function () {
                 let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
                 if (service_name) {
@@ -807,6 +884,7 @@ jQuery(document).ready(function($) {
                     total = total + parseFloat(ex_price) * ex_qty;
                 }
             });
+
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
@@ -831,6 +909,8 @@ jQuery(document).ready(function($) {
         let post_id = parent.find('[name="mpcrbm_post_id"]').val();
         let date = parent.find('[name="mpcrbm_date"]').val();
         let link_id = $(this).attr('data-wc_link_id');
+
+        let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
 
         if (start_place !== '' && end_place !== '' && link_id && post_id) {
             let extra_service_name = {};
@@ -866,6 +946,7 @@ jQuery(document).ready(function($) {
                     mpcrbm_return_time: return_target_time,
                     mpcrbm_extra_service: extra_service_name,
                     mpcrbm_extra_service_qty: extra_service_qty,
+                    mpcrbm_car_quantity: car_quantity,
                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
                 beforeSend: function() {
@@ -962,10 +1043,13 @@ jQuery(document).ready(function($) {
 
 // Helper functions
 function mpcrbm_content_refresh(parent) {
-    jQuery(parent).find('[name="mpcrbm_post_id"]').val("");
-    jQuery(parent).find(".mpcrbm_map_search_result").remove();
-    jQuery(parent).find(".mpcrbm_order_summary").remove();
-    jQuery(parent).find(".get_details_next_link").slideUp("fast");
+    let ajax_search = parent.find('[name="mpcrbm_enable_ajax_search"]').val();
+    if( ajax_search !== 'yes' ) {
+        jQuery(parent).find('[name="mpcrbm_post_id"]').val("");
+        jQuery(parent).find(".mpcrbm_map_search_result").remove();
+        jQuery(parent).find(".mpcrbm_order_summary").remove();
+        jQuery(parent).find(".get_details_next_link").slideUp("fast");
+    }
 }
 
 function checkAndToggleBookNowButton(parent) {
