@@ -29,7 +29,49 @@
 				// Multi-location support
 				add_action( 'wp_ajax_mpcrbm_get_dropoff_locations', [ $this, 'mpcrbm_get_dropoff_locations' ] );
 				add_action( 'wp_ajax_nopriv_mpcrbm_get_dropoff_locations', [ $this, 'mpcrbm_get_dropoff_locations' ] );
+
+				add_action( 'mpcrbm_left_side_car_filter', [ $this, 'mpcrbm_left_side_car_filter' ], 10 , 1);
 			}
+
+            public function mpcrbm_left_side_car_filter( $left_side_filter ){
+                // Example data (replace it with your dynamic $left_side_filter)
+
+
+                // Define nice display titles
+                $titles = array(
+                    'mpcrbm_car_type'         => 'Car Type',
+                    'mpcrbm_fuel_type'        => 'Fuel Type',
+                    'mpcrbm_seating_capacity' => 'Seating Capacity',
+                    'mpcrbm_car_brand'        => 'Car Brand',
+                    'mpcrbm_make_year'        => 'Make Year',
+                );
+
+                echo '<div class="mpcrbm-left-filter">';
+
+                foreach ( $left_side_filter as $taxonomy => $values ) {
+
+                    $title = isset( $titles[$taxonomy] ) ? $titles[$taxonomy] : ucfirst(str_replace('mpcrbm_', '', $taxonomy));
+
+                    echo '<div class="mpcrbm-filter-group">';
+                    echo '<h4 class="mpcrbm-filter-title">' . esc_html($title) . '</h4>';
+                    echo '<ul class="mpcrbm-filter-list">';
+
+                    foreach ( $values as $value ) {
+                        $id = esc_attr( $taxonomy . '_' . sanitize_title($value) );
+                        echo '<li>';
+                        echo '<label for="' . $id . '">';
+                        echo '<input type="checkbox" name="' . esc_attr($taxonomy) . '[]" id="' . $id . '" value="' . esc_attr($value) . '"> ';
+                        echo esc_html($value);
+                        echo '</label>';
+                        echo '</li>';
+                    }
+
+                    echo '</ul>';
+                    echo '</div>';
+                }
+
+                echo '</div>';
+             }
 
 			public function transport_search( $params, $search_date = [] ) {
 				$display_map = MPCRBM_Global_Function::get_settings( 'mpcrbm_map_api_settings', 'display_map', 'enable' );

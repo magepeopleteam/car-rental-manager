@@ -634,6 +634,47 @@
                 $formatted = sprintf('%02d:%02d', $hour, $minute);
                 return date('g.ia', strtotime($formatted));
             }
+
+            public static function get_meta_key( $post_ids ){
+                $meta_keys = [
+                    'mpcrbm_car_type',
+                    'mpcrbm_fuel_type',
+                    'mpcrbm_seating_capacity',
+                    'mpcrbm_car_brand',
+                    'mpcrbm_make_year',
+                ];
+
+                $result = [];
+
+                foreach ($meta_keys as $key) {
+                    $result[$key] = [];
+                }
+
+                foreach ($post_ids as $post_id) {
+                    foreach ($meta_keys as $key) {
+                        $value = get_post_meta($post_id, $key, true);
+
+                        // Unserialize if needed
+                        if (is_serialized($value)) {
+                            $value = maybe_unserialize($value);
+                        }
+
+                        // Merge arrays or single values
+                        if (is_array($value)) {
+                            $result[$key] = array_merge($result[$key], $value);
+                        } elseif (!empty($value)) {
+                            $result[$key][] = $value;
+                        }
+                    }
+                }
+                foreach ($result as $key => $values) {
+                    $result[$key] = array_values(array_unique($values));
+                }
+
+
+                return $result;
+            }
+
 		}
 		new MPCRBM_Global_Function();
 	}

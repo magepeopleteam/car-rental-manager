@@ -36,6 +36,7 @@ if (empty($content)) {
 
 // Remove content from session after use
 unset($_SESSION['custom_content']);
+unset($_SESSION['search_date']);
 
 
 /**
