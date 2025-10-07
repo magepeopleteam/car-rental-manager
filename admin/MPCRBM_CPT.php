@@ -18,24 +18,54 @@
 			}
 
             public function pa_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {
-                $cpt    = MPCRBM_Function::get_cpt();
+                $cpt = MPCRBM_Function::get_cpt();
 
+                // Auto-save / revision skip
                 if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
                 if ( wp_is_post_revision( $post_id ) ) return;
                 if ( $post->post_type !== $cpt ) return;
-                $taxonomies = array('mpcrbm_car_type', 'mpcrbm_fuel_type', 'mpcrbm_seating_capacity', 'mpcrbm_car_brand', 'mpcrbm_make_year');
+
+                // Taxonomies
+                $taxonomies = array(
+                    'mpcrbm_car_type',        // hierarchical (category type)
+                    'mpcrbm_fuel_type',       // non-hierarchical
+                    'mpcrbm_seating_capacity',// non-hierarchical
+                    'mpcrbm_car_brand',       // non-hierarchical
+                    'mpcrbm_make_year'        // non-hierarchical
+                );
+
                 foreach ($taxonomies as $taxonomy) {
 
+                    // Terms get as names
                     $terms = wp_get_post_terms($post_id, $taxonomy, array('fields' => 'names'));
+
                     if (!empty($terms) && !is_wp_error($terms)) {
-                        update_post_meta($post_id, $taxonomy, $terms);
+
+                        // যদি hierarchical taxonomy হয় (category type), parent-child structure handle করা
+                        $tax_obj = get_taxonomy($taxonomy);
+                        if ($tax_obj && $tax_obj->hierarchical) {
+                            // Hierarchical: top level term names first, meta হিসাবে array রাখো
+                            $term_names = array();
+                            foreach ($terms as $term_name) {
+                                $term_obj = get_term_by('name', $term_name, $taxonomy);
+                                if ($term_obj) {
+                                    $term_names[] = $term_obj->name; // শুধু নাম
+                                }
+                            }
+                            update_post_meta($post_id, $taxonomy, $term_names);
+                        } else {
+                            // Non-hierarchical: normal
+                            update_post_meta($post_id, $taxonomy, $terms);
+                        }
+
                     } else {
                         delete_post_meta($post_id, $taxonomy);
                     }
                 }
             }
 
-			public function rent_custom_column( $columns, $post_id ) {
+
+            public function rent_custom_column( $columns, $post_id ) {
 				switch ( $columns ) {
 					case 'mpcrbm_km_price':
 						$mpcrbm_km_price = get_post_meta( $post_id, 'mpcrbm_km_price', true );
@@ -73,11 +103,11 @@
 
             function pa_register_car_taxonomies( $cpt ) {
                 $taxonomies = array(
-                    'mpcrbm_car_type'         => array('label' => 'Car Type',         'hierarchical' => false),
-                    'mpcrbm_fuel_type'        => array('label' => 'Fuel Type',        'hierarchical' => false),
-                    'mpcrbm_seating_capacity' => array('label' => 'Seating Capacity', 'hierarchical' => false),
-                    'mpcrbm_car_brand'        => array('label' => 'Car Brand',        'hierarchical' => false),
-                    'mpcrbm_make_year'        => array('label' => 'Make Year',        'hierarchical' => false),
+                    'mpcrbm_car_type' => array('label' => 'Car Type', 'hierarchical' => true),  // Category type
+                    'mpcrbm_fuel_type' => array('label' => 'Fuel Type', 'hierarchical' => true), // Tag type
+                    'mpcrbm_seating_capacity' => array('label' => 'Seating Capacity', 'hierarchical' => true),
+                    'mpcrbm_car_brand' => array('label' => 'Car Brand', 'hierarchical' => true),
+                    'mpcrbm_make_year' => array('label' => 'Make Year', 'hierarchical' => true),
                 );
 
                 foreach ( $taxonomies as $slug => $props ) {
@@ -96,9 +126,9 @@
                         'hierarchical'      => $props['hierarchical'],
                         'labels'            => $labels,
                         'show_ui'           => true,
-                        'show_admin_column' => true,
+                        'show_admin_column' => true,   // CPT list এ column
                         'query_var'         => true,
-                        'show_in_rest'      => true,
+                        'show_in_rest'      => true,   // Gutenberg / REST API
                         'rewrite'           => array( 'slug' => $slug ),
                     );
 
