@@ -13,7 +13,27 @@
 				add_filter( 'manage_mpcrbm_rent_posts_columns', array( $this, 'rent_columns' ) );
 				add_action( 'manage_mpcrbm_rent_posts_custom_column', array( $this, 'rent_custom_column' ), 10, 2 );
 				add_filter( 'manage_edit-mpcrbm_rent_sortable_columns', array( $this, 'rent_sortable_columns' ) );
+
+                add_action('save_post', array( $this, 'pa_save_car_taxonomies_names_as_meta'), 10, 3);
 			}
+
+            public function pa_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {
+                $cpt    = MPCRBM_Function::get_cpt();
+
+                if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
+                if ( wp_is_post_revision( $post_id ) ) return;
+                if ( $post->post_type !== $cpt ) return;
+                $taxonomies = array('mpcrbm_car_type', 'mpcrbm_fuel_type', 'mpcrbm_seating_capacity', 'mpcrbm_car_brand', 'mpcrbm_make_year');
+                foreach ($taxonomies as $taxonomy) {
+
+                    $terms = wp_get_post_terms($post_id, $taxonomy, array('fields' => 'names'));
+                    if (!empty($terms) && !is_wp_error($terms)) {
+                        update_post_meta($post_id, $taxonomy, $terms);
+                    } else {
+                        delete_post_meta($post_id, $taxonomy);
+                    }
+                }
+            }
 
 			public function rent_custom_column( $columns, $post_id ) {
 				switch ( $columns ) {
@@ -50,6 +70,42 @@
 
 				return $columns;
 			}
+
+            function pa_register_car_taxonomies( $cpt ) {
+                $taxonomies = array(
+                    'mpcrbm_car_type'         => array('label' => 'Car Type',         'hierarchical' => false),
+                    'mpcrbm_fuel_type'        => array('label' => 'Fuel Type',        'hierarchical' => false),
+                    'mpcrbm_seating_capacity' => array('label' => 'Seating Capacity', 'hierarchical' => false),
+                    'mpcrbm_car_brand'        => array('label' => 'Car Brand',        'hierarchical' => false),
+                    'mpcrbm_make_year'        => array('label' => 'Make Year',        'hierarchical' => false),
+                );
+
+                foreach ( $taxonomies as $slug => $props ) {
+
+                    $labels = array(
+                        'name'          => _x( $props['label'].'s', 'taxonomy general name', 'pa-car' ),
+                        'singular_name' => _x( $props['label'], 'taxonomy singular name', 'pa-car' ),
+                        'search_items'  => __( 'Search '.$props['label'].'s', 'pa-car' ),
+                        'all_items'     => __( 'All '.$props['label'].'s', 'pa-car' ),
+                        'edit_item'     => __( 'Edit '.$props['label'], 'pa-car' ),
+                        'add_new_item'  => __( 'Add New '.$props['label'], 'pa-car' ),
+                        'menu_name'     => __( $props['label'].'s', 'pa-car' ),
+                    );
+
+                    $args = array(
+                        'hierarchical'      => $props['hierarchical'],
+                        'labels'            => $labels,
+                        'show_ui'           => true,
+                        'show_admin_column' => true,
+                        'query_var'         => true,
+                        'show_in_rest'      => true,
+                        'rewrite'           => array( 'slug' => $slug ),
+                    );
+
+                    // register taxonomy for CPT 'car'
+                    register_taxonomy( $slug, $cpt, $args );
+                }
+            }
 
 			public function cpt(): void {
 				$cpt    = MPCRBM_Function::get_cpt();
@@ -153,7 +209,11 @@
 				if ( class_exists( 'MPCRBM_Plugin_Pro' ) ) {
 					register_post_type( 'mpcrbm_operate_areas', $dx_args );
 				}
-			}
+
+                $this->pa_register_car_taxonomies( $cpt );
+
+
+            }
 		}
 		new MPCRBM_CPT();
 	}
