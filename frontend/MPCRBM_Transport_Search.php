@@ -9,7 +9,7 @@
 	if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
 		class MPCRBM_Transport_Search {
 			public function __construct() {
-				add_action( 'mpcrbm_transport_search', [ $this, 'transport_search' ], 10, 1 );
+				add_action( 'mpcrbm_transport_search', [ $this, 'transport_search' ], 10, 2 );
 				//add_action('mpcrbm_transport_search_form', [$this, 'transport_search_form'], 10, 2);
 				/*******************/
 				add_action( 'wp_ajax_mpcrbm_get_map_search_result', [ $this, 'mpcrbm_get_map_search_result' ] );
@@ -31,7 +31,7 @@
 				add_action( 'wp_ajax_nopriv_mpcrbm_get_dropoff_locations', [ $this, 'mpcrbm_get_dropoff_locations' ] );
 			}
 
-			public function transport_search( $params ) {
+			public function transport_search( $params, $search_date = [] ) {
 				$display_map = MPCRBM_Global_Function::get_settings( 'mpcrbm_map_api_settings', 'display_map', 'enable' );
 				$price_based = $params['price_based'] ?: 'dynamic';
 				$price_based = $display_map == 'disable' ? 'manual' : $price_based;
@@ -123,6 +123,7 @@
                 session_start();
                 $_SESSION['custom_content'] = $content;
                 $_SESSION['progress_bar'] = $progress_bar;
+                $_SESSION['search_date'] = $_POST;
                 session_write_close();
 
                 // Plugin settings থেকে search result page slug আনো

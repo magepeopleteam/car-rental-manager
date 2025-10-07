@@ -9,11 +9,13 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $content = '';
 
+$search_date= $_SESSION['search_date'] ?? '';
+
 $search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
 $search_defaults = MPCRBM_Shortcodes::default_attribute();
 $params = shortcode_atts( $search_defaults, $search_attribute );
 ob_start();
-do_action( 'mpcrbm_transport_search', $params );
+do_action( 'mpcrbm_transport_search', $params, $search_date );
 $action_output = ob_get_clean();
 
 $content .= $action_output;
@@ -34,6 +36,7 @@ if (empty($content)) {
 
 // Remove content from session after use
 unset($_SESSION['custom_content']);
+unset($_SESSION['search_date']);
 
  if ( wp_is_block_theme() ) {  ?>
 <!DOCTYPE html>
