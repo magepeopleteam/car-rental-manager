@@ -120,6 +120,26 @@ if( $is_title === 'no' ){
     $d_class = '';
 }
 
+$pickup_location = '';
+$return_location = '';
+$formatted_start_date = '';
+$formatted_start_time = '';
+$formatted_end_date = '';
+$formatted_end_time = '';
+if( is_array( $search_date ) && !empty( $search_date ) ){
+    $pickup_location = isset( $search_date['start_place'] ) ? $search_date['start_place'] : '' ;
+    $return_location =  isset( $search_date['end_place'] ) ? $search_date['end_place'] : '' ;
+    $start_date =  isset( $search_date['start_date'] ) ? $search_date['start_date'] : '' ;
+    $formatted_start_date = date('D d M, Y', strtotime( $start_date ));
+    $start_time =  isset( $search_date['start_time'] ) ? $search_date['start_time'] : '' ;
+    $formatted_start_time = MPCRBM_Global_Function::format_custom_time( $start_time );
+    $end_date =  isset( $search_date['return_date'] ) ? $search_date['return_date'] : '' ;
+    $formatted_end_date = date('D d M, Y', strtotime( $end_date ));
+    $end_time =  isset( $search_date['return_time'] ) ? $search_date['return_time'] : '' ;
+    $formatted_end_time = MPCRBM_Global_Function::format_custom_time( $end_time );
+}
+
+
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
     $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time', '30');
@@ -191,8 +211,12 @@ if (sizeof($all_dates) > 0) {
                                         <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
                                             <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
                                             <?php if (sizeof($all_locations) > 0) { ?>
-                                                <?php foreach ($all_locations as $start_location) { ?>
-                                                    <option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?></option>
+                                                <?php foreach ($all_locations as $start_location) {
+                                                    $start_selected = ( $pickup_location === $start_location) ? 'selected' : '';
+                                                    ?>
+                                                    <option value="<?php echo esc_attr($start_location); ?>" <?php echo $start_selected; ?>>
+                                                        <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?>
+                                                    </option>
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
@@ -208,9 +232,14 @@ if (sizeof($all_dates) > 0) {
                                     <?php if ($price_based == 'manual') { ?>
                                         <select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
                                             <option selected disabled><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
-                                            <?php if (sizeof($all_locations) > 0) { ?>
-                                                <?php foreach ($all_locations as $start_location) { ?>
-                                                    <option value="<?php echo esc_attr($start_location); ?>"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?></option>
+                                            <?php if (sizeof($all_locations) > 0) {
+                                                ?>
+                                                <?php foreach ( $all_locations as $start_location ) {
+                                                    $end_selected = ( $return_location === $start_location) ? 'selected' : '';
+                                                    ?>
+                                                    <option value="<?php echo esc_attr($start_location); ?>" <?php echo $end_selected; ?>>
+                                                        <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?>
+                                                    </option>
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
@@ -226,7 +255,7 @@ if (sizeof($all_dates) > 0) {
                                 <label class="fdColumn1">
                                     <input type="hidden" id="mpcrbm_map_start_date" value="" />
                                     <span class="mpcrbm_search_title"><i class="fas fa-calendar-alt _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e($type_text_pickup.' Date', 'car-rental-manager'); ?></span>
-                                    <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="" readonly />
+                                    <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_date );?>" readonly />
                                 </label>
                             </div>
 
@@ -236,7 +265,7 @@ if (sizeof($all_dates) > 0) {
                                 <input type="hidden" id="mpcrbm_map_start_time" value="" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title"><i class="far fa-clock _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
-                                    <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="" readonly />
+                                    <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_time );?>" readonly />
                                 </label>
 
                                 <ul class="input_select_list start_time_list">
@@ -282,7 +311,7 @@ if (sizeof($all_dates) > 0) {
                                 <label class="fdColumn1">
                                     <input type="hidden" id="mpcrbm_map_return_date" value="" />
                                     <span class="mpcrbm_search_title"><i class="fas fa-calendar-alt _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e($type_text_return.' Date', 'car-rental-manager'); ?></span>
-                                    <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="" readonly name="return_date"/>
+                                    <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_date );?>" readonly name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
                                 </label>
                             </div>
@@ -291,7 +320,7 @@ if (sizeof($all_dates) > 0) {
                                 <input type="hidden" id="mpcrbm_map_return_time" value="" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title"><i class="far fa-clock _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
-                                    <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="" readonly name="return_time" />
+                                    <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_time );?>" readonly name="return_time" />
                                     <!--						<span class="far fa-clock mpcrbm_left_icon allCenter"></span>-->
                                 </label>
                                 <ul class="return_time_list-no-dsiplay" style="display:none">

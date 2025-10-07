@@ -41,9 +41,11 @@
                     }
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
                     $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
+                    $search_date = isset($_SESSION['search_date']) ? $_SESSION['search_date'] : '';
                     if ( isset($_SESSION['custom_content'] ) ) {
                         unset($_SESSION['custom_content']);
                         unset($_SESSION['progress_bar']);
+                        unset($_SESSION['search_date']);
                     }
                     session_write_close();
 
@@ -53,7 +55,7 @@
                     $params = shortcode_atts( $search_defaults, $search_attribute );
 
                     ob_start();
-                    do_action( 'mpcrbm_transport_search', $params );
+                    do_action( 'mpcrbm_transport_search', $params, $search_date );
                     $action_output = ob_get_clean();
 
 

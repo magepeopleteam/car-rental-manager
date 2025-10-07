@@ -14,7 +14,6 @@
     if( $search_page_slug === '' ){
         $redirect = 'no';
     }
-
 ?>
 	<div class="mpcrbm mpcrbm_transport_search_area">
 		<div class="mpcrbm_tab_next _mT">
