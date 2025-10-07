@@ -1967,7 +1967,6 @@
 	}
 	.mpcrbm .mpForm label span {
 		width: 100%;
-		margin: 0 0 var(--dmp_xs) 0;
 	}
 	.mpcrbm .mpForm label span::before {
 		padding: 0 var(--dmp_xs);

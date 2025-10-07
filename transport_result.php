@@ -2,7 +2,7 @@
 /*
 Template Name: Transport Result
 */
-
+defined( 'ABSPATH' ) || exit;
 // ✅ Start session in functions.php (recommended), not in template
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -36,34 +36,35 @@ if (empty($content)) {
 
 // Remove content from session after use
 unset($_SESSION['custom_content']);
-unset($_SESSION['search_date']);
 
- if ( wp_is_block_theme() ) {  ?>
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-<head>
-	<meta charset="<?php bloginfo( 'charset' ); ?>">
-	<?php
-	$block_content = do_blocks( '
-		<!-- wp:group {"layout":{"type":"constrained"}} -->
-		<div class="wp-block-group">
-		<!-- wp:post-content /-->
-		</div>
-		<!-- /wp:group -->'
- 	);
-    wp_head(); ?>
-</head>
-<body <?php body_class(); ?>>
-<?php wp_body_open(); ?>
-<div class="wp-site-blocks">
-<header class="wp-block-template-part site-header">
-    <?php block_header_area(); ?>
-</header>
-</div>
-<?php
+
+/**
+ * --------------------------
+ * HEADER AREA
+ * --------------------------
+ */
+if ( wp_is_block_theme() ) {
+    if ( function_exists( 'block_header_area' ) ) {
+        ob_start();
+        block_header_area();
+        $header_html = trim( ob_get_clean() );
+
+        if ( $header_html ) {
+            wp_head();
+            wp_body_open();
+            echo '<div class="wp-site-blocks">';
+            echo '<header class="wp-block-template-part site-header">';
+            echo $header_html;
+            echo '</header>';
+            echo '</div>';
+        } else {
+            get_header();
+        }
+    } else {
+        get_header();
+    }
 } else {
-    get_header();	
-    the_post();
+    get_header();
 }
 ?>
 
@@ -75,7 +76,7 @@ unset($_SESSION['search_date']);
         })();
     </script>
 
-    <main id="maincontent" class="transport-result-page">
+    <div id="maincontent" class="transport-result-page">
         <div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto">
             <div class="mpcrbm_tab_next _mT">
                 <div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
@@ -108,18 +109,17 @@ unset($_SESSION['search_date']);
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
 <?php
-if ( wp_is_block_theme() ) {
-// Code for block themes goes here.
-?>
-<footer class="wp-block-template-part">
-    <?php block_footer_area(); ?>
-</footer>
-<?php wp_footer(); ?>
-</body>    
-<?php
+// ==============================
+// FOOTER
+// ==============================
+if ( function_exists( 'block_footer_area' ) && wp_is_block_theme() ) {
+    echo '<footer class="wp-block-template-part mep-site-footer">';
+        block_footer_area();
+    echo '</footer>';
+    wp_footer();
 } else {
     get_footer();
 }

@@ -47,13 +47,18 @@
 		color: #222222;
 		font-weight: 400;
 		font-size: 12px;
-		padding: var(--dmp_xs) 35px var(--dmp_xs) var(--dmp_xs);border-color: #EBECEE;
-		background-image: url('../../mp_global/assets/images/arrow_down.png');
-		background-repeat: no-repeat; background-position: calc(100% - var(--dmp_xs)); background-size: auto;
-		-webkit-appearance: none;
 
+		border-color: #EBECEE;
+		background-image: url('../../mp_global/assets/images/arrow_down.svg');
+		background-repeat: no-repeat; 
+		background-position: calc(100% - var(--dmp_xs)); 
+		background-size: auto;
+		-webkit-appearance: none;
 		border: unset !important;
 		/*border-radius: 10px;*/
+	}
+	.mpcrbm_transport_search_area .input_select{
+		width: 100%;
 	}
 	div.mpcrbm_transport_search_area .mpcrbm_map_area {max-width: calc(65% - 30px);width: 65%;}
 	div.mpcrbm_form_details_area div.mpcrbm_map_area{max-width: 100%;width: 100%;}
@@ -161,9 +166,10 @@
 	 letter-spacing: 0.5px;
 	 margin: 12px 0;
  }
- .mpcrbm_horizontal_date_time_input{
-	 background: #f8fafc;
-	 padding: 16px;
+.mpcrbm_horizontal_date_time_input{
+	 background: #fff;
+	 border-radius: 12px;
+	 padding:8px;
 	 width: 33.33%;
 	 display: flex;
 	 gap: 1px;
@@ -172,6 +178,12 @@
 	 color: #666666;
 	 text-align: center;
  }
+
+.mpcrbm_inline_search_form label span i{ 
+	margin: 0 !important;
+	margin-left: 5px !important;
+	margin-right: 5px !important;
+}
 
  .mpcrbm_next_button{
 	 width: 90% !important;
