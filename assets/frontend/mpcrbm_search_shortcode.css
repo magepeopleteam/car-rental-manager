@@ -40,8 +40,8 @@ div.header-text h2 {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .mpcrbm_search_holder{
-    padding: var(--dmp);
-    background-color:#f8fafc;
+    padding:10px;
+    background-color:#ecf1f5;
     border-radius: var(--dbrl);
 }
 .mprcbm_search_button_holder{
