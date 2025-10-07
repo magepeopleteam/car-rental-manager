@@ -84,13 +84,13 @@
 					$raw_price = MPCRBM_Global_Function::price_convert_raw( $wc_price );
 					$cart_item_data['mpcrbm_date'] = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
 					$cart_item_data['mpcrbm_taxi_return']         = $return;
-					$cart_item_data['mpcrbm_waiting_time']        = $waiting_time;
+//					$cart_item_data['mpcrbm_waiting_time']        = $waiting_time;
 					$cart_item_data['mpcrbm_start_place']         = wp_strip_all_tags( $start_place );
 					$cart_item_data['mpcrbm_end_place']           = wp_strip_all_tags( $end_place );
-					$cart_item_data['mpcrbm_distance']            = $distance;
+//					$cart_item_data['mpcrbm_distance']            = $distance;
 					$cart_item_data['mpcrbm_distance_text']       = isset( $_COOKIE['mpcrbm_distance_text'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['mpcrbm_distance_text'] ) ) : '';
-					$cart_item_data['mpcrbm_duration']            = $duration;
-					$cart_item_data['mpcrbm_fixed_hours']         = $fixed_hour;
+//					$cart_item_data['mpcrbm_duration']            = $duration;
+//					$cart_item_data['mpcrbm_fixed_hours']         = $fixed_hour;
 					$cart_item_data['mpcrbm_duration_text']       = isset( $_COOKIE['mpcrbm_duration_text'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['mpcrbm_duration_text'] ) ) : '';
 					$cart_item_data['mpcrbm_base_price']          = $raw_price;
 					$cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id );
@@ -674,6 +674,7 @@
 				$start_time      = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
 				$return_date     = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
 				$return_time     = isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : '';
+                $car_quantity     = isset( $_POST['mpcrbm_car_quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 				$return_date_time = $return_date ? gmdate( "Y-m-d", strtotime( $return_date ) ) : "";
 				if ( $return_date && $return_time !== "" ) {
 					if ( $return_time !== "" ) {
@@ -699,9 +700,10 @@
 				}
 				$price            = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
 				$wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
-				$raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price );
+				$raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
 				$service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];
 				$service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'absint', $_POST['mpcrbm_extra_service_qty'] ) : [];
+
 				if ( sizeof( $service_name ) > 0 ) {
 					for ( $i = 0; $i < count( $service_name ); $i ++ ) {
 						if ( $service_name[ $i ] ) {
@@ -713,6 +715,7 @@
 						}
 					}
 				}
+
 				$wc_price = MPCRBM_Global_Function::wc_price( $post_id, $raw_price );
 
 				return MPCRBM_Global_Function::price_convert_raw( $wc_price );
@@ -751,7 +754,8 @@
 				}
 				$link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
 				$product_id        = apply_filters( 'woocommerce_add_to_cart_product_id', $link_id );
-				$quantity          = 1;
+				$quantity          = isset( $_POST['mpcrbm_car_quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
+
 				$passed_validation = apply_filters( 'woocommerce_add_to_cart_validation', true, $product_id, $quantity );
 				$product_status    = get_post_status( $product_id );
 				WC()->cart->empty_cart();

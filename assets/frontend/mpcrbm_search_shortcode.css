@@ -42,27 +42,27 @@ div.header-text h2 {
 .mpcrbm_search_holder{
     padding: var(--dmp);
     background-color: var(--color_white);
-    margin-top: -1px;
-    border-bottom-left-radius: var(--dbrl);
-    border-bottom-right-radius: var(--dbrl);
+    /*margin-top: -1px;*/
+    border-radius: var(--dbrl);
 }
 .mprcbm_search_button_holder{
     display: flex;
-    justify-content: center;
+    width: 150px;
+    justify-content: right;
 }
 
 .mpcrbm_search-button {
     background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 10px;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100%;
-    max-width: 250px;
-    margin: 2rem auto 0;
+    max-width: 150px;
+    /*margin: 2rem auto 0;*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,6 +72,24 @@ div.header-text h2 {
     width: 18px;
     height: 18px;
     fill: currentColor;
+}
+.mpcrbm_horizontal_search_form{
+    display: flex;
+    flex-direction: column;
+}
+.mpcrbm_inline_search_form{
+    display: flex;
+    width: 100%;
+    flex: 1;
+    gap: 10px;
+}
+.mpcrbm_manual_end_place{
+    margin-top: 0 !important;
+}
+
+.mpcrbm_icon_margin{
+    color: #990000;
+    margin: 2px !important;
 }
 
 .mprcbm_checkbox_group {
@@ -84,4 +102,36 @@ div.header-text h2 {
     border-radius: 8px;
     transition: all 0.2s ease;
     margin-top: 15px;
+}
+.mprcbm_checkbox_group_new {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin: 5px 0 5px 0;
+}
+
+.mprcbm_checkbox_search_btn_holder{
+    display: flex;
+    gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.mpcrbm_search_title{
+    font-size: 12px;
+}
+
+.custom-divider {
+    border: none;
+    border-top: 1px solid #ccc; /* change color if needed */
+    margin: 20px 0; /* space above and below */
+}
+.mpcrbm-vertical-divider {
+    width: 1px;
+    background-color: #ccc;
+    margin: 0 2px;
 }

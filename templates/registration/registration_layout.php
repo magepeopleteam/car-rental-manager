@@ -14,7 +14,6 @@
     if( $search_page_slug === '' ){
         $redirect = 'no';
     }
-
 ?>
 	<div class="mpcrbm mpcrbm_transport_search_area">
 		<div class="mpcrbm_tab_next _mT">
@@ -49,7 +48,8 @@
 			<div class="tabsContentNext">
 				<div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
                     <?php //echo MPCRBM_Function::template_path('registration/get_details.php'); ?>
-					<?php include MPCRBM_Function::template_path('registration/get_details.php'); ?>
+<!--					--><?php //include MPCRBM_Function::template_path('registration/get_details.php'); ?>
+					<?php include MPCRBM_Function::template_path('registration/get_details_new.php'); ?>
 				</div>
 			</div>
 		</div>

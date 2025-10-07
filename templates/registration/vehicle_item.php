@@ -101,7 +101,13 @@ if ($post_id) {
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
         <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
-                <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
+                <?php if( $ajax_search === 'yes' ){
+                    ?>
+                    <img src="<?php echo esc_attr($thumbnail); ?>">
+                <?php }else{?>
+                    <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
+                <?php }?>
+
             </div>
         </div>
         <div class="mpcrbm_list_details">
@@ -230,21 +236,28 @@ if ($post_id) {
                             </div>
                         <?php endif; ?>
                     </div>
-                    
-                    <button type="button" 
-                        class="_mpBtn_xs mpcrbm_transport_select"
-                        data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" 
-                        data-transport-price="<?php echo esc_attr($discounted_price); ?>" 
-                        data-post-id="<?php echo esc_attr($post_id); ?>" 
-                        data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>" 
-                        data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>" 
-                        data-open-icon="" 
-                        data-close-icon="fas fa-check mR_xs">
-                        <span class="" data-icon></span>
-                        <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
-                    </button>
+
                 </div>
+
             </div>
+            <div class="mpcrbm_add_multiple_qty">
+                <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
+                    <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
+                </div>
+                <button type="button"
+                        class="_mpBtn_xs mpcrbm_transport_select"
+                        data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
+                        data-transport-price="<?php echo esc_attr($discounted_price); ?>"
+                        data-post-id="<?php echo esc_attr($post_id); ?>"
+                        data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
+                        data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
+                        data-open-icon=""
+                        data-close-icon="fas fa-check mR_xs">
+                    <span class="" data-icon></span>
+                    <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
+                </button>
+            </div>
+
             <?php do_action('mpcrbm_booking_item_after_feature', $post_id); ?>
         </div>
     </div>

@@ -623,6 +623,17 @@
 			public static function hasDecimal( $number ) {
 				return fmod( $number, 1 ) != 0;
 			}
+
+            public static function format_custom_time($time_value) {
+                $parts = explode('.', $time_value);
+                $hour = isset($parts[0]) ? (int)$parts[0] : 0;
+                $minute = isset($parts[1]) ? (int)$parts[1] : 0;
+                if ($minute < 10 && isset($parts[1]) && strlen($parts[1]) == 1) {
+                    $minute = $minute * 10;
+                }
+                $formatted = sprintf('%02d:%02d', $hour, $minute);
+                return date('g.ia', strtotime($formatted));
+            }
 		}
 		new MPCRBM_Global_Function();
 	}
