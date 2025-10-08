@@ -122,9 +122,13 @@ if( $is_title === 'no' ){
 
 $pickup_location = '';
 $return_location = '';
+$start_date = '';
 $formatted_start_date = '';
+$start_time = '';
 $formatted_start_time = '';
+$end_date = '';
 $formatted_end_date = '';
+$end_time = '';
 $formatted_end_time = '';
 if( is_array( $search_date ) && !empty( $search_date ) ){
     $pickup_location = isset( $search_date['start_place'] ) ? $search_date['start_place'] : '' ;
@@ -253,7 +257,7 @@ if (sizeof($all_dates) > 0) {
                         <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $width_class );?>">
                             <div class="input_select">
                                 <label class="fdColumn1">
-                                    <input type="hidden" id="mpcrbm_map_start_date" value="" />
+                                    <input type="hidden" id="mpcrbm_map_start_date" value="<?php echo esc_attr( $start_date );?>" />
                                     <span class="mpcrbm_search_title"><i class="fas fa-calendar-alt _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e($type_text_pickup.' Date', 'car-rental-manager'); ?></span>
                                     <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_date );?>" readonly />
                                 </label>
@@ -262,7 +266,7 @@ if (sizeof($all_dates) > 0) {
                             <div class="mpcrbm-vertical-divider"></div>
 
                             <div class=" input_select">
-                                <input type="hidden" id="mpcrbm_map_start_time" value="" />
+                                <input type="hidden" id="mpcrbm_map_start_time" value="<?php echo esc_attr( $start_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title"><i class="far fa-clock _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
                                     <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_time );?>" readonly />
@@ -309,7 +313,7 @@ if (sizeof($all_dates) > 0) {
                         <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $width_class );?>" >
                             <div class="input_select" >
                                 <label class="fdColumn1">
-                                    <input type="hidden" id="mpcrbm_map_return_date" value="" />
+                                    <input type="hidden" id="mpcrbm_map_return_date" value="<?php echo esc_attr( $end_date );?>" />
                                     <span class="mpcrbm_search_title"><i class="fas fa-calendar-alt _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e($type_text_return.' Date', 'car-rental-manager'); ?></span>
                                     <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_date );?>" readonly name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
@@ -317,7 +321,7 @@ if (sizeof($all_dates) > 0) {
                             </div>
                             <div class="mpcrbm-vertical-divider"></div>
                             <div class=" input_select">
-                                <input type="hidden" id="mpcrbm_map_return_time" value="" />
+                                <input type="hidden" id="mpcrbm_map_return_time" value="<?php echo esc_attr( $end_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title"><i class="far fa-clock _textTheme_mR_xs mpcrbm_icon_margin"></i><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
                                     <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_time );?>" readonly name="return_time" />
