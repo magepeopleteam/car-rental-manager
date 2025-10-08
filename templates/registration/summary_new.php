@@ -22,11 +22,10 @@ $price_based = $price_based ?? '';
                     <div class="mpcrbm_summary_title">
                         📋 <?php esc_html_e('Booking Summary', 'car-rental-manager'); ?>
                     </div>
-                    <div class="dividerL"></div>
 
                     <div class="dividerL"></div>
 
-                    <div class="" style="display: flex; gap: 3px;">
+                    <div class="mpcrbm_booking_summary_description" style="display: flex; gap: 3px;">
                         <h6 class="_mB_xs"><?php esc_html_e('Pickup Date', 'car-rental-manager'); ?></h6>
                         <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($date)); ?></p>
                         <div class="dividerL"></div>
