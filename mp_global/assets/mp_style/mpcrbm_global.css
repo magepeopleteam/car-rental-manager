@@ -2792,7 +2792,7 @@
 	.mpcrbm .mainSection {
 		width: 100%;
 		max-width: var(--mainsection);
-		margin: 0 0 0 var(--dmp);
+		margin: 0 0 0 10px;
 	}
 	/**************************************/
 	body.theme-astra div.mpContainer,
