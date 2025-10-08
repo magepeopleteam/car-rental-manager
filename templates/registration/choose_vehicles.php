@@ -451,8 +451,8 @@ if( $is_redirect === 'yes' ){
         <div class="mpcrbm_left_filter">
             <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
         </div>
-        <div class="flexWrap mpcrbm_main_content">
-            <div class="mainSection ">
+        <div class="mpcrbm_main_content">
+            <div class="mpcrbm_mainSection ">
                 <div class="sticky_depend_area fdColumn">
                     <!-- Filter area start -->
                     <?php if (MPCRBM_Global_Function::get_settings("mpcrbm_general_settings", "enable_filter_via_features") == "yes") { ?>
@@ -506,19 +506,22 @@ if( $is_redirect === 'yes' ){
                     <div class="_dLayout_mT_bgWarning geo-fence-no-transport">
                         <h3><?php esc_html_e("No Transport Available !!", "car-rental-manager"); ?></h3>
                     </div>
-                    <div class="mpcrbm_extra_service"></div>
+
                 </div>
             </div>
-            <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
+            <?php include MPCRBM_Function::template_path("registration/summary_new.php"); ?>
+
+            <div class="mpcrbm_extra_service"></div>
         </div>
     </div>
+
 </div>
 <div data-tabs-next="#mpcrbm_order_summary" class="mpcrbm_order_summary">
     <div class="sticky_section">
         <div class="flexWrap">
             <?php
             include MPCRBM_Function::template_path("registration/summary.php"); ?>
-            <div class="mainSection ">
+            <div class="mpcrbm_mainSection ">
                 <div class="sticky_depend_area fdColumn mpcrbm_checkout_area">
                 </div>
             </div>

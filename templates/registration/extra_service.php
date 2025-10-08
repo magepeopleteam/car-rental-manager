@@ -33,7 +33,7 @@ $extra_services = MPCRBM_Global_Function::get_post_info($service_id, 'mpcrbm_ext
 
 if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) {
 ?>
-		<div class="dLayout">
+		<div class="mpcrbm_extra_service_layout">
 			<h3><?php esc_html_e('Choose Extra Features (Optional)', 'car-rental-manager'); ?></h3>
 			<div class="divider"></div>
 			<?php foreach ($extra_services as $service) { 

@@ -99,7 +99,7 @@
 		color: var(--color_theme_alter);
 	}
 	div.mpcrbm_transport_search_area div.sticky_on_scroll {
-		min-height: 400px;
+		/*min-height: 400px;*/
 		overflow: auto;
 		/*border: 1px solid var(--color_border);*/
 		border: 1px solid #e5e7eb;
@@ -203,7 +203,7 @@
  .mpcrbm_summary_title{
 	 font-size: 22px;
 	 font-weight: 600;
-	 margin: 15px 0px 1px 0;
+	 margin: 1px 0px 1px 0;
 	 color: #2c3e50;
 	 display: flex;
 	 align-items: center;
@@ -243,6 +243,7 @@ div.mpcrbm .mpcrbm_extra_service h3{margin:0px 0 12px 0;}
 h2#mpcrbm_title_change{color:white;}
 .mpcrbm_car_specs_lists{
 	display: flex;
+	width: 50%;
 	flex-wrap: wrap;
 	gap: 8px;
 	font-size: 12px;
@@ -275,6 +276,10 @@ h2#mpcrbm_title_change{color:white;}
     text-decoration: line-through;
 }
 
+.mpcrbm_line_through{
+	text-decoration: line-through;
+}
+
  .mpcrbm_price-main {
 	 font-size: 18px;
 	 font-weight: 800;
@@ -284,8 +289,8 @@ h2#mpcrbm_title_change{color:white;}
 	 font-size: 10px;
 	 color: #d97706;
 	 background: #fefce8;
-	 padding:2px;
-	 border-radius: 50px;
+	 padding: 5px;
+	 border-radius: 5px;
 	 display: inline-block;
 	 border: 1px solid #fde68a;
 	 text-align: center;
@@ -294,8 +299,8 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_discount_info{
 	 display: flex;
 	 flex-direction: column;
-	 min-width: 100px;
-	 width: 200px;
+	 /*min-width: 100px;*/
+	 /*width: 200px;*/
 	 text-align: right;
 	 gap:5px;
  }
@@ -319,11 +324,11 @@ h2#mpcrbm_title_change{color:white;}
  }
  .mpcrbm_booking_vehicle .mpcrbm_price-breakdown .woocommerce-Price-amount {
 	 font-size: 16px !important;
-	 text-decoration: line-through;
+	 /*text-decoration: line-through;*/
  }
  .mpcrbm_booking_vehicle .mpcrbm_price-main .woocommerce-Price-amount {
 	 font-size: 16px !important;
-	 text-decoration: line-through;
+	 /*text-decoration: line-through;*/
  }
 
  .mpcrbm_discount-info {
@@ -331,8 +336,8 @@ h2#mpcrbm_title_change{color:white;}
 	 color: #059669;
 	 font-weight: 600;
 	 background: #f0fdf4;
-	 padding:2px 5px;
-	 border-radius:50px;
+	 padding: 5px;
+	 border-radius: 5px;
 	 display: inline-block;
 	 border: 1px solid #bbf7d0;
  }
@@ -353,9 +358,9 @@ h2#mpcrbm_title_change{color:white;}
 	background: var(--color_2);
 	color: var(--color_success);
 	border-radius: 12px;
-	padding: 20px;
+	padding: 5px 10px;
 	text-align: center;
-	margin: 20px 0;
+	/*margin: 20px 0;*/
  }
  .mpcrbm_duration-days {
 	 font-size: 24px;
@@ -389,6 +394,7 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_add_multiple_qty{
 	 display: flex;
 	 justify-content: end;
+	 padding: 8px 0;
  }
 
  .mpcrbm_search_result_holder{
@@ -397,14 +403,16 @@ h2#mpcrbm_title_change{color:white;}
  }
 
  .mpcrbm_main_content{
-	 width: calc( 100% - 200px );
+	 display: flex;
+	 flex-direction: column;
+	 width: calc( 100% - 250px );
  }
 
  /*FILTER*/
  .mpcrbm_left_filter{
 	 display: flex;
 	 flex-direction: column;
-	 width: 200px;
+	 width: 250px;
 	 padding: 5px;
 	 border-radius: 5px;
 	 /*border: 1px solid #e5e7eb;*/
@@ -457,10 +465,27 @@ h2#mpcrbm_title_change{color:white;}
 	 background: #0056b3;
  }
 
+ .mpcrbm_extra_service_layout{
+ 	 background-color: #f7f5f5;
+	 margin: 10px 0px;
+	 padding: 10px;
+ }
+
+ .mpcrbm_discount_booking{
+	 display: flex;
+	 flex-direction: row;
+	 gap: 10px;
+	 justify-content: space-between;
+	 width: 50%;
+ }
+
 
  @media (max-width: 815px) {
 	 .mpcrbm_search_result_holder{
 		 flex-direction: column;
+	 }
+	 .mpcrbm_main_content{
+		 width: 100%;
 	 }
 	 .mpcrbm_left_filter {
 		 width: 100%;
