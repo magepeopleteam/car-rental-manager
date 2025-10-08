@@ -402,6 +402,30 @@ $minutes_to_day = ceil( $minutes_all / 1440 );
 
 $ajax_search = isset( $_POST['ajax_search'] ) ? sanitize_text_field( wp_unslash( $_POST['ajax_search'] ) ) : '';
 
+$all_posts = MPCRBM_Query::query_transport_list($price_based);
+$post_ids = $left_side_filter = [];
+if ( $all_posts->found_posts > 0 ) {
+    $posts = $all_posts->posts;
+    $vehicle_item_count = 0;
+    $remove_class_item_post_id = [];
+    foreach ($posts as $post) {
+        $post_id = $post->ID;
+        $check_schedule = mpcrbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
+        $check_operation_area = mpcrbm_check_operation_area($post_id, $start_place, $end_place);
+
+        if ($check_schedule && $check_operation_area) {
+            $post_ids[] = $post_id;
+        }
+    }
+}
+
+if( count( $post_ids ) > 0 ){
+    $left_side_filter = MPCRBM_Global_Function::get_meta_key( $post_ids );
+}
+
+
+
+
 if( $is_redirect === 'yes' ){
 ?>
 <div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
@@ -423,10 +447,11 @@ if( $is_redirect === 'yes' ){
 
     <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
 
-    <div class="sticky_section">
-        <div class="flexWrap">
-
-            <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
+    <div class="sticky_section mpcrbm_search_result_holder" >
+        <div class="mpcrbm_left_filter">
+            <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
+        </div>
+        <div class="flexWrap mpcrbm_main_content">
             <div class="mainSection ">
                 <div class="sticky_depend_area fdColumn">
                     <!-- Filter area start -->
@@ -464,33 +489,12 @@ if( $is_redirect === 'yes' ){
                     <!-- Filter area end -->
                     <?php
 
-                    $all_posts = MPCRBM_Query::query_transport_list($price_based);
+//                    $all_posts = MPCRBM_Query::query_transport_list($price_based);
 
-                    if ($all_posts->found_posts > 0) {
-                        $posts = $all_posts->posts;
-                        $vehicle_item_count = 0;
-                        $remove_class_item_post_id = [];
-                        
-                        
-                        
-                        foreach ($posts as $post) {
-
-                            $post_id = $post->ID;
-                            $check_schedule = mpcrbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
-                            $check_operation_area = mpcrbm_check_operation_area($post_id, $start_place, $end_place);
-                            
-                            
-                           
-                            if ($check_schedule && $check_operation_area) {
-
-                                $vehicle_item_count = $vehicle_item_count + 1;
-                                include MPCRBM_Function::template_path("registration/vehicle_item.php");
-                            }
+                    if ( count( $post_ids ) > 0 ) {
+                        foreach ( $post_ids as $post_id) {
+                            include MPCRBM_Function::template_path("registration/vehicle_item.php");
                         }
-                        
-                                                 if ($vehicle_item_count == 0) {
-                             // No vehicles found message is handled by the existing "No Transport Available" div below
-                         }
                     } else {
                     ?>
                         <div class="_dLayout_mT_bgWarning">
@@ -505,6 +509,7 @@ if( $is_redirect === 'yes' ){
                     <div class="mpcrbm_extra_service"></div>
                 </div>
             </div>
+            <?php include MPCRBM_Function::template_path("registration/summary.php"); ?>
         </div>
     </div>
 </div>
