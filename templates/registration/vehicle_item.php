@@ -83,6 +83,34 @@ if ($post_id) {
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
 
+    $all_car_type = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_car_type');
+    $all_fuel_type = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_fuel_type');
+    $all_seating_capacity = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_seating_capacity');
+    $all_car_brand = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_car_brand');
+    $all_car_year = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_make_year');
+
+    $all_car_type_str         = (is_array($all_car_type) && !empty($all_car_type)) ? implode(',', $all_car_type) : '';
+    $all_fuel_type_str        = (is_array($all_fuel_type) && !empty($all_fuel_type)) ? implode(',', $all_fuel_type) : '';
+    $all_seating_capacity_str = (is_array($all_seating_capacity) && !empty($all_seating_capacity)) ? implode(', ', $all_seating_capacity) : '';
+    $all_car_brand_str        = (is_array($all_car_brand) && !empty($all_car_brand)) ? implode(',', $all_car_brand) : '';
+    $all_car_year_str         = (is_array($all_car_year) && !empty($all_car_year)) ? implode(',', $all_car_year) : '';
+
+    $all_filters = [
+        $all_car_type,
+        $all_fuel_type,
+        $all_seating_capacity,
+        $all_car_brand,
+        $all_car_year
+    ];
+    $merged_values = [];
+    foreach ($all_filters as $filter) {
+        if (is_array($filter) && !empty($filter)) {
+            $merged_values = array_merge($merged_values, $filter);
+        }
+    }
+    $final_filter_string = !empty($merged_values) ? implode(', ', $merged_values) : '';
+
+
     /*$startDate  = new DateTime( $start_date_time );
     $returnDate = new DateTime( $return_date_time );
     $interval = $startDate->diff( $returnDate );
@@ -98,7 +126,14 @@ if ($post_id) {
     $enable_seasonal    = (int)get_post_meta( $post_id, 'mpcrbm_enable_seasonal_discount', true );
 
     ?>
-    <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder>
+    <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder
+         data-car-type="<?php echo esc_attr( $all_car_type_str)?>"
+         data-fuel-type="<?php echo esc_attr( $all_fuel_type_str)?>"
+         data-seating-capacity="<?php echo esc_attr( $all_seating_capacity_str)?>"
+         data-car-brand="<?php echo esc_attr( $all_car_brand_str)?>"
+         data-car-year="<?php echo esc_attr( $all_car_year_str)?>"
+         data-filter-category-items="<?php echo esc_attr( $final_filter_string)?>"
+    >
         <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
                 <?php if( $ajax_search === 'yes' ){
@@ -170,7 +205,7 @@ if ($post_id) {
                         if( isset( $seasonal_data['name'] ) && !empty( $seasonal_data['name'] ) ){
                         ?>
                         <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price($seasonal_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                        <div class="mpcrbm_seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?> rate</div>
+                        <div class="mpcrbm_seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?><?php esc_attr_e( 'rate', 'car-rental-manager' );?></div>
                     <?php }
                     }?>
                 </div>
