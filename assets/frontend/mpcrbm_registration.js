@@ -1038,7 +1038,35 @@ jQuery(document).ready(function($) {
             parent.find(".nextTab_prev").trigger("click");
         }
     });
-    
+
+    $(document).on('change', '.mpcrbm-filter-checkbox', function() {
+
+        let parent = $(this).closest(".mpcrbm_transport_search_area");
+        let selectedValues = [];
+        $('.mpcrbm-filter-checkbox:checked').each(function() {
+            selectedValues.push($(this).val().toLowerCase());
+        });
+
+        $('#mpcrbm_selected_filters').val(selectedValues.join(','));
+
+        if (selectedValues.length === 0) {
+            $('.mpcrbm_booking_item').show();
+            return;
+        }
+
+        parent.find('.mpcrbm_booking_item').each(function() {
+            let $item = $(this);
+            let itemData = $item.attr('data-filter-category-items') || '';
+            let itemValues = itemData.toLowerCase().split(',').map(v => v.trim());
+            let hasMatch = selectedValues.some(value => itemValues.includes(value));
+            if (hasMatch) {
+                $item.fadeIn();
+            } else {
+                $item.fadeOut();
+            }
+        });
+
+    });
 });
 
 // Helper functions

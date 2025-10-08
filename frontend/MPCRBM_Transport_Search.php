@@ -44,34 +44,33 @@
                     'mpcrbm_seating_capacity' => 'Seating Capacity',
                     'mpcrbm_car_brand'        => 'Car Brand',
                     'mpcrbm_make_year'        => 'Make Year',
-                );
+                ); ?>
 
-                echo '<div class="mpcrbm-left-filter">';
+                <div class="mpcrbm-left-filter">
+                    <button class="mpcrbm_filter_btn">
+                        <i class="fas fa-car-side"></i>
+                        <i class="fas fa-sliders-h"></i>
+                        <?php esc_attr_e( 'Filter Cars', 'car-rental-manager' );?>
+                    </button>
+                    <?php
+                    foreach ( $left_side_filter as $taxonomy => $values ) {
 
-                foreach ( $left_side_filter as $taxonomy => $values ) {
+                        if( is_array( $values ) && !empty( $values ) ){
+                            $title = isset( $titles[$taxonomy] ) ? $titles[$taxonomy] : ucfirst( str_replace('mpcrbm_', '', $taxonomy ) ); ?>
+                            <div class="mpcrbm-filter-group" data-filter="mpcrbm_car_brand">
+                                <h5 class="mpcrbm-filter-title"><?php echo esc_attr( $title );?></h5>
+                                <ul class="mpcrbm-filter-list">
+                                <?php foreach ( $values as $value ) { ?>
+                                    <li><label><input class="mpcrbm-filter-checkbox" type="checkbox" value="<?php echo esc_attr( $value );?>"> <?php echo esc_attr( $value );?></label></li>
+                                <?php } ?>
+                                </ul>
+                            </div>
+                       <?php }
 
-                    $title = isset( $titles[$taxonomy] ) ? $titles[$taxonomy] : ucfirst(str_replace('mpcrbm_', '', $taxonomy));
+                    } ?>
 
-                    echo '<div class="mpcrbm-filter-group">';
-                    echo '<h4 class="mpcrbm-filter-title">' . esc_html($title) . '</h4>';
-                    echo '<ul class="mpcrbm-filter-list">';
-
-                    foreach ( $values as $value ) {
-                        $id = esc_attr( $taxonomy . '_' . sanitize_title($value) );
-                        echo '<li>';
-                        echo '<label for="' . $id . '">';
-                        echo '<input type="checkbox" name="' . esc_attr($taxonomy) . '[]" id="' . $id . '" value="' . esc_attr($value) . '"> ';
-                        echo esc_html($value);
-                        echo '</label>';
-                        echo '</li>';
-                    }
-
-                    echo '</ul>';
-                    echo '</div>';
-                }
-
-                echo '</div>';
-             }
+                </div>
+            <?php }
 
 			public function transport_search( $params, $search_date = [] ) {
 				$display_map = MPCRBM_Global_Function::get_settings( 'mpcrbm_map_api_settings', 'display_map', 'enable' );
