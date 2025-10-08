@@ -475,7 +475,7 @@ h2#mpcrbm_title_change{color:white;}
 	 display: flex;
 	 flex-direction: row;
 	 gap: 10px;
-	 justify-content: space-between;
+	 justify-content: flex-end;
 	 width: 50%;
  }
 
@@ -488,6 +488,12 @@ h2#mpcrbm_title_change{color:white;}
 		 width: 100%;
 	 }
 	 .mpcrbm_left_filter {
+		 width: 100%;
+	 }
+ }
+
+ @media (max-width: 768px) {
+	 .mpcrbm_discount_booking, .mpcrbm_car_specs_lists {
 		 width: 100%;
 	 }
  }

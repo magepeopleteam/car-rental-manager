@@ -24,6 +24,45 @@ $price_based = $price_based ?? '';
                     </div>
                     <div class="dividerL"></div>
 
+                    <div class="dividerL"></div>
+
+                    <div class="" style="display: flex; gap: 3px;">
+                        <h6 class="_mB_xs"><?php esc_html_e('Pickup Date', 'car-rental-manager'); ?></h6>
+                        <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($date)); ?></p>
+                        <div class="dividerL"></div>
+                        <h6 class="_mB_xs"><?php esc_html_e('Pickup Time', 'car-rental-manager'); ?></h6>
+                        <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($date, 'time')); ?></p>
+                        <div class="dividerL"></div>
+                        <h6 class="_mB_xs"><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></h6>
+                        <?php if($price_based == 'manual'){ ?>
+                            <p class="_textLight_1 mpcrbm_manual_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $start_place,'mpcrbm_locations' )); ?></p>
+                        <?php }else{ ?>
+                            <p class="_textLight_1 mpcrbm_map_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_place, 'mpcrbm_locations')); ?></p>
+                        <?php } ?>
+                        <div class="dividerL"></div>
+                        <h6 class="_mB_xs"><?php esc_html_e('Return Location', 'car-rental-manager'); ?></h6>
+                        <?php if($price_based == 'manual'){ ?>
+                            <p class="_textLight_1 mpcrbm_map_end_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $end_place,'mpcrbm_locations' )); ?></p>
+                        <?php }else{ ?>
+                            <p class="_textLight_1 mpcrbm_map_end_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($end_place, 'mpcrbm_locations')); ?></p>
+                        <?php } ?>
+
+                        <?php if($two_way>1){
+                            ?>
+                            <div class="dividerL"></div>
+                            <?php if(!empty($return_date_time)){ ?>
+                                <h6 class="_mB_xs"><?php esc_html_e('Return Date', 'car-rental-manager'); ?></h6>
+                                <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time)); ?></p>
+                                <div class="dividerL"></div>
+                                <h6 class="_mB_xs"><?php esc_html_e('Return Time', 'car-rental-manager'); ?></h6>
+                                <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time,'time')); ?></p>
+                            <?php } ?>
+                        <?php } ?>
+                    </div>
+
+
+
+
                     <div class="mpcrbm_duration-highlight">
                         <div class="mpcrbm_duration-days"><?php echo esc_attr( $minutes_to_day );?> <?php esc_html_e('Days', 'car-rental-manager'); ?></div>
                         <div class="mpcrbm_duration-label"><?php esc_html_e('Rental Period', 'car-rental-manager'); ?></div>
