@@ -96,7 +96,7 @@ jQuery(document).ready(function($) {
         let desc = item.find('small').text();
 
         // Simple popup (you can style it)
-        let popup = `
+        let popup1 = `
             <div class="mpcrbm_popup">
                 <div class="mpcrbm_popup_inner">
                     <h3>Edit Taxonomy</h3>
@@ -104,6 +104,23 @@ jQuery(document).ready(function($) {
                     <textarea id="edit_description">${desc}</textarea>
                     <button class="button button-primary mpcrbm_update_taxonomy" data-id="${id}" data-type="${type}">Update</button>
                     <button class="button mpcrbm_close_popup">Cancel</button>
+                </div>
+            </div>`;
+        let popup = `
+            <div class="mpcrbm_popup">
+                <div class="mpcrbm_popup_inner">
+                    <h3>Edit Taxonomy</h3>
+                    <label>Name:</label>
+                    <input type="text" id="edit_name" placeholder="Enter name" value="${name}">
+                    <label>Slug:</label>
+                    <input type="text" id="mpcrbm_taxonomies_slug" placeholder="Optional slug">
+                    <label>Description:</label>
+                    <textarea id="edit_description" placeholder="Short description">${desc}</textarea>
+    
+                    <div class="mpcrbm_taxonomies_popup_actions">
+                         <button class="button button-primary mpcrbm_update_taxonomy" data-id="${id}" data-type="${type}">Update</button>
+                        <button class="button mpcrbm_close_popup">Cancel</button>
+                    </div>
                 </div>
             </div>`;
         $('body').append(popup);
