@@ -452,6 +452,9 @@ if( $is_redirect === 'yes' ){
             <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
         </div>
         <div class="mpcrbm_main_content">
+            <?php include MPCRBM_Function::template_path("registration/summary_new.php"); ?>
+
+
             <div class="mpcrbm_mainSection ">
                 <div class="sticky_depend_area fdColumn">
                     <!-- Filter area start -->
@@ -509,7 +512,25 @@ if( $is_redirect === 'yes' ){
 
                 </div>
             </div>
-            <?php include MPCRBM_Function::template_path("registration/summary_new.php"); ?>
+
+            <div class="mpcrbm_transport_summary">
+                <div class="dividerL"></div>
+                <h6 class="_mB_xs"><?php echo esc_html($label) . ' ' . esc_html__(' Details', 'car-rental-manager') ?></h6>
+                <div class="_textColor_4 justifyBetween">
+                    <div class="_dFlex_alignCenter">
+                        <span class="fas fa-check-square _textTheme_mR_xs"></span>
+                        <span class="mpcrbm_product_name"></span>
+                    </div>
+                    <span class="textTheme mpcrbm_car_qty_display">x1</span><span class="mpcrbm_product_price _textTheme"></span>
+                </div>
+                <div class="mpcrbm_extra_service_summary"></div>
+                <div class="dividerL"></div>
+                <div class="justifyBetween">
+                    <h4><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h4>
+                    <h6 class="mpcrbm_product_total_price"></h6>
+                </div>
+            </div>
+
 
             <div class="mpcrbm_extra_service"></div>
         </div>

@@ -479,6 +479,34 @@ h2#mpcrbm_title_change{color:white;}
 	 width: 50%;
  }
 
+ .mpcrbm_summary_show{
+	 width: 25%;
+	 display: flex;
+	 position: relative;
+	 flex-direction: column;
+	 gap: 2px;
+	 padding: 5px;
+	 background-color: #dbdbdb;
+	 justify-content: center;
+	 border-radius: 8px;
+	 font-weight: 600;
+ }
+ .mpcrbm_location_icon_margin{
+	 color: var(--color_theme);
+	 margin: 5px !important;
+ }
+
+ .mpcrbm_mainSection{
+	 margin-top: 15px;
+ }
+
+ .mpcrbm_booking_summary_description{
+	 position: relative;
+	 display: flex;
+	 padding: 10px 0 5px 0;
+	 gap: 10px;
+ }
+
 
  @media (max-width: 815px) {
 	 .mpcrbm_search_result_holder{
