@@ -23,29 +23,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             add_action('wp_ajax_mpcrbm_delete_taxonomy', [$this, 'ajax_delete_taxonomy']);
         }
 
-        public function ajax_load_taxonomies_old() {
-
-
-            $type = sanitize_text_field($_POST['taxonomy_type']);
-            $terms = get_terms(array('taxonomy' => $type, 'hide_empty' => false));
-
-
-            ob_start();
-            if (!empty($terms)) {
-                echo '<div class="mpcrbm_taxonomies_list">';
-                foreach ($terms as $term) {
-                    echo '<div class="mpcrbm_taxonomy_item">';
-                    echo '<strong>' . esc_html($term->name) . '</strong><br>';
-                    echo '<small>' . esc_html($term->description) . '</small>';
-                    echo '</div>';
-                }
-                echo '</div>';
-            } else {
-                echo '<p>No taxonomies found for ' . esc_html($type) . '</p>';
-            }
-
-            wp_send_json_success(['html' => ob_get_clean()]);
-        }
 
         public function ajax_load_taxonomies() {
 //            check_ajax_referer('mpcrbm_admin_nonce', 'security');

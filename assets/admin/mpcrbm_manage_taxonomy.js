@@ -45,6 +45,11 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 alert(response.data.message);
+
+                 $('#mpcrbm_taxonomies_name').val( '' );
+                 $('#mpcrbm_taxonomies_slug').val( '' );
+                 $('#mpcrbm_taxonomies_desc').val( '' );
+
                 $('.mpcrbm_taxonomies_popup_overlay').fadeOut();
                 loadTaxonomyData( currentType );
             }
@@ -54,7 +59,7 @@ jQuery(document).ready(function($) {
     // Search filter
     $('.mpcrbm_taxonomies_search').on('input', function() {
         let query = $(this).val().toLowerCase();
-        $('#mpcrbm_taxonomies_holder .mpcrbm_item').filter(function() {
+        $('#mpcrbm_taxonomies_holder .mpcrbm_taxonomy_item').filter(function() {
             $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
         });
     });
