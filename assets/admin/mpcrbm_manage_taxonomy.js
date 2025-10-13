@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
 
     // Load default tab content
-    let currentType = 'mpcrbm_car_type';
+    let currentType = 'mpcrbm_car_list';
     loadTaxonomyData(currentType);
 
     // Switch tab
@@ -13,12 +13,12 @@ jQuery(document).ready(function($) {
     });
 
     // Add new button
-    $('.mpcrbm_taxonomies_add_btn').on('click', function() {
+    $(document).on( 'click', '.mpcrbm_taxonomies_add_btn', function() {
         $('.mpcrbm_taxonomies_popup_overlay').fadeIn();
     });
 
     // Cancel button
-    $('.mpcrbm_taxonomies_cancel_btn').on('click', function() {
+    $(document).on( 'click','.mpcrbm_taxonomies_cancel_btn', function() {
         $('.mpcrbm_taxonomies_popup_overlay').fadeOut();
     });
 
