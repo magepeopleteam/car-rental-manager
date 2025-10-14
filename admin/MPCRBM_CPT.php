@@ -20,31 +20,26 @@
             public function pa_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {
                 $cpt = MPCRBM_Function::get_cpt();
 
-                // Auto-save / revision skip
                 if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
                 if ( wp_is_post_revision( $post_id ) ) return;
                 if ( $post->post_type !== $cpt ) return;
 
-                // Taxonomies
                 $taxonomies = array(
-                    'mpcrbm_car_type',        // hierarchical (category type)
-                    'mpcrbm_fuel_type',       // non-hierarchical
-                    'mpcrbm_seating_capacity',// non-hierarchical
-                    'mpcrbm_car_brand',       // non-hierarchical
-                    'mpcrbm_make_year'        // non-hierarchical
+                    'mpcrbm_car_type',
+                    'mpcrbm_fuel_type',
+                    'mpcrbm_seating_capacity',
+                    'mpcrbm_car_brand',
+                    'mpcrbm_make_year'
                 );
 
                 foreach ($taxonomies as $taxonomy) {
 
-                    // Terms get as names
                     $terms = wp_get_post_terms($post_id, $taxonomy, array('fields' => 'names'));
 
                     if (!empty($terms) && !is_wp_error($terms)) {
 
-                        // যদি hierarchical taxonomy হয় (category type), parent-child structure handle করা
                         $tax_obj = get_taxonomy($taxonomy);
                         if ($tax_obj && $tax_obj->hierarchical) {
-                            // Hierarchical: top level term names first, meta হিসাবে array রাখো
                             $term_names = array();
                             foreach ($terms as $term_name) {
                                 $term_obj = get_term_by('name', $term_name, $taxonomy);
@@ -54,7 +49,6 @@
                             }
                             update_post_meta($post_id, $taxonomy, $term_names);
                         } else {
-                            // Non-hierarchical: normal
                             update_post_meta($post_id, $taxonomy, $terms);
                         }
 
@@ -103,8 +97,8 @@
 
             function pa_register_car_taxonomies( $cpt ) {
                 $taxonomies = array(
-                    'mpcrbm_car_type' => array('label' => 'Car Type', 'hierarchical' => true),  // Category type
-                    'mpcrbm_fuel_type' => array('label' => 'Fuel Type', 'hierarchical' => true), // Tag type
+                    'mpcrbm_car_type' => array('label' => 'Car Type', 'hierarchical' => true),
+                    'mpcrbm_fuel_type' => array('label' => 'Fuel Type', 'hierarchical' => true),
                     'mpcrbm_seating_capacity' => array('label' => 'Seating Capacity', 'hierarchical' => true),
                     'mpcrbm_car_brand' => array('label' => 'Car Brand', 'hierarchical' => true),
                     'mpcrbm_make_year' => array('label' => 'Make Year', 'hierarchical' => true),
@@ -113,28 +107,31 @@
                 foreach ( $taxonomies as $slug => $props ) {
 
                     $labels = array(
-                        'name'          => _x( $props['label'].'s', 'taxonomy general name', 'pa-car' ),
+                        'name'          => _x( $props['label'] . 's', 'taxonomy general name', 'pa-car' ),
                         'singular_name' => _x( $props['label'], 'taxonomy singular name', 'pa-car' ),
-                        'search_items'  => __( 'Search '.$props['label'].'s', 'pa-car' ),
-                        'all_items'     => __( 'All '.$props['label'].'s', 'pa-car' ),
-                        'edit_item'     => __( 'Edit '.$props['label'], 'pa-car' ),
-                        'add_new_item'  => __( 'Add New '.$props['label'], 'pa-car' ),
-                        'menu_name'     => __( $props['label'].'s', 'pa-car' ),
+                        'search_items'  => __( 'Search ' . $props['label'] . 's', 'pa-car' ),
+                        'all_items'     => __( 'All ' . $props['label'] . 's', 'pa-car' ),
+                        'edit_item'     => __( 'Edit ' . $props['label'], 'pa-car' ),
+                        'add_new_item'  => __( 'Add New ' . $props['label'], 'pa-car' ),
+                        'menu_name'     => __( $props['label'] . 's', 'pa-car' ),
                     );
 
                     $args = array(
                         'hierarchical'      => $props['hierarchical'],
                         'labels'            => $labels,
-                        'show_ui'           => true,
-                        'show_admin_column' => true,   // CPT list এ column
+                        'show_ui'           => true,             // show meta box on post edit screen
+                        'show_admin_column' => true,             // show column in CPT list table
                         'query_var'         => true,
-                        'show_in_rest'      => true,   // Gutenberg / REST API
+                        'show_in_rest'      => true,             // enable Gutenberg / REST API
                         'rewrite'           => array( 'slug' => $slug ),
+                        'show_in_menu'      => false,            // ❌ hide from admin menu (left side)
                     );
 
-                    // register taxonomy for CPT 'car'
+                    // register taxonomy for your CPT, e.g., 'car'
                     register_taxonomy( $slug, $cpt, $args );
                 }
+
+
             }
 
 			public function cpt(): void {

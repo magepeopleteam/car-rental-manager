@@ -21,6 +21,42 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             add_action('wp_ajax_mpcrbm_update_taxonomy', [$this, 'ajax_update_taxonomy']);
             add_action('wp_ajax_mpcrbm_delete_taxonomy', [$this, 'ajax_delete_taxonomy']);
+
+            add_action('admin_action_mpcrbm_duplicate_car', [$this, 'mpcrbm_duplicate_car']);
+        }
+
+
+        public function mpcrbm_duplicate_car(){
+            if ( ! isset( $_GET['post'] ) || ! isset( $_GET['_wpnonce'] ) ) {
+                wp_die( 'Invalid request.' );
+            }
+
+            $post_id = intval( $_GET['post'] );
+            if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'mpcrbm_duplicate_car_' . $post_id ) ) {
+                wp_die( 'Security check failed.' );
+            }
+
+            $post = get_post( $post_id );
+            if ( ! $post ) wp_die( 'Post not found.' );
+
+            $new_post = array(
+                'post_title'   => $post->post_title . ' (Copy)',
+                'post_content' => $post->post_content,
+                'post_status'  => 'draft',
+                'post_type'    => $post->post_type,
+            );
+
+            $new_post_id = wp_insert_post( $new_post );
+
+            // Copy meta
+            $metas = get_post_meta( $post_id );
+            foreach ( $metas as $key => $values ) {
+                foreach ( $values as $value ) {
+                    update_post_meta( $new_post_id, $key, maybe_unserialize( $value ) );
+                }
+            }
+            wp_redirect( get_edit_post_link( $new_post_id, 'url' ) );
+            exit;
         }
 
 
@@ -72,16 +108,17 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     echo '<div class="mpcrbm_taxonomies_list">';
                     foreach ($terms as $term) {
                         ?>
-                        <div class="mpcrbm_taxonomy_item" data-term-id="<?php echo esc_attr($term->term_id); ?>" data-type="<?php echo esc_attr($type); ?>">
+                        <div class="mpcrbm_taxonomy_item" data-term-id="<?php echo esc_attr( $term->term_id); ?>" data-type="<?php echo esc_attr($type); ?>">
                             <div class="mpcrbm_taxonomy_content">
-                                <strong><?php echo esc_html($term->name); ?></strong><br>
+                                <strong><?php echo esc_html($term->name); ?> (<?php echo esc_html($term->count); ?>) </strong><br>
                                 <small><?php echo esc_html($term->description); ?></small>
                             </div>
 
                             <div class="mpcrbm_taxonomy_actions">
-                                <button class="button button-small mpcrbm_edit_taxonomy">Edit</button>
-                                <button class="button button-small button-danger mpcrbm_delete_taxonomy">Delete</button>
+                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">✏️</button>
+                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>">🗑️</button>
                             </div>
+
                         </div>
                         <?php
                     }
