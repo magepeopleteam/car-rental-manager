@@ -48,7 +48,6 @@
 
                 <div class="mpcrbm-left-filter">
                     <button class="mpcrbm_filter_btn">
-                        <i class="fas fa-car-side"></i>
                         <i class="fas fa-sliders-h"></i>
                         <?php esc_attr_e( 'Filter Cars', 'car-rental-manager' );?>
                     </button>
