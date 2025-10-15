@@ -42,8 +42,9 @@
 
 .mpcrbm_taxonomies_toolbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-bottom: 15px;
+    gap: 10px;
 }
 
 .mpcrbm_taxonomies_add_btn {
@@ -114,6 +115,15 @@
 .mpcrbm_taxonomies_popup_actions {
     text-align: right;
     margin-top: 15px;
+}
+
+.mpcrbm_taxonomies_content_holder{
+    display: block;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .mpcrbm_taxonomies_save_btn {
@@ -237,12 +247,12 @@
 }
 
 .mpcrbm_list_tab_content {
-    display: block;
+    /*display: block;
     padding: 30px;
     background: white;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);*/
 }
 
 .mpcrbm_car_list_controls {

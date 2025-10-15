@@ -146,6 +146,89 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             wp_send_json_success(['html' => ob_get_clean()]);
         }
 
+        public static function load_taxonomies( $type ) {
+
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => 'Unauthorized']);
+            }
+
+            $terms = [];
+
+            if( $type === 'mpcrbm_car_list' ){
+                $terms = [];
+            }else{
+                $terms = get_terms(array('taxonomy' => $type, 'hide_empty' => false));
+            }
+
+
+            ob_start();
+            ?>
+            <div class="mpcrbm_taxonomoy_data_holder">
+                <?php  if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
+                    if( $type === 'mpcrbm_car_type' ){
+                        $type_title = 'Car Types';
+                    }elseif( $type === 'mpcrbm_fuel_type' ){
+                        $type_title = 'Fuel Types';
+                    }else if( $type === 'mpcrbm_seating_capacity' ){
+                        $type_title = 'Seating Capacity';
+                    }else if( $type === 'mpcrbm_car_brand' ){
+                        $type_title = 'Car Brand';
+                    }else if( $type === 'mpcrbm_make_year' ){
+                        $type_title = 'Make Year';
+                    }else{
+                        $type_title = 'Car List';
+                    }
+                    ?>
+                    <h2><?php echo esc_html( $type_title );?></h2>
+                    <div class="mpcrbm_taxonomies_toolbar">
+                        <button class="mpcrbm_taxonomies_add_btn">+ <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
+                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
+                    </div>
+                <?php }else{?>
+                <?php }?>
+                <?php
+                if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
+                    echo '<div class="mpcrbm_taxonomies_list">';
+                    foreach ($terms as $term) {
+                        $description = '';
+                        if( !empty( $term->description ) ){
+                            $description = $term->description;
+                        }
+                        ?>
+                        <div class="mpcrbm_taxonomy_item"
+                             data-term-id="<?php echo esc_attr( $term->term_id); ?>"
+                             data-type="<?php echo esc_attr($type); ?>"
+                             data-term-name="<?php echo esc_attr($term->name); ?>"
+                             data-term-slug="<?php echo esc_attr($term->slug); ?>"
+                             data-term-desc="<?php echo esc_attr($term->description); ?>"
+                        >
+                            <div class="mpcrbm_taxonomy_content">
+                                <strong><?php echo esc_html($term->name); ?> (<?php echo esc_html($term->count); ?>) </strong><br>
+                                <small><?php echo esc_html( $description ); ?></small>
+                            </div>
+
+                            <div class="mpcrbm_taxonomy_actions">
+                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">✏️</button>
+                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>">🗑️</button>
+                            </div>
+
+                        </div>
+                        <?php
+                    }
+                    echo '</div>';
+                }else if ( empty( $terms ) && $type === 'mpcrbm_car_list'){
+                    include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
+                }
+                else {
+                    echo '<p> '.esc_attr_e( 'Search taxonomy...', 'car-rental-manager' ) .' '. esc_html($type) . '</p>';
+                }
+                ?>
+            </div>
+            <?php
+
+            return ob_get_clean();
+        }
+
         public function ajax_save_taxonomy() {
 //            check_ajax_referer( 'mpcrbm_taxonomy_nonce', 'security' );
 
@@ -269,9 +352,34 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     </div>
 
                     <div class="mpcrbm_taxonomies_content">
-                        <div id="mpcrbm_taxonomies_holder">
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_list_holder">
                             <?php
                                 include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_type_holder" style="display: none">
+                            <?php
+                                echo self::load_taxonomies( 'mpcrbm_car_type' );
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_fuel_type_holder" style="display: none">
+                            <?php
+                                echo self::load_taxonomies( 'mpcrbm_fuel_type' );
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_seating_capacity_holder" style="display: none">
+                            <?php
+                                echo self::load_taxonomies( 'mpcrbm_seating_capacity' );
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_brand_holder" style="display: none">
+                            <?php
+                                echo self::load_taxonomies( 'mpcrbm_car_brand' );
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_make_year_holder" style="display: none">
+                            <?php
+                                echo self::load_taxonomies( 'mpcrbm_make_year' );
                             ?>
                         </div>
                     </div>
