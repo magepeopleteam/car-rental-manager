@@ -211,9 +211,10 @@ if ($post_id) {
                 <div class="mpcrbm_discount_booking">
                     <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
                         <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-
-                        <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-
+                        <?php
+                        if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){ ?>
+                            <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                        <?php } ?>
                     </div>
                     <div class="_min_150_mL_xs mpcrbm_booking_items">
                         <?php

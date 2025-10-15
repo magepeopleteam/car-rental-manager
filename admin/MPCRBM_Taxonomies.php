@@ -107,11 +107,21 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
                     echo '<div class="mpcrbm_taxonomies_list">';
                     foreach ($terms as $term) {
+                        $description = '';
+                        if( !empty( $term->description ) ){
+                            $description = $term->description;
+                        }
                         ?>
-                        <div class="mpcrbm_taxonomy_item" data-term-id="<?php echo esc_attr( $term->term_id); ?>" data-type="<?php echo esc_attr($type); ?>">
+                        <div class="mpcrbm_taxonomy_item"
+                             data-term-id="<?php echo esc_attr( $term->term_id); ?>"
+                             data-type="<?php echo esc_attr($type); ?>"
+                             data-term-name="<?php echo esc_attr($term->name); ?>"
+                             data-term-slug="<?php echo esc_attr($term->slug); ?>"
+                             data-term-desc="<?php echo esc_attr($term->description); ?>"
+                        >
                             <div class="mpcrbm_taxonomy_content">
                                 <strong><?php echo esc_html($term->name); ?> (<?php echo esc_html($term->count); ?>) </strong><br>
-                                <small><?php echo esc_html($term->description); ?></small>
+                                <small><?php echo esc_html( $description ); ?></small>
                             </div>
 
                             <div class="mpcrbm_taxonomy_actions">
@@ -296,6 +306,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             if (!current_user_can('manage_options')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
             }
+
 
             $term_id = intval($_POST['term_id']);
             $type = sanitize_text_field($_POST['taxonomy_type']);

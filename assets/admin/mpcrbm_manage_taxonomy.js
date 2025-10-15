@@ -92,21 +92,13 @@
             let item = $(this).closest('.mpcrbm_taxonomy_item');
             let id = item.data('term-id');
             let type = item.data('type');
-            let name = item.find('.mpcrbm_taxonomy_name').text();
-            let slug = item.find('.mpcrbm_taxonomy_slug').text();
-            let desc = item.find('.mpcrbm_taxonomy_desc').text();
+            let name = item.data('term-name');
+            let slug = item.data('term-slug');
+            let desc = item.data('term-desc');
+            if( desc === undefined ){
+                desc = '';
+            }
 
-            // Simple popup (you can style it)
-            let popup1 = `
-            <div class="mpcrbm_popup">
-                <div class="mpcrbm_popup_inner">
-                    <h3>Edit Taxonomy</h3>
-                    <input type="text" id="edit_name" value="${name}" />
-                    <textarea id="edit_description">${desc}</textarea>
-                    <button class="button button-primary mpcrbm_update_taxonomy" data-id="${id}" data-type="${type}">Update</button>
-                    <button class="button mpcrbm_close_popup">Cancel</button>
-                </div>
-            </div>`;
             let popup = `
             <div class="mpcrbm_popup">
                 <div class="mpcrbm_popup_inner">
@@ -133,6 +125,7 @@
             let type = $(this).data('type');
             let name = $('#edit_name').val();
             let desc = $('#edit_description').val();
+            let slug = $('#mpcrbm_taxonomies_slug').val();
 
             $.post(ajaxurl, {
                 action: 'mpcrbm_update_taxonomy',
@@ -140,11 +133,13 @@
                 term_id,
                 taxonomy_type: type,
                 name,
+                slug,
                 description: desc
             }, function (res) {
                 alert(res.data.message);
                 $('.mpcrbm_popup').remove();
                 // Reload taxonomy list
+                loadTaxonomyData( type );
             });
         });
 
