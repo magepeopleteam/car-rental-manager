@@ -1,4 +1,6 @@
 .mpcrbm_taxonomies_wrap {
+    display: flex;
+    gap:15px;
     background: #fff;
     padding: 20px;
     border-radius: 10px;
@@ -7,8 +9,20 @@
 
 .mpcrbm_taxonomies_tabs {
     display: flex;
-    border-bottom: 2px solid #ddd;
-    margin-bottom: 15px;
+    flex-direction: column;
+    gap: 5px;
+}
+.mpcrbm_left_main_content{
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    width: calc(100% - 200px);
+}
+
+.mpcrbm_left_sidebar{
+    width: 200px;
 }
 
 .mpcrbm_taxonomies_tab {
@@ -18,10 +32,11 @@
     cursor: pointer;
     font-weight: 600;
     transition: all 0.2s ease;
+    text-align: left;
 }
 
 .mpcrbm_taxonomies_tab.active {
-    border-bottom: 3px solid #0073aa;
+    background-color: #e5e5e5;
     color: #0073aa;
 }
 
@@ -35,7 +50,7 @@
     background: #0073aa;
     color: #fff;
     border: none;
-    padding: 8px 16px;
+    padding: 8px 30px;
     border-radius: 4px;
     cursor: pointer;
 }
@@ -122,7 +137,8 @@
 
 .mpcrbm_taxonomies_list{
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 5px;
 }
 .mpcrbm_taxonomy_item{
@@ -141,21 +157,280 @@
     border-radius: 5px;
 }
 .mpcrbm_taxonomy_actions {
-    display: none;
+    display: flex;
     position: absolute;
     top: 5px;
     right: 10px;
+    gap: 10px;
 }
 .mpcrbm_popup {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex; align-items: center; justify-content: center;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
     z-index: 9999;
 }
 .mpcrbm_popup_inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
     background: #fff;
     padding: 20px;
     border-radius: 10px;
+    left: 50%;
+    top: 20%;
     width: 400px;
+    max-width: 90%;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
+
+.mpcrbm_taxonomy_content{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+
+.mpcrbm_analytics {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 5px;
+    overflow-x: auto;
+}
+
+.mpcrbm_stat-card {
+    background: white;
+    padding: 20px 10px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    position: relative;
+    /*overflow: hidden;*/
+    transition: all 0.2s ease;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px
+}
+
+.mpcrbm_stat-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mpcrbm_stat-change {
+    font-size: 12px;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 500;
+    white-space: wrap;
+}
+.mpcrbm_stat-change.positive {
+    color: #10b981;
+}
+
+.mpcrbm_list_tab_content {
+    display: block;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mpcrbm_car_list_controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.mpcrbm_car_list_controls h2 {
+    color: #1f2937;
+    font-size: 24px;
+}
+.mpcrbm_car_list_control_buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mpcrbm_car_list_control_btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s
+    ease;
+}
+
+.mpcrbm_car_list_control_btn.btn-primary {
+    background: #667eea;
+    color: white;
+}
+.mpcrbm_car_list_control_btn.btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.mpcrbm_car_list_search_filter {
+    display: flex;
+    justify-content: end;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+
+
+input[type="text"], select {
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s
+    ease;
+    background: white;
+}
+
+input[type="text"], select {
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s
+    ease;
+    background: white;
+}
+
+.mpcrbm_car_list_table_container {
+    width: 100%;
+    /*overflow-x: auto;*/
+}
+.mpcrbm_car_list_car_table{
+    width: 100%;
+    text-align: left;
+}
+
+.mpcrbm_car_list_car_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mpcrbm_car_list_car_thead {
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+}
+.mpcrbm_car_list_car_table th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mpcrbm_car_list_car_table tr {
+    transition: background-color 0.15s;
+}
+
+.mpcrbm_car_list_car_table td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+    font-size: 14px;
+}
+
+.badge-petrol {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 4px;
+}
+.mpcrbm_car_status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 500;
+    color: #10b981;
+}
+.mpcrbm_status_dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+}
+.mpcrbm_day_price {
+    font-weight: 600;
+    color: #667eea;
+    font-size: 16px;
+}
+
+.mpcrbm_actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mpcrbm_action_btn.view {
+    color: #667eea;
+}
+.mpcrbm_action_btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+.mpcrbm_action_btn.edit {
+    color: #10b981;
+}
+
+.mpcrbm_action_btn.duplicate {
+    color: #f59e0b;
+}
+
+.mpcrbm_action_btn.delete {
+    color: #ef4444;
+}
+
+.mpcrbm_loadMoreContainer{
+    display: flex;
+    padding: 10px 0;
+    justify-content: center;
+}
+.mpcrbm_btn_load_more{
+    display: flex;
+    padding: 10px 30px;
+    border: 1px solid #e3e1e1;
+    border-radius: 5px;
+}
+
+

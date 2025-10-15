@@ -410,9 +410,32 @@
 
                 $start_timestamp = strtotime($start_date);
 
+                /*if ( $enable_day_wise === 1 && (int)$days === 1 && (float)$price === (float)$base_price ) {
+                    $day_of_week = strtolower(date('D', $start_timestamp));
+                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '' && $daywise[$day_of_week] > 0 ) {
+                        $price = (float) $daywise[$day_of_week];
+                    }
+                }*/
 
-                $day_of_week = strtolower(date('D', $start_timestamp)); // mon, tue, wed, etc.
+                if ( $enable_day_wise === 1 && is_array( $daywise )  && !empty( $daywise ) ) {
+                    $total_price = 0;
+                    $current_timestamp = $start_timestamp;
 
+                    for ( $i = 0; $i < (int)$days; $i++ ) {
+                        $day_of_week = strtolower(date('D', $current_timestamp));
+                        if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] > 0) {
+                            $day_price = (float) $daywise[$day_of_week];
+                        } else {
+                            $day_price = (float) $base_price;
+                        }
+
+                        $total_price += $day_price;
+                        $current_timestamp = strtotime('+1 day', $current_timestamp);
+                    }
+
+                    $price = $total_price;
+
+                }
 
                 // 1. Seasonal Pricing
                 if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
@@ -440,13 +463,6 @@
                     }
                 }
 
-
-                if ( $enable_day_wise === 1 && (int)$days === 1 && (float)$price === (float)$base_price ) {
-                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '' && $daywise[$day_of_week] > 0 ) {
-                        $price = (float) $daywise[$day_of_week];
-                    }
-                }
-
                 // 3. Tiered discount based on rental duration
 
                 if ( $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
@@ -462,7 +478,7 @@
                     }
                 }
 
-                return round($price, 2);
+                return round( $price, 2 );
             }
 
             public static function get_seasonal_rate( $post_id, $price_per_day, $start_date, $enable_seasonal,  ){
@@ -599,6 +615,16 @@
                 return array_unique( $dropoff_locations );
             }
 
+            public static function get_days_from_start_end_date( $start_date_time, $return_date_time ){
+                $startDate = new DateTime( $start_date_time );
+                $returnDate = new DateTime( $return_date_time );
+                $interval = $startDate->diff( $returnDate );
+                $minutes = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
+                $days = ceil( $minutes / 1440 );
+
+                return $days;
+            }
+
             /**
              * Calculate price with multi-location support
              * Uses base pricing from main settings + tiered + seasonal + day pricing + transfer fee
@@ -611,12 +637,8 @@
              * @return float
              */
             public static function calculate_multi_location_price( $post_id, $pickup_location, $dropoff_location, $start_date_time, $return_date_time ) {
-                // Calculate rental duration
-                $startDate = new DateTime( $start_date_time );
-                $returnDate = new DateTime( $return_date_time );
-                $interval = $startDate->diff( $returnDate );
-                $minutes = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
-                $days = ceil( $minutes / 1440 );
+
+                $days = self::get_days_from_start_end_date( $start_date_time, $return_date_time );
                 
                 // Get base daily price from main pricing settings
                 $base_daily_price = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );

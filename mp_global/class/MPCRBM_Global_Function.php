@@ -675,6 +675,77 @@
                 return $result;
             }
 
+            public static function mpcrbm_get_car_data() {
+                $args = array(
+                    'post_type'      => 'mpcrbm_rent',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                );
+
+                $query = new WP_Query($args);
+
+                $cars_data = array();
+
+                $meta_keys = [
+                    'mpcrbm_car_type',
+                    'mpcrbm_fuel_type',
+                    'mpcrbm_seating_capacity',
+                    'mpcrbm_car_brand',
+                    'mpcrbm_make_year',
+                ];
+
+                $meta_data = array_fill_keys( $meta_keys, [] );
+
+                if ($query->have_posts()) {
+                    while ($query->have_posts()) {
+                        $query->the_post();
+                        $post_id = get_the_ID();
+
+                        $mpcrbm_car_type         = get_post_meta($post_id, 'mpcrbm_car_type', true);
+                        $mpcrbm_fuel_type        = get_post_meta($post_id, 'mpcrbm_fuel_type', true);
+                        $mpcrbm_seating_capacity = get_post_meta($post_id, 'mpcrbm_seating_capacity', true);
+                        $mpcrbm_car_brand        = get_post_meta($post_id, 'mpcrbm_car_brand', true);
+                        $mpcrbm_make_year        = get_post_meta($post_id, 'mpcrbm_make_year', true);
+
+                        $mpcrbm_car_type         = (array) (!empty($mpcrbm_car_type) ? $mpcrbm_car_type : []);
+                        $mpcrbm_fuel_type        = (array) (!empty($mpcrbm_fuel_type) ? $mpcrbm_fuel_type : []);
+                        $mpcrbm_seating_capacity = (array) (!empty($mpcrbm_seating_capacity) ? $mpcrbm_seating_capacity : []);
+                        $mpcrbm_car_brand        = (array) (!empty($mpcrbm_car_brand) ? $mpcrbm_car_brand : []);
+                        $mpcrbm_make_year        = (array) (!empty($mpcrbm_make_year) ? $mpcrbm_make_year : []);
+
+                        $meta_data['mpcrbm_car_type']         = array_merge( $meta_data['mpcrbm_car_type'], $mpcrbm_car_type );
+                        $meta_data['mpcrbm_fuel_type']        = array_merge( $meta_data['mpcrbm_fuel_type'], $mpcrbm_fuel_type );
+                        $meta_data['mpcrbm_seating_capacity'] = array_merge( $meta_data['mpcrbm_seating_capacity'], $mpcrbm_seating_capacity );
+                        $meta_data['mpcrbm_car_brand']        = array_merge( $meta_data['mpcrbm_car_brand'], $mpcrbm_car_brand );
+                        $meta_data['mpcrbm_make_year']        = array_merge( $meta_data['mpcrbm_make_year'], $mpcrbm_make_year );
+
+                        $cars_data[] = array(
+                            'id'        => $post_id,
+                            'title'     => get_the_title(),
+                            'type'      => $mpcrbm_car_type,
+                            'fuel_type' => $mpcrbm_fuel_type,
+                            'capacity'  => $mpcrbm_seating_capacity,
+                            'brand'     => $mpcrbm_car_brand,
+                            'year'      => $mpcrbm_make_year,
+                            'price'     => get_post_meta($post_id, 'mpcrbm_day_price', true),
+                            'status'    => get_post_status($post_id),
+                        );
+                    }
+
+                    foreach ( $meta_data as $key => $values ) {
+                        $meta_data[$key] = array_values(array_unique(array_filter($values)));
+                    }
+
+                    wp_reset_postdata();
+                }
+
+                return [
+                    'cars'  => $cars_data,
+                    'meta'  => $meta_data,
+                ];
+            }
+
 		}
+
 		new MPCRBM_Global_Function();
 	}
