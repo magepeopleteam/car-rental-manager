@@ -21,31 +21,44 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             add_action('wp_ajax_mpcrbm_update_taxonomy', [$this, 'ajax_update_taxonomy']);
             add_action('wp_ajax_mpcrbm_delete_taxonomy', [$this, 'ajax_delete_taxonomy']);
+
+            add_action('admin_action_mpcrbm_duplicate_car', [$this, 'mpcrbm_duplicate_car']);
         }
 
-        public function ajax_load_taxonomies_old() {
 
-
-            $type = sanitize_text_field($_POST['taxonomy_type']);
-            $terms = get_terms(array('taxonomy' => $type, 'hide_empty' => false));
-
-
-            ob_start();
-            if (!empty($terms)) {
-                echo '<div class="mpcrbm_taxonomies_list">';
-                foreach ($terms as $term) {
-                    echo '<div class="mpcrbm_taxonomy_item">';
-                    echo '<strong>' . esc_html($term->name) . '</strong><br>';
-                    echo '<small>' . esc_html($term->description) . '</small>';
-                    echo '</div>';
-                }
-                echo '</div>';
-            } else {
-                echo '<p>No taxonomies found for ' . esc_html($type) . '</p>';
+        public function mpcrbm_duplicate_car(){
+            if ( ! isset( $_GET['post'] ) || ! isset( $_GET['_wpnonce'] ) ) {
+                wp_die( 'Invalid request.' );
             }
 
-            wp_send_json_success(['html' => ob_get_clean()]);
+            $post_id = intval( $_GET['post'] );
+            if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'mpcrbm_duplicate_car_' . $post_id ) ) {
+                wp_die( 'Security check failed.' );
+            }
+
+            $post = get_post( $post_id );
+            if ( ! $post ) wp_die( 'Post not found.' );
+
+            $new_post = array(
+                'post_title'   => $post->post_title . ' (Copy)',
+                'post_content' => $post->post_content,
+                'post_status'  => 'draft',
+                'post_type'    => $post->post_type,
+            );
+
+            $new_post_id = wp_insert_post( $new_post );
+
+            // Copy meta
+            $metas = get_post_meta( $post_id );
+            foreach ( $metas as $key => $values ) {
+                foreach ( $values as $value ) {
+                    update_post_meta( $new_post_id, $key, maybe_unserialize( $value ) );
+                }
+            }
+            wp_redirect( get_edit_post_link( $new_post_id, 'url' ) );
+            exit;
         }
+
 
         public function ajax_load_taxonomies() {
 //            check_ajax_referer('mpcrbm_admin_nonce', 'security');
@@ -55,50 +68,82 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             }
 
             $type = sanitize_text_field($_POST['taxonomy_type']);
-            $terms = get_terms(array('taxonomy' => $type, 'hide_empty' => false));
+
+            $terms = [];
+
+            if( $type === 'mpcrbm_car_list' ){
+                $terms = [];
+            }else{
+                $terms = get_terms(array('taxonomy' => $type, 'hide_empty' => false));
+            }
+
 
             ob_start();
-
-            if (!empty($terms)) {
-                echo '<div class="mpcrbm_taxonomies_list">';
-                foreach ($terms as $term) {
+            ?>
+            <div class="mpcrbm_taxonomoy_data_holder">
+                <?php  if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
+                    if( $type === 'mpcrbm_car_type' ){
+                        $type_title = 'Car Types';
+                    }elseif( $type === 'mpcrbm_fuel_type' ){
+                        $type_title = 'Fuel Types';
+                    }else if( $type === 'mpcrbm_seating_capacity' ){
+                        $type_title = 'Seating Capacity';
+                    }else if( $type === 'mpcrbm_car_brand' ){
+                        $type_title = 'Car Brand';
+                    }else if( $type === 'mpcrbm_make_year' ){
+                        $type_title = 'Make Year';
+                    }else{
+                        $type_title = 'Car List';
+                    }
                     ?>
-                    <div class="mpcrbm_taxonomy_item" data-term-id="<?php echo esc_attr($term->term_id); ?>" data-type="<?php echo esc_attr($type); ?>">
-                        <div class="mpcrbm_taxonomy_content">
-                            <strong><?php echo esc_html($term->name); ?></strong><br>
-                            <small><?php echo esc_html($term->description); ?></small>
-                        </div>
-
-                        <div class="mpcrbm_taxonomy_actions">
-                            <button class="button button-small mpcrbm_edit_taxonomy">Edit</button>
-                            <button class="button button-small button-danger mpcrbm_delete_taxonomy">Delete</button>
-                        </div>
+                    <h2><?php echo esc_html( $type_title );?></h2>
+                    <div class="mpcrbm_taxonomies_toolbar">
+                        <button class="mpcrbm_taxonomies_add_btn">+ <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
+                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
                     </div>
-                    <?php
+                <?php }else{?>
+                <?php }?>
+                <?php
+                if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
+                    echo '<div class="mpcrbm_taxonomies_list">';
+                    foreach ($terms as $term) {
+                        $description = '';
+                        if( !empty( $term->description ) ){
+                            $description = $term->description;
+                        }
+                        ?>
+                        <div class="mpcrbm_taxonomy_item"
+                             data-term-id="<?php echo esc_attr( $term->term_id); ?>"
+                             data-type="<?php echo esc_attr($type); ?>"
+                             data-term-name="<?php echo esc_attr($term->name); ?>"
+                             data-term-slug="<?php echo esc_attr($term->slug); ?>"
+                             data-term-desc="<?php echo esc_attr($term->description); ?>"
+                        >
+                            <div class="mpcrbm_taxonomy_content">
+                                <strong><?php echo esc_html($term->name); ?> (<?php echo esc_html($term->count); ?>) </strong><br>
+                                <small><?php echo esc_html( $description ); ?></small>
+                            </div>
+
+                            <div class="mpcrbm_taxonomy_actions">
+                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">✏️</button>
+                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>">🗑️</button>
+                            </div>
+
+                        </div>
+                        <?php
+                    }
+                    echo '</div>';
+                }else if ( empty( $terms ) && $type === 'mpcrbm_car_list'){
+                    include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
                 }
-                echo '</div>';
-            } else {
-                echo '<p>No taxonomies found for ' . esc_html($type) . '</p>';
-            }
+                else {
+                    echo '<p> '.esc_attr_e( 'Search taxonomy...', 'car-rental-manager' ) .' '. esc_html($type) . '</p>';
+                }
+                ?>
+            </div>
+            <?php
 
             wp_send_json_success(['html' => ob_get_clean()]);
-        }
-
-
-        public function ajax_save_taxonomy_old() {
-
-            $type = sanitize_text_field($_POST['taxonomy_type']);
-            $name = sanitize_text_field($_POST['name']);
-            $slug = sanitize_title($_POST['slug']);
-            $desc = sanitize_textarea_field($_POST['description']);
-
-            $result = wp_insert_term($name, $type, array('slug' => $slug, 'description' => $desc));
-
-            if (is_wp_error($result)) {
-                wp_send_json_error(['message' => $result->get_error_message()]);
-            } else {
-                wp_send_json_success(['message' => 'Taxonomy added successfully!']);
-            }
         }
 
         public function ajax_save_taxonomy() {
@@ -155,10 +200,10 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             add_submenu_page(
                 'edit.php?post_type=' . $cpt,
-                esc_html__('Car Taxonomies', 'car-rental-manager'),
-                esc_html__('Car Taxonomies', 'car-rental-manager'),
+                esc_html__('Car Rental', 'car-rental-manager'),
+                esc_html__('Car Rental', 'car-rental-manager'),
                 'manage_options',
-                'mpcrbm_taxonomies',
+                'mpcrbm_car_rental',
                 array($this, 'mpcrbm_taxonomies_setup')
             );
 
@@ -169,39 +214,83 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         public function mpcrbm_taxonomies_setup() {
             ?>
             <div class="mpcrbm_taxonomies_wrap">
-                <h2>Manage Car Taxonomies</h2>
 
-                <div class="mpcrbm_taxonomies_tabs">
-                    <button class="mpcrbm_taxonomies_tab active" data-target="mpcrbm_car_type">Car Type</button>
-                    <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_fuel_type">Fuel Type</button>
-                    <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_seating_capacity">Seating Capacity</button>
-                    <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand">Car Brand</button>
-                    <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year">Make Year</button>
-                </div>
 
-                <div class="mpcrbm_taxonomies_content">
-                    <div class="mpcrbm_taxonomies_toolbar">
-                        <button class="mpcrbm_taxonomies_add_btn">+ Add New</button>
-                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="Search taxonomy...">
+
+                <div class="mpcrbm_left_sidebar">
+                    <div class="mpcrbm_car_rental_title">
+                        <h2><?php esc_html_e( 'Car Rental', 'car-rental-manager' );?> </h2>
+                        <p><?php esc_html_e( 'Management System', 'car-rental-manager' );?></p>
                     </div>
 
-                    <div id="mpcrbm_taxonomies_holder"></div>
+                    <div class="mpcrbm_taxonomies_tabs">
+                        <button class="mpcrbm_car_list_tab mpcrbm_taxonomies_tab active" data-target="mpcrbm_car_list">🚗 <?php esc_attr_e( 'Car List', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_type">📋 <?php esc_attr_e( 'Car Type', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_fuel_type">⛽ <?php esc_attr_e( 'Fuel Type', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_seating_capacity">💺 <?php esc_attr_e( 'Seating Capacity', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand">🏷️ <?php esc_attr_e( 'Car Brand', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year">📅 <?php esc_attr_e( 'Make Year', 'car-rental-manager' );?></button>
+                    </div>
+                </div>
+                <div class="mpcrbm_left_main_content">
+
+                    <div class="mpcrbm_analytics">
+                        <div class="mpcrbm_stat-card total">
+                            <div class="mpcrbm_stat-left">
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Total Cars', 'car-rental-manager' );?></div>
+                                <div class="mpcrbm_stat-value">7</div>
+                            </div>
+                            <div class="mpcrbm_stat-change positive">↑ 2 <?php esc_attr_e( 'new this month', 'car-rental-manager' );?></div>
+                        </div>
+
+                        <div class="mpcrbm_stat-card available">
+                            <div class="mpcrbm_stat-left">
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Available', 'car-rental-manager' );?></div>
+                                <div class="mpcrbm_stat-value">7</div>
+                            </div>
+                            <div class="mpcrbm_stat-change positive">100% <?php esc_attr_e( 'availability', 'car-rental-manager' );?></div>
+                        </div>
+
+                        <div class="mpcrbm_stat-card rented">
+                            <div class="mpcrbm_stat-left">
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Currently Rented', 'car-rental-manager' );?></div>
+                                <div class="mpcrbm_stat-value">0</div>
+                            </div>
+                            <div class="mpcrbm_stat-change"><?php esc_attr_e( 'Ready to rent', 'car-rental-manager' );?></div>
+                        </div>
+
+                        <div class="mpcrbm_stat-card revenue">
+                            <div class="mpcrbm_stat-left">
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Daily Revenue', 'car-rental-manager' );?></div>
+                                <div class="mpcrbm_stat-value">$70</div>
+                            </div>
+                            <div class="mpcrbm_stat-change positive">↑ $10/day <?php esc_attr_e( 'avg', 'car-rental-manager' );?></div>
+                        </div>
+                    </div>
+
+                    <div class="mpcrbm_taxonomies_content">
+                        <div id="mpcrbm_taxonomies_holder">
+                            <?php
+                                include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
+                            ?>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Popup Form -->
                 <div class="mpcrbm_taxonomies_popup_overlay">
                     <div class="mpcrbm_taxonomies_popup">
-                        <h3>Add New Taxonomy</h3>
-                        <label>Name:</label>
-                        <input type="text" id="mpcrbm_taxonomies_name" placeholder="Enter name">
-                        <label>Slug:</label>
-                        <input type="text" id="mpcrbm_taxonomies_slug" placeholder="Optional slug">
-                        <label>Description:</label>
-                        <textarea id="mpcrbm_taxonomies_desc" placeholder="Short description"></textarea>
+                        <h3><?php esc_attr_e( 'Add New Taxonomy', 'car-rental-manager' );?></h3>
+                        <label><?php esc_attr_e( 'Name', 'car-rental-manager' );?>:</label>
+                        <input type="text" id="mpcrbm_taxonomies_name" placeholder="<?php esc_attr_e( 'Enter name', 'car-rental-manager' );?>">
+                        <label><?php esc_attr_e( 'Slug', 'car-rental-manager' );?>:</label>
+                        <input type="text" id="mpcrbm_taxonomies_slug" placeholder="<?php esc_attr_e( 'Optional slug', 'car-rental-manager' );?>">
+                        <label><?php esc_attr_e( 'Description', 'car-rental-manager' );?>:</label>
+                        <textarea id="mpcrbm_taxonomies_desc" placeholder="<?php esc_attr_e( 'Short description', 'car-rental-manager' );?>"></textarea>
 
                         <div class="mpcrbm_taxonomies_popup_actions">
-                            <button class="mpcrbm_taxonomies_save_btn">Save</button>
-                            <button class="mpcrbm_taxonomies_cancel_btn">Cancel</button>
+                            <button class="mpcrbm_taxonomies_save_btn"><?php esc_attr_e( 'Save', 'car-rental-manager' );?></button>
+                            <button class="mpcrbm_taxonomies_cancel_btn"><?php esc_attr_e( 'Cancel', 'car-rental-manager' );?></button>
                         </div>
                     </div>
                 </div>
@@ -217,6 +306,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             if (!current_user_can('manage_options')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
             }
+
 
             $term_id = intval($_POST['term_id']);
             $type = sanitize_text_field($_POST['taxonomy_type']);
