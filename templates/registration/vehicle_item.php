@@ -69,16 +69,17 @@ $two_way = $two_way ?? 1;
 if ($post_id) {
     // Get vehicle data
     $thumbnail = MPCRBM_Global_Function::get_image_url($post_id);
-    
+
+    $days = MPCRBM_Function::get_days_from_start_end_date( $start_date_time, $return_date_time );
     // Use multi-location pricing if enabled, otherwise use default pricing
     $price = MPCRBM_Function::calculate_multi_location_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
-    
+
     if (!$price || $price <= 0) {
         return;
     }
     
-    $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
-    $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
+    $wc_price = MPCRBM_Global_Function::wc_price( $post_id, $price );
+    $raw_price = MPCRBM_Global_Function::price_convert_raw( $wc_price );
 
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
@@ -123,9 +124,15 @@ if ($post_id) {
     $total_base_price = $minutes_to_day * $price_per_day;
     $total_save = $total_base_price - $raw_price ;
 
+    $day_price = $raw_price/$days;
+    $day_price = round( $day_price, 2 );
+
     $enable_seasonal    = (int)get_post_meta( $post_id, 'mpcrbm_enable_seasonal_discount', true );
+    $enable_day_wise    = (int)get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );
+    $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
+
     $line_through = '';
-    if( $enable_seasonal === 1 ){
+    if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){
         $line_through = 'mpcrbm_line_through';
     }
 
@@ -202,7 +209,7 @@ if ($post_id) {
                 <?php }
                 ?>
                 <div class="mpcrbm_discount_booking">
-                    <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
+                    <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
                         <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                         <?php
                         if( $enable_seasonal === 1 ){
@@ -213,7 +220,9 @@ if ($post_id) {
                                 <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price($seasonal_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                                 <div class="mpcrbm_seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?><?php esc_attr_e( ' rate', 'car-rental-manager' );?></div>
                             <?php }
-                        }?>
+                        }else{?>
+                            <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                        <?php }?>
                     </div>
                     <div class="_min_150_mL_xs mpcrbm_booking_items">
                         <?php
