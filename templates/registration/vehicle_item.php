@@ -211,18 +211,9 @@ if ($post_id) {
                 <div class="mpcrbm_discount_booking">
                     <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
                         <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                        <?php
-                        if( $enable_seasonal === 1 ){
-                            $seasonal_data = MPCRBM_Function::get_seasonal_rate( $post_id, $price_per_day, $start_date, $enable_seasonal );
-                            $seasonal_price_per_day = $seasonal_data['seasonal_price_per_day'];
-                            if( isset( $seasonal_data['name'] ) && !empty( $seasonal_data['name'] ) ){
-                                ?>
-                                <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price($seasonal_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                                <div class="mpcrbm_seasonal-info"><?php echo esc_attr( $seasonal_data['name'] )?><?php esc_attr_e( ' rate', 'car-rental-manager' );?></div>
-                            <?php }
-                        }else{?>
-                            <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                        <?php }?>
+
+                        <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+
                     </div>
                     <div class="_min_150_mL_xs mpcrbm_booking_items">
                         <?php

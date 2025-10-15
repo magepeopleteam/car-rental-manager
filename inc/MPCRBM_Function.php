@@ -410,9 +410,32 @@
 
                 $start_timestamp = strtotime($start_date);
 
+                /*if ( $enable_day_wise === 1 && (int)$days === 1 && (float)$price === (float)$base_price ) {
+                    $day_of_week = strtolower(date('D', $start_timestamp));
+                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '' && $daywise[$day_of_week] > 0 ) {
+                        $price = (float) $daywise[$day_of_week];
+                    }
+                }*/
 
-                $day_of_week = strtolower(date('D', $start_timestamp)); // mon, tue, wed, etc.
+                if ( $enable_day_wise === 1 && is_array( $daywise )  && !empty( $daywise ) ) {
+                    $total_price = 0;
+                    $current_timestamp = $start_timestamp;
 
+                    for ( $i = 0; $i < (int)$days; $i++ ) {
+                        $day_of_week = strtolower(date('D', $current_timestamp));
+                        if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] > 0) {
+                            $day_price = (float) $daywise[$day_of_week];
+                        } else {
+                            $day_price = (float) $base_price;
+                        }
+
+                        $total_price += $day_price;
+                        $current_timestamp = strtotime('+1 day', $current_timestamp);
+                    }
+
+                    $price = $total_price;
+
+                }
 
                 // 1. Seasonal Pricing
                 if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
@@ -437,13 +460,6 @@
                             }
                             break;
                         }
-                    }
-                }
-
-
-                if ( $enable_day_wise === 1 && (int)$days === 1 && (float)$price === (float)$base_price ) {
-                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '' && $daywise[$day_of_week] > 0 ) {
-                        $price = (float) $daywise[$day_of_week];
                     }
                 }
 
