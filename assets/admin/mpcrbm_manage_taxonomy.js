@@ -2,7 +2,7 @@
     $(document).ready(function () {
 
         let currentType = 'mpcrbm_car_list';
-        loadTaxonomyData( currentType );
+        // loadTaxonomyData( currentType );
 
         $('.mpcrbm_taxonomies_tab').on('click', function () {
             $('.mpcrbm_taxonomies_tab').removeClass('active');

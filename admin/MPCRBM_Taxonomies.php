@@ -98,8 +98,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ?>
                     <h2><?php echo esc_html( $type_title );?></h2>
                     <div class="mpcrbm_taxonomies_toolbar">
-                        <button class="mpcrbm_taxonomies_add_btn">+ Add New</button>
-                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="Search taxonomy...">
+                        <button class="mpcrbm_taxonomies_add_btn">+ <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
+                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
                     </div>
                 <?php }else{?>
                 <?php }?>
@@ -127,7 +127,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
                 }
                 else {
-                    echo '<p>No taxonomies found for ' . esc_html($type) . '</p>';
+                    echo '<p> '.esc_attr_e( 'Search taxonomy...', 'car-rental-manager' ) .' '. esc_html($type) . '</p>';
                 }
                 ?>
             </div>
@@ -214,12 +214,12 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     </div>
 
                     <div class="mpcrbm_taxonomies_tabs">
-                        <button class="mpcrbm_car_list_tab mpcrbm_taxonomies_tab active" data-target="mpcrbm_car_list">🚗 Car List</button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_type">📋 Car Type</button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_fuel_type">⛽ Fuel Type</button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_seating_capacity">💺 Seating Capacity</button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand">🏷️ Car Brand</button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year">📅 Make Year</button>
+                        <button class="mpcrbm_car_list_tab mpcrbm_taxonomies_tab active" data-target="mpcrbm_car_list">🚗 <?php esc_attr_e( 'Car List', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_type">📋 <?php esc_attr_e( 'Car Type', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_fuel_type">⛽ <?php esc_attr_e( 'Fuel Type', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_seating_capacity">💺 <?php esc_attr_e( 'Seating Capacity', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand">🏷️ <?php esc_attr_e( 'Car Brand', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year">📅 <?php esc_attr_e( 'Make Year', 'car-rental-manager' );?></button>
                     </div>
                 </div>
                 <div class="mpcrbm_left_main_content">
@@ -227,56 +227,60 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     <div class="mpcrbm_analytics">
                         <div class="mpcrbm_stat-card total">
                             <div class="mpcrbm_stat-left">
-                                <div class="mpcrbm_stat-label">Total Cars</div>
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Total Cars', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">7</div>
                             </div>
-                            <div class="mpcrbm_stat-change positive">↑ 2 new this month</div>
+                            <div class="mpcrbm_stat-change positive">↑ 2 <?php esc_attr_e( 'new this month', 'car-rental-manager' );?></div>
                         </div>
 
                         <div class="mpcrbm_stat-card available">
                             <div class="mpcrbm_stat-left">
-                                <div class="mpcrbm_stat-label">Available</div>
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Available', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">7</div>
                             </div>
-                            <div class="mpcrbm_stat-change positive">100% availability</div>
+                            <div class="mpcrbm_stat-change positive">100% <?php esc_attr_e( 'availability', 'car-rental-manager' );?></div>
                         </div>
 
                         <div class="mpcrbm_stat-card rented">
                             <div class="mpcrbm_stat-left">
-                                <div class="mpcrbm_stat-label">Currently Rented</div>
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Currently Rented', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">0</div>
                             </div>
-                            <div class="mpcrbm_stat-change">Ready to rent</div>
+                            <div class="mpcrbm_stat-change"><?php esc_attr_e( 'Ready to rent', 'car-rental-manager' );?></div>
                         </div>
 
                         <div class="mpcrbm_stat-card revenue">
                             <div class="mpcrbm_stat-left">
-                                <div class="mpcrbm_stat-label">Daily Revenue</div>
+                                <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Daily Revenue', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">$70</div>
                             </div>
-                            <div class="mpcrbm_stat-change positive">↑ $10/day avg</div>
+                            <div class="mpcrbm_stat-change positive">↑ $10/day <?php esc_attr_e( 'avg', 'car-rental-manager' );?></div>
                         </div>
                     </div>
 
                     <div class="mpcrbm_taxonomies_content">
-                        <div id="mpcrbm_taxonomies_holder"></div>
+                        <div id="mpcrbm_taxonomies_holder">
+                            <?php
+                                include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
+                            ?>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Popup Form -->
                 <div class="mpcrbm_taxonomies_popup_overlay">
                     <div class="mpcrbm_taxonomies_popup">
-                        <h3>Add New Taxonomy</h3>
-                        <label>Name:</label>
-                        <input type="text" id="mpcrbm_taxonomies_name" placeholder="Enter name">
-                        <label>Slug:</label>
-                        <input type="text" id="mpcrbm_taxonomies_slug" placeholder="Optional slug">
-                        <label>Description:</label>
-                        <textarea id="mpcrbm_taxonomies_desc" placeholder="Short description"></textarea>
+                        <h3><?php esc_attr_e( 'Add New Taxonomy', 'car-rental-manager' );?></h3>
+                        <label><?php esc_attr_e( 'Name', 'car-rental-manager' );?>:</label>
+                        <input type="text" id="mpcrbm_taxonomies_name" placeholder="<?php esc_attr_e( 'Enter name', 'car-rental-manager' );?>">
+                        <label><?php esc_attr_e( 'Slug', 'car-rental-manager' );?>:</label>
+                        <input type="text" id="mpcrbm_taxonomies_slug" placeholder="<?php esc_attr_e( 'Optional slug', 'car-rental-manager' );?>">
+                        <label><?php esc_attr_e( 'Description', 'car-rental-manager' );?>:</label>
+                        <textarea id="mpcrbm_taxonomies_desc" placeholder="<?php esc_attr_e( 'Short description', 'car-rental-manager' );?>"></textarea>
 
                         <div class="mpcrbm_taxonomies_popup_actions">
-                            <button class="mpcrbm_taxonomies_save_btn">Save</button>
-                            <button class="mpcrbm_taxonomies_cancel_btn">Cancel</button>
+                            <button class="mpcrbm_taxonomies_save_btn"><?php esc_attr_e( 'Save', 'car-rental-manager' );?></button>
+                            <button class="mpcrbm_taxonomies_cancel_btn"><?php esc_attr_e( 'Cancel', 'car-rental-manager' );?></button>
                         </div>
                     </div>
                 </div>
