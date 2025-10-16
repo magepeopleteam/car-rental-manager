@@ -496,3 +496,39 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
   display: table;
   clear: both;
 }
+
+
+.mpcrbm_gallery-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: start;
+}
+
+.mpcrbm_gallery-image {
+    width: 16.38em;
+    height: 120px;
+    margin: 5px;
+    position: relative;
+}
+
+
+.mpcrbm_gallery_image_remove{
+    position: absolute;
+    color: #ffffff;
+    bottom: 0;
+    right: 0;
+    width: 25px;
+    height: 25px;
+    background-color: var(--mpcrbm-primary);
+    text-align: center;
+    border-radius: 5px 0 0 0;
+    cursor: pointer;
+    padding-top: 4px;
+}
+
+.mpcrbm_gallery-images{
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    border-radius: 0;
+}

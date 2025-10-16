@@ -41,6 +41,9 @@
                             <li data-tabs-target="#mpcrbm_settings_pricing">
                                 <span class="pe-1 fas fa-hand-holding-usd"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
+                            <li data-tabs-target="#mpcrbm_settings_gallery_images">
+                                <span class="pe-1 fas fa-hand-holding-usd"></span><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?>
+                            </li>
                             <li data-tabs-target="#mpcrbm_settings_ex_service">
                                 <span class="pe-1 fas fa-puzzle-piece"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
                             </li>
