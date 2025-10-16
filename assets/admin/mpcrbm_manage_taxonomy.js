@@ -4,11 +4,14 @@
         let currentType = 'mpcrbm_car_list';
         // loadTaxonomyData( currentType );
 
-        $('.mpcrbm_taxonomies_tab').on('click', function () {
+        $(document).on( 'click','.mpcrbm_taxonomies_tab', function () {
+            $('.mpcrbm_taxonomies_content_holder').hide();
             $('.mpcrbm_taxonomies_tab').removeClass('active');
             $(this).addClass('active');
             currentType = $(this).data('target');
-            loadTaxonomyData(currentType);
+            let content_holder_id = currentType+'_holder';
+            $("#"+content_holder_id).fadeIn();
+
         });
 
         $(document).on('click', '.mpcrbm_taxonomies_add_btn', function () {
@@ -61,7 +64,8 @@
         });
 
         function loadTaxonomyData(type) {
-            $('#mpcrbm_taxonomies_holder').html('<p>Loading...</p>');
+            let content_holder = type+'_holder';
+            $('#'+content_holder).html('<p>Loading...</p>');
             $.ajax({
                 url: ajaxurl,
                 type: 'POST',
@@ -70,7 +74,7 @@
                     taxonomy_type: type
                 },
                 success: function (response) {
-                    $('#mpcrbm_taxonomies_holder').html(response.data.html);
+                    $('#'+content_holder).html(response.data.html);
                 }
             });
         }
