@@ -23,6 +23,25 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             add_action('wp_ajax_mpcrbm_delete_taxonomy', [$this, 'ajax_delete_taxonomy']);
 
             add_action('admin_action_mpcrbm_duplicate_car', [$this, 'mpcrbm_duplicate_car']);
+
+            add_action('wp_ajax_mpcrbm_delete_multiple_cars', [$this, 'mpcrbm_delete_multiple_cars']);
+        }
+
+        function mpcrbm_delete_multiple_cars() {
+            check_ajax_referer('mpcrbm_extra_service', '_wpnonce');
+
+            $ids = isset($_POST['ids']) ? explode(',', sanitize_text_field($_POST['ids'])) : [];
+
+            error_log( print_r( [ '$ids' => $ids ], true ) );
+
+            if (!empty($ids)) {
+                foreach ($ids as $id) {
+                    wp_trash_post((int)$id);
+                }
+                wp_send_json_success(['trashed' => $ids]);
+            } else {
+                wp_send_json_error(['message' => 'No IDs provided']);
+            }
         }
 
 

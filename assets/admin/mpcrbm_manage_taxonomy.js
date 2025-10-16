@@ -244,6 +244,73 @@
         });
 
 
+        // Function to update delete holder visibility and IDs
+        function updateDeleteHolder() {
+            let ids = [];
+            $('#mpcrbm_carTableBody input[type="checkbox"]:checked').each(function () {
+                let postId = $(this).closest('tr').data('post-id');
+                if (postId) ids.push(postId);
+            });
+
+            if (ids.length > 0) {
+                $('.mpcrbm_multiple_delete_btn_holder').show();
+                $('#mpcrbm_delete_car_ids').val(ids.join(','));
+            } else {
+                $('.mpcrbm_multiple_delete_btn_holder').hide();
+                $('#mpcrbm_delete_car_ids').val('');
+            }
+        }
+
+        $(document).on( 'change','#mpcrbm_carTableBody','input[type="checkbox"]', function () {
+            if (!$(this).is(':checked')) {
+                $('#mpcrbm_car_list_car_table thead input[type="checkbox"]').prop('checked', false);
+            } else {
+                let allChecked = $('#mpcrbm_carTableBody input[type="checkbox"]').length === $('#mpcrbm_carTableBody input[type="checkbox"]:checked').length;
+                $('#mpcrbm_car_list_car_table thead input[type="checkbox"]').prop('checked', allChecked);
+            }
+            updateDeleteHolder();
+        });
+
+        $(document).on( 'change','#mpcrbm_car_list_car_table thead input[type="checkbox"]',function () {
+            let isChecked = $(this).is(':checked');
+            $('#mpcrbm_carTableBody input[type="checkbox"]').prop('checked', isChecked);
+            updateDeleteHolder();
+        });
+
+        $(document).on( 'click','.mpcrbm_multiple_delete',function () {
+            let ids = $('#mpcrbm_delete_car_ids').val();
+            if (!ids) {
+                alert('Please select at least one car to delete.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete selected cars?')) {
+                return;
+            }
+
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'mpcrbm_delete_multiple_cars',
+                    ids: ids,
+                    _wpnonce: mpcrbm_admin_nonce.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        ids.split(',').forEach(function (id) {
+                            $('#mpcrbm_carTableBody tr[data-post-id="' + id + '"]').remove();
+                        });
+                        alert('Selected cars deleted successfully.');
+                        updateDeleteHolder();
+                    } else {
+                        alert('Failed to delete cars.');
+                    }
+                }
+            });
+        });
+
+
     });
 
 })(jQuery);
