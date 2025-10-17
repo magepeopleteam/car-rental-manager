@@ -122,6 +122,7 @@
 	.div.mpcrbm_transport_search_area .mpcrbm_transport_select:hover span{
 		color: var(--color_theme_alter);
 	}
+	div.mpcrbm_transport_search_area button.mpcrbm_price_calculation.mActive,
 	div.mpcrbm_transport_search_area button.mpcrbm_price_calculation.active_select,
 	div.mpcrbm_transport_search_area button.mpcrbm_transport_select.active_select {
 		background-color: var(--color_success);
@@ -245,7 +246,7 @@
 	 background: white;
 	 border: 1px solid #e5e7eb;
 	 border-radius: 12px;
-	 padding:5px;
+	 padding:10px;
 	 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 	 transition: all 0.3s ease;
 	 display: flex;
@@ -253,6 +254,9 @@
 	 gap: 15px;
 	 align-items: center;
 	 margin-bottom:10px;
+ }
+ .mpcrbm .mpcrbm-image-box img:not(.wp_editor img){
+	height: 100%;
  }
  .mpcrbm_group {
 	 margin: 20px 0 10px 0;
@@ -456,19 +460,18 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm-filter-group {
 	 margin-bottom: 20px;
  }
- .mpcrbm-filter-title {
-	 /*font-size: 16px;*/
-	 /*font-weight: 600;*/
-	 margin-bottom: 8px;
-	 color: #333;
-	 border-bottom: 1px solid #eee;
-	 padding-bottom: 4px !important;
+   div.mpcrbm .mpcrbm-filter-title {
+	font-size: 16px;
+	font-weight: 600;
+	color: #333;
+	border-bottom: 1px solid #eee;
+	padding-bottom: 4px !important;
  }
  .mpcrbm-filter-list {
-	 list-style: none;
-	 padding-left: 10px;
-	 margin: 0;
-	 padding-top: 8px !important;
+	list-style: none;
+	padding-left: 10px;
+	margin: 0;
+	padding-top: 8px !important;
  }
  .mpcrbm-filter-list li {
 	 margin: 4px 0;
@@ -533,7 +536,7 @@ h2#mpcrbm_title_change{color:white;}
 	 position: relative;
 	 flex-direction: column;
 	 gap: 2px;
-	 padding: 5px;
+	 padding:10px;
 	 background-color: #fff;
 	 border: 2px solid #f0f0f0;
 	 justify-content: center;
@@ -541,11 +544,12 @@ h2#mpcrbm_title_change{color:white;}
 	 font-weight: 600;
  }
 
- .mpcrbm_summary_show span{color: #999;font-weight: 300;}
+ .mpcrbm_summary_show span{color: #999;font-weight: 300;font-size: 16px;}
 
 .mpcrbm_summary_show p:not(.wp_editor p){
 	font-weight: bold;
 	color: #666;
+	font-size: 16px;
  }
 
  .mpcrbm_location_icon_margin{
