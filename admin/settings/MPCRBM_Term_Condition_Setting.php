@@ -15,13 +15,12 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
         private $term_option_key = 'mpcrbm_term_condition_list';
         public function __construct() {
             add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ] );
-            add_action('wp_ajax_mpcrbm_save_added_faq', [ $this, 'mpcrbm_save_added_faq' ] );
+            add_action('wp_ajax_mpcrbm_save_added_term_condition', [ $this, 'mpcrbm_save_added_term_condition' ] );
         }
-
         public function term_tab_content(){
 
             $faqs = get_option( $this->term_option_key, [] );
-            $added_faqs = get_post_meta( 66, 'mpcrbm_added_term_condition', true);
+            $added_faqs = get_post_meta( 66, $this->term_option_key, true);
             $selected_faqs_data = [];
             if (!empty($added_faqs) && !empty( $faqs ) ) {
                 foreach ($added_faqs as $faq_key) {
@@ -56,7 +55,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
                                     >
                                         <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
+                                        <button type="button" class="button button-small mpcrbm_add_term_condition">Add</button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -75,7 +74,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
                                     >
                                         <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
+                                        <button type="button" class="button button-small mpcrbm_remove_term_condition">Remove</button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -92,6 +91,23 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
         <?php }
 
+        function mpcrbm_save_added_term_condition() {
+            check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+
+            $post_id =  isset( $_POST['mpcrbm_added_term']) ?  intval( $_POST['post_id']) : '';
+            $data = isset( $_POST['mpcrbm_added_term']) ? json_decode(stripslashes( $_POST[ 'mpcrbm_added_term' ] ), true) : [];
+
+            if (!current_user_can('edit_post', $post_id ) ) {
+                wp_send_json_error(['message' => 'You do not have permission to edit this post.']);
+            }
+            if ( $post_id && is_array( $data ) ) {
+                update_post_meta( $post_id, $this->term_option_key, $data );
+
+                wp_send_json_success(['message' => 'FAQ saved successfully!', 'data' => $data]);
+            } else {
+                wp_send_json_error(['message' => 'Invalid data']);
+            }
+        }
 
     }
 

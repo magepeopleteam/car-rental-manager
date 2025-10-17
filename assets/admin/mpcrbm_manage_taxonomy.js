@@ -505,7 +505,6 @@
             updateFaqMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
 
         });
-
         // ===== REMOVE FAQ =====
         $(document).on('click', '.mpcrbm_remove_faq', function() {
             let $this = $(this);
@@ -525,6 +524,49 @@
             // $('.mpcrbm_faq_all_question').append(html);
 
             updateFaqMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
+
+        });
+
+        // ===== ADD TERM =====
+        $(document).on('click', '.mpcrbm_add_term_condition', function() {
+            let item = $(this).closest('.mpcrbm_faq_item');
+            let $this = $(this);
+            $this.text( 'adding...');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="mpcrbm_selected_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="mpcrbm_faq_title">${title}</div>
+                <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
+            </div>`;
+            // $('.mpcrbm_selected_faq_question').append( html );
+
+            updateTermMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
+
+        });
+        // ===== REMOVE FAQ =====
+        $(document).on('click', '.mpcrbm_remove_term_condition', function() {
+            let $this = $(this);
+            $this.text( 'removing...');
+            let item = $(this).closest('.mpcrbm_selected_item');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="mpcrbm_faq_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="mpcrbm_faq_title">${title}</div>
+                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
+            </div>`;
+            // $('.mpcrbm_faq_all_question').append(html);
+
+            updateTermMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
 
         });
 
@@ -560,6 +602,53 @@
                     action: 'mpcrbm_save_added_faq',
                     post_id: post_id,
                     mpcrbm_added_faq: faq_keys,
+                    nonce: mpcrbm_admin_nonce.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('✅ FAQs saved successfully');
+
+                        clickBtn.text( action );
+                        $('.'+append_section).append(html);
+                        item.remove();
+                    } else {
+                        alert('❌ Error saving FAQs:', response.data.message);
+                    }
+                }
+            });
+        }
+        function updateTermMeta( clickBtn, item, action, append_section, html ) {
+
+            let post_id = $('[name="mpcrbm_post_id"]').val();
+            let data = [];
+
+            $('.mpcrbm_selected_item').each(function() {
+                let key = $(this).data('key');
+                data.push(key);
+            });
+            let key = $(item).data('key');
+
+            if ( action === 'add' ) {
+                if (!data.includes(key)) {
+                    data.push(key);
+                }
+            } else if (action === 'remove') {
+                let index = data.indexOf(key);
+                if (index !== -1) {
+                    data.splice(index, 1);
+                }
+            }
+
+            let faq_keys = JSON.stringify(data);
+            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+
+            $.ajax({
+                url: ajaxurl,
+                method: 'POST',
+                data: {
+                    action: 'mpcrbm_save_added_term_condition',
+                    post_id: post_id,
+                    mpcrbm_added_term: faq_keys,
                     nonce: mpcrbm_admin_nonce.nonce
                 },
                 success: function (response) {
