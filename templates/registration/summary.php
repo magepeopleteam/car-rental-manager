@@ -72,6 +72,7 @@
 							</div>
 							<span class="mpcrbm_product_price _textTheme"></span>
 						</div>
+					<div class="mpcrbm_fee_summary"></div>
 						<div class="mpcrbm_extra_service_summary"></div>
 						<div class="dividerL"></div>
 						<div class="justifyBetween">

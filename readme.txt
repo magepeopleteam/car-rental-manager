@@ -54,6 +54,17 @@ Let's look at the key features that make the plugin more acceptable in its categ
 * 📱 **Responsive by Design** – Optimized for desktops, tablets, and mobile devices.  
 
 
+== New Features (Overview) ==
+
+- **Multi-location support**: Manage pickup and drop-off across multiple branches with location-specific availability and pricing.  
+- **Early-bird discounts**: Offer automatic percentage or fixed discounts for bookings made in advance.  
+- **Google Reviews integration**: Display recent reviews to build trust; includes shortcode/widget-based rendering.  
+- **Analytics insights**: At-a-glance metrics for bookings, revenue, utilization, and popular vehicles.  
+- **Enhanced calendars**: Improved front-end availability view and back-end scheduling calendar for faster management.  
+- **SMS notifications**: Send booking confirmations and updates via supported SMS gateways.  
+
+Note: Feature availability may vary by edition and configuration. Please check the plugin settings and documentation for details.
+
 ## Explore The Demo:
 &#9989;  [Live Demo for Car Rental ](https://car.wprently.com/)
 
@@ -104,3 +115,16 @@ Yes you can offer extra services along with the car
 This plugin utilizes several external services and libraries to provide its functionality. Here's a detailed breakdown of what services are used and how:
 
 Note: All external services are used only when necessary for the functionality requested by the user. No personal data is transmitted without user consent, and all data transmissions are done securely over HTTPS connections.
+
+== Changelog ==
+
+= 1.0.1 =
+- Added: Multi-location support for pickup and drop-off with location-specific availability.
+- Added: Early-bird discounts for advance bookings with percentage or fixed amounts.
+- Added: Google Reviews integration with shortcode/widget rendering options.
+- Added: Analytics insights for bookings, revenue, utilization, and popular vehicles.
+- Added: Enhanced availability and admin scheduling calendars.
+- Added: SMS notifications for booking confirmations and updates via supported gateways.
+
+= 1.0.0 =
+- Initial release.

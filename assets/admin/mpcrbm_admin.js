@@ -123,6 +123,24 @@
 			);
 		});
 
+		$('#mpcrbm-add-fee').on('click', function(){
+			$('#mpcrbm-fees-rows').append(
+				'<div class="mpcrbm-item mpcrbm-fee-row">\
+					<input type="text" name="mpcrbm_additional_fees[name][]" class="mpcrbm-input" placeholder="Fee Name">\
+					<select name="mpcrbm_additional_fees[type][]">\
+						<option value="fixed">Fixed</option>\
+						<option value="percentage">Percentage</option>\
+					</select>\
+					<input type="number" step="0.01" name="mpcrbm_additional_fees[value][]" class="mpcrbm-input" placeholder="Value">\
+					<select name="mpcrbm_additional_fees[apply][]">\
+						<option value="per_booking">Per Booking</option>\
+						<option value="per_day">Per Day</option>\
+					</select>\
+					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
+				</div>'
+			);
+		});
+
 		$(document).on('click', '.mpcrbm-remove-row', function(){
 			$(this).closest('.mpcrbm-item').remove();
 		});

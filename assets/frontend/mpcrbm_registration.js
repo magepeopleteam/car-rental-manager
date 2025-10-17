@@ -216,8 +216,39 @@ jQuery(document).ready(function($) {
             
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
-            target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(transport_price));
+            // Show breakdown: base per-day price * days plus fees
+            let basePrice = parseFloat($this.attr('data-transport-base')) || transport_price;
+            let feeTotal = parseFloat($this.attr('data-transport-fee')) || 0;
+            let days = parseInt($('.mpcrbm_duration-days').text()) || 1;
+            let carSubtotal = basePrice; // already includes duration in backend price; keep as is
+            let displayLine = mpcrbm_price_format(carSubtotal);
+            target_summary.find('.mpcrbm_product_price').html(displayLine);
             target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(transport_price));
+
+            // Render fee summary if backend provided fee breakdown on DOM dataset (optional future) or compute placeholder
+            let $feeSummary = target_summary.find('.mpcrbm_fee_summary');
+            $feeSummary.empty();
+            // If the vehicle list item included a data-fees JSON, show it
+            let feesDataAttr = $this.attr('data-fees');
+            if (feesDataAttr) {
+                try {
+                    let fees = JSON.parse(feesDataAttr);
+                    if (Array.isArray(fees) && fees.length > 0) {
+                        let html = '';
+                        fees.forEach(function(fee){
+                            if (!fee || !fee.name) return;
+                            let amount = parseFloat(fee.amount) || 0;
+                            if (amount <= 0) return;
+                            html += '<div class="_textLight_1_dFlex_flexWrap_justifyBetween">'
+                                + '<div class="_dFlex_alignCenter"><span class="fas fa-plus-circle _textTheme_mR_xs"></span>'
+                                + '<span>' + fee.name + '</span></div>'
+                                + '<p class="_textTheme">' + mpcrbm_price_format(amount) + '</p>'
+                                + '</div>';
+                        });
+                        if (html) { $feeSummary.html(html); }
+                    }
+                } catch(e) {}
+            }
             
             $this.addClass('active_select');
             parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', transport_price);

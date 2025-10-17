@@ -79,6 +79,9 @@ if ($post_id) {
     
     $wc_price = MPCRBM_Global_Function::wc_price($post_id, $price);
     $raw_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
+    // Compute additional fees for front-end display
+    $fees_display = MPCRBM_Function::compute_additional_fees( $post_id, $raw_price, $minutes_to_day );
+    $fees_total_display = isset($fees_display['total_fee']) ? (float)$fees_display['total_fee'] : 0.0;
 
     $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
     $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
@@ -184,13 +187,14 @@ if ($post_id) {
                     }
                     ?>
                     
+                    <?php $final_display_price = max( 0, $discounted_price + $fees_total_display ); ?>
                     <div class="mpcrbm-price-container">
                         <?php if ($early_bird_discount > 0): ?>
                             <div class="mpcrbm-original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em;">
                                 <?php echo wp_kses_post(wc_price($raw_price)); ?>
                             </div>
                             <div class="mpcrbm-discounted-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338;">
-                                <?php echo wp_kses_post(wc_price($discounted_price)); ?>
+                                <?php echo wp_kses_post(wc_price($final_display_price)); ?>
                             </div>
                             <div class="mpcrbm_early_bird_promotion_badge" style="margin: 3px 0 0 0;">
                                 <span class="fas fa-clock"></span>
@@ -211,12 +215,15 @@ if ($post_id) {
                             </div>
                         <?php else: ?>
                             <div class="mpcrbm-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338;">
-                                <?php echo wp_kses_post(wc_price($raw_price)); ?>
+                                <?php echo wp_kses_post(wc_price($final_display_price)); ?>
                             </div>
                         <?php endif; ?>
                         
                         <div class="mpcrbm_price-total" style="margin-top: 2px; color: #666; font-size: 0.85em;">
                             <?php echo esc_attr($minutes_to_day); ?>-day total
+                            <?php if ( $fees_total_display > 0 ) { ?>
+                                <span style="margin-left:6px; color:#888;">(incl. fees <?php echo wp_kses_post( wc_price( $fees_total_display ) ); ?>)</span>
+                            <?php } ?>
                             <?php if ($early_bird_discount > 0): ?>
                                 <span style="color: #4CAF50; font-weight: bold; margin-left: 5px;">
                                     (<?php echo wp_kses_post(wc_price($early_bird_discount)); ?> saved)
@@ -234,7 +241,10 @@ if ($post_id) {
                     <button type="button" 
                         class="_mpBtn_xs mpcrbm_transport_select"
                         data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>" 
-                        data-transport-price="<?php echo esc_attr($discounted_price); ?>" 
+                        data-transport-price="<?php echo esc_attr($final_display_price); ?>" 
+                        data-transport-base="<?php echo esc_attr( $discounted_price ); ?>"
+                        data-transport-fee="<?php echo esc_attr( $fees_total_display ); ?>"
+                        data-fees='<?php echo wp_json_encode( isset($fees_display['breakdown']) ? $fees_display['breakdown'] : array() ); ?>'
                         data-post-id="<?php echo esc_attr($post_id); ?>" 
                         data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>" 
                         data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>" 

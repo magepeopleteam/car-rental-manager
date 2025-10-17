@@ -55,7 +55,7 @@
 					$return_date      = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
 					$return_time      = isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : '';
 					$return_date_time = $return_date ? gmdate( "Y-m-d", strtotime( $return_date ) ) : "";
-					if ( $return_date && $return_time !== "" ) {
+                    if ( $return_date && $return_time !== "" ) {
 						if ( $return_time !== "" ) {
 							if ( $return_time !== "0" ) {
 								// Convert start time to hours and minutes
@@ -65,7 +65,12 @@
 									$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
 								} else {
 									$minutes = isset( $decimal_part ) ? (int) $decimal_part * 10 : 0; // Multiply by 10 to convert to minutes
-								}
+                    }
+                    // Safe defaults for optional fields used later
+                    $waiting_time = isset( $_POST['mpcrbm_waiting_time'] ) ? absint( wp_unslash( $_POST['mpcrbm_waiting_time'] ) ) : 0;
+                    $fixed_hour   = isset( $_POST['mpcrbm_fixed_hours'] ) ? absint( wp_unslash( $_POST['mpcrbm_fixed_hours'] ) ) : 0;
+                    $distance     = isset( $_COOKIE['mpcrbm_distance'] ) ? floatval( wp_unslash( $_COOKIE['mpcrbm_distance'] ) ) : 0;
+                    $duration     = isset( $_COOKIE['mpcrbm_duration'] ) ? floatval( wp_unslash( $_COOKIE['mpcrbm_duration'] ) ) : 0;
 							} else {
 								$hours   = 0;
 								$minutes = 0;
@@ -82,6 +87,17 @@
 					$price     = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
 					$wc_price  = MPCRBM_Global_Function::wc_price( $post_id, $price );
 					$raw_price = MPCRBM_Global_Function::price_convert_raw( $wc_price );
+					// Compute fees for meta storage and cart display context
+					$days_for_fee = 1;
+					if ( $start_time && $return_date_time ) {
+						$sd = new DateTime( $start_time );
+						$rd = new DateTime( $return_date_time );
+						$diff = $sd->diff( $rd );
+						$days_for_fee = max( 1, (int) ceil( ( $diff->days * 24 * 60 + $diff->h * 60 + $diff->i ) / 1440 ) );
+					}
+					$fee_calc = MPCRBM_Function::compute_additional_fees( $post_id, $raw_price, $days_for_fee );
+					$cart_item_data['mpcrbm_fee_breakdown'] = $fee_calc['breakdown'];
+					$cart_item_data['mpcrbm_fee_total'] = isset($fee_calc['total_fee']) ? (float)$fee_calc['total_fee'] : 0.0;
 					$cart_item_data['mpcrbm_date'] = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
 					$cart_item_data['mpcrbm_taxi_return']         = $return;
 					$cart_item_data['mpcrbm_waiting_time']        = $waiting_time;
@@ -124,7 +140,7 @@
 								$total_price += (float) $session_data[0];
 							}
 						}
-						$value['data']->set_price( $total_price );
+					$value['data']->set_price( $total_price );
 						$value['data']->set_regular_price( $total_price );
 						$value['data']->set_sale_price( $total_price );
 						$value['data']->set_sold_individually( 'yes' );
@@ -232,6 +248,19 @@
 					$item->add_meta_data( '_mpcrbm_return_time', $return_time );
 					$item->add_meta_data( '_return_date_time', $return_date_time );
 					$item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ) ) );
+					// Add fee breakdown to order item meta if available
+					$fee_total = isset( $values['mpcrbm_fee_total'] ) ? (float) $values['mpcrbm_fee_total'] : 0.0;
+					$fee_breakdown = isset( $values['mpcrbm_fee_breakdown'] ) ? (array) $values['mpcrbm_fee_breakdown'] : array();
+					if ( $fee_total > 0 ) {
+						$item->add_meta_data( esc_html__( 'Additional Fees', 'car-rental-manager' ), wp_kses_post( wc_price( $fee_total ) ) );
+						foreach ( $fee_breakdown as $fee_row ) {
+							$fname = isset( $fee_row['name'] ) ? $fee_row['name'] : '';
+							$famt  = isset( $fee_row['amount'] ) ? (float)$fee_row['amount'] : 0.0;
+							if ( $fname && $famt > 0 ) {
+								$item->add_meta_data( esc_html__( 'Fee', 'car-rental-manager' ), esc_html( $fname ) . ': ' . wp_kses_post( wc_price( $famt ) ) );
+							}
+						}
+					}
 					if ( sizeof( $extra_service ) > 0 ) {
 						$item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
 						foreach ( $extra_service as $service ) {
@@ -442,6 +471,8 @@
 				$start_location = array_key_exists( 'mpcrbm_start_place', $cart_item ) ? $cart_item['mpcrbm_start_place'] : '';
 				$end_location   = array_key_exists( 'mpcrbm_end_place', $cart_item ) ? $cart_item['mpcrbm_end_place'] : '';
 				$base_price     = array_key_exists( 'mpcrbm_base_price', $cart_item ) ? $cart_item['mpcrbm_base_price'] : '';
+				$fee_total      = array_key_exists( 'mpcrbm_fee_total', $cart_item ) ? (float) $cart_item['mpcrbm_fee_total'] : 0.0;
+				$fee_breakdown  = array_key_exists( 'mpcrbm_fee_breakdown', $cart_item ) && is_array( $cart_item['mpcrbm_fee_breakdown'] ) ? $cart_item['mpcrbm_fee_breakdown'] : array();
 				$return         = array_key_exists( 'mpcrbm_taxi_return', $cart_item ) ? $cart_item['mpcrbm_taxi_return'] : '';
 				$waiting_time   = array_key_exists( 'mpcrbm_waiting_time', $cart_item ) ? $cart_item['mpcrbm_waiting_time'] : '';
 				$fixed_time     = array_key_exists( 'mpcrbm_fixed_hours', $cart_item ) ? $cart_item['mpcrbm_fixed_hours'] : '';
@@ -547,7 +578,24 @@
                                 <h6 class="_mR_xs"><?php esc_html_e( 'Base Price : ', 'car-rental-manager' ); ?></h6>
                                 <span><?php echo wp_kses_post( wc_price( $base_price ) ); ?></span>
                             </li>
-							<?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
+						<?php if ( $fee_total > 0 ) { ?>
+							<?php if ( ! empty( $fee_breakdown ) ) { foreach ( $fee_breakdown as $fee_row ) { 
+								$fname = isset( $fee_row['name'] ) ? $fee_row['name'] : '';
+								$famt  = isset( $fee_row['amount'] ) ? (float) $fee_row['amount'] : 0.0;
+								if ( $fname && $famt > 0 ) { ?>
+									<li>
+										<span class="fa fa-plus-circle"></span>
+										<h6 class="_mR_xs"><?php echo esc_html( $fname ); ?> :</h6>
+										<span><?php echo wp_kses_post( wc_price( $famt ) ); ?></span>
+									</li>
+								<?php } } } else { ?>
+							<li>
+								<h6 class="_mR_xs"><?php esc_html_e( 'Additional Fees', 'car-rental-manager' ); ?> :</h6>
+								<span><?php echo wp_kses_post( wc_price( 0 ) ); ?></span>
+							</li>
+							<?php } ?>
+                        <?php } ?>
+                        <?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
                         </ul>
                     </div>
 					<?php if ( sizeof( $extra_service ) > 0 ) { ?>
@@ -713,6 +761,16 @@
 						}
 					}
 				}
+				// Compute additional fees
+				$days_for_fee = 1;
+				if ( $start_time && $return_date_time ) {
+					$sd = new DateTime( $start_time );
+					$rd = new DateTime( $return_date_time );
+					$diff = $sd->diff( $rd );
+					$days_for_fee = max( 1, (int) ceil( ( $diff->days * 24 * 60 + $diff->h * 60 + $diff->i ) / 1440 ) );
+				}
+				$fees = MPCRBM_Function::compute_additional_fees( $post_id, $raw_price, $days_for_fee );
+				$raw_price += isset($fees['total_fee']) ? (float)$fees['total_fee'] : 0.0;
 				$wc_price = MPCRBM_Global_Function::wc_price( $post_id, $raw_price );
 
 				return MPCRBM_Global_Function::price_convert_raw( $wc_price );

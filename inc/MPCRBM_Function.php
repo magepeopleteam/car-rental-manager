@@ -631,10 +631,58 @@
                     $transfer_fee = self::get_multi_location_price( $post_id, $pickup_location, $dropoff_location );
                 }
                 
-                $total_price = $calculated_price + $transfer_fee;
-                
-                return round( $total_price, 2 );
+				$total_price = $calculated_price + $transfer_fee;
+				
+				return round( $total_price, 2 );
             }
+
+			/**
+			 * Compute enabled additional fees for a vehicle
+			 *
+			 * @param int $post_id
+			 * @param float $base_subtotal Subtotal before fees (rental price incl. transfer fee, excl. taxes and extras)
+			 * @param int $days Rental days
+			 * @return array { total_fee: float, breakdown: array<array{name,type,value,apply,amount}> }
+			 */
+			public static function compute_additional_fees( $post_id, $base_subtotal, $days ) {
+				$fees_enabled = (int) get_post_meta( $post_id, 'mpcrbm_enable_fees', true );
+				$fees_meta    = (array) get_post_meta( $post_id, 'mpcrbm_additional_fees', true );
+				$total_fee    = 0.0;
+				$breakdown    = array();
+				
+				if ( $fees_enabled !== 1 || empty( $fees_meta ) || ! isset( $fees_meta[0] ) || ! is_array( $fees_meta[0] ) ) {
+					return array( 'total_fee' => 0.0, 'breakdown' => array() );
+				}
+				
+				$effective_days = max( 1, (int) $days );
+				foreach ( $fees_meta as $fee ) {
+					$name  = isset( $fee['name'] ) ? $fee['name'] : '';
+					$type  = isset( $fee['type'] ) ? $fee['type'] : 'fixed';
+					$value = isset( $fee['value'] ) ? (float) $fee['value'] : 0.0;
+					$apply = isset( $fee['apply'] ) ? $fee['apply'] : 'per_booking';
+					if ( $name === '' || $value === 0.0 ) {
+						continue;
+					}
+					$amount = 0.0;
+					if ( $type === 'fixed' ) {
+						$amount = ( $apply === 'per_day' ) ? $value * $effective_days : $value;
+					} else { // percentage
+						// Apply percentage on base subtotal (before taxes and extras)
+						$amount = ( $value / 100.0 ) * $base_subtotal;
+						// If per_day selected, proportionally same result overall; kept for future differentiation
+					}
+					$amount = round( (float) $amount, 2 );
+					$total_fee += $amount;
+					$breakdown[] = array(
+						'name'   => sanitize_text_field( $name ),
+						'type'   => $type,
+						'value'  => $value,
+						'apply'  => $apply,
+						'amount' => $amount,
+					);
+				}
+				return array( 'total_fee' => round( (float) $total_fee, 2 ), 'breakdown' => $breakdown );
+			}
 
         }
 	}

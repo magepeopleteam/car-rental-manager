@@ -215,6 +215,61 @@
                     </div>
                 </div>
 
+                <div class="mpcrbm-section">
+                    <?php
+                    $fees          = (array) get_post_meta( $post_id, 'mpcrbm_additional_fees', true );
+                    $enable_fees   = (int) get_post_meta( $post_id, 'mpcrbm_enable_fees', true );
+                    $fees_display  = $enable_fees === 1 ? 'block' : 'none';
+                    $fees_checked  = $enable_fees === 1 ? 'checked' : '';
+                    $fees_toggle_class = $enable_fees === 1 ? 'mpcrbm_toggle_class' : '';
+                    ?>
+                    <div class="mpcrbm-heading <?php echo esc_attr( $fees_toggle_class );?>"><?php esc_html_e('Fee Management', 'car-rental-manager'); ?></div>
+                    <section>
+                        <label class="label">
+                            <div>
+                                <h6><?php esc_html_e('Enable Fee Management', 'car-rental-manager'); ?></h6>
+                                <span class="desc"><?php esc_html_e('Add additional fees such as cleaning, delivery, or service fees. These are applied during pricing calculation according to the selected basis.', 'car-rental-manager'); ?></span>
+                            </div>
+                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_fees', $fees_checked ); ?>
+                        </label>
+                    </section>
+                    <div class="mpcrbm-price-content-container" id="mpcrbm_enable_fees_holder" style="display: <?php echo esc_attr( $fees_display )?>">
+                        <div class="mpcrbm-price-info-banner ">
+                            <svg class="mpcrbm-price-icon" fill="currentColor" viewBox="0 0 20 20" style="margin-right: 8px;">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                            </svg>
+                            <?php esc_html_e( 'Create fees and choose whether they apply per booking or per day. Percentage fees are calculated on the subtotal before taxes.', 'car-rental-manager' ); ?>
+                        </div>
+
+                        <div id="mpcrbm-fees-rows" class="mpcrbm-list">
+                            <?php if ( isset( $fees[0] ) && is_array( $fees[0] ) && ! empty( $fees[0] ) ) :
+                                foreach ( $fees as $f ) :
+                                    $fname = isset( $f['name'] ) ? $f['name'] : '';
+                                    $ftype = isset( $f['type'] ) ? $f['type'] : 'fixed';
+                                    $fvalue = isset( $f['value'] ) ? $f['value'] : '';
+                                    $fapply = isset( $f['apply'] ) ? $f['apply'] : 'per_booking';
+                                    ?>
+                                    <div class="mpcrbm-item mpcrbm-fee-row">
+                                        <input type="text" name="mpcrbm_additional_fees[name][]" value="<?php echo esc_attr( $fname ); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e('Fee Name', 'car-rental-manager'); ?>">
+                                        <select name="mpcrbm_additional_fees[type][]">
+                                            <option value="fixed" <?php selected( $ftype, 'fixed' ); ?>><?php esc_html_e('Fixed', 'car-rental-manager'); ?></option>
+                                            <option value="percentage" <?php selected( $ftype, 'percentage' ); ?>><?php esc_html_e('Percentage', 'car-rental-manager'); ?></option>
+                                        </select>
+                                        <input type="number" step="0.01" name="mpcrbm_additional_fees[value][]" value="<?php echo esc_attr( $fvalue ); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e('Value', 'car-rental-manager'); ?>">
+                                        <select name="mpcrbm_additional_fees[apply][]">
+                                            <option value="per_booking" <?php selected( $fapply, 'per_booking' ); ?>><?php esc_html_e('Per Booking', 'car-rental-manager'); ?></option>
+                                            <option value="per_day" <?php selected( $fapply, 'per_day' ); ?>><?php esc_html_e('Per Day', 'car-rental-manager'); ?></option>
+                                        </select>
+                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php esc_html_e('Remove', 'car-rental-manager'); ?></button>
+                                    </div>
+                                <?php endforeach;
+                            endif; ?>
+                        </div>
+                        <button type="button" id="mpcrbm-add-fee" class="mpcrbm-price-add-btn"><?php esc_html_e('+ Add Fee', 'car-rental-manager'); ?></button>
+                        <p class="mpcrbm-price-info-text"><?php esc_html_e( 'Examples: Cleaning fee (fixed per booking), Delivery fee (fixed), Service fee (% of subtotal).', 'car-rental-manager' ); ?></p>
+                    </div>
+                </div>
+
                 <?php
             }
 
@@ -327,6 +382,35 @@
                             }
                         }
                         update_post_meta( $post_id, 'mpcrbm_seasonal_pricing', $seasons );
+                    }
+
+                    // Additional Fees
+                    if ( isset( $_POST['mpcrbm_additional_fees'] ) && is_array( $_POST['mpcrbm_additional_fees'] ) ) {
+                        $fees = array();
+                        $names = isset($_POST['mpcrbm_additional_fees']['name']) ? (array) $_POST['mpcrbm_additional_fees']['name'] : array();
+                        $types = isset($_POST['mpcrbm_additional_fees']['type']) ? (array) $_POST['mpcrbm_additional_fees']['type'] : array();
+                        $values = isset($_POST['mpcrbm_additional_fees']['value']) ? (array) $_POST['mpcrbm_additional_fees']['value'] : array();
+                        $applies = isset($_POST['mpcrbm_additional_fees']['apply']) ? (array) $_POST['mpcrbm_additional_fees']['apply'] : array();
+
+                        $count = max( count( $names ), count( $types ), count( $values ), count( $applies ) );
+                        for ( $i = 0; $i < $count; $i++ ) {
+                            $n = isset($names[$i]) ? sanitize_text_field($names[$i]) : '';
+                            $t = isset($types[$i]) ? sanitize_text_field($types[$i]) : 'fixed';
+                            $v = isset($values[$i]) ? floatval($values[$i]) : '';
+                            $a = isset($applies[$i]) ? sanitize_text_field($applies[$i]) : 'per_booking';
+
+                            if ( $n !== '' && $v !== '' ) {
+                                $t = in_array( $t, array('fixed','percentage'), true ) ? $t : 'fixed';
+                                $a = in_array( $a, array('per_booking','per_day'), true ) ? $a : 'per_booking';
+                                $fees[] = array(
+                                    'name'  => $n,
+                                    'type'  => $t,
+                                    'value' => $v,
+                                    'apply' => $a,
+                                );
+                            }
+                        }
+                        update_post_meta( $post_id, 'mpcrbm_additional_fees', $fees );
                     }
 
 				}
