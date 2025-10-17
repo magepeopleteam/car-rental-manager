@@ -443,4 +443,19 @@ input[type="text"], select {
     border-radius: 5px;
 }
 
+.mpcrbm_multiple_delete_btn_holder{
+    display: flex;
+    padding: 20px 0;
+    justify-content: end;
+}
+.mpcrbm_multiple_delete{
+    display: flex;
+    position: relative;
+    padding: 10px 20px;
+    background-color: var(--mpcrbm-primary);
+    color: var(--mpcrbm-white);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 

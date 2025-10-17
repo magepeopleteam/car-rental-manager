@@ -114,6 +114,7 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
                             data-car-type-filter="<?php echo esc_attr( $cart_type );?>"
                             data-fuel-type-filter="<?php echo esc_attr( $fuel_type );?>"
                             data-make-year-filter="<?php echo esc_attr( $make_year );?>"
+                            data-post-id="<?php echo esc_attr( $car_id );?>"
 
                             style="display: <?php echo esc_attr( $display_car );?>"
                             >
@@ -165,6 +166,10 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
                     ?>
                     </tbody>
                 </table>
+            </div>
+            <div class="mpcrbm_multiple_delete_btn_holder" style="display: none">
+                <input type="hidden" id="mpcrbm_delete_car_ids" value="" name="">
+                <span class="mpcrbm_multiple_delete">Delete</span>
             </div>
 
             <div class="mpcrbm_loadMoreContainer" id="mpcrbm_loadMoreContainer" style="display: <?php echo esc_attr( $load_more_display );?>">
