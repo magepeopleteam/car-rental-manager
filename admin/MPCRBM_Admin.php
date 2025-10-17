@@ -43,6 +43,8 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Operation_Area_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Multi_Location_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Gallery_Imges_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Faq.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Faq_Settings.php';
 			}
 
 			public function add_dummy_data() {

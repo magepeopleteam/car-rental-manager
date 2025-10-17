@@ -32,8 +32,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             $ids = isset($_POST['ids']) ? explode(',', sanitize_text_field($_POST['ids'])) : [];
 
-            error_log( print_r( [ '$ids' => $ids ], true ) );
-
             if (!empty($ids)) {
                 foreach ($ids as $id) {
                     wp_trash_post((int)$id);
