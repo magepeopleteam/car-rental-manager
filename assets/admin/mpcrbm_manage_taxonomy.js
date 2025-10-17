@@ -40,7 +40,7 @@
                     taxonomy_type: currentType,
                     name: name,
                     slug: slug,
-                    // security: mpcrbm_taxonomy_ajax.nonce,
+                    nonce: mpcrbm_admin_nonce.nonce,
                 },
                 success: function (response) {
                     alert(response.data.message);
@@ -138,7 +138,8 @@
                 taxonomy_type: type,
                 name,
                 slug,
-                description: desc
+                description: desc,
+                nonce: mpcrbm_admin_nonce.nonce,
             }, function (res) {
                 alert(res.data.message);
                 $('.mpcrbm_popup').remove();
@@ -158,7 +159,8 @@
                     action: 'mpcrbm_delete_taxonomy',
                     security: nonce,
                     term_id: id,
-                    taxonomy_type: type
+                    taxonomy_type: type,
+                    nonce: mpcrbm_admin_nonce.nonce,
                 }, function (res) {
                     alert(res.data.message);
                     if (res.success) item.remove();
@@ -483,8 +485,44 @@
                     }
                 }
             });
-
         }
+
+        function updateFeatureMeta( actionType, termId, featureType) {
+            let post_id = $('[name="mpcrbm_post_id"]').val();
+
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'mpcrbm_update_feature_meta',
+                    nonce: mpcrbm_admin_nonce.nonce,
+                    post_id: post_id,
+                    term_id: termId,
+                    feature_type: featureType,
+                    action_type: actionType,
+                },
+                success: function(res) {
+                    if (res.success) {
+                        alert('Feature meta updated');
+                    }
+                }
+            });
+        }
+
+        // Include checkboxes
+        $(document).on('change', '.mpcrbm_include_checkbox', function() {
+            let termId = $(this).val();
+            let actionType = $(this).is(':checked') ? 'add' : 'remove';
+            updateFeatureMeta(actionType, termId, 'include');
+        });
+
+        // Exclude checkboxes
+        $(document).on('change', '.mpcrbm_exclude_checkbox', function() {
+            let termId = $(this).val();
+            let actionType = $(this).is(':checked') ? 'add' : 'remove';
+            updateFeatureMeta(actionType, termId, 'exclude');
+        });
 
 
     });

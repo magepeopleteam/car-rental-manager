@@ -45,6 +45,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Gallery_Imges_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Faq.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Faq_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Feature.php';
 			}
 
 			public function add_dummy_data() {

@@ -13,7 +13,6 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
         private $option_key = 'mpcrbm_faq_list';
         public function __construct() {
             add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ] );
-
             add_action('wp_ajax_mpcrbm_save_added_faq', [ $this, 'mpcrbm_save_added_faq' ] );
         }
 
