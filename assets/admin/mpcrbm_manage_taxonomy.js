@@ -328,6 +328,23 @@
         $('#mpcrbm_add_faq_btn').on('click', function() {
             $('#mpcrbm_modal_title').text('Add FAQ');
             closeModal();
+            let targetBtn = $('#mpcrbm_save_term_condition_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_faq_btn');
+            }
+            $('#mpcrbm_faq_modal').show();
+        });
+
+        $('#mpcrbm_add_term_condition_btn').on('click', function() {
+            $('#mpcrbm_modal_title').text('Add Term & Condition');
+            closeModal();
+
+            let targetBtn = $('#mpcrbm_save_faq_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
+            }
             $('#mpcrbm_faq_modal').show();
         });
 
@@ -342,6 +359,35 @@
             $('#mpcrbm_faq_title').val(row.find('.faq-title').text());
             $('#mpcrbm_modal_title').text('Edit FAQ');
             $('#mpcrbm_faq_modal').show();
+
+            let targetBtn = $('#mpcrbm_save_term_condition_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_faq_btn');
+            }
+
+            const answer = row.find('.faq-answer').text();
+            setTimeout(() => {
+                if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                    tinymce.get('mpcrbm_faq_answer_editor').setContent(answer);
+                } else {
+                    $('#mpcrbm_faq_answer_editor').val(answer);
+                }
+            }, 300);
+        });
+        // Edit TERM
+        $(document).on('click', '.mpcrbm_edit_term', function() {
+            const row = $(this).closest('tr');
+            $('#mpcrbm_faq_key').val(row.data('key'));
+            $('#mpcrbm_faq_title').val(row.find('.faq-title').text());
+            $('#mpcrbm_modal_title').text('Edit FAQ');
+            $('#mpcrbm_faq_modal').show();
+
+            let targetBtn = $('#mpcrbm_save_faq_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
+            }
 
             const answer = row.find('.faq-answer').text();
             setTimeout(() => {
@@ -367,8 +413,23 @@
             });
         });
 
+        // Delete ERM
+        $(document).on('click', '.mpcrbm_delete_term', function() {
+            if (!confirm('Are you sure you want to delete this FAQ?')) return;
+            const key = $(this).closest('tr').data('key');
+            $.post(ajaxurl, {
+                action: 'mpcrbm_delete_term',
+                key: key,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response){
+                if (response.success) location.reload();
+                else alert(response.data);
+            });
+        });
+
         // Save FAQ
-        $('#mpcrbm_save_faq_btn').on('click', function() {
+        $(document).on( 'click','#mpcrbm_save_faq_btn', function( e ) {
+            e.preventDefault();
             const title = $('#mpcrbm_faq_title').val().trim();
             let answer = '';
             if (tinymce.get('mpcrbm_faq_answer_editor')) {
@@ -385,6 +446,34 @@
 
             $.post( ajaxurl, {
                 action: 'mpcrbm_save_faq',
+                title: title,
+                answer: answer,
+                key: key,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response){
+                if (response.success) location.reload();
+                else alert(response.data);
+            });
+        });
+        // Save FAQ
+        $(document).on( 'click','#mpcrbm_save_term_condition_btn', function( e ) {
+            e.preventDefault();
+            const title = $('#mpcrbm_faq_title').val().trim();
+            let answer = '';
+            if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                answer = tinymce.get('mpcrbm_faq_answer_editor').getContent();
+            } else {
+                answer = $('#mpcrbm_faq_answer_editor').val();
+            }
+            const key = $('#mpcrbm_faq_key').val();
+
+            if (title === '' || answer === '') {
+                alert('Please fill all fields.');
+                return;
+            }
+
+            $.post( ajaxurl, {
+                action: 'mpcrbm_save_term_and_condition',
                 title: title,
                 answer: answer,
                 key: key,

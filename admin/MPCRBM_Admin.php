@@ -46,6 +46,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Faq.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Faq_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Feature.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Term_Condition_Setting.php';
 			}
 
 			public function add_dummy_data() {

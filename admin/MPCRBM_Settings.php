@@ -62,6 +62,9 @@
                             <li data-tabs-target="#mpcrbm_setting_feature">
                                 <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>
                             </li>
+                            <li data-tabs-target="#mpcrbm_term_and_condition">
+                                <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
+                            </li>
                             <?php
                                 // Allow pro plugins to add their own tabs
                                 do_action( 'mpcrbm_settings_tab_navigation' );
