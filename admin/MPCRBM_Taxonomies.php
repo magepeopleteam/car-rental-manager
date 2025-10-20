@@ -333,6 +333,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand">🏷️ <?php esc_attr_e( 'Car Brand', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year">📅 <?php esc_attr_e( 'Make Year', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature">🧩 <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq">❓ <?php esc_attr_e( 'Manage Faq', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition">📜 <?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></button>
                     </div>
                 </div>
                 <div class="mpcrbm_left_main_content">
@@ -405,6 +407,16 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_feature_holder" style="display: none">
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_car_feature' );
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_faq_holder" style="display: none">
+                            <?php
+                                MPCRBM_Manage_Faq::faq_display();
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_term_condition_holder" style="display: none">
+                            <?php
+                                MPCRBM_Manage_Faq::term_and_condition_display();
                             ?>
                         </div>
                     </div>
