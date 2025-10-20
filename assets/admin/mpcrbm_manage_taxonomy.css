@@ -1,15 +1,32 @@
 .mpcrbm_taxonomies_wrap {
     display: flex;
-    gap:15px;
+    gap:10px;
     background: #fff;
     padding: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.mpcrbm_car_rental_title{
+    background-color: #f5f5f5;
+    padding: 15px;
+    margin-bottom: 60px;
+    border-radius: 5px;
+}
+.mpcrbm_car_rental_title h2{
+    font-size: 36px;
+    margin:10px 0;
+    line-height: 1;
+}
+.mpcrbm_car_rental_title p{
+    font-size:16px;
+    margin:0;
 }
 
 .mpcrbm_taxonomies_tabs {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
 }
 .mpcrbm_left_main_content{
     display: flex;
@@ -22,22 +39,53 @@
 }
 
 .mpcrbm_left_sidebar{
-    width: 230px;
+    width: 240px;
 }
 
 .mpcrbm_taxonomies_tab {
-    padding: 10px 20px;
-    border: none;
-    background: none;
+    border-radius: 0;
+    padding: 10px 15px;
+    font-size: 16px;
+    background: #f5f5f5;
+    color: #333;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1px solid #f5f5f5;
+    margin: 0;
+    width: 100%;
     text-align: left;
 }
+.mpcrbm_taxonomies_tab i{
+    margin-right: 5px;
+    color: var(--color_theme);
+}
 
+.mpcrbm_taxonomies_tab:hover{
+    background-color: #EAF6FF;
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 119, 204, 0.15);
+}
 .mpcrbm_taxonomies_tab.active {
-    background-color: #e5e5e5;
-    color: #0073aa;
+    background-color: var(--color_theme);
+    color: #FFF;
+}
+.mpcrbm_taxonomies_tab.active i{
+    color: #FFF;
+}
+
+.mpcrbm_taxonomies_tab.active::after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 8px solid var(--color_theme);
 }
 
 .mpcrbm_taxonomies_toolbar {
@@ -225,6 +273,7 @@
     font-size: 25px;
     font-weight: 600;
     color: #1f2937;
+    margin: 6px;
 }
 
 .mpcrbm_stat-card {
@@ -246,6 +295,7 @@
     display: flex;
     gap: 5px;
     align-items:center;
+    padding-bottom: 10px;
 }
 .mpcrbm_stat-left i{
     font-size: 25px;
@@ -258,13 +308,16 @@
 }
 
 .mpcrbm_stat-change {
-    font-size: 12px;
+    font-size: 16px;
     margin-top: 0;
     display: flex;
     align-items: center;
     gap: 4px;
     font-weight: 500;
     white-space: wrap;
+    position: absolute;
+    right: 15px;
+    border: 0;
 }
 .mpcrbm_stat-change.positive {
     color: #10b981;
