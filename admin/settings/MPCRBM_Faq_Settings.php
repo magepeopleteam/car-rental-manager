@@ -12,7 +12,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
 
         private $option_key = 'mpcrbm_faq_list';
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ] );
+            add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_save_added_faq', [ $this, 'mpcrbm_save_added_faq' ] );
         }
 
@@ -33,10 +33,10 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
             }
         }
 
-        public function faq_tab_content(){
+        public function faq_tab_content( $post_id ){
 
             $faqs = get_option( $this->option_key, [] );
-            $added_faqs = get_post_meta( 66, 'mpcrbm_added_faq', true);
+            $added_faqs = get_post_meta( $post_id, 'mpcrbm_added_faq', true );
             $selected_faqs_data = [];
             if (!empty($added_faqs) && !empty( $faqs ) ) {
                 foreach ($added_faqs as $faq_key) {

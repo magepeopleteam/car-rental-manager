@@ -14,13 +14,13 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
         private $term_option_key = 'mpcrbm_term_condition_list';
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ] );
+            add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_save_added_term_condition', [ $this, 'mpcrbm_save_added_term_condition' ] );
         }
-        public function term_tab_content(){
+        public function term_tab_content( $post_id ){
 
             $faqs = get_option( $this->term_option_key, [] );
-            $added_faqs = get_post_meta( 66, $this->term_option_key, true);
+            $added_faqs = get_post_meta( $post_id, $this->term_option_key, true );
             $selected_faqs_data = [];
             if (!empty($added_faqs) && !empty( $faqs ) ) {
                 foreach ($added_faqs as $faq_key) {

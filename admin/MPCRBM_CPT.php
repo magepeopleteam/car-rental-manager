@@ -120,12 +120,12 @@
                     $args = array(
                         'hierarchical'      => $props['hierarchical'],
                         'labels'            => $labels,
-                        'show_ui'           => true,             // show meta box on post edit screen
-                        'show_admin_column' => true,             // show column in CPT list table
+                        'show_ui'           => true,
+                        'show_admin_column' => true,
                         'query_var'         => true,
-                        'show_in_rest'      => true,             // enable Gutenberg / REST API
+                        'show_in_rest'      => true,
                         'rewrite'           => array( 'slug' => $slug ),
-                        'show_in_menu'      => false,            // ❌ hide from admin menu (left side)
+                        'show_in_menu'      => false,
                     );
 
                     // register taxonomy for your CPT, e.g., 'car'
