@@ -158,3 +158,65 @@
 		}
 		new MPCRBM_Plugin();
 	}
+
+
+
+
+
+function register_book_post_type() {
+
+
+				$cpt    = MPCRBM_Function::get_cpt();
+				$label  = MPCRBM_Function::get_name();
+				$slug   = MPCRBM_Function::get_slug();
+				$icon   = MPCRBM_Function::get_icon();
+				$labels = [
+					'name'                  => $label,
+					'singular_name'         => $label,
+					'menu_name'             => $label,
+					'name_admin_bar'        => $label,
+					'archives'              => $label . ' ' . esc_html__( ' List', 'car-rental-manager' ),
+					'attributes'            => $label . ' ' . esc_html__( ' List', 'car-rental-manager' ),
+					'parent_item_colon'     => $label . ' ' . esc_html__( ' Item:', 'car-rental-manager' ),
+					'all_items'             => esc_html__( 'All ', 'car-rental-manager' ) . ' ' . $label,
+					'add_new_item'          => esc_html__( 'Add New ', 'car-rental-manager' ) . ' ' . $label,
+					'add_new'               => esc_html__( 'Add New ', 'car-rental-manager' ) . ' ' . $label,
+					'new_item'              => esc_html__( 'New ', 'car-rental-manager' ) . ' ' . $label,
+					'edit_item'             => esc_html__( 'Edit ', 'car-rental-manager' ) . ' ' . $label,
+					'update_item'           => esc_html__( 'Update ', 'car-rental-manager' ) . ' ' . $label,
+					'view_item'             => esc_html__( 'View ', 'car-rental-manager' ) . ' ' . $label,
+					'view_items'            => esc_html__( 'View ', 'car-rental-manager' ) . ' ' . $label,
+					'search_items'          => esc_html__( 'Search ', 'car-rental-manager' ) . ' ' . $label,
+					'not_found'             => $label . ' ' . esc_html__( ' Not found', 'car-rental-manager' ),
+					'not_found_in_trash'    => $label . ' ' . esc_html__( ' Not found in Trash', 'car-rental-manager' ),
+					'featured_image'        => $label . ' ' . esc_html__( ' Feature Image', 'car-rental-manager' ),
+					'set_featured_image'    => esc_html__( 'Set ', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' featured image', 'car-rental-manager' ),
+					'remove_featured_image' => esc_html__( 'Remove ', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' featured image', 'car-rental-manager' ),
+					'use_featured_image'    => esc_html__( 'Use as featured image', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' featured image', 'car-rental-manager' ),
+					'insert_into_item'      => esc_html__( 'Insert into ', 'car-rental-manager' ) . ' ' . $label,
+					'uploaded_to_this_item' => esc_html__( 'Uploaded to this ', 'car-rental-manager' ) . ' ' . $label,
+					'items_list'            => $label . ' ' . esc_html__( ' list', 'car-rental-manager' ),
+					'items_list_navigation' => $label . ' ' . esc_html__( ' list navigation', 'car-rental-manager' ),
+					'filter_items_list'     => esc_html__( 'Filter ', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' list', 'car-rental-manager' )
+				];
+
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'publicly_queryable' => true,
+        'show_ui'            => true,
+        'show_in_menu'       => true,
+        'query_var'          => true,
+        'rewrite'            => array( 'slug' => $slug ),
+        'capability_type'    => 'post',
+        'has_archive'        => true,
+        'hierarchical'       => false,
+        'menu_position'      => 5,
+        'supports'           => array('title', 'editor', 'thumbnail'),
+        'menu_icon'          => 'dashicons-book',
+    );
+
+    register_post_type('mpcrbm_rent', $args);
+}
+add_action('init', 'register_book_post_type');
