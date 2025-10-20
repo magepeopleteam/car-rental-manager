@@ -45,7 +45,7 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
             </div>
 
             <div class="mpcrbm_car_list_search_filter">
-                <input type="text" id="mpcrbm_searchInput" placeholder="🔍 <?php esc_attr_e( 'Search cars...', 'car-rental-manager' );?>" oninput="searchCars()">
+                <input type="text" id="mpcrbm_searchInput" placeholder="<?php esc_attr_e( 'Search cars...', 'car-rental-manager' );?>" oninput="searchCars()">
                 <select id="mpcrbm_typeFilter">
                     <option value=""><?php esc_attr_e( 'All Car Types', 'car-rental-manager' );?></option>
                     <?php foreach ( $all_car_type as $car_type ){?>

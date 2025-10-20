@@ -115,7 +115,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ?>
                     <h2><?php echo esc_html( $type_title );?></h2>
                     <div class="mpcrbm_taxonomies_toolbar">
-                        <button class="mpcrbm_taxonomies_add_btn">+ <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
                         <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
                     </div>
                 <?php }else{?>
@@ -200,7 +200,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ?>
                     <h2><?php echo esc_html( $type_title );?></h2>
                     <div class="mpcrbm_taxonomies_toolbar">
-                        <button class="mpcrbm_taxonomies_add_btn">+ <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
                         <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
                     </div>
                 <?php }else{?>

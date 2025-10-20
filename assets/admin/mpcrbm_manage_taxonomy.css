@@ -109,15 +109,16 @@ display: none !important;
 .mpcrbm_taxonomies_toolbar {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     margin-bottom: 15px;
     gap: 10px;
 }
 
 .mpcrbm_taxonomies_add_btn {
-    background: #0073aa;
+    background: #667eea;
     color: #fff;
     border: none;
-    padding: 8px 30px;
+    padding:10px;
     border-radius: 4px;
     cursor: pointer;
 }
@@ -390,7 +391,11 @@ display: none !important;
 
 .mpcrbm_car_list_control_btn.btn-primary {
     background: #667eea;
-    color: white;
+    color: #fff;
+    border: none;
+    padding:10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 .mpcrbm_car_list_control_btn.btn-secondary {
     background: #f3f4f6;
@@ -420,7 +425,7 @@ input[type="text"], select {
 }
 
 input[type="text"], select {
-    padding: 10px 15px;
+    padding: 5px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     font-size: 14px;
