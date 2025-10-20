@@ -119,13 +119,13 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
                             style="display: <?php echo esc_attr( $display_car );?>"
                             >
                                 <td><input type="checkbox" class="checkbox"></td>
-                                <td><a href="<?php echo esc_url( get_edit_post_link( $car_id ) ); ?>"><?php echo esc_html( $car['title'] );?></a></td>
+                                <td><a class="car-title" href="<?php echo esc_url( get_edit_post_link( $car_id ) ); ?>"><?php echo esc_html( $car['title'] );?></a></td>
                                 <td><?php echo esc_attr( $cart_type );?></td>
                                 <td><span class="badge badge-petrol"><?php echo esc_attr( $fuel_type );?></span></td>
                                 <td><?php echo esc_attr( $seat_capacity );?></td>
                                 <td><?php echo esc_attr( $brand );?></td>
                                 <td><?php echo esc_attr( $make_year );?></td>
-                                <td><span class="mpcrbm_car_status status-published"><span class="mpcrbm_status_dot"></span> <?php echo esc_attr( $car['status'] );?></span></td>
+                                <td><span class="mpcrbm_car_status status-published"><?php echo esc_attr( $car['status'] );?></span></td>
                                 <td><span class="mpcrbm_day_price"><?php echo esc_attr( $car['price'] );?></span></td>
 
                                 <td>
@@ -133,11 +133,11 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
                                         <a href="<?php echo esc_url( get_permalink( $car_id ) ); ?>"
                                            class="mpcrbm_action_btn view"
                                            title="<?php esc_attr_e( 'View', 'car-rental-manager' ); ?>"
-                                           target="_blank">👁️</a>
+                                           target="_blank"><i class="mi mi-eye"></i></a>
 
                                         <a href="<?php echo esc_url( get_edit_post_link( $car_id ) ); ?>"
                                            class="mpcrbm_action_btn edit"
-                                           title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">✏️</a>
+                                           title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></a>
 
                                         <?php
                                         $duplicate_url = wp_nonce_url(
@@ -147,14 +147,14 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
                                         ?>
                                         <a href="<?php echo esc_url( $duplicate_url ); ?>"
                                            class="mpcrbm_action_btn duplicate"
-                                           title="<?php esc_attr_e( 'Duplicate', 'car-rental-manager' ); ?>">📋</a>
+                                           title="<?php esc_attr_e( 'Duplicate', 'car-rental-manager' ); ?>"><i class="mi mi-copy-alt"></i></a>
 
                                         <?php
                                         $delete_url = get_delete_post_link( $car_id, '', true );
                                         ?>
                                         <a href="<?php echo esc_url( $delete_url ); ?>"
                                            class="mpcrbm_action_btn delete"
-                                           title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>">🗑️</a>
+                                           title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="mi mi-trash"></i></a>
                                     </div>
                                 </td>
 

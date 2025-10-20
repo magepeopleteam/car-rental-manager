@@ -142,8 +142,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             </div>
 
                             <div class="mpcrbm_taxonomy_actions">
-                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">✏️</button>
-                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>">🗑️</button>
+                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></button>
+                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="mi mi-trash"></i></button>
                             </div>
 
                         </div>
@@ -227,8 +227,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             </div>
 
                             <div class="mpcrbm_taxonomy_actions">
-                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">✏️</button>
-                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>">🗑️</button>
+                                <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></button>
+                                <button class="mpcrbm_action_btn delete mpcrbm_delete_taxonomy" title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="mi mi-trash"></i></button>
                             </div>
 
                         </div>

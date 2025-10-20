@@ -213,31 +213,36 @@ display: none !important;
 
 .mpcrbm_taxonomies_list{
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 5px;
+    justify-content: start ;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 .mpcrbm_taxonomy_item{
-    padding: 8px 13px;
+    padding:5px;
     border: 1px solid #dfdfdf;
     border-radius: 5px;
+    position: relative;
+    padding:12px 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+    background: #fafafa;
+    border-radius: 5px;
+    width: 17.79%;
+    transition: all .3s;
 }
 
 
-.mpcrbm_taxonomy_item {
-    position: relative;
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 8px;
-    background: #fff;
-    border-radius: 5px;
+.mpcrbm_taxonomy_item:hover {
+    box-shadow: 0 0 5px #d8ffd8;
+    transform: translateY(-3px);
 }
 .mpcrbm_taxonomy_actions {
     display: flex;
     position: absolute;
-    top: 5px;
-    right: 10px;
-    gap: 10px;
+    top: 50%;
+    right: 5px;
+    gap: 5px;
+    transform: translateY(-50%);
 }
 .mpcrbm_popup {
     position: fixed;
@@ -362,7 +367,10 @@ display: none !important;
 .mpcrbm_car_list_controls h2 {
     color: #1f2937;
     font-size: 24px;
+    line-height: 1;
+    margin: 0;
 }
+
 .mpcrbm_car_list_control_buttons {
     display: flex;
     gap: 10px;
@@ -429,33 +437,47 @@ input[type="text"], select {
 .mpcrbm_car_list_car_table{
     width: 100%;
     text-align: left;
-}
-
-.mpcrbm_car_list_car_table {
-    width: 100%;
     border-collapse: collapse;
 }
 
+.mpcrbm_car_list_car_table a{
+    text-decoration: none;
+}
+
 .mpcrbm_car_list_car_thead {
-    background: #f9fafb;
+    background: #f5f5f5;
     border-bottom: 1px solid #e5e7eb;
 }
 .mpcrbm_car_list_car_table th {
-    padding: 12px 15px;
+    padding:5px 10px;
     text-align: left;
     font-weight: 600;
-    color: #6b7280;
+    color: #333;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
+.status-published{
+    background-color:#e5fff6;
+    color: #0b704e;
+    padding:3px 10px;
+    border-radius:20px;
+}
+.mpcrbm_car_list_car_table tr:nth-child(even) {
+    background-color: #fafafa;
+}
 .mpcrbm_car_list_car_table tr {
     transition: background-color 0.15s;
 }
 
+.mpcrbm_car_list_car_table .car-title{
+    font-size: 14px;
+    font-weight: 600;
+}
+
 .mpcrbm_car_list_car_table td {
-    padding: 14px 15px;
+    padding:10px;
     border-bottom: 1px solid #f3f4f6;
     color: #374151;
     font-size: 14px;
@@ -479,14 +501,8 @@ input[type="text"], select {
     align-items: center;
     gap: 5px;
     font-weight: 500;
-    color: #10b981;
 }
-.mpcrbm_status_dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #10b981;
-}
+
 .mpcrbm_day_price {
     font-weight: 600;
     color: #667eea;
@@ -498,8 +514,18 @@ input[type="text"], select {
     gap: 8px;
 }
 
-.mpcrbm_action_btn.view {
-    color: #667eea;
+.mpcrbm_actions a{
+    text-decoration: none;
+}
+
+.mpcrbm_action_btn.mpcrbm_edit_taxonomy {
+    background-color: #defff4;
+    color: #10b981;
+}
+
+.mpcrbm_action_btn.mpcrbm_delete_taxonomy {
+    background-color: #ffdede;
+    color: #b91010;
 }
 .mpcrbm_action_btn {
     width: 32px;
@@ -515,11 +541,11 @@ input[type="text"], select {
     font-size: 14px;
 }
 .mpcrbm_action_btn.edit {
-    color: #10b981;
+    color: #f59e0b;
 }
 
 .mpcrbm_action_btn.duplicate {
-    color: #f59e0b;
+    color: #667eea;
 }
 
 .mpcrbm_action_btn.delete {
