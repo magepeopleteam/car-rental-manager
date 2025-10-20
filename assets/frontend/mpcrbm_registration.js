@@ -1068,6 +1068,16 @@ jQuery(document).ready(function($) {
         });
 
     });
+
+    $(".mpcrbm_car_details_tabs button").on("click", function(){
+        let tabId = $(this).data("tab");
+        $(".mpcrbm_car_details_tabs button").removeClass("active");
+        $(this).addClass("active");
+        $(".mpcrbm_car_details_tab_content").removeClass("active");
+        $("#" + tabId).addClass("active");
+    });
+
+
 });
 
 // Helper functions
