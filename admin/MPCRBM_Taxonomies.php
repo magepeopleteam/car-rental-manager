@@ -339,6 +339,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     <div class="mpcrbm_analytics">
                         <div class="mpcrbm_stat-card total">
                             <div class="mpcrbm_stat-left">
+                                <i class="mi mi-cars"></i>
                                 <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Total Cars', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">7</div>
                             </div>
@@ -347,6 +348,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
                         <div class="mpcrbm_stat-card available">
                             <div class="mpcrbm_stat-left">
+                                <i class="mi mi-car"></i>
                                 <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Available', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">7</div>
                             </div>
@@ -355,14 +357,16 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
                         <div class="mpcrbm_stat-card rented">
                             <div class="mpcrbm_stat-left">
+                                <i class="mi mi-car-journey"></i>
                                 <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Currently Rented', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">0</div>
                             </div>
-                            <div class="mpcrbm_stat-change"><?php esc_attr_e( 'Ready to rent', 'car-rental-manager' );?></div>
+                            <div class="mpcrbm_stat-change positive"><?php esc_attr_e( 'Ready to rent', 'car-rental-manager' );?></div>
                         </div>
 
                         <div class="mpcrbm_stat-card revenue">
                             <div class="mpcrbm_stat-left">
+                                <i class="mi mi-coins"></i>
                                 <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Daily Revenue', 'car-rental-manager' );?></div>
                                 <div class="mpcrbm_stat-value">$70</div>
                             </div>

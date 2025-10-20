@@ -30,6 +30,7 @@
 
 			public function global_enqueue() {
 				do_action( 'mpcrbm_common_script' );
+				wp_enqueue_style('mage-icons', MPCRBM_PLUGIN_URL . '/assets/mage-icon/css/mage-icon.css', array(), time());
 			}
 
 			public function admin_enqueue() {

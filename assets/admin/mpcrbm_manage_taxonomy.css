@@ -2,8 +2,7 @@
     display: flex;
     gap:15px;
     background: #fff;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
@@ -19,10 +18,11 @@
     gap: 10px;
     flex: 1;
     width: calc(100% - 200px);
+    background-color: #f5f5f5;
 }
 
 .mpcrbm_left_sidebar{
-    width: 200px;
+    width: 230px;
 }
 
 .mpcrbm_taxonomies_tab {
@@ -123,7 +123,7 @@
     background: white;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 5px #d5e4ff;
 }
 
 .mpcrbm_taxonomies_save_btn {
@@ -207,30 +207,54 @@
 .mpcrbm_analytics {
     display: flex;
     gap: 15px;
-    margin-bottom: 5px;
     overflow-x: auto;
+    padding:20px;
+}
+.mpcrbm_taxonomies_content{
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.mpcrbm_stat-label{
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+}
+
+.mpcrbm_stat-value{
+    font-size: 25px;
+    font-weight: 600;
+    color: #1f2937;
 }
 
 .mpcrbm_stat-card {
     background: white;
-    padding: 20px 10px;
+    padding: 10px;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid #e5e7eb;
     position: relative;
-    /*overflow: hidden;*/
+    box-shadow: 0 0 5px #d5e4ff;
     transition: all 0.2s ease;
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: space-between;
     gap: 10px
 }
 
 .mpcrbm_stat-left {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    gap: 5px;
+    align-items:center;
+}
+.mpcrbm_stat-left i{
+    font-size: 25px;
+    color: #667eea;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius:50%;
+    width: 30px;
+    height: 30px;
 }
 
 .mpcrbm_stat-change {
