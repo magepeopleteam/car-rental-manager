@@ -71,23 +71,21 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 								<span class="<?php echo esc_attr($service_icon); ?>"></span>
 							<?php } ?>
 							<?php echo esc_html($service_name); ?>
-							<sub class="textTheme"> &nbsp;&nbsp;<?php echo wp_kses_post(wc_price($service_price)); ?></sub>
 						</h4>
-						<div class="_equalChild">
+						<div class="price-quantity-box">
 							<div class="_mR_xs">
 								<?php MPCRBM_Custom_Layout::load_more_text($description, 100); ?>
 							</div>
-							<div>
-								<div class="justifyEnd">
-									<div class="_mR_min_100" data-collapse="<?php echo esc_attr($ex_unique_id); ?>">
-										<?php MPCRBM_Custom_Layout::qty_input('mpcrbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
-									</div>
-									<button type="button" class="_mpBtn_dBR_min_150 mpcrbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">
-										<input type="hidden" name="mpcrbm_extra_service[]" data-value="<?php echo esc_attr($service_name); ?>" value="" />
-										<span data-text><?php esc_html_e('Select', 'car-rental-manager'); ?></span>
-										<span data-icon class="mL_xs"></span>
-									</button>
+							<div class="price-quantity-box">
+								<div class="_mR_min_100" data-collapse="<?php echo esc_attr($ex_unique_id); ?>">
+									<?php MPCRBM_Custom_Layout::qty_input('mpcrbm_extra_service_qty[]', $service_price, 100, 1, 0); ?>
 								</div>
+								<div class="mpcrbm-price"><?php echo wp_kses_post(wc_price($service_price)); ?></div>
+								<button type="button" class="mpcrbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">
+									<input type="hidden" name="mpcrbm_extra_service[]" data-value="<?php echo esc_attr($service_name); ?>" value="" />
+									<span data-text><?php esc_html_e('Select', 'car-rental-manager'); ?></span>
+									<span data-icon></span>
+								</button>
 							</div>
 						</div>
 					</div>
@@ -96,7 +94,6 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
 			<?php } ?>
 		</div>
 	<?php } ?>
-	<div class="divider"></div>
 	<div class="justifyBetween">
 		<div></div>
 		<button class="_successButton_min_200 mpcrbm_book_now" style="display:none;" type="button" data-wc_link_id="<?php echo esc_attr($link_wc_product); ?>">

@@ -794,13 +794,14 @@ jQuery(document).ready(function($) {
 
             if (summary_item.length === 0) {
                 let new_item_html = `
-                    <div class="_textLight_1_dFlex_flexWrap_justifyBetween" data-extra-service-id="${service_id}" data-price="${price_per_item}">
-                        <div class="_dFlex_alignCenter">
+                    <div class="_textColor_4_dFlex_flexWrap_justifyBetween book-items" data-extra-service-id="${service_id}" data-price="${price_per_item}">
+                        <p class="_dFlex_alignCenter">
                             <span class="fas fa-check-square _textTheme_mR_xs"></span>
-                            <span>${service_name_display}</span>
-                        </div>
+                            <span class="">${service_name_display}</span> &nbsp;
+                            <span class="textTheme ex_service_qty">x${qty}</span>
+                        </p>
                         <p>
-                            <span class="textTheme ex_service_qty">x${qty}</span>&nbsp;|&nbsp;
+                            
                             <span class="textTheme"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol"></span>${mpcrbm_price_format(total_price_for_item)}</span></span>
                         </p>
                     </div>
