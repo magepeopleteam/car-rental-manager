@@ -1,16 +1,32 @@
 .mpcrbm_taxonomies_wrap {
     display: flex;
-    gap:15px;
+    gap:10px;
     background: #fff;
-    padding: 20px;
-    border-radius: 10px;
+    padding: 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.mpcrbm_car_rental_title{
+    background-color: #f5f5f5;
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+}
+.mpcrbm_car_rental_title h2{
+    font-size: 36px;
+    margin:10px 0;
+    line-height: 1;
+}
+.mpcrbm_car_rental_title p{
+    font-size:16px;
+    margin:0;
 }
 
 .mpcrbm_taxonomies_tabs {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    justify-content: start;
+    align-items: center;
+    gap: 10px;
 }
 .mpcrbm_left_main_content{
     display: flex;
@@ -19,39 +35,90 @@
     gap: 10px;
     flex: 1;
     width: calc(100% - 200px);
+    background-color: #f5f5f5;
 }
 
 .mpcrbm_left_sidebar{
-    width: 200px;
+    width: 240px;
 }
 
 .mpcrbm_taxonomies_tab {
-    padding: 10px 20px;
-    border: none;
-    background: none;
+    border-radius: 0;
+    padding: 10px 15px;
+    font-size: 16px;
+    background: #f5f5f5;
+    color: #333;
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 1px solid #f5f5f5;
+    margin: 0;
+    width: 100%;
     text-align: left;
 }
-
+.mpcrbm_taxonomies_tab i{
+    margin-right: 5px;
+    color: var(--color_theme);
+}
+/* hide notice */
+.wrap .notice, 
+.wrap .update-nag, 
+#message, 
+.notice-success, 
+.notice-error, 
+.notice-warning, 
+.notice-info {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.wrap .mpcrbm-admin-notice { display: none !important; }
+.mpcrbm_rent_page_mpcrbm_car_rental [class*='notice']{
+display: none !important;
+}
+/* notice */
+.mpcrbm_taxonomies_tab:hover{
+    background-color: #EAF6FF;
+    color: var(--color_theme);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 119, 204, 0.15);
+}
 .mpcrbm_taxonomies_tab.active {
-    background-color: #e5e5e5;
-    color: #0073aa;
+    background-color: var(--color_theme);
+    color: #FFF;
+}
+.mpcrbm_taxonomies_tab.active i{
+    color: #FFF;
+}
+
+.mpcrbm_taxonomies_tab.active::after{
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 8px solid var(--color_theme);
 }
 
 .mpcrbm_taxonomies_toolbar {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     margin-bottom: 15px;
     gap: 10px;
 }
 
 .mpcrbm_taxonomies_add_btn {
-    background: #0073aa;
+    background: #667eea;
     color: #fff;
     border: none;
-    padding: 8px 30px;
+    padding:10px;
     border-radius: 4px;
     cursor: pointer;
 }
@@ -123,7 +190,7 @@
     background: white;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 5px #d5e4ff;
 }
 
 .mpcrbm_taxonomies_save_btn {
@@ -147,31 +214,36 @@
 
 .mpcrbm_taxonomies_list{
     display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    gap: 5px;
+    justify-content: start ;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 .mpcrbm_taxonomy_item{
-    padding: 8px 13px;
+    padding:5px;
     border: 1px solid #dfdfdf;
     border-radius: 5px;
+    position: relative;
+    padding:12px 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 8px;
+    background: #fafafa;
+    border-radius: 5px;
+    width: 17.79%;
+    transition: all .3s;
 }
 
 
-.mpcrbm_taxonomy_item {
-    position: relative;
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 8px;
-    background: #fff;
-    border-radius: 5px;
+.mpcrbm_taxonomy_item:hover {
+    box-shadow: 0 0 5px #d8ffd8;
+    transform: translateY(-3px);
 }
 .mpcrbm_taxonomy_actions {
     display: flex;
     position: absolute;
-    top: 5px;
-    right: 10px;
-    gap: 10px;
+    top: 50%;
+    right: 5px;
+    gap: 5px;
+    transform: translateY(-50%);
 }
 .mpcrbm_popup {
     position: fixed;
@@ -207,40 +279,69 @@
 .mpcrbm_analytics {
     display: flex;
     gap: 15px;
-    margin-bottom: 5px;
     overflow-x: auto;
+    padding:20px;
+}
+.mpcrbm_taxonomies_content{
+    padding:0 20px 20px 20px;
+    background-color: #f5f5f5;
+}
+
+.mpcrbm_stat-label{
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+}
+
+.mpcrbm_stat-value{
+    font-size: 25px;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 6px;
 }
 
 .mpcrbm_stat-card {
     background: white;
-    padding: 20px 10px;
+    padding: 10px;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     border: 1px solid #e5e7eb;
     position: relative;
-    /*overflow: hidden;*/
+    box-shadow: 0 0 5px #d5e4ff;
     transition: all 0.2s ease;
     flex: 1;
     display: flex;
-    align-items: center;
+    align-items: end;
     justify-content: space-between;
     gap: 10px
 }
 
 .mpcrbm_stat-left {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    gap: 5px;
+    align-items:center;
+    padding-bottom: 10px;
+}
+.mpcrbm_stat-left i{
+    font-size: 25px;
+    color: #667eea;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius:50%;
+    width: 30px;
+    height: 30px;
 }
 
 .mpcrbm_stat-change {
-    font-size: 12px;
+    font-size: 16px;
     margin-top: 0;
     display: flex;
     align-items: center;
     gap: 4px;
     font-weight: 500;
     white-space: wrap;
+    position: absolute;
+    right: 15px;
+    border: 0;
 }
 .mpcrbm_stat-change.positive {
     color: #10b981;
@@ -267,7 +368,10 @@
 .mpcrbm_car_list_controls h2 {
     color: #1f2937;
     font-size: 24px;
+    line-height: 1;
+    margin: 0;
 }
+
 .mpcrbm_car_list_control_buttons {
     display: flex;
     gap: 10px;
@@ -287,7 +391,11 @@
 
 .mpcrbm_car_list_control_btn.btn-primary {
     background: #667eea;
-    color: white;
+    color: #fff;
+    border: none;
+    padding:10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 .mpcrbm_car_list_control_btn.btn-secondary {
     background: #f3f4f6;
@@ -317,7 +425,7 @@ input[type="text"], select {
 }
 
 input[type="text"], select {
-    padding: 10px 15px;
+    padding: 5px;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
     font-size: 14px;
@@ -334,33 +442,47 @@ input[type="text"], select {
 .mpcrbm_car_list_car_table{
     width: 100%;
     text-align: left;
-}
-
-.mpcrbm_car_list_car_table {
-    width: 100%;
     border-collapse: collapse;
 }
 
+.mpcrbm_car_list_car_table a{
+    text-decoration: none;
+}
+
 .mpcrbm_car_list_car_thead {
-    background: #f9fafb;
+    background: #f5f5f5;
     border-bottom: 1px solid #e5e7eb;
 }
 .mpcrbm_car_list_car_table th {
-    padding: 12px 15px;
+    padding:5px 10px;
     text-align: left;
     font-weight: 600;
-    color: #6b7280;
+    color: #333;
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
+.status-published{
+    background-color:#e5fff6;
+    color: #0b704e;
+    padding:3px 10px;
+    border-radius:20px;
+}
+.mpcrbm_car_list_car_table tr:nth-child(even) {
+    background-color: #fafafa;
+}
 .mpcrbm_car_list_car_table tr {
     transition: background-color 0.15s;
 }
 
+.mpcrbm_car_list_car_table .car-title{
+    font-size: 14px;
+    font-weight: 600;
+}
+
 .mpcrbm_car_list_car_table td {
-    padding: 14px 15px;
+    padding:10px;
     border-bottom: 1px solid #f3f4f6;
     color: #374151;
     font-size: 14px;
@@ -384,14 +506,8 @@ input[type="text"], select {
     align-items: center;
     gap: 5px;
     font-weight: 500;
-    color: #10b981;
 }
-.mpcrbm_status_dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #10b981;
-}
+
 .mpcrbm_day_price {
     font-weight: 600;
     color: #667eea;
@@ -403,8 +519,18 @@ input[type="text"], select {
     gap: 8px;
 }
 
-.mpcrbm_action_btn.view {
-    color: #667eea;
+.mpcrbm_actions a{
+    text-decoration: none;
+}
+
+.mpcrbm_action_btn.mpcrbm_edit_taxonomy {
+    background-color: #defff4;
+    color: #10b981;
+}
+
+.mpcrbm_action_btn.mpcrbm_delete_taxonomy {
+    background-color: #ffdede;
+    color: #b91010;
 }
 .mpcrbm_action_btn {
     width: 32px;
@@ -420,11 +546,11 @@ input[type="text"], select {
     font-size: 14px;
 }
 .mpcrbm_action_btn.edit {
-    color: #10b981;
+    color: #f59e0b;
 }
 
 .mpcrbm_action_btn.duplicate {
-    color: #f59e0b;
+    color: #667eea;
 }
 
 .mpcrbm_action_btn.delete {
