@@ -40,7 +40,7 @@
                     taxonomy_type: currentType,
                     name: name,
                     slug: slug,
-                    // security: mpcrbm_taxonomy_ajax.nonce,
+                    nonce: mpcrbm_admin_nonce.nonce,
                 },
                 success: function (response) {
                     alert(response.data.message);
@@ -138,7 +138,8 @@
                 taxonomy_type: type,
                 name,
                 slug,
-                description: desc
+                description: desc,
+                nonce: mpcrbm_admin_nonce.nonce,
             }, function (res) {
                 alert(res.data.message);
                 $('.mpcrbm_popup').remove();
@@ -158,7 +159,8 @@
                     action: 'mpcrbm_delete_taxonomy',
                     security: nonce,
                     term_id: id,
-                    taxonomy_type: type
+                    taxonomy_type: type,
+                    nonce: mpcrbm_admin_nonce.nonce,
                 }, function (res) {
                     alert(res.data.message);
                     if (res.success) item.remove();
@@ -308,6 +310,396 @@
                     }
                 }
             });
+        });
+
+
+        /*FAQ*/
+        function closeModal() {
+            $('#mpcrbm_faq_modal').hide();
+            $('#mpcrbm_faq_key').val('');
+            $('#mpcrbm_faq_title').val('');
+            if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                tinymce.get('mpcrbm_faq_answer_editor').setContent('');
+            } else {
+                $('#mpcrbm_faq_answer_editor').val('');
+            }
+        }
+
+        $('#mpcrbm_add_faq_btn').on('click', function() {
+            $('#mpcrbm_modal_title').text('Add FAQ');
+            closeModal();
+            let targetBtn = $('#mpcrbm_save_term_condition_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_faq_btn');
+            }
+            $('#mpcrbm_faq_modal').show();
+        });
+
+        $('#mpcrbm_add_term_condition_btn').on('click', function() {
+            $('#mpcrbm_modal_title').text('Add Term & Condition');
+            closeModal();
+
+            let targetBtn = $('#mpcrbm_save_faq_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
+            }
+            $('#mpcrbm_faq_modal').show();
+        });
+
+        $('#mpcrbm_cancel_faq_btn').on('click', function() {
+            closeModal();
+        });
+
+        // Edit FAQ
+        $(document).on('click', '.edit-faq', function() {
+            const row = $(this).closest('tr');
+            $('#mpcrbm_faq_key').val(row.data('key'));
+            $('#mpcrbm_faq_title').val(row.find('.faq-title').text());
+            $('#mpcrbm_modal_title').text('Edit FAQ');
+            $('#mpcrbm_faq_modal').show();
+
+            let targetBtn = $('#mpcrbm_save_term_condition_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_faq_btn');
+            }
+
+            const answer = row.find('.faq-answer').text();
+            setTimeout(() => {
+                if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                    tinymce.get('mpcrbm_faq_answer_editor').setContent(answer);
+                } else {
+                    $('#mpcrbm_faq_answer_editor').val(answer);
+                }
+            }, 300);
+        });
+        // Edit TERM
+        $(document).on('click', '.mpcrbm_edit_term', function() {
+            const row = $(this).closest('tr');
+            $('#mpcrbm_faq_key').val(row.data('key'));
+            $('#mpcrbm_faq_title').val(row.find('.faq-title').text());
+            $('#mpcrbm_modal_title').text('Edit FAQ');
+            $('#mpcrbm_faq_modal').show();
+
+            let targetBtn = $('#mpcrbm_save_faq_btn');
+
+            if (targetBtn.length) {
+                targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
+            }
+
+            const answer = row.find('.faq-answer').text();
+            setTimeout(() => {
+                if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                    tinymce.get('mpcrbm_faq_answer_editor').setContent(answer);
+                } else {
+                    $('#mpcrbm_faq_answer_editor').val(answer);
+                }
+            }, 300);
+        });
+
+        // Delete FAQ
+        $(document).on('click', '.delete-faq', function() {
+            if (!confirm('Are you sure you want to delete this FAQ?')) return;
+            const key = $(this).closest('tr').data('key');
+            $.post(ajaxurl, {
+                action: 'mpcrbm_delete_faq',
+                key: key,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response){
+                if (response.success) location.reload();
+                else alert(response.data);
+            });
+        });
+
+        // Delete ERM
+        $(document).on('click', '.mpcrbm_delete_term', function() {
+            if (!confirm('Are you sure you want to delete this FAQ?')) return;
+            const key = $(this).closest('tr').data('key');
+            $.post(ajaxurl, {
+                action: 'mpcrbm_delete_term',
+                key: key,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response){
+                if (response.success) location.reload();
+                else alert(response.data);
+            });
+        });
+
+        // Save FAQ
+        $(document).on( 'click','#mpcrbm_save_faq_btn', function( e ) {
+            e.preventDefault();
+            const title = $('#mpcrbm_faq_title').val().trim();
+            let answer = '';
+            if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                answer = tinymce.get('mpcrbm_faq_answer_editor').getContent();
+            } else {
+                answer = $('#mpcrbm_faq_answer_editor').val();
+            }
+            const key = $('#mpcrbm_faq_key').val();
+
+            if (title === '' || answer === '') {
+                alert('Please fill all fields.');
+                return;
+            }
+
+            $.post( ajaxurl, {
+                action: 'mpcrbm_save_faq',
+                title: title,
+                answer: answer,
+                key: key,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response){
+                if (response.success) location.reload();
+                else alert(response.data);
+            });
+        });
+        // Save FAQ
+        $(document).on( 'click','#mpcrbm_save_term_condition_btn', function( e ) {
+            e.preventDefault();
+            const title = $('#mpcrbm_faq_title').val().trim();
+            let answer = '';
+            if (tinymce.get('mpcrbm_faq_answer_editor')) {
+                answer = tinymce.get('mpcrbm_faq_answer_editor').getContent();
+            } else {
+                answer = $('#mpcrbm_faq_answer_editor').val();
+            }
+            const key = $('#mpcrbm_faq_key').val();
+
+            if (title === '' || answer === '') {
+                alert('Please fill all fields.');
+                return;
+            }
+
+            $.post( ajaxurl, {
+                action: 'mpcrbm_save_term_and_condition',
+                title: title,
+                answer: answer,
+                key: key,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response){
+                if (response.success) location.reload();
+                else alert(response.data);
+            });
+        });
+
+        // ===== ADD FAQ =====
+        $(document).on('click', '.mpcrbm_add_faq', function() {
+            let item = $(this).closest('.mpcrbm_faq_item');
+            let $this = $(this);
+            $this.text( 'adding...');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="mpcrbm_selected_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="mpcrbm_faq_title">${title}</div>
+                <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
+            </div>`;
+            // $('.mpcrbm_selected_faq_question').append( html );
+
+            updateFaqMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
+
+        });
+        // ===== REMOVE FAQ =====
+        $(document).on('click', '.mpcrbm_remove_faq', function() {
+            let $this = $(this);
+            $this.text( 'removing...');
+            let item = $(this).closest('.mpcrbm_selected_item');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="mpcrbm_faq_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="mpcrbm_faq_title">${title}</div>
+                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
+            </div>`;
+            // $('.mpcrbm_faq_all_question').append(html);
+
+            updateFaqMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
+
+        });
+
+        // ===== ADD TERM =====
+        $(document).on('click', '.mpcrbm_add_term_condition', function() {
+            let item = $(this).closest('.mpcrbm_faq_item');
+            let $this = $(this);
+            $this.text( 'adding...');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="mpcrbm_selected_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="mpcrbm_faq_title">${title}</div>
+                <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
+            </div>`;
+            // $('.mpcrbm_selected_faq_question').append( html );
+
+            updateTermMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
+
+        });
+        // ===== REMOVE FAQ =====
+        $(document).on('click', '.mpcrbm_remove_term_condition', function() {
+            let $this = $(this);
+            $this.text( 'removing...');
+            let item = $(this).closest('.mpcrbm_selected_item');
+            let key = item.data('key');
+            let title = item.data('title');
+
+            let html = `
+            <div class="mpcrbm_faq_item" 
+            data-key="${key}"
+            data-key="${title}"
+            >
+                <div class="mpcrbm_faq_title">${title}</div>
+                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
+            </div>`;
+            // $('.mpcrbm_faq_all_question').append(html);
+
+            updateTermMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
+
+        });
+
+        function updateFaqMeta( clickBtn, item, action, append_section, html ) {
+
+            let post_id = $('[name="mpcrbm_post_id"]').val();
+            let data = [];
+
+            $('.mpcrbm_selected_item').each(function() {
+                let key = $(this).data('key');
+                data.push(key);
+            });
+            let key = $(item).data('key');
+
+            if ( action === 'add' ) {
+                if (!data.includes(key)) {
+                    data.push(key);
+                }
+            } else if (action === 'remove') {
+                let index = data.indexOf(key);
+                if (index !== -1) {
+                    data.splice(index, 1);
+                }
+            }
+
+            let faq_keys = JSON.stringify(data);
+            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+
+            $.ajax({
+                url: ajaxurl,
+                method: 'POST',
+                data: {
+                    action: 'mpcrbm_save_added_faq',
+                    post_id: post_id,
+                    mpcrbm_added_faq: faq_keys,
+                    nonce: mpcrbm_admin_nonce.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('✅ FAQs saved successfully');
+
+                        clickBtn.text( action );
+                        $('.'+append_section).append(html);
+                        item.remove();
+                    } else {
+                        alert('❌ Error saving FAQs:', response.data.message);
+                    }
+                }
+            });
+        }
+        function updateTermMeta( clickBtn, item, action, append_section, html ) {
+
+            let post_id = $('[name="mpcrbm_post_id"]').val();
+            let data = [];
+
+            $('.mpcrbm_selected_item').each(function() {
+                let key = $(this).data('key');
+                data.push(key);
+            });
+            let key = $(item).data('key');
+
+            if ( action === 'add' ) {
+                if (!data.includes(key)) {
+                    data.push(key);
+                }
+            } else if (action === 'remove') {
+                let index = data.indexOf(key);
+                if (index !== -1) {
+                    data.splice(index, 1);
+                }
+            }
+
+            let faq_keys = JSON.stringify(data);
+            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+
+            $.ajax({
+                url: ajaxurl,
+                method: 'POST',
+                data: {
+                    action: 'mpcrbm_save_added_term_condition',
+                    post_id: post_id,
+                    mpcrbm_added_term: faq_keys,
+                    nonce: mpcrbm_admin_nonce.nonce
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('✅ FAQs saved successfully');
+
+                        clickBtn.text( action );
+                        $('.'+append_section).append(html);
+                        item.remove();
+                    } else {
+                        alert('❌ Error saving FAQs:', response.data.message);
+                    }
+                }
+            });
+        }
+
+        function updateFeatureMeta( actionType, termId, featureType) {
+            let post_id = $('[name="mpcrbm_post_id"]').val();
+
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    action: 'mpcrbm_update_feature_meta',
+                    nonce: mpcrbm_admin_nonce.nonce,
+                    post_id: post_id,
+                    term_id: termId,
+                    feature_type: featureType,
+                    action_type: actionType,
+                },
+                success: function(res) {
+                    if (res.success) {
+                        alert('Feature meta updated');
+                    }
+                }
+            });
+        }
+
+        // Include checkboxes
+        $(document).on('change', '.mpcrbm_include_checkbox', function() {
+            let termId = $(this).val();
+            let actionType = $(this).is(':checked') ? 'add' : 'remove';
+            updateFeatureMeta(actionType, termId, 'include');
+        });
+
+        // Exclude checkboxes
+        $(document).on('change', '.mpcrbm_exclude_checkbox', function() {
+            let termId = $(this).val();
+            let actionType = $(this).is(':checked') ? 'add' : 'remove';
+            updateFeatureMeta(actionType, termId, 'exclude');
         });
 
 

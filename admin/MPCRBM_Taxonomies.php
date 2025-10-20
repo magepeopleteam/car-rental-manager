@@ -32,8 +32,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             $ids = isset($_POST['ids']) ? explode(',', sanitize_text_field($_POST['ids'])) : [];
 
-            error_log( print_r( [ '$ids' => $ids ], true ) );
-
             if (!empty($ids)) {
                 foreach ($ids as $id) {
                     wp_trash_post((int)$id);
@@ -183,7 +181,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             ob_start();
             ?>
             <div class="mpcrbm_taxonomoy_data_holder">
-                <?php  if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
+                <?php  if ( $type !== 'mpcrbm_car_list' ) {
                     if( $type === 'mpcrbm_car_type' ){
                         $type_title = 'Car Types';
                     }elseif( $type === 'mpcrbm_fuel_type' ){
@@ -194,6 +192,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         $type_title = 'Car Brand';
                     }else if( $type === 'mpcrbm_make_year' ){
                         $type_title = 'Make Year';
+                    }else if( $type === 'mpcrbm_car_feature' ){
+                        $type_title = 'Car Feature';
                     }else{
                         $type_title = 'Car List';
                     }
@@ -249,7 +249,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         }
 
         public function ajax_save_taxonomy() {
-//            check_ajax_referer( 'mpcrbm_taxonomy_nonce', 'security' );
+            check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
             if ( ! current_user_can( 'manage_options' ) ) {
                 wp_send_json_error( array(
@@ -332,6 +332,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_seating_capacity">💺 <?php esc_attr_e( 'Seating Capacity', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand">🏷️ <?php esc_attr_e( 'Car Brand', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year">📅 <?php esc_attr_e( 'Make Year', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature">🧩 <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
                     </div>
                 </div>
                 <div class="mpcrbm_left_main_content">
@@ -405,6 +406,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 echo self::load_taxonomies( 'mpcrbm_make_year' );
                             ?>
                         </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_feature_holder" style="display: none">
+                            <?php
+                                echo self::load_taxonomies( 'mpcrbm_car_feature' );
+                            ?>
+                        </div>
                     </div>
                 </div>
 
@@ -432,12 +438,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
 
         public function ajax_update_taxonomy() {
-//            check_ajax_referer('mpcrbm_admin_nonce', 'security');
+            check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
             if (!current_user_can('manage_options')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
             }
-
 
             $term_id = intval($_POST['term_id']);
             $type = sanitize_text_field($_POST['taxonomy_type']);
@@ -459,7 +464,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         }
 
         public function ajax_delete_taxonomy() {
-//            check_ajax_referer('mpcrbm_admin_nonce', 'security');
+            check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
             if (!current_user_can('manage_options')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
