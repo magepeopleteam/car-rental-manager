@@ -324,8 +324,18 @@
                 $('#mpcrbm_faq_answer_editor').val('');
             }
         }
+        function closeTermModal() {
+            $('#mpcrbm_term_condition_modal').hide();
+            $('#mpcrbm_term_condition_key').val('');
+            $('#mpcrbm_term_condition_title').val('');
+            if (tinymce.get('mpcrbm_term_condition_answer_editor')) {
+                tinymce.get('mpcrbm_term_condition_answer_editor').setContent('');
+            } else {
+                $('#mpcrbm_term_condition_answer_editor').val('');
+            }
+        }
 
-        $('#mpcrbm_add_faq_btn').on('click', function() {
+        $(document).on('click', '#mpcrbm_add_faq_btn',function() {
             $('#mpcrbm_modal_title').text('Add FAQ');
             closeModal();
             let targetBtn = $('#mpcrbm_save_term_condition_btn');
@@ -336,20 +346,24 @@
             $('#mpcrbm_faq_modal').show();
         });
 
-        $('#mpcrbm_add_term_condition_btn').on('click', function() {
-            $('#mpcrbm_modal_title').text('Add Term & Condition');
-            closeModal();
+        $(document).on('click', '#mpcrbm_add_term_condition_btn',function() {
+            $('#mpcrbm_term_modal_title').text('Add Term & Condition');
+            closeTermModal();
 
-            let targetBtn = $('#mpcrbm_save_faq_btn');
+            let targetBtn = $('#mpcrbm_save_term_condition_btn');
 
             if (targetBtn.length) {
                 targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
             }
-            $('#mpcrbm_faq_modal').show();
+            $('#mpcrbm_term_condition_modal').show();
         });
 
-        $('#mpcrbm_cancel_faq_btn').on('click', function() {
+        $(document).on( 'click', '#mpcrbm_cancel_faq_btn', function() {
             closeModal();
+        });
+
+        $(document).on( 'click', '#mpcrbm_cancel_term_condition_btn', function() {
+            closeTermModal();
         });
 
         // Edit FAQ
@@ -378,12 +392,12 @@
         // Edit TERM
         $(document).on('click', '.mpcrbm_edit_term', function() {
             const row = $(this).closest('tr');
-            $('#mpcrbm_faq_key').val(row.data('key'));
-            $('#mpcrbm_faq_title').val(row.find('.faq-title').text());
-            $('#mpcrbm_modal_title').text('Edit FAQ');
-            $('#mpcrbm_faq_modal').show();
+            $('#mpcrbm_term_condition_key').val(row.data('key'));
+            $('#mpcrbm_term_condition_title').val(row.find('.faq-title').text());
+            $('#mpcrbm_term_modal_title').text('Edit Term & Condition');
+            $('#mpcrbm_term_condition_modal').show();
 
-            let targetBtn = $('#mpcrbm_save_faq_btn');
+            let targetBtn = $('#mpcrbm_save_term_condition_btn');
 
             if (targetBtn.length) {
                 targetBtn.attr('id', 'mpcrbm_save_term_condition_btn');
@@ -391,10 +405,10 @@
 
             const answer = row.find('.faq-answer').text();
             setTimeout(() => {
-                if (tinymce.get('mpcrbm_faq_answer_editor')) {
-                    tinymce.get('mpcrbm_faq_answer_editor').setContent(answer);
+                if (tinymce.get('mpcrbm_term_condition_answer_editor')) {
+                    tinymce.get('mpcrbm_term_condition_answer_editor').setContent(answer);
                 } else {
-                    $('#mpcrbm_faq_answer_editor').val(answer);
+                    $('#mpcrbm_term_condition_answer_editor').val(answer);
                 }
             }, 300);
         });
@@ -458,14 +472,14 @@
         // Save FAQ
         $(document).on( 'click','#mpcrbm_save_term_condition_btn', function( e ) {
             e.preventDefault();
-            const title = $('#mpcrbm_faq_title').val().trim();
+            const title = $('#mpcrbm_term_condition_title').val().trim();
             let answer = '';
-            if (tinymce.get('mpcrbm_faq_answer_editor')) {
-                answer = tinymce.get('mpcrbm_faq_answer_editor').getContent();
+            if (tinymce.get('mpcrbm_term_condition_answer_editor')) {
+                answer = tinymce.get('mpcrbm_term_condition_answer_editor').getContent();
             } else {
-                answer = $('#mpcrbm_faq_answer_editor').val();
+                answer = $('#mpcrbm_term_condition_answer_editor').val();
             }
-            const key = $('#mpcrbm_faq_key').val();
+            const key = $('#mpcrbm_term_condition_key').val();
 
             if (title === '' || answer === '') {
                 alert('Please fill all fields.');

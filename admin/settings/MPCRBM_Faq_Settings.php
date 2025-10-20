@@ -12,7 +12,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
 
         private $option_key = 'mpcrbm_faq_list';
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ] );
+            add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_save_added_faq', [ $this, 'mpcrbm_save_added_faq' ] );
         }
 
@@ -33,10 +33,10 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
             }
         }
 
-        public function faq_tab_content(){
+        public function faq_tab_content( $post_id ){
 
             $faqs = get_option( $this->option_key, [] );
-            $added_faqs = get_post_meta( 66, 'mpcrbm_added_faq', true);
+            $added_faqs = get_post_meta( $post_id, 'mpcrbm_added_faq', true );
             $selected_faqs_data = [];
             if (!empty($added_faqs) && !empty( $faqs ) ) {
                 foreach ($added_faqs as $faq_key) {
@@ -60,7 +60,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
 
                 <div class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_faq_all_question_box">
-                        <h3>Available FAQs</h3>
+                        <h3><?php esc_html_e( 'Available FAQs', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_faq_all_question">
                             <?php if (!empty($faqs)) : ?>
                                 <?php foreach ($faqs as $key => $faq) :
@@ -71,17 +71,17 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
                                     >
                                         <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
+                                        <button type="button" class="button button-small mpcrbm_add_faq"><?php esc_html_e( 'Add', 'car-rental-manager' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p>No FAQs available.</p>
+                                <p><?php esc_html_e( 'No FAQs available.', 'car-rental-manager' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="mpcrbm_selected_faq_question_box">
-                        <h3>Added FAQs</h3>
+                        <h3><?php esc_html_e( 'Added FAQs', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_selected_faq_question">
                             <?php if (!empty($selected_faqs_data)) : ?>
                                 <?php foreach ($selected_faqs_data as $key => $faq) : ?>
@@ -90,11 +90,11 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
                                     >
                                         <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
+                                        <button type="button" class="button button-small mpcrbm_remove_faq"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p>No FAQs added yet.</p>
+                                <p><?php esc_html_e( 'No FAQs added yet.', 'car-rental-manager' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>

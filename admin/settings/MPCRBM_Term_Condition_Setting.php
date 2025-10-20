@@ -14,13 +14,13 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
         private $term_option_key = 'mpcrbm_term_condition_list';
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ] );
+            add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_save_added_term_condition', [ $this, 'mpcrbm_save_added_term_condition' ] );
         }
-        public function term_tab_content(){
+        public function term_tab_content( $post_id ){
 
             $faqs = get_option( $this->term_option_key, [] );
-            $added_faqs = get_post_meta( 66, $this->term_option_key, true);
+            $added_faqs = get_post_meta( $post_id, $this->term_option_key, true );
             $selected_faqs_data = [];
             if (!empty($added_faqs) && !empty( $faqs ) ) {
                 foreach ($added_faqs as $faq_key) {
@@ -44,7 +44,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
                 <div class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_faq_all_question_box">
-                        <h3>Available Term & Condition</h3>
+                        <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_faq_all_question">
                             <?php if (!empty($faqs)) : ?>
                                 <?php foreach ($faqs as $key => $faq) :
@@ -55,17 +55,17 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
                                     >
                                         <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_add_term_condition">Add</button>
+                                        <button type="button" class="button button-small mpcrbm_add_term_condition"><?php esc_html_e( 'Add', 'car-rental-manager' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p>No Term & Condition available.</p>
+                                <p><?php esc_html_e( 'No Term & Condition available.', 'car-rental-manager' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="mpcrbm_selected_faq_question_box">
-                        <h3>Added Term & Condition</h3>
+                        <h3><?php esc_html_e( 'Added Term & Condition', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_selected_faq_question">
                             <?php if (!empty($selected_faqs_data)) : ?>
                                 <?php foreach ($selected_faqs_data as $key => $faq) : ?>
@@ -74,11 +74,11 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
                                     >
                                         <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_remove_term_condition">Remove</button>
+                                        <button type="button" class="button button-small mpcrbm_remove_term_condition"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else : ?>
-                                <p>No Term & Condition added yet.</p>
+                                <p><?php esc_html_e( 'No Term & Condition added yet.', 'car-rental-manager' ); ?></p>
                             <?php endif; ?>
                         </div>
                     </div>

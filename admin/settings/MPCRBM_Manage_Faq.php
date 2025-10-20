@@ -15,7 +15,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
         private $menu_slug  = 'mpcrbm_manage_faq';
 
         public function __construct() {
-            add_action('admin_menu', [ $this, 'register_menu' ]);
+//            add_action('admin_menu', [ $this, 'register_menu' ]);
             add_action('wp_ajax_mpcrbm_save_faq', [ $this, 'ajax_save_faq' ]);
             add_action('wp_ajax_mpcrbm_save_term_and_condition', [ $this, 'mpcrbm_save_term_and_condition' ]);
             add_action('wp_ajax_mpcrbm_delete_faq', [ $this, 'ajax_delete_faq' ]);
@@ -40,11 +40,13 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
          * Render FAQ management page
          */
         public function render_page() {
-            $faqs = get_option( $this->option_key, [] );
-            $term_and_conditions = get_option( $this->term_option_key, [] );
+            self::faq_display();
+            self::term_and_condition_display();
+        }
 
-            error_log( print_r( [ '$term_and_conditions' => $term_and_conditions ], true ) );
+        public static function term_and_condition_display(){
 
+            $term_and_conditions = get_option( 'mpcrbm_term_condition_list', [] );
             ?>
             <div class="mpcrbm_faq_container">
                 <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
@@ -81,7 +83,39 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                 </table>
 
                 <!-- Popup Modal -->
+                <div id="mpcrbm_term_condition_modal" class="mpcrbm_faq_modal">
+                    <div class="mpcrbm_modal_content">
+                        <h3 id="mpcrbm_term_modal_title"><?php esc_attr_e( 'Add Term & Condition', 'car-rental-manager' );?></h3>
+                        <input type="hidden" id="mpcrbm_term_condition_key" value="">
+                        <label><?php esc_attr_e( 'Question', 'car-rental-manager' );?>:</label>
+                        <input type="text" id="mpcrbm_term_condition_title" class=" mpcrbm_faq_title regular-text"><br><br>
+
+                        <label>Answer:</label>
+                        <div id="mpcrbm_term_condition_editor_container">
+                            <?php
+                            wp_editor( '', 'mpcrbm_term_condition_answer_editor', [
+                                'textarea_name' => 'mpcrbm_term_condition_answer',
+                                'textarea_rows' => 8,
+                                'media_buttons' => true,
+                                'editor_height' => 400,
+                                'tinymce' => [
+                                    'toolbar1' => 'bold italic underline | bullist numlist | link unlink | undo redo | formatselect',
+                                ],
+                            ] );
+                            ?>
+                        </div>
+
+                        <br>
+                        <button id="mpcrbm_save_term_condition_btn" class="button button-primary">Save</button>
+                        <button id="mpcrbm_cancel_term_condition_btn" class="button">Cancel</button>
+                    </div>
+                </div>
             </div>
+        <?php }
+        public static function faq_display(){
+
+            $faqs = get_option( 'mpcrbm_faq_list', [] );
+            ?>
 
             <div class="mpcrbm_faq_container">
                 <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
@@ -145,8 +179,8 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     </div>
                 </div>
             </div>
-            <?php
-        }
+
+        <?php }
 
         /**
          * Save FAQ (AJAX)
@@ -179,8 +213,6 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
             public function mpcrbm_save_term_and_condition() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
-
-                error_log( print_r( [ '$_POST' => $_POST ], true ) );
 
                 $title  = sanitize_text_field( $_POST['title'] ?? '' );
                 $answer = wp_kses_post( $_POST['answer'] ?? '' );
