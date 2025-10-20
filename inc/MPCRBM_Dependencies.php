@@ -13,6 +13,13 @@
 				$this->load_file();
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ), 80 );
 				add_action( 'wp_enqueue_scripts', array( $this, 'frontend_enqueue' ), 80 );
+				add_action( 'current_screen', function( $screen ) {
+					if ( $screen && $screen->id === 'mpcrbm_rent_page_mpcrbm_car_rental' ) {
+						// try to remove generic actions (risky: may remove others)
+						remove_all_actions( 'admin_notices' ); // <-- এইটা সাবধান দিয়ে ব্যবহার করো
+						remove_all_actions( 'all_admin_notices' ); // optional
+					}
+				});
 			}
 
 			public function language_load(): void {
@@ -30,6 +37,7 @@
 
 			public function global_enqueue() {
 				do_action( 'mpcrbm_common_script' );
+				wp_enqueue_style('mage-icons', MPCRBM_PLUGIN_URL . '/assets/mage-icon/css/mage-icon.css', array(), time());
 			}
 
 			public function admin_enqueue() {
