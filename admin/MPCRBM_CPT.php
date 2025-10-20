@@ -184,6 +184,7 @@
 					'rewrite'             => [ 'slug' => $slug ],
 				];
 				register_post_type( $cpt, $args );
+				
 				$ex_args = array(
 					'public'              => false,
 					'label'               => esc_html__( 'Extra Services', 'car-rental-manager' ),
