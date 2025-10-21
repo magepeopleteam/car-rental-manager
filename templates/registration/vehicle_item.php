@@ -157,7 +157,7 @@ if ($post_id) {
             </div>
         </div>
         <div class="mpcrbm_list_details">
-            <h5><?php echo esc_html(get_the_title($post_id)); ?></h5>
+            <h2><?php echo esc_html(get_the_title($post_id)); ?></h2>
             <div class=" mpcrbm_list">
                 <?php if ($display_features === 'on' && is_array($all_features) && !empty($all_features)) { ?>
                     <div class="mpcrbm_car_specs_lists">
@@ -185,7 +185,7 @@ if ($post_id) {
                                         $icon_class = 'mpcrbm_feature_icon_color_'.$i;
                                     }
                                     ?>
-                                    <span class="<?php echo esc_attr($icon); ?> <?php echo esc_attr( $icon_class);?>"></span>
+                                    <span class="<?php echo esc_attr($icon); ?>"></span>
                                 <?php }  echo esc_html($text); ?>
                             </div>
                         <?php
@@ -281,8 +281,6 @@ if ($post_id) {
 
                     </div>
                 </div>
-
-
             </div>
             <div class="mpcrbm_add_multiple_qty">
                 <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">

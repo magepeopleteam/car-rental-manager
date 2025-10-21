@@ -28,12 +28,6 @@
   text-align: center;
 }
 
-.mpcrbm_booking_item .mpcrbm-image-box{
-  max-width: 200px;
-  width:100%;
-  height: 140px;
-}
-
 .mpcrbm_list{
   gap: 10px;
   justify-content: space-between;
