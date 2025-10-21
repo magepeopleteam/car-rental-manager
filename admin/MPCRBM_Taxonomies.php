@@ -316,9 +316,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         public function mpcrbm_taxonomies_setup() {
             ?>
             <div class="mpcrbm_taxonomies_wrap">
-
-
-
                 <div class="mpcrbm_left_sidebar">
                     <div class="mpcrbm_car_rental_title">
                         <h2><?php esc_html_e( 'Car Rental', 'car-rental-manager' );?> </h2>

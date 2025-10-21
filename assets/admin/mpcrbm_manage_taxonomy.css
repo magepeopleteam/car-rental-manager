@@ -40,6 +40,7 @@
 
 .mpcrbm_left_sidebar{
     width: 240px;
+    min-height: 85vh;
 }
 
 .mpcrbm_taxonomies_tab {
