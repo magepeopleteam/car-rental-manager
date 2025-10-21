@@ -5,30 +5,171 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 $post_id = $post_id ?? get_the_id();
 $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
+
+$term_id= 157;
+$name = MPCRBM_Function::get_taxonomy_name_by_id( $term_id, 'mpcrbm_car_feature' );
+
+
+
+$include_features = get_post_meta( $post_id, 'mpcrbm_include_features', true );
+$include_feature_names = [];
+if( is_array( $include_features ) && !empty( $include_features ) ){
+    foreach ($include_features as $term_id) {
+        $term_name = MPCRBM_Function::get_taxonomy_name_by_id( $term_id, 'mpcrbm_car_feature' );
+        if ( $term_name ) {
+            $include_feature_names[] = $term_name;
+        }
+    }
+}
+
+$exclude_features = get_post_meta( $post_id, 'mpcrbm_exclude_features', true );
+$exclude_feature_names = [];
+if( is_array( $exclude_features ) && !empty( $exclude_features ) ){
+    foreach ($exclude_features as $term_id) {
+        $term_name = MPCRBM_Function::get_taxonomy_name_by_id( $term_id, 'mpcrbm_car_feature' );
+        if ( $term_name ) {
+            $exclude_feature_names[] = $term_name;
+        }
+    }
+}
+
+$faqs = get_option( 'mpcrbm_faq_list', [] );
+$added_faqs = get_post_meta( $post_id, 'mpcrbm_added_faq', true );
+$selected_faqs_data = [];
+if (!empty($added_faqs) && !empty( $faqs ) ) {
+    foreach ($added_faqs as $faq_key) {
+        if (isset($faqs[$faq_key])) {
+            $selected_faqs_data[$faq_key] = $faqs[$faq_key];
+        }
+    }
+}
+
+$all_term_condition = get_option( 'mpcrbm_term_condition_list', [] );
+$added_term_condition = get_post_meta( $post_id, 'mpcrbm_term_condition_list', true );
+$selected_term_condition = [];
+if (!empty($added_term_condition) && !empty( $all_term_condition ) ) {
+    foreach ($added_term_condition as $faq_key) {
+        if (isset($all_term_condition[$faq_key])) {
+            $selected_term_condition[$faq_key] = $all_term_condition[$faq_key];
+        }
+    }
+}
+
+//$daily_price = get_post_meta( $post_id, 'mpcrbm_base_daily_price', true );
+$day_price = get_post_meta( $post_id, 'mpcrbm_day_price', true );
+$extra_service = get_post_meta( $post_id, 'mpcrbm_extra_service_infos', true );
+$price_based = get_post_meta( $post_id, 'mpcrbm_price_based', true );
+$link_wc_product = get_post_meta( $post_id, 'link_wc_product', true );
+$display_faq = get_post_meta( $post_id, 'mpcrbm_display_faq', true );
+
+$nable_seasonal = get_post_meta( $post_id, 'mpcrbm_enable_seasonal_discount', true );
+$seasonal_pricing = get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
+$enable_day_wise = get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );
+$day_wise_pricing = get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
+$tiered_discounts = get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
+$location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
+
+
+$make_year = get_post_meta( $post_id, 'mpcrbm_make_year', true );
+$make_year = !empty($make_year) ? $make_year[0] : '';
+
+$car_brand = get_post_meta( $post_id, 'mpcrbm_car_brand', true );
+$car_brand = !empty($car_brand) ? $car_brand[0] : '';
+
+$seating_capacity = get_post_meta( $post_id, 'mpcrbm_seating_capacity', true );
+$seating_capacity = !empty($seating_capacity) ? $seating_capacity[0] : '';
+
+$fuel_type = get_post_meta( $post_id, 'mpcrbm_fuel_type', true );
+$fuel_type = !empty($fuel_type) ? $fuel_type[0] : '';
+
+$car_type = get_post_meta( $post_id, 'mpcrbm_car_type', true );
+$car_type = !empty($car_type) ? $car_type[0] : '';
+
+$maximum_bag = get_post_meta( $post_id, 'mpcrbm_maximum_bag', true );
+$maximum_bag = !empty($maximum_bag) ? $maximum_bag : '';
+
+
+$off_dates = get_post_meta( $post_id, 'mpcrbm_off_dates', true );
+$off_days = get_post_meta( $post_id, 'mpcrbm_off_days', true );
+
+
+$gallery_images = get_post_meta( $post_id, 'mpcrbm_gallery_images', true );
+$gallery_image_urls = [];
+if (!empty($gallery_images) && is_array($gallery_images)) {
+    $gallery_image_urls = array_map(function ( $id ) {
+        return wp_get_attachment_url( $id );
+    }, $gallery_images );
+}
+$all_image_urls = $gallery_image_urls;
+if( $thumbnail_url ){
+    array_push( $all_image_urls, $thumbnail_url );
+}
+
+$car_name = get_the_title( $post_id );
+$car_description = get_the_content( $post_id );
+//error_log( print_r( [ '$car_description' => $car_description ], true ) );
 ?>
+
+<div class="mpcrbm_gallery_image_popup_wrapper">
+    <div class="mpcrbm_gallery_image_popup_overlay"></div>
+    <div class="mpcrbm_gallery_image_popup_content">
+        <div class="" style="display: block; float: right">
+            <button class="mpcrbm_gallery_image_popup_close">✕</button>
+        </div>
+        <div class="mpcrbm_gallery_image_popup_container">
+            <?php foreach ( $all_image_urls as $index => $img_url): ?>
+                <img src="<?php echo esc_url($img_url); ?>"
+                     class="mpcrbm_gallery_image_popup_item <?php echo $index === 0 ? 'active' : ''; ?>"
+                     alt="Gallery image">
+            <?php endforeach; ?>
+        </div>
+        <div class="mpcrbm_gallery_image_popup_prev_holder" style="display: flex; justify-content: space-between">
+            <div class="">
+                <button class="mpcrbm_gallery_image_popup_prev">←</button>
+            </div>
+            <div class="">
+                <button class="mpcrbm_gallery_image_popup_next">→</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="mpcrbm mpcrbm_default_theme">
     <div class="mpContainer" style="min-height: 1000px">
         <?php do_action( 'mpcrbm_transport_search_form',$post_id ); ?>
-
-
         <div class="mpcrbm_car_details_wrapper">
-            <h1 ><?php echo get_the_title( $post_id );?></h1>
+            <h1 ><?php echo $car_name;?></h1>
             <div class="mpcrbm_car_details_container">
-                <!-- LEFT CONTENT -->
-
                 <div class="mpcrbm_car_details_left">
+                    <div class="mpcrbm_car_details_images">
+                        <div class="mpcrbm_car_details_feature_image">
+                            <?php if( $thumbnail_url ){?>
+                                <img class="mpcrbm_car_image_details" id="mpcrbm_car_details_feature_image" src="<?php echo esc_attr( $thumbnail_url );?>" alt="<?php echo esc_attr( $car_name );?>">
+                            <?php }?>
+                        </div>
+                        <?php
+                        if (!empty( $gallery_images ) && is_array( $gallery_images ) ) { ?>
+                            <div class="mpcrbm_car_details_gallery">
+                                <?php
+                                $counter = 0;
 
-                    <!-- FEATURE IMAGE -->
-                    <div class="mpcrbm_car_details_feature_image">
-                        <img src="<?php echo esc_attr( $thumbnail_url );?>" alt="Car Image">
-                    </div>
-
-                    <!-- GALLERY -->
-                    <div class="mpcrbm_car_details_gallery">
-                        <img src="https://via.placeholder.com/200x120" alt="">
-                        <img src="https://via.placeholder.com/200x120" alt="">
-                        <img src="https://via.placeholder.com/200x120" alt="">
-                        <button class="mpcrbm_car_details_view_more">View More →</button>
+                                foreach ( $gallery_image_urls as $gallery_image_url ) {
+                                    if ( !$gallery_image_url ) continue;
+                                    if ( $counter < 4 ) { ?>
+                                        <img class="mpcrbm_gallery_image" src=" <?php echo esc_url( $gallery_image_url );?> " alt="<?php echo esc_attr( $car_name )?> Gallery Image">
+                                        <?php
+                                    }
+                                    $counter++;
+                                }
+                                if ( count( $all_image_urls ) > 4) { ?>
+                                    <button class="mpcrbm_car_image_details mpcrbm_car_details_view_more">View More →</button>
+                                    <?php
+                                }
+                                ?>
+                            </div>
+                            <?php
+                        }
+                        ?>
                     </div>
 
                     <!-- TABS -->
@@ -45,18 +186,21 @@ $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
 
                     <!-- TAB CONTENT -->
                     <div id="description" class="mpcrbm_car_details_tab_content active">
-                        <p>Engineered for adventure, the Desert Storm is a rugged yet luxurious SUV designed to conquer challenging terrains with ease. Equipped with advanced off-road capabilities, premium interiors, and a powerful engine, this vehicle ensures you travel in comfort and style, no matter where the journey takes you.</p>
+                        <?php if( $car_description ){?>
+                            <p><?php echo wp_strip_all_tags( $car_description );?></p>
+                        <?php }?>
                     </div>
 
                     <div id="carinfo" class="mpcrbm_car_details_tab_content">
                         <div class="mpcrbm_car_details_info_grid">
-                            <div>👤 5 Persons</div>
-                            <div>🧳 3 Bags</div>
-                            <div>⚡ Electric</div>
-                            <div>📅 2022</div>
-                            <div>∞ Unlimited</div>
-                            <div>⚙️ Auto</div>
-                            <div>⛽ Full to full</div>
+                            <div class="sss"><i class="mi mi-tachometer-fast"></i> <?php echo esc_attr( $car_type );?></div>
+                            <div class="sss"><i class="mi mi-bonus"></i> <?php echo esc_attr( $car_brand );?></div>
+                            <div class="sss">👤 <?php echo esc_attr( $seating_capacity );?> Persons</div>
+                            <div class="sss">🧳 <?php echo esc_attr( $maximum_bag );?> Bags</div>
+                            <div class="sss">📅 <?php echo esc_attr( $make_year );?></div>
+                            <div class="sss">∞ Unlimited</div>
+                            <div class="sss">⛽ <?php echo esc_attr( $fuel_type );?></div>
+
                         </div>
                     </div>
 
@@ -75,21 +219,31 @@ $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
                     <div id="include" class="mpcrbm_car_details_tab_content">
                         <div class="mpcrbm_car_details_include_exclude">
                             <div class="mpcrbm_car_details_include">
-                                <h4>Include</h4>
+                                <h4>Include Feature</h4>
                                 <ul>
-                                    <li>✅ Unlimited Mileage</li>
-                                    <li>✅ Collision Damage Waiver (CDW)</li>
-                                    <li>✅ Third-Party Liability Insurance</li>
-                                    <li>✅ 24/7 Roadside Assistance</li>
+                                    <?php
+                                    if( !empty( $include_feature_names ) ){
+                                        foreach ( $include_feature_names as $include_feature ){
+                                        ?>
+                                            <li>✅ <?php echo esc_attr( $include_feature );?></li>
+                                        <?php
+                                        }
+                                    }
+                                    ?>
                                 </ul>
                             </div>
                             <div class="mpcrbm_car_details_exclude">
-                                <h4>Exclude</h4>
+                                <h4>Exclude Feature</h4>
                                 <ul>
-                                    <li>❌ Additional Insurance</li>
-                                    <li>❌ Additional Driver Fee</li>
-                                    <li>❌ Child Safety Seat</li>
-                                    <li>❌ Tolls and Fines</li>
+                                    <?php
+                                    if( !empty( $exclude_feature_names ) ){
+                                        foreach ( $exclude_feature_names as $exclude_feature ){
+                                            ?>
+                                            <li>❌ <?php echo esc_attr( $exclude_feature );?></li>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
                                 </ul>
                             </div>
                         </div>
@@ -97,7 +251,7 @@ $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
 
                     <div id="location" class="mpcrbm_car_details_tab_content">
                         <div class="mpcrbm_car_details_map_box">
-                            <iframe src="https://maps.google.com/maps?q=Bangkok&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                            <iframe src="https://maps.google.com/maps?q=Rajshahi&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
                         </div>
                     </div>
 
@@ -107,46 +261,56 @@ $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
 
                     <div id="faq" class="mpcrbm_car_details_tab_content">
                         <h4>Frequently Asked Questions</h4>
-                        <p><strong>Q:</strong> Is there a mileage limit?</p>
-                        <p><strong>A:</strong> No, the mileage is unlimited.</p>
-                        <p><strong>Q:</strong> Can I cancel for free?</p>
-                        <p><strong>A:</strong> Yes, you can cancel anytime before the pickup date.</p>
+                        <?php
+                        if( !empty( $selected_faqs_data ) ){
+                            foreach ( $selected_faqs_data as $faq_data  ){
+                            ?>
+                            <p><strong>Q:</strong> <?php echo wp_strip_all_tags( $faq_data['title'] )?></p>
+                            <p><strong>A:</strong> <?php echo wp_strip_all_tags(  $faq_data['answer'] )?></p>
+                        <?php }
+                        }
+                        ?>
                     </div>
 
                     <div id="terms" class="mpcrbm_car_details_tab_content">
-                        <p>All bookings are subject to availability. The renter must possess a valid driver’s license. Fuel policy, insurance coverage, and other conditions apply based on local regulations.</p>
+                        <?php if ( ! empty( $selected_term_condition ) ) : ?>
+                            <div class="tf-car-conditions-section" id="tf-tc">
+                                <h3>Tour Terms &amp; Conditions</h3>
+                                <table class="mpcrbm_car_details_table">
+                                    <tbody>
+                                    <?php foreach ( $selected_term_condition as $term_condition ){?>
+                                        <tr>
+                                            <th><?php echo wp_strip_all_tags( $term_condition['title'] )?></th>
+                                            <td><?php echo wp_strip_all_tags( $term_condition['answer'] )?></td>
+                                        </tr>
+                                    <?php }?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                 </div>
 
-                <!-- RIGHT CONTENT -->
                 <div class="mpcrbm_car_details_right">
+                    <?php
+                    $ddd = new MPCRBM_Shortcodes();
+
+                    ?>
+
                     <div class="mpcrbm_car_details_price_box">
-                        <h3>Total: <span>$240.00</span> / Day</h3>
+                        <h3>Total: <span>$<?php echo esc_attr( $day_price )?></span> / Day</h3>
                         <p>Without Taxes</p>
 
-                        <div class="mpcrbm_car_details_pickup_box">
-                            <div class="mpcrbm_car_details_row">
-                                <label>Pick-up</label>
-                                <input type="text" value="Bangkok">
-                            </div>
-                            <div class="mpcrbm_car_details_row">
-                                <label>Drop-off</label>
-                                <input type="text" value="Bangkok">
-                            </div>
-                            <div class="mpcrbm_car_details_row">
-                                <label>Pick-up date</label>
-                                <input type="date" value="2025-10-16">
-                                <label>Time</label>
-                                <input type="time" value="10:00">
-                            </div>
-                            <div class="mpcrbm_car_details_row">
-                                <label>Drop-off date</label>
-                                <input type="date" value="2025-10-17">
-                                <label>Time</label>
-                                <input type="time" value="10:00">
-                            </div>
-                        </div>
+                        <?php
+                        $attribute = [
+                            'progressbar' => 'no',
+                            'title'       => 'no',
+                            'single_page'       => 'yes',
+                        ];
+                        echo $ddd->mpcrbm_booking($attribute);
+
+                        ?>
 
                         <button class="mpcrbm_car_details_continue_btn">Continue →</button>
                     </div>

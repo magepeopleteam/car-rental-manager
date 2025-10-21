@@ -144,6 +144,8 @@ if( is_array( $search_date ) && !empty( $search_date ) ){
 }
 
 
+$single_page = $params['single_page'];
+
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
     $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time', '30');
@@ -403,6 +405,7 @@ if (sizeof($all_dates) > 0) {
                         <span for="is-drop-off" class="mpcrbm-my-checkbox-label drop-off"><?php esc_html_e( 'Return car in same location', 'car-rental-manager'); ?></span>
                     </div>
 
+                    <?php if( $single_page !== 'yes' ){?>
                     <div class="mprcbm_search_button_holder ">
                         <button type="button" class="mpcrbm_search-button" id="mpcrbm_get_vehicle">
                             <svg class="mprcbm_search_icon " viewBox="0 0 24 24">
@@ -411,6 +414,7 @@ if (sizeof($all_dates) > 0) {
                             <?php esc_html_e('Search', 'car-rental-manager'); ?>
                         </button>
                     </div>
+                    <?php }?>
                 </div>
 
 

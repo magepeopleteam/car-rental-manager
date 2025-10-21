@@ -24,14 +24,15 @@
 /* ===== GALLERY ===== */
 .mpcrbm_car_details_gallery {
     display: flex;
+    justify-content: center;
     gap: 10px;
     margin-top: 15px;
     flex-wrap: wrap;
 }
 
 .mpcrbm_car_details_gallery img {
-    width: 120px;
-    height: 80px;
+    width: 120px !important;
+    height: 80px !important;
     border-radius: 8px;
     cursor: pointer;
 }
@@ -57,7 +58,7 @@
 .mpcrbm_car_details_tabs button {
     background: none;
     border: none;
-    padding: 10px 16px;
+    padding: 10px 2px;
     cursor: pointer;
     font-weight: 500;
 }
@@ -69,7 +70,7 @@
 
 /* ===== TAB CONTENT ===== */
 .mpcrbm_car_details_tab_content {
-    display: none;
+    display: block;
     margin-top: 15px;
 }
 .mpcrbm_car_details_tab_content.active {
@@ -78,12 +79,16 @@
 
 /* ===== INFO GRID ===== */
 .mpcrbm_car_details_info_grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     background: #f9f9f9;
     padding: 15px;
     border-radius: 10px;
+}
+
+.mpcrbm_car_details_benefit_list{
+    padding: 10px !important;
 }
 
 /* ===== INCLUDE/EXCLUDE ===== */
@@ -137,6 +142,121 @@
     font-weight: 600;
     cursor: pointer;
     margin-top: 10px;
+}
+
+/* Smooth fade image animation */
+.mpcrbm_gallery_image_fade_out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.mpcrbm_gallery_image_fade_in{
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+.mpcrbm_gallery_image {
+    cursor: pointer;
+    border-radius: 6px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.mpcrbm_gallery_image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.mpcrbm_gallery_image.active {
+    border: 2px solid #0073aa;
+}
+
+.mpcrbm_gallery_image_popup_wrapper {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.mpcrbm_gallery_image_popup_content {
+    position: relative;
+    max-width: 90%;
+    max-height: 85%;
+    top: 100px;
+    margin: auto;
+}
+
+.mpcrbm_gallery_image_popup_item {
+    display: none;
+    width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 8px;
+    animation: fadeIn 0.4s ease;
+}
+.mpcrbm_gallery_image_popup_container img.active {
+    display: block;
+    opacity: 1;
+}
+
+.mpcrbm_gallery_image_popup_close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff4444;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    padding: 8px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.mpcrbm_gallery_image_popup_prev,
+.mpcrbm_gallery_image_popup_next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffffff99;
+    border: none;
+    color: #000;
+    font-size: 22px;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.mpcrbm_car_image_details{
+    cursor: pointer;
+}
+
+.mpcrbm_gallery_image_popup_prev:hover,
+.mpcrbm_gallery_image_popup_next:hover {
+    background: #fff;
+}
+
+.mpcrbm_gallery_image_popup_prev { left: 10px; }
+.mpcrbm_gallery_image_popup_next { right: 10px; }
+
+.sss{
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+    color: #566676;
+    font-size: 1rem;
+    font-weight: 400;
+    width: calc(25% - 8px);
+    border-radius: 8px;
+    border: 1px solid #C9D4F7;
+    padding: 8px;
+    position: relative;
+}
+
+.mpcrbm_car_details_table {
+    border-left: 1px solid #c0ccd8;
+    border-top: 1px solid #c0ccd8;
+    margin: 0px;
+    border-radius: 16px;
 }
 
 /* ===== RESPONSIVE ===== */
