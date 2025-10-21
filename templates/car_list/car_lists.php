@@ -38,7 +38,7 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
             <div class="mpcrbm_car_list_controls">
                 <h2><?php esc_attr_e( 'Car Inventory', 'car-rental-manager' );?></h2>
                 <div class="mpcrbm_car_list_control_buttons">
-                    <a href="<?php echo esc_url( $add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" >+ <?php esc_attr_e( 'Add New Car', 'car-rental-manager' );?></button></a>
+                    <a href="<?php echo esc_url( $add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Car', 'car-rental-manager' );?></button></a>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Export', 'car-rental-manager' );?></button>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Bulk Actions', 'car-rental-manager' );?></button>
                 </div>

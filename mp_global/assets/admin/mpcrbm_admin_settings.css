@@ -55,6 +55,7 @@
 }
 /******************************************************************** add Icon image ************************************************/
 @media only screen and (min-width: 10px) {
+	
 	div.mpcrbm div.add_icon_image_area {border: 1px solid var(--color_theme);position: relative;max-width: 120px;}
 	div.mpcrbm div.add_icon_image_area img {max-height: 100px;}
 	div.mpcrbm div.add_icon_image_area button {padding: 5px;font-size: 12px;}
@@ -63,60 +64,23 @@
 	div.mpcrbm div.add_icon_image_area div.icon_item {padding: var(--dmp_xs);background-color: var(--color_light);font-size: 16px;}
 	div.mpcrbm div.icon_item:hover .remove_icon,
 	div.mpcrbm div.image_item:hover .remove_icon {opacity: 1;}
-	div.mpcrbm div.add_icon_popup .popup_header {
-		color: #FFF;height: 60px;
-		margin: 0 auto;width: 100%;background-color: #222;position: relative;
-		border-bottom: 1px solid #FFF;
-	}
-	div.add_icon_popup .popup_header h2 {
-		color: #FFF;text-align: center;
-		font-size: 30px !important;
-		font-weight: 500;
-	}
-	div.add_icon_popup .popupBody {padding: 0;}
-	div.add_icon_popup ul.popupIconMenu {
-		min-width: 270px;background-color: #222;margin: 0;
-		max-height: calc(100vh - var(--dmp) - var(--dmp) - 60px);
-		overflow: hidden auto;
-	}
-	div.add_icon_popup .popupIconMenu li {
-		padding: 7px 15px;margin: 0;
-		border-bottom: 1px solid #DDD;
-		color: #FFF;font-size: 16px;display: block;cursor: pointer;
-		position: relative;
-		font-weight: 500;
-	}
-	div.add_icon_popup .popupIconMenu li strong {color: #9F6C8A;}
-	div.add_icon_popup .popupIconMenu li.active {background-color: #E3A939;}
-	div.add_icon_popup .popupIconMenu li:hover {color: #E3A939;}
-	div.add_icon_popup .popupIconMenu li.active:hover {color: #FFF;}
-	div.add_icon_popup .popup_all_icon {
-		width: 100%;padding: 10px;background-color: #FFF;
-		max-height: calc(100vh - var(--dmp) - var(--dmp) - 60px);
-		overflow: hidden auto;
-	}
-	div.add_icon_popup .popup_all_icon .popupTabItem {width: 100%;}
-	div.add_icon_popup .popup_all_icon .itemIconArea {
-		width: 100%;
-		display: -webkit-flex;display: flex;
-		-webkit-flex-wrap: wrap;flex-wrap: wrap;
-	}
-	div.add_icon_popup .iconItem {
-		width: 60px;height: 60px;font-size: 30px;margin: 7px;cursor: pointer;
-		border: 2px solid #FFF;background-color: #F2F2F2;
-		-webkit-box-shadow: 0 1px 4px 1px #DBDBDB;
-		box-shadow: 0 1px 4px 1px #DBDBDB;
-	}
-	div.add_icon_popup .iconItem.active,
-	div.add_icon_popup .iconItem:hover {border-color: var(--color_theme);color: var(--color_theme);border-radius: 5px;}
-	/************* font***************/
-	div.add_icon_popup .iconItem,
-	div.add_icon_popup .popupIconMenu li {
-		-webkit-transition: 350ms ease-in-out;
-		-moz-transition: 350ms ease-in-out;
-		-o-transition: 350ms ease-in-out;
-		transition: 350ms ease-in-out;
-	}
+
+	div.mpcrbm_add_icon_popup .popup_header { color: #FFF;height: 60px; margin: 0 auto;width: 100%; background-color: #032C53; position: relative; border-bottom: 0px solid #FFF; }
+	div.mpcrbm_add_icon_popup .popup_header h2 { color: #FFF;text-align: center; font-size: 20px !important; }
+	div.mpcrbm_add_icon_popup .popupBody {padding: 0;}
+	div.mpcrbm_add_icon_popup ul.popupIconMenu { padding: 10px; min-width: 270px;background-color: #34424F;margin: 0; max-height: calc(100vh - var(--ttbm_mp) - var(--ttbm_mp) - 60px); overflow: hidden auto; }
+	div.mpcrbm_add_icon_popup .popupIconMenu li { padding: 10px; margin: 5px 0; border-radius: 5px; color: #FFF;font-size: 16px;display: block;cursor: pointer; position: relative; font-weight: 500; }
+	div.mpcrbm_add_icon_popup .popupIconMenu li strong {background-color: #C3CBD6A3;color: #202A33;padding: 0px 5px;border-radius: 10px;margin-left: 10px;}
+	div.mpcrbm_add_icon_popup .popupIconMenu li.active {background-color: #202A33;}
+	div.mpcrbm_add_icon_popup .popupIconMenu li:hover {color: #C3CBD6;background-color: #202A33;}
+	div.mpcrbm_add_icon_popup .popupIconMenu li.active:hover {color: #C3CBD6;}
+	div.mpcrbm_add_icon_popup .popup_all_icon { width: 100%;padding: 10px;background-color: #FFF; max-height: calc(100vh - var(--ttbm_mp) - var(--ttbm_mp) - 60px); overflow: hidden auto; }
+	div.mpcrbm_add_icon_popup .popup_all_icon .popupTabItem {width: 100%;}
+	div.mpcrbm_add_icon_popup .popup_all_icon .itemIconArea { width: 100%; display: -webkit-flex;display: flex; -webkit-flex-wrap: wrap;flex-wrap: wrap; }
+	div.mpcrbm_add_icon_popup .iconItem { width: 51px; height: 51px; font-size: 25px; margin: 5px; cursor: pointer; color: #777777; border: 1px solid #DBDBDB; border-radius: 5px; }
+	div.mpcrbm_add_icon_popup .iconItem.active,
+	div.mpcrbm_add_icon_popup .iconItem:hover { background-color: var(--color_theme); color: var(--color_theme_alter); border: 1px solid var(--color_theme); }
+	
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {

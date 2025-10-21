@@ -316,9 +316,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         public function mpcrbm_taxonomies_setup() {
             ?>
             <div class="mpcrbm_taxonomies_wrap">
-
-
-
                 <div class="mpcrbm_left_sidebar">
                     <div class="mpcrbm_car_rental_title">
                         <h2><?php esc_html_e( 'Car Rental', 'car-rental-manager' );?> </h2>
@@ -333,8 +330,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand"><i class="mi mi-bonus"></i> <?php esc_attr_e( 'Car Brand', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year"><i class="mi mi-time-quarter-to"></i> <?php esc_attr_e( 'Make Year', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature"><i class="mi mi-list-timeline"></i> <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq"><i class="mi mi-messages-question"></i> <?php esc_attr_e( 'Manage Faq', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition"><i class="mi mi-blog-text"></i> <?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq"><i class="mi mi-messages-question"></i> <?php esc_attr_e( 'Faq', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition"><i class="mi mi-blog-text"></i> <?php esc_attr_e( 'Terms & Condition', 'car-rental-manager' );?></button>
                     </div>
                 </div>
                 <div class="mpcrbm_left_main_content">
