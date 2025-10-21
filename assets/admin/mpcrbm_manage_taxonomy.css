@@ -40,6 +40,7 @@
 
 .mpcrbm_left_sidebar{
     width: 240px;
+    min-height: 85vh;
 }
 
 .mpcrbm_taxonomies_tab {
@@ -389,7 +390,7 @@ display: none !important;
     ease;
 }
 
-.mpcrbm_car_list_control_btn.btn-primary {
+.btn-primary {
     background: #667eea;
     color: #fff;
     border: none;
@@ -433,6 +434,13 @@ input[type="text"], select {
     transition: border-color 0.2s
     ease;
     background: white;
+}
+
+.mpcrbm_faq_container .widefat{
+    margin-top: 10px;
+}
+.mpcrbm_faq_container .widefat thead{
+    background-color: #f5f5f5;
 }
 
 .mpcrbm_car_list_table_container {
@@ -603,8 +611,9 @@ input[type="text"], select {
     position: relative;
     animation: mpcrbm_popup_fade 0.3s ease;
     margin: auto;
-    top: 20%;
+    top: 50%;
     min-height: 500px;
+    transform: translateY(-50%);
 }
 .mpcrbm_faq_table td, .mpcrbm_faq_table th {
     padding: 8px 10px;
