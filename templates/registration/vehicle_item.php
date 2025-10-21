@@ -216,7 +216,7 @@ if ($post_id) {
                             <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                         <?php } ?>
                     </div>
-                    <div class="_min_150_mL_xs mpcrbm_booking_items">
+                    <div class="mpcrbm_booking_items">
                         <?php
                         // Calculate Early Bird Discount and apply to price
                         $early_bird_discount = 0;

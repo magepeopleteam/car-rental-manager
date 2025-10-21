@@ -302,11 +302,8 @@ h2#mpcrbm_title_change{color:white;}
 
 .mpcrbm_car_spec{
 	display: flex;
-	align-items: center;
-	gap: 4px;
-	padding: 4px 8px;
-	white-space: nowrap;
-	max-height: 30px;
+	align-items: start;
+	gap:5px;
 	width: 48%;
 }
  .mpcrbm_price-breakdown {
@@ -539,7 +536,7 @@ h2#mpcrbm_title_change{color:white;}
 	 display: flex;
 	 flex-direction: row;
 	 gap: 10px;
-	 justify-content: flex-end;
+	 justify-content: space-around;
 	 align-items: center;
 	 width: 50%;
  }
