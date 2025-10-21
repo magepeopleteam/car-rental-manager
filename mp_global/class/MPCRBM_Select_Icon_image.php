@@ -44,64 +44,82 @@
                     <div class="add_icon_popup mpPopup mpcrbm" data-popup="#add_icon_popup">
                         <div class="popupMainArea fullWidth">
                             <div class="popup_header allCenter">
-                                <h2 class="_mR"><?php esc_html_e('Select Icon', 'car-rental-manager'); ?></h2>
-                                <label class="min_300">
-                                    <input type="text" class="formControl name_validation" name="select_icon_name" placeholder="<?php esc_attr_e('Icon/class name....', 'car-rental-manager'); ?>" />
-                                </label>
-                                <span class="fas fa-times popupClose"></span>
+                                <?php self::disaply_icon_header_in_popup(); ?>
                             </div>
                             <div class="popupBody">
-								<?php
-									$icons = $this->all_icon_array();
-									if (sizeof($icons) > 0) {
-										$total_icon = 0;
-										foreach ($icons as $icon) {
-											$total_icon += sizeof($icon['icon']);
-										}
-										?>
-                                        <div class="dFlex">
-                                            <ul class="popupIconMenu">
-                                                <li class="active" data-icon-menu="all_item" data-icon-title="all_item">
-													<?php esc_html_e('All Icon', 'car-rental-manager'); ?>&nbsp;(
-                                                    <strong><?php echo esc_html($total_icon); ?></strong>
-                                                    )
-                                                </li>
-												<?php foreach ($icons as $key => $icon) { ?>
-                                                    <li data-icon-menu="<?php echo esc_attr($key); ?>">
-													<?php 
-														echo esc_html($icon['title']) . '&nbsp;(<strong>' . esc_html((string) sizeof($icon['icon'])) . '</strong>)'; 
-													?>
-
-                                                    </li>
-												<?php } ?>
-                                            </ul>
-                                            <div class="popup_all_icon">
-												<?php foreach ($icons as $key => $icon) { ?>
-                                                    <div class="popupTabItem" data-icon-list="<?php echo esc_attr($key); ?>" data-icon-title="<?php echo esc_attr($icon['title']); ?>">
-													<h5 class="textTheme">
-															<?php 
-																echo esc_html($icon['title']) . '&nbsp;(<strong>' . esc_html((string) sizeof($icon['icon'])) . '</strong>)'; 
-															?>
-														</h5>
-                                                        <div class="divider"></div>
-                                                        <div class="itemIconArea">
-															<?php foreach ($icon['icon'] as $icon => $item) { ?>
-                                                                <div class="iconItem allCenter" data-icon-class="<?php echo esc_attr($icon); ?>" data-icon-name="<?php echo esc_attr($item); ?>" title="<?php echo esc_attr($item); ?>">
-                                                                    <span class="<?php echo esc_attr($icon); ?>"></span>
-                                                                </div>
-															<?php } ?>
-                                                        </div>
-                                                    </div>
-												<?php } ?>
-                                            </div>
-                                        </div>
-									<?php } ?>
+								<?php self::disaply_icon_in_popup(); ?>
                             </div>
                         </div>
                     </div>
 					<?php
 				}
 			}
+
+			public static function disaply_icon_header_in_popup() {
+				?>
+                <h2 class="_mR"><?php esc_html_e('Select Icon', 'tour-booking-manager'); ?></h2>
+                <label class="min_300">
+                    <input type="text" id="searchInputIcon" class="formControl ttbm_name_validation" name="ttbm_select_icon_name" placeholder="<?php esc_attr_e('Icon/class name....', 'tour-booking-manager'); ?>"/>
+                </label>
+                <span class="fas fa-times popupClose"></span>
+				<?php
+			}
+			public static function disaply_icon_in_popup() {
+				$icons = self::all_icon_array();
+				if (sizeof($icons) > 0) {
+					$total_icon = 0;
+					foreach ($icons as $icon) {
+						$total_icon += sizeof($icon['icon']);
+					}
+					?>
+                    <div class="dFlex">
+                        <ul class="popupIconMenu">
+                            <li class="active" data-icon-menu="all_item" data-icon-title="all_item">
+								<?php esc_html_e('All Icon', 'tour-booking-manager'); ?> <strong><?php echo esc_html($total_icon); ?></strong>
+                            </li>
+							<?php foreach ($icons as $key => $icon) { ?>
+                                <li data-icon-menu="<?php echo esc_attr($key); ?>">
+									<?php
+										printf(
+										/* translators: %1$s: title, %2$s: number of icons */
+											wp_kses_post(__('%1$s&nbsp; <strong>%2$s</strong>', 'tour-booking-manager')),
+											esc_html($icon['title']),
+											esc_html(sizeof($icon['icon']))
+										);
+									?>
+                                </li>
+							<?php } ?>
+                        </ul>
+                        <div class="popup_all_icon">
+							<?php foreach ($icons as $key => $icon) { ?>
+                                <div class="popupTabItem" data-icon-list="<?php echo esc_attr($key); ?>" data-icon-title="<?php echo esc_attr($icon['title']); ?>">
+                                    <h3>
+										<?php
+											echo wp_kses_post(
+												sprintf(
+												/* translators: %1$s is the title, %2$s is the count */
+													__('%1$s&nbsp;(<strong>%2$s</strong>)', 'tour-booking-manager'),
+													esc_html($icon['title']),
+													esc_html(sizeof($icon['icon']))
+												)
+											);
+										?>
+                                    </h3>
+                                    <div class="divider"></div>
+                                    <div class="itemIconArea">
+										<?php foreach ($icon['icon'] as $icon => $item) { ?>
+                                            <div class="iconItem allCenter" data-icon-class="<?php echo esc_attr($icon); ?>" data-icon-name="<?php echo esc_attr($item); ?>" title="<?php echo esc_attr($item); ?>">
+                                                <span class="<?php echo esc_attr($icon); ?>"></span>
+                                            </div>
+										<?php } ?>
+                                    </div>
+                                </div>
+							<?php } ?>
+                        </div>
+                    </div>
+				<?php }
+			}
+
 			//======image========//
 			public function single_image($name, $image_id = '') {
 				?>
