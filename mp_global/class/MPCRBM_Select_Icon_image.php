@@ -41,7 +41,7 @@
 				if (!$GLOBALS['mpcrbm_icon_popup_exit']) {
 					$GLOBALS['mpcrbm_icon_popup_exit'] = true;
 					?>
-                    <div class="add_icon_popup mpPopup mpcrbm" data-popup="#add_icon_popup">
+                    <div class="add_icon_popup mpcrbm_add_icon_popup mpPopup mpcrbm" data-popup="#add_icon_popup">
                         <div class="popupMainArea fullWidth">
                             <div class="popup_header allCenter">
                                 <?php self::disaply_icon_header_in_popup(); ?>
