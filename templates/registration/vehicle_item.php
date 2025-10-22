@@ -279,26 +279,29 @@ if ($post_id) {
                             <?php endif; ?>
                         </div>
 
+                        <div class="mpcrbm_add_multiple_qty">
+                            <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
+                                <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
+                            </div>
+                            <button type="button"
+                                    class="_mpBtn_xs mpcrbm_transport_select"
+                                    data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
+                                    data-transport-price="<?php echo esc_attr($discounted_price); ?>"
+                                    data-post-id="<?php echo esc_attr($post_id); ?>"
+                                    data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
+                                    data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
+                                    data-open-icon=""
+                                    data-close-icon="fas fa-check mR_xs">
+                                <span class="" data-icon></span>
+                                <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
+                            </button>
+                        </div>
+
                     </div>
+
                 </div>
             </div>
-            <div class="mpcrbm_add_multiple_qty">
-                <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
-                    <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
-                </div>
-                <button type="button"
-                        class="_mpBtn_xs mpcrbm_transport_select"
-                        data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
-                        data-transport-price="<?php echo esc_attr($discounted_price); ?>"
-                        data-post-id="<?php echo esc_attr($post_id); ?>"
-                        data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
-                        data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
-                        data-open-icon=""
-                        data-close-icon="fas fa-check mR_xs">
-                    <span class="" data-icon></span>
-                    <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
-                </button>
-            </div>
+
 
             <?php do_action('mpcrbm_booking_item_after_feature', $post_id); ?>
         </div>
