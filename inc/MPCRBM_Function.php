@@ -81,6 +81,21 @@
 
 				return $term_name;
 			}
+            public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
+                global $wpdb;
+
+                $query = $wpdb->prepare(
+                    "SELECT t.name 
+                     FROM {$wpdb->terms} AS t
+                     INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
+                     WHERE t.term_id = %d AND tt.taxonomy = %s",
+                    $term_id,
+                    $taxonomy
+                );
+                $term_name = $wpdb->get_var( $query );
+
+                return $term_name ? $term_name : null;
+            }
 
 			public static function template_path( $file_name ): string {
 				$template_path = get_stylesheet_directory() . '/mpcrbm_templates/';

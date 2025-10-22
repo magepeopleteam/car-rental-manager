@@ -62,6 +62,7 @@
 				$this->global_enqueue();
 				wp_enqueue_style( 'mpcrbm_frontend', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_frontend.css', array(), time() );
 				wp_enqueue_style( 'mpcrbm_search_shortcode', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_search_shortcode.css', array(), time() );
+				wp_enqueue_style( 'mpcrbm_car_details', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_car_details.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_frontend', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_frontend.js', array( 'jquery' ), time(), true );
 				wp_enqueue_style( 'mpcrbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_registration.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_registration.js', array( 'jquery' ), time(), true );

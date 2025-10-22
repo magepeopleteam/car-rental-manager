@@ -38,6 +38,7 @@
 					'form'=>'horizontal',
 					'title'=>'yes',
 					'ajax_search' => 'no',
+					'single_page' => 'no',
 				);
 			}
 		}

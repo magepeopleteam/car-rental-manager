@@ -74,6 +74,7 @@ div.header-text h2 {
 }
 .mpcrbm_horizontal_search_form{
     display: flex;
+    gap:5px;
     flex-direction: column;
 }
 .mpcrbm_inline_search_form{
