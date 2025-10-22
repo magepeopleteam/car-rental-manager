@@ -80,7 +80,18 @@
 	div.mpcrbm_add_icon_popup .iconItem { width: 51px; height: 51px; font-size: 25px; margin: 5px; cursor: pointer; color: #777777; border: 1px solid #DBDBDB; border-radius: 5px; }
 	div.mpcrbm_add_icon_popup .iconItem.active,
 	div.mpcrbm_add_icon_popup .iconItem:hover { background-color: var(--color_theme); color: var(--color_theme_alter); border: 1px solid var(--color_theme); }
-	
+	div.mpcrbm_add_icon_popup .popup_header .popupClose {
+		position: absolute;
+		z-index: 1111;
+		cursor: pointer;
+		top: 2px;
+		right: 1px;
+		width: 32px;
+		height: 32px;
+		background-color: var(--color_theme);
+		color: #FFF;
+		font-size: 20px;
+	}
 }
 /********************************************************************  ************************************************/
 @media only screen and (min-width: 10px) {
