@@ -541,6 +541,10 @@ h2#mpcrbm_title_change{color:white;}
 	 width: 50%;
  }
 
+ .mpcrbm_car_quantity{
+	 margin-right: 5px;
+ }
+
  .mpcrbm_price_holder{
 	 display: flex;
 	 justify-content: end;

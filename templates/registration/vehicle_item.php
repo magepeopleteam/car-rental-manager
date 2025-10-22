@@ -284,7 +284,7 @@ if ($post_id) {
                         </div>
                     </div>
                     <div class="mpcrbm_add_multiple_qty">
-                        <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
+                        <div class=" mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
                             <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
                         </div>
                         <button type="button"

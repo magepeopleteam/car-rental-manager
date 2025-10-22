@@ -109,7 +109,7 @@ jQuery(document).ready(function($) {
             let postId = $(this).val();
             if (postId) vehicleIds.push(postId);
         });
-        
+
         // If no specific vehicles selected, get all available vehicles
         if (vehicleIds.length === 0) {
             // This will be populated when vehicles are loaded
@@ -124,7 +124,7 @@ jQuery(document).ready(function($) {
                 action: 'mpcrbm_get_dropoff_locations',
                 pickup_location: pickupLocation,
                 vehicle_ids: vehicleIds,
-                nonce: mpcrbm_nonce
+                nonce: mpcrbm_ajax.nonce
             },
             success: function(response) {
                 if (response.success && response.data.locations) {
@@ -975,6 +975,90 @@ jQuery(document).ready(function($) {
                             mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                             parent.find('.nextTab_next').trigger('click');
                         });
+                    } else {
+                        window.location.href = data;
+                    }
+                },
+                error: function(response) {
+                    console.log(response);
+                    mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                }
+            });
+        }
+    });
+    // Handle Book Now button click
+
+    $(document).on("click", ".mpcrbm_car_details_continue_btn", function() {
+        let parent = $(this).closest('.mpcrbm_car_details_wrapper');
+        let start_place = parent.find('#mpcrbm_manual_start_place').val();
+        let end_place = parent.find('#mpcrbm_drop_off_location').val();
+        let mpcrbm_waiting_time = '';
+        let mpcrbm_taxi_return = '';
+        let mpcrbm_start_date = parent.find("#mpcrbm_map_start_date").val();
+        let mpcrbm_start_time = parent.find("#mpcrbm_map_start_time").val();
+        let return_target_date = parent.find("#mpcrbm_map_return_date").val();
+        let return_target_time = parent.find("#mpcrbm_map_return_time").val();
+        let mpcrbm_fixed_hours = parent.find('[name="mpcrbm_fixed_hours"]').val();
+        // let date = parent.find('[name="mpcrbm_date"]').val();
+        let link_id = $(this).attr('data-wc_link_id');
+        let post_id = $(this).attr('data-car-id');
+
+        let [hour, minute] = mpcrbm_start_time.split(".");
+        minute = minute ? minute.padEnd(2, "0") : "00";
+        hour = hour.padStart(2, "0");
+        let date = `${mpcrbm_start_date} ${hour}:${minute}`;
+
+        // console.log( date );
+        if( end_place === '' ){
+            end_place = start_place;
+        }
+
+        let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
+
+        if (start_place !== '' && end_place !== '' && link_id && post_id) {
+            let extra_service_name = {};
+            let extra_service_qty = {};
+            let count = 0;
+
+            // Collect extra service data
+            parent.find('[name="mpcrbm_extra_service[]"]').each(function() {
+                let ex_name = $(this).val();
+                if (ex_name) {
+                    extra_service_name[count] = ex_name;
+                    let ex_qty = parseInt($(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service_qty[]"]').val());
+                    ex_qty = ex_qty > 0 ? ex_qty : 1;
+                    extra_service_qty[count] = ex_qty;
+                    count++;
+                }
+            });
+
+            // Make AJAX request to add to cart
+            $.ajax({
+                type: 'POST',
+                url: mpcrbm_ajax.ajax_url,
+                data: {
+                    action: "mpcrbm_add_to_cart",
+                    link_id: link_id,
+                    mpcrbm_start_place: start_place,
+                    mpcrbm_end_place: end_place,
+                    mpcrbm_waiting_time: mpcrbm_waiting_time,
+                    mpcrbm_taxi_return: mpcrbm_taxi_return,
+                    mpcrbm_fixed_hours: mpcrbm_fixed_hours,
+                    mpcrbm_date: date,
+                    mpcrbm_return_date: return_target_date,
+                    mpcrbm_return_time: return_target_time,
+                    mpcrbm_extra_service: extra_service_name,
+                    mpcrbm_extra_service_qty: extra_service_qty,
+                    mpcrbm_car_quantity: car_quantity,
+                    mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
+                },
+                beforeSend: function() {
+                    mpcrbm_loader(parent.find('.tabsContentNext'));
+                },
+                success: function(data) {
+                    console.log( data );
+                    if ( data ) {
+                        window.location.href = mpcrbm_ajax.site_url+'/checkout/';
                     } else {
                         window.location.href = data;
                     }
