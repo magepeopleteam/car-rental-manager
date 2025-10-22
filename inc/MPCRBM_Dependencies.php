@@ -52,7 +52,8 @@
 				wp_enqueue_script( 'mpcrbm_manage_taxonomy', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_manage_taxonomy.js', array( 'jquery' ), time(), true );
 				$nonce = wp_create_nonce( 'mpcrbm_extra_service' );
 				wp_localize_script( 'mpcrbm_admin', 'mpcrbm_admin_nonce', array(
-					'nonce' => $nonce
+					'nonce' => $nonce,
+                    'site_url' => get_site_url(),
 				) );
 				// Trigger the action hook to add additional scripts if needed
 				do_action( 'mpcrbm_admin_script' );
@@ -69,7 +70,8 @@
 				// Localize scripts
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbm_ajax', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
-					'nonce'    => wp_create_nonce( 'mpcrbm_transportation_type_nonce' )
+					'nonce'    => wp_create_nonce( 'mpcrbm_transportation_type_nonce' ),
+                    'site_url' => get_site_url(),
 				) );
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbmL10n', array(
 					'nameLabel'  => __( 'Name : ', 'car-rental-manager' ),

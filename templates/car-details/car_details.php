@@ -326,7 +326,7 @@ $two_way = 2;
 
                             ?>
 
-                            <button data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn mpcrbm_book_now">Continue →</button>
+                            <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn">Continue →</button>
                         </div>
 
                         <!-- DRIVER INFO -->
