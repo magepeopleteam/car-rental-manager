@@ -209,42 +209,44 @@ if ($post_id) {
                 <?php }
                 ?>
                 <div class="mpcrbm_discount_booking">
-                    <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
-                        <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                        <?php
-                        if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){ ?>
-                            <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                        <?php } ?>
-                    </div>
-                    <div class="mpcrbm_booking_items">
-                        <?php
-                        // Calculate Early Bird Discount and apply to price
-                        $early_bird_discount = 0;
-                        $early_bird_info = null;
-                        $discounted_price = $raw_price;
 
-                        if (class_exists('MPCRBM_Frontend_Early_Bird')) {
-                            $early_bird_info = MPCRBM_Frontend_Early_Bird::get_early_bird_discount_info($post_id, $start_date_time);
-                            if ($early_bird_info && $early_bird_info['applicable']) {
-                                $early_bird_discount = MPCRBM_Frontend_Early_Bird::calculate_discount_amount($post_id, $start_date_time, $raw_price);
-                                $discounted_price = $raw_price - $early_bird_discount;
+                    <div class="mpcrbm_price_holder">
+                        <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
+                            <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                            <?php
+                            if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){ ?>
+                                <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                            <?php } ?>
+                        </div>
+                        <div class="mpcrbm_booking_items">
+                            <?php
+                            // Calculate Early Bird Discount and apply to price
+                            $early_bird_discount = 0;
+                            $early_bird_info = null;
+                            $discounted_price = $raw_price;
+
+                            if (class_exists('MPCRBM_Frontend_Early_Bird')) {
+                                $early_bird_info = MPCRBM_Frontend_Early_Bird::get_early_bird_discount_info($post_id, $start_date_time);
+                                if ($early_bird_info && $early_bird_info['applicable']) {
+                                    $early_bird_discount = MPCRBM_Frontend_Early_Bird::calculate_discount_amount($post_id, $start_date_time, $raw_price);
+                                    $discounted_price = $raw_price - $early_bird_discount;
+                                }
                             }
-                        }
-                        ?>
+                            ?>
 
-                        <div class="mpcrbm-price-container">
-                            <?php if ($early_bird_discount > 0): ?>
-                                <div class="mpcrbm-original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em; text-align: end">
-                                    <?php echo wp_kses_post(wc_price($raw_price)); ?>
-                                </div>
-                                <div class="mpcrbm-discounted-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338;">
-                                    <?php echo wp_kses_post(wc_price($discounted_price)); ?>
-                                </div>
-                                <div class="mpcrbm_early_bird_promotion_badge" style="margin: 3px 0 0 0;">
-                                    <span class="fas fa-clock"></span>
-                                    <div class="early_bird_text">
-                                        <strong><?php esc_html_e('Early Bird Special!', 'car-rental-manager'); ?></strong>
-                                        <span>
+                            <div class="mpcrbm-price-container">
+                                <?php if ($early_bird_discount > 0): ?>
+                                    <div class="mpcrbm-original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em; text-align: end">
+                                        <?php echo wp_kses_post(wc_price($raw_price)); ?>
+                                    </div>
+                                    <div class="mpcrbm-discounted-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338;">
+                                        <?php echo wp_kses_post(wc_price($discounted_price)); ?>
+                                    </div>
+                                    <div class="mpcrbm_early_bird_promotion_badge" style="margin: 3px 0 0 0;">
+                                        <span class="fas fa-clock"></span>
+                                        <div class="early_bird_text">
+                                            <strong><?php esc_html_e('Early Bird Special!', 'car-rental-manager'); ?></strong>
+                                            <span>
                                         <?php
                                         $discount_text = $early_bird_info['discount_type'] === 'percentage'
                                             ? $early_bird_info['discount_value'] . '%'
@@ -255,50 +257,53 @@ if ($post_id) {
                                         ));
                                         ?>
                                     </span>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php else: ?>
-                                <div class="mpcrbm-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338; text-align: end">
-                                    <?php echo wp_kses_post(wc_price($raw_price)); ?>
-                                </div>
-                            <?php endif; ?>
+                                <?php else: ?>
+                                    <div class="mpcrbm-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338; text-align: end">
+                                        <?php echo wp_kses_post(wc_price($raw_price)); ?>
+                                    </div>
+                                <?php endif; ?>
 
-                            <div class="mpcrbm_price-total" style="margin-top: 2px; color: #666; font-size: 0.85em;">
-                                <?php echo esc_attr($minutes_to_day); ?>-day total
-                                <?php if ($early_bird_discount > 0): ?>
-                                    <span style="color: #4CAF50; font-weight: bold; margin-left: 5px;">
+                                <div class="mpcrbm_price-total" style="margin-top: 2px; color: #666; font-size: 0.85em;">
+                                    <?php echo esc_attr($minutes_to_day); ?>-day total
+                                    <?php if ($early_bird_discount > 0): ?>
+                                        <span style="color: #4CAF50; font-weight: bold; margin-left: 5px;">
                                     (<?php echo wp_kses_post(wc_price($early_bird_discount)); ?> saved)
                                 </span>
+                                    <?php endif; ?>
+                                </div>
+
+                                <?php if ($total_save > 0): ?>
+                                    <div class="mpcrbm_discount-info" style="color: #d26e4b; font-weight: bold; margin-top: 2px;">
+                                        <?php echo sprintf(esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($total_save))); ?>
+                                    </div>
                                 <?php endif; ?>
                             </div>
 
-                            <?php if ($total_save > 0): ?>
-                                <div class="mpcrbm_discount-info" style="color: #d26e4b; font-weight: bold; margin-top: 2px;">
-                                    <?php echo sprintf(esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($total_save))); ?>
-                                </div>
-                            <?php endif; ?>
                         </div>
-
                     </div>
+                    <div class="mpcrbm_add_multiple_qty">
+                        <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
+                            <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
+                        </div>
+                        <button type="button"
+                                class="_mpBtn_xs mpcrbm_transport_select"
+                                data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
+                                data-transport-price="<?php echo esc_attr($discounted_price); ?>"
+                                data-post-id="<?php echo esc_attr($post_id); ?>"
+                                data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
+                                data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
+                                data-open-icon=""
+                                data-close-icon="fas fa-check mR_xs">
+                            <span class="" data-icon></span>
+                            <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
+                        </button>
+                    </div>
+
                 </div>
             </div>
-            <div class="mpcrbm_add_multiple_qty">
-                <div class="_mR_min_100 mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
-                    <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
-                </div>
-                <button type="button"
-                        class="_mpBtn_xs mpcrbm_transport_select"
-                        data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
-                        data-transport-price="<?php echo esc_attr($discounted_price); ?>"
-                        data-post-id="<?php echo esc_attr($post_id); ?>"
-                        data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
-                        data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
-                        data-open-icon=""
-                        data-close-icon="fas fa-check mR_xs">
-                    <span class="" data-icon></span>
-                    <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
-                </button>
-            </div>
+
 
             <?php do_action('mpcrbm_booking_item_after_feature', $post_id); ?>
         </div>

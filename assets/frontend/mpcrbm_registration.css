@@ -534,11 +534,18 @@ h2#mpcrbm_title_change{color:white;}
 
  .mpcrbm_discount_booking{
 	 display: flex;
-	 flex-direction: row;
+	 flex-direction: column;
 	 gap: 10px;
-	 justify-content: space-around;
-	 align-items: center;
+	 justify-content: end;
+	 align-items: revert;
 	 width: 50%;
+ }
+
+ .mpcrbm_price_holder{
+	 display: flex;
+	 justify-content: end;
+	 flex-direction: row;
+	 gap: 20px;
  }
 
  .mpcrbm_summary_show{
