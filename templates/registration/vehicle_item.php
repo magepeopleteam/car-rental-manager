@@ -159,55 +159,50 @@ if ($post_id) {
         <div class="mpcrbm_list_details">
             <h2><?php echo esc_html(get_the_title($post_id)); ?></h2>
             <div class=" mpcrbm_list">
-                <?php if ($display_features === 'on' && is_array($all_features) && !empty($all_features)) { ?>
-                    <div class="mpcrbm_car_specs_lists">
-                        <?php
-                        $i = 1;
-
-                        $count_total_features = count( $all_features );
-                        $remaining_features = $count_total_features - 6;
-
-                        foreach ($all_features as $key => $features) {
-
-                            if (!is_array($features)) {
-                                continue;
-                            }
-                            $label = isset($features['label']) ? sanitize_text_field($features['label']) : '';
-                            $text = isset($features['text']) ? sanitize_text_field($features['text']) : '';
-                            $icon = isset($features['icon']) ? sanitize_text_field($features['icon']) : '';
-                            $image = isset($features['image']) ? sanitize_text_field($features['image']) : '';
-                            ?>
-                            <div class="mpcrbm_car_spec">
-                                <?php if ($icon) {
-                                    if( $i > 4 ){
-                                        $icon_class = 'mpcrbm_feature_icon_color';
-                                    }else{
-                                        $icon_class = 'mpcrbm_feature_icon_color_'.$i;
-                                    }
-                                    ?>
-                                    <span class="<?php echo esc_attr($icon); ?>"></span>
-                                <?php }  echo esc_html($text); ?>
-                            </div>
-                        <?php
-
-                            if( $i === 6 ){
-                                break;
-                            }
-                            $i++;
-                        }
-
-                        if( $remaining_features > 0 ){ ?>
-                            <div class="mpcrbm_car_spec">
-                                <span class="">+<?php echo esc_attr( $remaining_features );?> more</span>
-                            </div>
-                        <?php }?>
-
+                <div class="mpcrbm_car_specs_lists">
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-car"></i>
+                        <div>
+                            <div class="spec-label">Car Type</div>
+                            <div class="spec-value">Sedan</div>
+                        </div>
                     </div>
-                <?php
-                } else { ?>
-                    <div></div>
-                <?php }
-                ?>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-gas-pump-alt"></i>
+                        <div>
+                            <div class="spec-label">Fuel Type</div>
+                            <div class="spec-value">Sedan</div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-bonus"></i>
+                        <div>
+                            <div class="spec-label">Brands</div>
+                            <div class="spec-value">Sedan</div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-time-quarter-to"></i>
+                        <div>
+                            <div class="spec-label">Build year</div>
+                            <div class="spec-value">Sedan</div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-person-seat"></i>
+                        <div>
+                            <div class="spec-label">Seating capacity</div>
+                            <div class="spec-value">Sedan</div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-person-luggage"></i>
+                        <div>
+                            <div class="spec-label">Maximum Bags</div>
+                            <div class="spec-value">Sedan</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="mpcrbm_discount_booking">
 
                     <div class="mpcrbm_price_holder">
