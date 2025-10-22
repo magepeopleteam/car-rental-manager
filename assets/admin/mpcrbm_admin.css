@@ -44,7 +44,7 @@
   border-left: 2px solid transparent;
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li span {
-  margin-right: 25px;
+  margin-right:10px;
   color: var(--mpcrbm-primary);
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li::after {

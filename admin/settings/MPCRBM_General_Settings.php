@@ -62,6 +62,61 @@
                         <section>
                             <label class="label">
                                 <div>
+                                    <h6><?php esc_html_e( 'Car Type', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
+                                </div>
+								<select name="" id="">
+									<option value="">Car type</option>
+								</select>
+                            </label>
+                        </section>
+						<section>
+                            <label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Fuel Type', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
+                                </div>
+								<select name="" id="">
+									<option value="">Car type</option>
+								</select>
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Car Brand', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
+                                </div>
+								<select name="" id="">
+									<option value="">Car type</option>
+								</select>
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Build Year', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
+                                </div>
+								<select name="" id="">
+									<option value="">Car type</option>
+								</select>
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Seating Capacity', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
+                                </div>
+								<select name="" id="">
+									<option value="">Car type</option>
+								</select>
+                            </label>
+                        </section>
+                        <section>
+                            <label class="label">
+                                <div>
                                     <h6><?php esc_html_e( 'Maximum Passenger', 'car-rental-manager' ); ?></h6>
                                     <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_maximum_passenger' ); ?></span>
                                 </div>
@@ -76,41 +131,6 @@
                                 </div>
                                 <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                             </label>
-                        </section>
-                        <section>
-                            <label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'On/Off Feature Extra feature', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
-                                </div>
-								<?php MPCRBM_Custom_Layout::switch_button( 'display_mpcrbm_features', $checked ); ?>
-                            </label>
-                        </section>
-                        <section data-collapse="#display_mpcrbm_features" class="<?php echo esc_attr( $active ); ?>">
-                            <table>
-                                <thead>
-                                <tr class="bg-dark">
-                                    <th class="_w_150"><?php esc_html_e( 'Icon/Image', 'car-rental-manager' ); ?></th>
-                                    <th><?php esc_html_e( 'Label', 'car-rental-manager' ); ?></th>
-                                    <th><?php esc_html_e( 'Text', 'car-rental-manager' ); ?></th>
-                                    <th class="_w_125"><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></th>
-                                </tr>
-                                </thead>
-                                <tbody class="sortable_area item_insert">
-								<?php
-									if ( is_array( $all_features ) && sizeof( $all_features ) > 0 ) {
-										foreach ( $all_features as $features ) {
-											$this->features_item( $features );
-										}
-									} else {
-										$this->features_item();
-									}
-								?>
-                                </tbody>
-                            </table>
-                            <div class="my-2"></div>
-							<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add New Item', 'car-rental-manager' ) ); ?>
-							<?php do_action( 'mpcrbm_hidden_table', 'mpcrbm_hidden_features_item' ); ?>
                         </section>
                     </div>
                 </div>

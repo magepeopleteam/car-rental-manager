@@ -33,37 +33,37 @@
                     <div class="mpcrbm_tabs leftTabs">
                         <ul class="tabLists">
                             <li data-tabs-target="#mpcrbm_general_info">
-                                <span class="pe-1 fas fa-tools"></span><?php esc_html_e( 'General Info', 'car-rental-manager' ); ?>
+                                <span class="fas fa-tools"></span><?php esc_html_e( 'General Info', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_date">
-                                <span class="pe-1 fas fa-calendar-alt"></span><?php esc_html_e( 'Date', 'car-rental-manager' ); ?>
+                                <span class="fas fa-calendar-alt"></span><?php esc_html_e( 'Date', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_pricing">
-                                <span class="pe-1 fas fa-hand-holding-usd"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
+                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_gallery_images">
-                                <span class="pe-1 fas fa-hand-holding-usd"></span><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?>
+                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_ex_service">
-                                <span class="pe-1 fas fa-puzzle-piece"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
+                                <span class="fas fa-puzzle-piece"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_tax">
                                 <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_operation_area">
-                                <span class="pe-1 fas fa-map-marker-alt"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
+                                <span class="fas fa-map-marker-alt"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_multi_location">
-                                <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Multi-Location', 'car-rental-manager' ); ?>
+                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Multi-Location', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_manage_faq">
-                                <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>
+                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_feature">
-                                <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>
+                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_term_and_condition">
-                                <span class="pe-1 fas fa-map-marked-alt"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
+                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
                             </li>
                             <?php
                                 // Allow pro plugins to add their own tabs
