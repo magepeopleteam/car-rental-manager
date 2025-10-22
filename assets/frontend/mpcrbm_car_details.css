@@ -7,6 +7,9 @@
 }
 
 .mpcrbm_car_details_left {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
     flex: 1 1 65%;
 }
 

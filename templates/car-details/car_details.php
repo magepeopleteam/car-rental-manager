@@ -6,11 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 $post_id = $post_id ?? get_the_id();
 $thumbnail_url = get_the_post_thumbnail_url($post_id, 'full');
 
-$term_id= 157;
-$name = MPCRBM_Function::get_taxonomy_name_by_id( $term_id, 'mpcrbm_car_feature' );
-
-
-
 $include_features = get_post_meta( $post_id, 'mpcrbm_include_features', true );
 $include_feature_names = [];
 if( is_array( $include_features ) && !empty( $include_features ) ){
@@ -108,228 +103,248 @@ if( $thumbnail_url ){
 $car_name = get_the_title( $post_id );
 $car_description = get_the_content( $post_id );
 //error_log( print_r( [ '$car_description' => $car_description ], true ) );
-?>
 
-<div class="mpcrbm_gallery_image_popup_wrapper">
-    <div class="mpcrbm_gallery_image_popup_overlay"></div>
-    <div class="mpcrbm_gallery_image_popup_content">
-        <div class="" style="display: block; float: right">
-            <button class="mpcrbm_gallery_image_popup_close">✕</button>
-        </div>
-        <div class="mpcrbm_gallery_image_popup_container">
-            <?php foreach ( $all_image_urls as $index => $img_url): ?>
-                <img src="<?php echo esc_url($img_url); ?>"
-                     class="mpcrbm_gallery_image_popup_item <?php echo $index === 0 ? 'active' : ''; ?>"
-                     alt="Gallery image">
-            <?php endforeach; ?>
-        </div>
-        <div class="mpcrbm_gallery_image_popup_prev_holder" style="display: flex; justify-content: space-between">
-            <div class="">
-                <button class="mpcrbm_gallery_image_popup_prev">←</button>
+$date = date('Y-m-d') . ' 10:00';
+$start_place = $end_place = 'Dhaka';
+// Get tomorrow's date
+$return_date = date('Y-m-d', strtotime('+1 day'));
+$start_time = $return_time = 10;
+$two_way = 2;
+?>
+<div class="mpcrbm_car_details">
+    <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="" />
+    <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
+    <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
+    <input type="hidden" name="mpcrbm_date" value="<?php echo esc_attr($date); ?>" />
+    <input type="hidden" name="mpcrbm_start_time" id="mpcrbm_start_time" value="<?php echo esc_attr($start_time); ?>" />
+    <input type="hidden" name="mpcrbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
+
+    <input type="hidden" name="mpcrbm_map_return_date" id="mpcrbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
+    <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
+
+    <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
+
+    <div class="mpcrbm_gallery_image_popup_wrapper">
+        <div class="mpcrbm_gallery_image_popup_overlay"></div>
+        <div class="mpcrbm_gallery_image_popup_content">
+            <div class="" style="display: block; float: right">
+                <button class="mpcrbm_gallery_image_popup_close">✕</button>
             </div>
-            <div class="">
-                <button class="mpcrbm_gallery_image_popup_next">→</button>
+            <div class="mpcrbm_gallery_image_popup_container">
+                <?php foreach ( $all_image_urls as $index => $img_url): ?>
+                    <img src="<?php echo esc_url($img_url); ?>"
+                         class="mpcrbm_gallery_image_popup_item <?php echo $index === 0 ? 'active' : ''; ?>"
+                         alt="Gallery image">
+                <?php endforeach; ?>
+            </div>
+            <div class="mpcrbm_gallery_image_popup_prev_holder" style="display: flex; justify-content: space-between">
+                <div class="">
+                    <button class="mpcrbm_gallery_image_popup_prev">←</button>
+                </div>
+                <div class="">
+                    <button class="mpcrbm_gallery_image_popup_next">→</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="mpcrbm mpcrbm_default_theme">
-    <div class="mpContainer" style="min-height: 1000px">
-        <?php do_action( 'mpcrbm_transport_search_form',$post_id ); ?>
-        <div class="mpcrbm_car_details_wrapper">
-            <h1 ><?php echo $car_name;?></h1>
-            <div class="mpcrbm_car_details_container">
-                <div class="mpcrbm_car_details_left">
-                    <div class="mpcrbm_car_details_images">
-                        <div class="mpcrbm_car_details_feature_image">
-                            <?php if( $thumbnail_url ){?>
-                                <img class="mpcrbm_car_image_details" id="mpcrbm_car_details_feature_image" src="<?php echo esc_attr( $thumbnail_url );?>" alt="<?php echo esc_attr( $car_name );?>">
-                            <?php }?>
-                        </div>
-                        <?php
-                        if (!empty( $gallery_images ) && is_array( $gallery_images ) ) { ?>
-                            <div class="mpcrbm_car_details_gallery">
-                                <?php
-                                $counter = 0;
-
-                                foreach ( $gallery_image_urls as $gallery_image_url ) {
-                                    if ( !$gallery_image_url ) continue;
-                                    if ( $counter < 4 ) { ?>
-                                        <img class="mpcrbm_gallery_image" src=" <?php echo esc_url( $gallery_image_url );?> " alt="<?php echo esc_attr( $car_name )?> Gallery Image">
-                                        <?php
-                                    }
-                                    $counter++;
-                                }
-                                if ( count( $all_image_urls ) > 4) { ?>
-                                    <button class="mpcrbm_car_image_details mpcrbm_car_details_view_more">View More →</button>
-                                    <?php
-                                }
-                                ?>
+    <div class="mpcrbm mpcrbm_default_theme">
+        <div class="mpContainer" style="min-height: 1000px">
+            <?php do_action( 'mpcrbm_transport_search_form',$post_id ); ?>
+            <div class="mpcrbm_car_details_wrapper">
+                <h1 ><?php echo $car_name;?></h1>
+                <div class="mpcrbm_car_details_container">
+                    <div class="mpcrbm_car_details_left">
+                        <div class="mpcrbm_car_details_images">
+                            <div class="mpcrbm_car_details_feature_image">
+                                <?php if( $thumbnail_url ){?>
+                                    <img class="mpcrbm_car_image_details" id="mpcrbm_car_details_feature_image" src="<?php echo esc_attr( $thumbnail_url );?>" alt="<?php echo esc_attr( $car_name );?>">
+                                <?php }?>
                             </div>
                             <?php
-                        }
-                        ?>
-                    </div>
-
-                    <!-- TABS -->
-                    <div class="mpcrbm_car_details_tabs">
-                        <button class="active" data-tab="description">Description</button>
-                        <button data-tab="carinfo">Car Info</button>
-                        <button data-tab="benefits">Benefits</button>
-                        <button data-tab="include">Include/Exclude</button>
-                        <button data-tab="location">Location</button>
-                        <button data-tab="reviews">Reviews</button>
-                        <button data-tab="faq">FAQ’s</button>
-                        <button data-tab="terms">Terms & Conditions</button>
-                    </div>
-
-                    <!-- TAB CONTENT -->
-                    <div id="description" class="mpcrbm_car_details_tab_content active">
-                        <?php if( $car_description ){?>
-                            <p><?php echo wp_strip_all_tags( $car_description );?></p>
-                        <?php }?>
-                    </div>
-
-                    <div id="carinfo" class="mpcrbm_car_details_tab_content">
-                        <div class="mpcrbm_car_details_info_grid">
-                            <div class="sss"><i class="mi mi-tachometer-fast"></i> <?php echo esc_attr( $car_type );?></div>
-                            <div class="sss"><i class="mi mi-bonus"></i> <?php echo esc_attr( $car_brand );?></div>
-                            <div class="sss">👤 <?php echo esc_attr( $seating_capacity );?> Persons</div>
-                            <div class="sss">🧳 <?php echo esc_attr( $maximum_bag );?> Bags</div>
-                            <div class="sss">📅 <?php echo esc_attr( $make_year );?></div>
-                            <div class="sss">∞ Unlimited</div>
-                            <div class="sss">⛽ <?php echo esc_attr( $fuel_type );?></div>
-
-                        </div>
-                    </div>
-
-                    <div id="benefits" class="mpcrbm_car_details_tab_content">
-                        <ul class="mpcrbm_car_details_benefit_list">
-                            <li>✅ Most popular fuel policy</li>
-                            <li>✅ Short waiting times</li>
-                            <li>✅ Superior safety and durability</li>
-                            <li>✅ Convenient pick-up location</li>
-                            <li>✅ Free cancellation</li>
-                            <li>✅ 100% luxurious fleet</li>
-                            <li>✅ Pay at pickup option</li>
-                        </ul>
-                    </div>
-
-                    <div id="include" class="mpcrbm_car_details_tab_content">
-                        <div class="mpcrbm_car_details_include_exclude">
-                            <div class="mpcrbm_car_details_include">
-                                <h4>Include Feature</h4>
-                                <ul>
+                            if (!empty( $gallery_images ) && is_array( $gallery_images ) ) { ?>
+                                <div class="mpcrbm_car_details_gallery">
                                     <?php
-                                    if( !empty( $include_feature_names ) ){
-                                        foreach ( $include_feature_names as $include_feature ){
-                                        ?>
-                                            <li>✅ <?php echo esc_attr( $include_feature );?></li>
-                                        <?php
-                                        }
-                                    }
-                                    ?>
-                                </ul>
-                            </div>
-                            <div class="mpcrbm_car_details_exclude">
-                                <h4>Exclude Feature</h4>
-                                <ul>
-                                    <?php
-                                    if( !empty( $exclude_feature_names ) ){
-                                        foreach ( $exclude_feature_names as $exclude_feature ){
-                                            ?>
-                                            <li>❌ <?php echo esc_attr( $exclude_feature );?></li>
+                                    $counter = 0;
+
+                                    foreach ( $gallery_image_urls as $gallery_image_url ) {
+                                        if ( !$gallery_image_url ) continue;
+                                        if ( $counter < 4 ) { ?>
+                                            <img class="mpcrbm_gallery_image" src=" <?php echo esc_url( $gallery_image_url );?> " alt="<?php echo esc_attr( $car_name )?> Gallery Image">
                                             <?php
                                         }
+                                        $counter++;
+                                    }
+                                    if ( count( $all_image_urls ) > 4) { ?>
+                                        <button class="mpcrbm_car_image_details mpcrbm_car_details_view_more">View More →</button>
+                                        <?php
                                     }
                                     ?>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="location" class="mpcrbm_car_details_tab_content">
-                        <div class="mpcrbm_car_details_map_box">
-                            <iframe src="https://maps.google.com/maps?q=Rajshahi&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
-                        </div>
-                    </div>
-
-                    <div id="reviews" class="mpcrbm_car_details_tab_content">
-                        <p>No reviews yet. Be the first to share your experience!</p>
-                    </div>
-
-                    <div id="faq" class="mpcrbm_car_details_tab_content">
-                        <h4>Frequently Asked Questions</h4>
-                        <?php
-                        if( !empty( $selected_faqs_data ) ){
-                            foreach ( $selected_faqs_data as $faq_data  ){
+                                </div>
+                                <?php
+                            }
                             ?>
-                            <p><strong>Q:</strong> <?php echo wp_strip_all_tags( $faq_data['title'] )?></p>
-                            <p><strong>A:</strong> <?php echo wp_strip_all_tags(  $faq_data['answer'] )?></p>
-                        <?php }
-                        }
-                        ?>
-                    </div>
+                        </div>
 
-                    <div id="terms" class="mpcrbm_car_details_tab_content">
-                        <?php if ( ! empty( $selected_term_condition ) ) : ?>
-                            <div class="tf-car-conditions-section" id="tf-tc">
-                                <h3>Tour Terms &amp; Conditions</h3>
-                                <table class="mpcrbm_car_details_table">
-                                    <tbody>
-                                    <?php foreach ( $selected_term_condition as $term_condition ){?>
-                                        <tr>
-                                            <th><?php echo wp_strip_all_tags( $term_condition['title'] )?></th>
-                                            <td><?php echo wp_strip_all_tags( $term_condition['answer'] )?></td>
-                                        </tr>
-                                    <?php }?>
-                                    </tbody>
-                                </table>
+                        <!-- TABS -->
+                        <div class="mpcrbm_car_details_tabs">
+                            <button class="active" data-tab="description">Description</button>
+                            <button data-tab="carinfo">Car Info</button>
+                            <button data-tab="benefits">Benefits</button>
+                            <button data-tab="include">Include/Exclude</button>
+                            <button data-tab="location">Location</button>
+                            <button data-tab="reviews">Reviews</button>
+                            <button data-tab="faq">FAQ’s</button>
+                            <button data-tab="terms">Terms & Conditions</button>
+                        </div>
+
+                        <!-- TAB CONTENT -->
+                        <div id="description" class="mpcrbm_car_details_tab_content active">
+                            <?php if( $car_description ){?>
+                                <p><?php echo wp_strip_all_tags( $car_description );?></p>
+                            <?php }?>
+                        </div>
+
+                        <div id="carinfo" class="mpcrbm_car_details_tab_content">
+                            <div class="mpcrbm_car_details_info_grid">
+                                <div class="sss"><i class="mi mi-tachometer-fast"></i> <?php echo esc_attr( $car_type );?></div>
+                                <div class="sss"><i class="mi mi-bonus"></i> <?php echo esc_attr( $car_brand );?></div>
+                                <div class="sss">👤 <?php echo esc_attr( $seating_capacity );?> Persons</div>
+                                <div class="sss">🧳 <?php echo esc_attr( $maximum_bag );?> Bags</div>
+                                <div class="sss">📅 <?php echo esc_attr( $make_year );?></div>
+                                <div class="sss">∞ Unlimited</div>
+                                <div class="sss">⛽ <?php echo esc_attr( $fuel_type );?></div>
+
                             </div>
-                        <?php endif; ?>
+                        </div>
+
+                        <div id="benefits" class="mpcrbm_car_details_tab_content">
+                            <ul class="mpcrbm_car_details_benefit_list">
+                                <li>✅ Most popular fuel policy</li>
+                                <li>✅ Short waiting times</li>
+                                <li>✅ Superior safety and durability</li>
+                                <li>✅ Convenient pick-up location</li>
+                                <li>✅ Free cancellation</li>
+                                <li>✅ 100% luxurious fleet</li>
+                                <li>✅ Pay at pickup option</li>
+                            </ul>
+                        </div>
+
+                        <div id="include" class="mpcrbm_car_details_tab_content">
+                            <div class="mpcrbm_car_details_include_exclude">
+                                <div class="mpcrbm_car_details_include">
+                                    <h4>Include Feature</h4>
+                                    <ul>
+                                        <?php
+                                        if( !empty( $include_feature_names ) ){
+                                            foreach ( $include_feature_names as $include_feature ){
+                                                ?>
+                                                <li>✅ <?php echo esc_attr( $include_feature );?></li>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
+                                <div class="mpcrbm_car_details_exclude">
+                                    <h4>Exclude Feature</h4>
+                                    <ul>
+                                        <?php
+                                        if( !empty( $exclude_feature_names ) ){
+                                            foreach ( $exclude_feature_names as $exclude_feature ){
+                                                ?>
+                                                <li>❌ <?php echo esc_attr( $exclude_feature );?></li>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="location" class="mpcrbm_car_details_tab_content">
+                            <div class="mpcrbm_car_details_map_box">
+                                <iframe src="https://maps.google.com/maps?q=Rajshahi&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                            </div>
+                        </div>
+
+                        <div id="reviews" class="mpcrbm_car_details_tab_content">
+                            <p>No reviews yet. Be the first to share your experience!</p>
+                        </div>
+
+                        <div id="faq" class="mpcrbm_car_details_tab_content">
+                            <h4>Frequently Asked Questions</h4>
+                            <?php
+                            if( !empty( $selected_faqs_data ) ){
+                                foreach ( $selected_faqs_data as $faq_data  ){
+                                    ?>
+                                    <p><strong>Q:</strong> <?php echo wp_strip_all_tags( $faq_data['title'] )?></p>
+                                    <p><strong>A:</strong> <?php echo wp_strip_all_tags(  $faq_data['answer'] )?></p>
+                                <?php }
+                            }
+                            ?>
+                        </div>
+
+                        <div id="terms" class="mpcrbm_car_details_tab_content">
+                            <?php if ( ! empty( $selected_term_condition ) ) : ?>
+                                <div class="tf-car-conditions-section" id="tf-tc">
+                                    <h3>Tour Terms &amp; Conditions</h3>
+                                    <table class="mpcrbm_car_details_table">
+                                        <tbody>
+                                        <?php foreach ( $selected_term_condition as $term_condition ){?>
+                                            <tr>
+                                                <th><?php echo wp_strip_all_tags( $term_condition['title'] )?></th>
+                                                <td><?php echo wp_strip_all_tags( $term_condition['answer'] )?></td>
+                                            </tr>
+                                        <?php }?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
                     </div>
 
-                </div>
-
-                <div class="mpcrbm_car_details_right">
-                    <?php
-                    $ddd = new MPCRBM_Shortcodes();
-
-                    ?>
-
-                    <div class="mpcrbm_car_details_price_box">
-                        <h3>Total: <span>$<?php echo esc_attr( $day_price )?></span> / Day</h3>
-                        <p>Without Taxes</p>
-
+                    <div class="mpcrbm_car_details_right">
                         <?php
-                        $attribute = [
-                            'progressbar' => 'no',
-                            'title'       => 'no',
-                            'single_page'       => 'yes',
-                        ];
-                        echo $ddd->mpcrbm_booking($attribute);
+                        $ddd = new MPCRBM_Shortcodes();
 
                         ?>
 
-                        <button class="mpcrbm_car_details_continue_btn">Continue →</button>
-                    </div>
+                        <div class="mpcrbm_car_details_price_box">
+                            <h3>Total: <span>$<?php echo esc_attr( $day_price )?></span> / Day</h3>
+                            <p>Without Taxes</p>
 
-                    <!-- DRIVER INFO -->
-                    <div class="mpcrbm_car_details_driver_box">
-                        <h4>Driver details <span class="verified">✔ Verified</span></h4>
-                        <p><strong>Abdullah Khan</strong></p>
-                        <p>Age 24 Years</p>
-                    </div>
+                            <?php
+                            $attribute = [
+                                'progressbar' => 'no',
+                                'title'       => 'no',
+                                'single_page'       => 'yes',
+                            ];
+                            echo $ddd->mpcrbm_booking($attribute);
 
-                    <!-- RENTER INFO -->
-                    <div class="mpcrbm_car_details_renter_box">
-                        <h4>Renters Information</h4>
-                        <p><strong>Shelley Mcconnell</strong></p>
+                            ?>
+
+                            <button data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn mpcrbm_book_now">Continue →</button>
+                        </div>
+
+                        <!-- DRIVER INFO -->
+                        <div class="mpcrbm_car_details_driver_box">
+                            <h4>Driver details <span class="verified">✔ Verified</span></h4>
+                            <p><strong>Abdullah Khan</strong></p>
+                            <p>Age 24 Years</p>
+                        </div>
+
+                        <!-- RENTER INFO -->
+                        <div class="mpcrbm_car_details_renter_box">
+                            <h4>Renters Information</h4>
+                            <p><strong>Shelley Mcconnell</strong></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
