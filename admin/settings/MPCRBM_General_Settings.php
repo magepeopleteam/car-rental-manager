@@ -100,7 +100,7 @@
 						<section>
                             <label class="label">
                                 <div>
-                                    <h6><?php esc_html_e( 'Car Type', 'car-rental-manager' ); ?></h6>
+                                    <h6><?php esc_html_e( 'Fuel Type', 'car-rental-manager' ); ?></h6>
                                     <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
                                 </div>
 								<select name="mpcrbm_fuel_type" class="formControl">
