@@ -274,7 +274,7 @@ jQuery(document).ready(function($) {
         }
     });
 
-    $(document).on('change', '#mpcrbm_is_drop_off', function() {
+    $(document).on('change','#mpcrbm_is_drop_off', function() {
         if ($(this).is(':checked')) {
             $('#mpcrbm_drop_off_location').hide();
             $('#mpcrbm-vertical-divide-location').hide();

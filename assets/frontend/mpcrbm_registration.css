@@ -536,8 +536,8 @@ h2#mpcrbm_title_change{color:white;}
 	 display: flex;
 	 flex-direction: row;
 	 gap: 10px;
-	 justify-content: space-around;
-	 align-items: center;
+	 justify-content: end;
+	 align-items: revert;
 	 width: 50%;
  }
 
