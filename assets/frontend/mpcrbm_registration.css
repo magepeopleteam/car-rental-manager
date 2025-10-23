@@ -533,6 +533,14 @@ h2#mpcrbm_title_change{color:white;}
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 	margin-bottom: 10px;
  }
+ .mpcrbm_extra_service_layout_details{
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	margin-bottom: 10px;
+ }
 	.price-quantity-box{
 		display: flex;
 		align-items: center;

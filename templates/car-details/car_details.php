@@ -102,7 +102,6 @@ if( $thumbnail_url ){
 
 $car_name = get_the_title( $post_id );
 $car_description = get_the_content( $post_id );
-//error_log( print_r( [ '$car_description' => $car_description ], true ) );
 
 $date = date('Y-m-d') . ' 10:00';
 $start_place = $end_place = 'Dhaka';
@@ -110,6 +109,11 @@ $start_place = $end_place = 'Dhaka';
 $return_date = date('Y-m-d', strtotime('+1 day'));
 $start_time = $return_time = 10;
 $two_way = 2;
+
+$return_date_time = $return_date. ' 10:00';
+
+$discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $date, $return_date_time );
+
 ?>
 <div class="mpcrbm_car_details">
     <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="" />
@@ -176,7 +180,7 @@ $two_way = 2;
                                         $counter++;
                                     }
                                     if ( count( $all_image_urls ) > 4) { ?>
-                                        <button class="mpcrbm_car_image_details mpcrbm_car_details_view_more">View More →</button>
+                                        <button class="mpcrbm_car_image_details mpcrbm_car_details_view_more"><?php esc_attr_e( 'View More', 'car-rental-manager' );?> →</button>
                                         <?php
                                     }
                                     ?>
@@ -188,14 +192,14 @@ $two_way = 2;
 
                         <!-- TABS -->
                         <div class="mpcrbm_car_details_tabs">
-                            <button class="active" data-tab="description">Description</button>
-                            <button data-tab="carinfo">Car Info</button>
-                            <button data-tab="benefits">Benefits</button>
-                            <button data-tab="include">Include/Exclude</button>
-                            <button data-tab="location">Location</button>
-                            <button data-tab="reviews">Reviews</button>
-                            <button data-tab="faq">FAQ’s</button>
-                            <button data-tab="terms">Terms & Conditions</button>
+                            <button class="active" data-tab="description"><?php esc_attr_e( 'Description', 'car-rental-manager' );?></button>
+                            <button data-tab="carinfo"><?php esc_attr_e( 'Car Info', 'car-rental-manager' );?></button>
+                            <button data-tab="benefits" style="display: none"><?php esc_attr_e( 'Benefits', 'car-rental-manager' );?></button>
+                            <button data-tab="include"><?php esc_attr_e( 'Include/Exclude', 'car-rental-manager' );?></button>
+                            <button data-tab="location"><?php esc_attr_e( 'Location', 'car-rental-manager' );?></button>
+                            <button data-tab="reviews"><?php esc_attr_e( 'Reviews', 'car-rental-manager' );?></button>
+                            <button data-tab="faq"><?php esc_attr_e( 'FAQ’s', 'car-rental-manager' );?></button>
+                            <button data-tab="terms"><?php esc_attr_e( 'Terms & Conditions', 'car-rental-manager' );?></button>
                         </div>
 
                         <!-- TAB CONTENT -->
@@ -209,31 +213,31 @@ $two_way = 2;
                             <div class="mpcrbm_car_details_info_grid">
                                 <div class="sss"><i class="mi mi-tachometer-fast"></i> <?php echo esc_attr( $car_type );?></div>
                                 <div class="sss"><i class="mi mi-bonus"></i> <?php echo esc_attr( $car_brand );?></div>
-                                <div class="sss">👤 <?php echo esc_attr( $seating_capacity );?> Persons</div>
-                                <div class="sss">🧳 <?php echo esc_attr( $maximum_bag );?> Bags</div>
+                                <div class="sss">👤 <?php echo esc_attr( $seating_capacity );?> <?php esc_attr_e( 'Persons', 'car-rental-manager' );?></div>
+                                <div class="sss">🧳 <?php echo esc_attr( $maximum_bag );?> <?php esc_attr_e( 'Bags', 'car-rental-manager' );?></div>
                                 <div class="sss">📅 <?php echo esc_attr( $make_year );?></div>
-                                <div class="sss">∞ Unlimited</div>
+                                <div class="sss">∞ <?php esc_attr_e( 'Unlimited', 'car-rental-manager' );?></div>
                                 <div class="sss">⛽ <?php echo esc_attr( $fuel_type );?></div>
 
                             </div>
                         </div>
 
-                        <div id="benefits" class="mpcrbm_car_details_tab_content">
+                        <div id="benefits" class="mpcrbm_car_details_tab_content" style="display: none">
                             <ul class="mpcrbm_car_details_benefit_list">
-                                <li>✅ Most popular fuel policy</li>
-                                <li>✅ Short waiting times</li>
-                                <li>✅ Superior safety and durability</li>
-                                <li>✅ Convenient pick-up location</li>
-                                <li>✅ Free cancellation</li>
-                                <li>✅ 100% luxurious fleet</li>
-                                <li>✅ Pay at pickup option</li>
+                                <li>✅ <?php esc_attr_e( 'Most popular fuel policy', 'car-rental-manager' );?></li>
+                                <li>✅ <?php esc_attr_e( 'Short waiting times', 'car-rental-manager' );?></li>
+                                <li>✅ <?php esc_attr_e( 'Superior safety and durability', 'car-rental-manager' );?></li>
+                                <li>✅ <?php esc_attr_e( 'Convenient pick-up location', 'car-rental-manager' );?></li>
+                                <li>✅ <?php esc_attr_e( 'Free cancellation', 'car-rental-manager' );?></li>
+                                <li>✅ <?php esc_attr_e( '100% luxurious fleet', 'car-rental-manager' );?></li>
+                                <li>✅ <?php esc_attr_e( 'Pay at pickup option', 'car-rental-manager' );?></li>
                             </ul>
                         </div>
 
                         <div id="include" class="mpcrbm_car_details_tab_content">
                             <div class="mpcrbm_car_details_include_exclude">
                                 <div class="mpcrbm_car_details_include">
-                                    <h4>Include Feature</h4>
+                                    <h4><?php esc_attr_e( 'Include Feature', 'car-rental-manager' );?></h4>
                                     <ul>
                                         <?php
                                         if( !empty( $include_feature_names ) ){
@@ -247,7 +251,7 @@ $two_way = 2;
                                     </ul>
                                 </div>
                                 <div class="mpcrbm_car_details_exclude">
-                                    <h4>Exclude Feature</h4>
+                                    <h4><?php esc_attr_e( 'Exclude Feature', 'car-rental-manager' );?></h4>
                                     <ul>
                                         <?php
                                         if( !empty( $exclude_feature_names ) ){
@@ -270,11 +274,11 @@ $two_way = 2;
                         </div>
 
                         <div id="reviews" class="mpcrbm_car_details_tab_content">
-                            <p>No reviews yet. Be the first to share your experience!</p>
+                            <p><?php esc_attr_e( 'No reviews yet. Be the first to share your experience!', 'car-rental-manager' );?></p>
                         </div>
 
                         <div id="faq" class="mpcrbm_car_details_tab_content">
-                            <h4>Frequently Asked Questions</h4>
+                            <h4><?php esc_attr_e( 'Frequently Asked Questions', 'car-rental-manager' );?></h4>
                             <?php
                             if( !empty( $selected_faqs_data ) ){
                                 foreach ( $selected_faqs_data as $faq_data  ){
@@ -289,7 +293,7 @@ $two_way = 2;
                         <div id="terms" class="mpcrbm_car_details_tab_content">
                             <?php if ( ! empty( $selected_term_condition ) ) : ?>
                                 <div class="tf-car-conditions-section" id="tf-tc">
-                                    <h3>Tour Terms &amp; Conditions</h3>
+                                    <h3><?php esc_attr_e( 'Tour Terms &amp; Conditions', 'car-rental-manager' );?></h3>
                                     <table class="mpcrbm_car_details_table">
                                         <tbody>
                                         <?php foreach ( $selected_term_condition as $term_condition ){?>
@@ -308,13 +312,13 @@ $two_way = 2;
 
                     <div class="mpcrbm_car_details_right">
                         <?php
-                        $ddd = new MPCRBM_Shortcodes();
+                        $mpcrbm_booking_form = new MPCRBM_Shortcodes();
 
                         ?>
 
                         <div class="mpcrbm_car_details_price_box">
-                            <h3>Total: <span>$<?php echo esc_attr( $day_price )?></span> / Day</h3>
-                            <p>Without Taxes</p>
+                            <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span><?php echo wp_kses_post( wc_price( $day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
+                            <p><?php esc_attr_e( 'Without Taxes', 'car-rental-manager' );?></p>
 
                             <?php
                             $attribute = [
@@ -322,24 +326,28 @@ $two_way = 2;
                                 'title'       => 'no',
                                 'single_page'       => 'yes',
                             ];
-                            echo $ddd->mpcrbm_booking($attribute);
+                            echo $mpcrbm_booking_form->mpcrbm_booking( $attribute );
 
-                            ?>
+                            $extra_service_class = 'mpcrbm_extra_service_layout_details';
 
-                            <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn">Continue →</button>
+                            // Get service data
+                            include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
+
+                            <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
+
                         </div>
 
                         <!-- DRIVER INFO -->
                         <div class="mpcrbm_car_details_driver_box">
-                            <h4>Driver details <span class="verified">✔ Verified</span></h4>
-                            <p><strong>Abdullah Khan</strong></p>
-                            <p>Age 24 Years</p>
+                            <h4><?php esc_attr_e( 'Driver details', 'car-rental-manager' );?> <span class="verified">✔ <?php esc_attr_e( 'Verified', 'car-rental-manager' );?></span></h4>
+                            <p><strong><?php esc_attr_e( 'Abdullah Khan', 'car-rental-manager' );?></strong></p>
+                            <p><?php esc_attr_e( 'Age 24 Years', 'car-rental-manager' );?></p>
                         </div>
 
                         <!-- RENTER INFO -->
                         <div class="mpcrbm_car_details_renter_box">
-                            <h4>Renters Information</h4>
-                            <p><strong>Shelley Mcconnell</strong></p>
+                            <h4><?php esc_attr_e( 'Renters Information', 'car-rental-manager' );?></h4>
+                            <p><strong><?php esc_attr_e( 'Shelley Mcconnell', 'car-rental-manager' );?></strong></p>
                         </div>
                     </div>
                 </div>
