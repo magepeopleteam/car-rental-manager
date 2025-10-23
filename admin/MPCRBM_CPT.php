@@ -102,7 +102,7 @@
                     'mpcrbm_seating_capacity' => array('label' => 'Seating Capacity', 'hierarchical' => true),
                     'mpcrbm_car_brand' => array('label' => 'Car Brand', 'hierarchical' => true),
                     'mpcrbm_make_year' => array('label' => 'Make Year', 'hierarchical' => true),
-                    'mpcrbm_car_feature' => array('label' => 'Make Year', 'hierarchical' => true),
+                    'mpcrbm_car_feature' => array('label' => 'Car Features', 'hierarchical' => true),
                 );
 
                 foreach ( $taxonomies as $slug => $props ) {
