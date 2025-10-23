@@ -135,7 +135,20 @@ if ($post_id) {
     if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){
         $line_through = 'mpcrbm_line_through';
     }
+    $selected_car_type  = get_post_meta( $post_id, 'mpcrbm_car_type', true );
+    $selected_car_type  = empty($selected_car_type) ? $selected_car_type : '';
 
+    $selected_fuel_type = get_post_meta( $post_id, 'mpcrbm_fuel_type', true );
+    $selected_fuel_type  = empty($selected_fuel_type) ? $selected_fuel_type : '';
+
+    $selected_seating   = get_post_meta( $post_id, 'mpcrbm_seating_capacity', true );
+    $selected_seating  = empty($selected_seating) ? $selected_seating : '';
+
+    $selected_brand     = get_post_meta( $post_id, 'mpcrbm_car_brand', true );
+    $selected_brand  = empty($selected_brand) ? $selected_brand : '';
+
+    $selected_year      = get_post_meta( $post_id, 'mpcrbm_make_year', true );
+    $selected_year  = empty($selected_year) ? $selected_year : '';
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder
          data-car-type="<?php echo esc_attr( $all_car_type_str)?>"
@@ -163,43 +176,43 @@ if ($post_id) {
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-car"></i>
                         <div>
-                            <div class="spec-label">Car Type</div>
-                            <div class="spec-value">Sedan</div>
+                            <div class="spec-label"><?php echo esc_html__('Car Type ','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($selected_car_type); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-gas-pump-alt"></i>
                         <div>
-                            <div class="spec-label">Fuel Type</div>
-                            <div class="spec-value">Sedan</div>
+                            <div class="spec-label"><?php echo esc_html__('Fuel Type ','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($selected_fuel_type); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-bonus"></i>
                         <div>
-                            <div class="spec-label">Brands</div>
-                            <div class="spec-value">Sedan</div>
+                            <div class="spec-label"><?php echo esc_html__('Brands','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($selected_brand); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-time-quarter-to"></i>
                         <div>
-                            <div class="spec-label">Build year</div>
-                            <div class="spec-value">Sedan</div>
+                            <div class="spec-label"><?php echo esc_html__('Make Year','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($selected_year); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-person-seat"></i>
                         <div>
-                            <div class="spec-label">Seating capacity</div>
-                            <div class="spec-value">Sedan</div>
+                            <div class="spec-label"><?php echo esc_html__('Seating Capacity','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($selected_seating); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-person-luggage"></i>
                         <div>
-                            <div class="spec-label">Maximum Bags</div>
-                            <div class="spec-value">Sedan</div>
+                            <div class="spec-label"><?php echo esc_html__('Maximum Bags','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($selected_car_type); ?></div>
                         </div>
                     </div>
                 </div>
