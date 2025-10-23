@@ -38,6 +38,7 @@
 			public function global_enqueue() {
 				do_action( 'mpcrbm_common_script' );
 				wp_enqueue_style('mage-icons', MPCRBM_PLUGIN_URL . '/assets/mage-icon/css/mage-icon.css', array(), time());
+                $this->mpcrbm_enque_flatpickr();
 			}
 
 			public function admin_enqueue() {
@@ -78,8 +79,29 @@
 					'qtyLabel'   => __( 'Quantity : ', 'car-rental-manager' ),
 					'priceLabel' => __( 'Price : ', 'car-rental-manager' )
 				) );
+
 				do_action( 'mpcrbm_frontend_script' );
 			}
+
+            public function mpcrbm_enque_flatpickr() {
+                wp_enqueue_style(
+                    'mpcrbm-flatpickr-css',
+                    'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
+                    array(),
+                    '4.6.13'
+                );
+
+                // Flatpickr JS
+                wp_enqueue_script(
+                    'mpcrbm-flatpickr-js',
+                    'https://cdn.jsdelivr.net/npm/flatpickr',
+                    array('jquery'),
+                    '4.6.13',
+                    true
+                );
+
+            }
+
 		}
 		new MPCRBM_Dependencies();
 	}
