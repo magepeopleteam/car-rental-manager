@@ -60,94 +60,107 @@
                         </section>
                         
 						<?php
-							$car_types = get_terms(array('taxonomy' => 'mpcrbm_car_type', 'hide_empty' => false));
-							$fuel_types = get_terms(array('taxonomy' => 'mpcrbm_fuel_type', 'hide_empty' => false));
-							$seating_capacities = get_terms(array('taxonomy' => 'mpcrbm_seating_capacity', 'hide_empty' => false));
-							$car_brands = get_terms(array('taxonomy' => 'mpcrbm_car_brand', 'hide_empty' => false));
-							$make_years = get_terms(array('taxonomy' => 'mpcrbm_make_year', 'hide_empty' => false));
-							
-							$selected_car_type  = get_post_meta( $post_id, 'mpcrbm_car_type', true );
-							$selected_car_type  = empty($selected_car_type) ? $selected_car_type : '';
+							// Get all taxonomy terms
+							$car_types = get_terms(['taxonomy' => 'mpcrbm_car_type', 'hide_empty' => false]);
+							$fuel_types = get_terms(['taxonomy' => 'mpcrbm_fuel_type', 'hide_empty' => false]);
+							$seating_capacities = get_terms(['taxonomy' => 'mpcrbm_seating_capacity', 'hide_empty' => false]);
+							$car_brands = get_terms(['taxonomy' => 'mpcrbm_car_brand', 'hide_empty' => false]);
+							$make_years = get_terms(['taxonomy' => 'mpcrbm_make_year', 'hide_empty' => false]);
 
-							$selected_fuel_type = get_post_meta( $post_id, 'mpcrbm_fuel_type', true );
-							$selected_fuel_type  = empty($selected_fuel_type) ? $selected_fuel_type : '';
-
-							$selected_seating   = get_post_meta( $post_id, 'mpcrbm_seating_capacity', true );
-							$selected_seating  = empty($selected_seating) ? $selected_seating : '';
-
-							$selected_brand     = get_post_meta( $post_id, 'mpcrbm_car_brand', true );
-							$selected_brand  = empty($selected_brand) ? $selected_brand : '';
-
-							$selected_year      = get_post_meta( $post_id, 'mpcrbm_make_year', true );
-							$selected_year  = empty($selected_year) ? $selected_year : '';
+							// Get selected taxonomy terms for this post
+							$selected_car_type  = wp_get_post_terms($post_id, 'mpcrbm_car_type', ['fields' => 'ids']);
+							$selected_fuel_type = wp_get_post_terms($post_id, 'mpcrbm_fuel_type', ['fields' => 'ids']);
+							$selected_seating   = wp_get_post_terms($post_id, 'mpcrbm_seating_capacity', ['fields' => 'ids']);
+							$selected_brand     = wp_get_post_terms($post_id, 'mpcrbm_car_brand', ['fields' => 'ids']);
+							$selected_year      = wp_get_post_terms($post_id, 'mpcrbm_make_year', ['fields' => 'ids']);
 
 						?>
+						<!-- Car Type -->
 						<section>
-                            <label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'Car Type', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
-                                </div>
-								
-								<select name="mpcrbm_car_type" class="formControl">
-									<?php foreach ($car_types as $car_type):?>
-									<option value="<?php echo esc_html($car_type->term_id); ?>" <?php echo ($car_type->term_id==$selected_car_type)?'selected':''; ?>><?php echo esc_html($car_type->name); ?></option>
+							<label class="label">
+								<div>
+									<h6><?php esc_html_e('Car Type', 'car-rental-manager'); ?></h6>
+									<span class="desc"><?php MPCRBM_Settings::info_text('display_mpcrbm_features'); ?></span>
+								</div>
+								<select name="tax_input[mpcrbm_car_type][]" class="formControl">
+									<option value=""><?php esc_html_e('— Select Car Type —','car-rental-manager'); ?></option>
+									<?php foreach ($car_types as $car_type): ?>
+										<option value="<?php echo esc_attr($car_type->term_id); ?>" <?php selected(in_array($car_type->term_id, $selected_car_type)); ?>>
+											<?php echo esc_html($car_type->name); ?>
+										</option>
 									<?php endforeach; ?>
 								</select>
-                            </label>
-                        </section>
+							</label>
+						</section>
+
+						<!-- Fuel Type -->
 						<section>
-                            <label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'Fuel Type', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
-                                </div>
-								<select name="mpcrbm_fuel_type" class="formControl">
-									<?php foreach ($fuel_types as $fuel_type):?>
-									<option value="<?php echo esc_html($fuel_type->term_id); ?>" <?php echo ($fuel_type->term_id==$selected_fuel_type)?'selected':''; ?>><?php echo esc_html($fuel_type->name); ?></option>
+							<label class="label">
+								<div>
+									<h6><?php esc_html_e('Fuel Type', 'car-rental-manager'); ?></h6>
+									<span class="desc"><?php MPCRBM_Settings::info_text('display_mpcrbm_features'); ?></span>
+								</div>
+								<select name="tax_input[mpcrbm_fuel_type][]" class="formControl">
+									<option value=""><?php esc_html_e('— Select Fuel Type —','car-rental-manager'); ?></option>
+									<?php foreach ($fuel_types as $fuel_type): ?>
+										<option value="<?php echo esc_attr($fuel_type->term_id); ?>" <?php selected(in_array($fuel_type->term_id, $selected_fuel_type)); ?>>
+											<?php echo esc_html($fuel_type->name); ?>
+										</option>
 									<?php endforeach; ?>
 								</select>
-                            </label>
-                        </section>
-                        <section>
-                            <label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'Seating Capacity', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
-                                </div>
-								<select name="mpcrbm_seating_capacity" class="formControl">
-									<?php foreach ($seating_capacities as $seating_capacity):?>
-									<option value="<?php echo esc_html($seating_capacity->term_id); ?>" <?php echo ($seating_capacity->term_id==$selected_seating)?'selected':''; ?>><?php echo esc_html($seating_capacity->name); ?></option>
+							</label>
+						</section>
+
+						<!-- Seating Capacity -->
+						<section>
+							<label class="label">
+								<div>
+									<h6><?php esc_html_e('Seating Capacity', 'car-rental-manager'); ?></h6>
+								</div>
+								<select name="tax_input[mpcrbm_seating_capacity][]" class="formControl">
+									<option value=""><?php esc_html_e('— Select Seating —','car-rental-manager'); ?></option>
+									<?php foreach ($seating_capacities as $seat): ?>
+										<option value="<?php echo esc_attr($seat->term_id); ?>" <?php selected(in_array($seat->term_id, $selected_seating)); ?>>
+											<?php echo esc_html($seat->name); ?>
+										</option>
 									<?php endforeach; ?>
 								</select>
-                            </label>
-                        </section>
-                        <section>
-                            <label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'Car Brand', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
-                                </div>
-								<select name="mpcrbm_car_brand" class="formControl">
-									<?php foreach ($car_brands as $car_brand):?>
-									<option value="<?php echo esc_html($car_brand->term_id); ?>" <?php echo ($car_brand->term_id==$selected_brand)?'selected':''; ?>><?php echo esc_html($car_brand->name); ?></option>
+							</label>
+						</section>
+
+						<!-- Car Brand -->
+						<section>
+							<label class="label">
+								<div>
+									<h6><?php esc_html_e('Car Brand', 'car-rental-manager'); ?></h6>
+								</div>
+								<select name="tax_input[mpcrbm_car_brand][]" class="formControl">
+									<option value=""><?php esc_html_e('— Select Brand —','car-rental-manager'); ?></option>
+									<?php foreach ($car_brands as $brand): ?>
+										<option value="<?php echo esc_attr($brand->term_id); ?>" <?php selected(in_array($brand->term_id, $selected_brand)); ?>>
+											<?php echo esc_html($brand->name); ?>
+										</option>
 									<?php endforeach; ?>
 								</select>
-                            </label>
-                        </section>
-                        <section>
-                            <label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'Make Years', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
-                                </div>
-								<select name="mpcrbm_make_year" class="formControl">
-									<?php foreach ($make_years as $make_year):?>
-										<option value="<?php echo esc_html($make_year->term_id); ?>" <?php echo ($make_year->term_id==$selected_year)?'selected':''; ?>><?php echo esc_html($make_year->name); ?></option>
+							</label>
+						</section>
+
+						<!-- Make Year -->
+						<section>
+							<label class="label">
+								<div>
+									<h6><?php esc_html_e('Make Year', 'car-rental-manager'); ?></h6>
+								</div>
+								<select name="tax_input[mpcrbm_make_year][]" class="formControl">
+									<option value=""><?php esc_html_e('— Select Year —','car-rental-manager'); ?></option>
+									<?php foreach ($make_years as $year): ?>
+										<option value="<?php echo esc_attr($year->term_id); ?>" <?php selected(in_array($year->term_id, $selected_year)); ?>>
+											<?php echo esc_html($year->name); ?>
+										</option>
 									<?php endforeach; ?>
 								</select>
-                            </label>
-                        </section>
+							</label>
+						</section>
                         <section>
                             <label class="label">
                                 <div>
@@ -184,17 +197,22 @@
 				if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 					$max_passenger = isset( $_POST['mpcrbm_maximum_passenger'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_maximum_passenger'] ) ) : '';
 					$max_bag       = isset( $_POST['mpcrbm_maximum_bag'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_maximum_bag'] ) ) : '';
-					$car_type      = isset( $_POST['mpcrbm_car_type'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_type'] ) ) ? $_POST['mpcrbm_car_type'] : '';
-					$fuel_type      = isset( $_POST['mpcrbm_fuel_type'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_fuel_type'] ) ) ? $_POST['mpcrbm_fuel_type'] : '';
-					$seating_capacity      = isset( $_POST['mpcrbm_seating_capacity'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_seating_capacity'] ) ) ? $_POST['mpcrbm_seating_capacity'] : '';
-					$car_brand      = isset( $_POST['mpcrbm_car_brand'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_brand'] ) ) ? $_POST['mpcrbm_car_brand'] : '';
-					$make_year      = isset( $_POST['mpcrbm_make_year'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_make_year'] ) ) ? $_POST['mpcrbm_make_year'] : '';
-					
-					update_post_meta( $post_id, 'mpcrbm_car_type', $car_type );
-					update_post_meta( $post_id, 'mpcrbm_fuel_type', $fuel_type );
-					update_post_meta( $post_id, 'mpcrbm_seating_capacity', $seating_capacity );
-					update_post_meta( $post_id, 'mpcrbm_car_brand', $car_brand );
-					update_post_meta( $post_id, 'mpcrbm_make_year', $make_year );
+					$taxonomies = [
+						'mpcrbm_car_type',
+						'mpcrbm_fuel_type',
+						'mpcrbm_seating_capacity',
+						'mpcrbm_car_brand',
+						'mpcrbm_make_year'
+					];
+
+					foreach ($taxonomies as $taxonomy) {
+						if (isset($_POST['tax_input'][$taxonomy])) {
+							$term_ids = array_map('intval', $_POST['tax_input'][$taxonomy]);
+							wp_set_object_terms($post_id, $term_ids, $taxonomy);
+						} else {
+							wp_set_object_terms($post_id, [], $taxonomy); // clear terms if none selected
+						}
+					}
 
 					update_post_meta( $post_id, 'mpcrbm_maximum_passenger', $max_passenger );
 					update_post_meta( $post_id, 'mpcrbm_maximum_bag', $max_bag );
