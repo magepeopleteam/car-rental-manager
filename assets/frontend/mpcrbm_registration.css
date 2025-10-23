@@ -155,7 +155,7 @@
 	}
 	div.mpcrbm_list_details h2{
 		font-size: 20px;
-		margin-bottom: 20px;
+		margin-bottom: 10px;
 	}
 }
 /******************************************************************** Responsive ************************************************/
@@ -293,25 +293,39 @@ div.mpcrbm .mpcrbm_extra_service h3{margin:0px 0 12px 0;}
 h2#mpcrbm_title_change{color:white;}
 .mpcrbm_car_specs_lists{
 	display: flex;
-	width: 50%;
+	width: 70%;
 	flex-wrap: wrap;
 	gap: 8px;
 	font-size: 16px;
-	color: #64748b;
+	
 }
 
 .mpcrbm_car_spec{
 	display: flex;
 	align-items: start;
-	gap:5px;
+	gap:10px;
 	width: 48%;
+	margin:6px 0;
 }
- .mpcrbm_price-breakdown {
+.mpcrbm_car_spec i{
+	font-size: 22px;
+	color: var(--color_theme);
+}
+
+.mpcrbm_car_spec .spec-label{
+	font-size: 10px;
+	color: #64748b;
+}
+.mpcrbm_car_spec .spec-value{
+	font-weight: bold;
+}
+
+.mpcrbm_price-breakdown {
 	font-size: 11px;
 	color: #94a3b8;
 	font-weight: 500;
 	
- }
+}
 
 .mpcrbm_list{
 	gap:10px;
