@@ -85,7 +85,13 @@ $maximum_bag = !empty($maximum_bag) ? $maximum_bag : '';
 
 
 $off_dates = get_post_meta( $post_id, 'mpcrbm_off_dates', true );
+$off_dates_str = '';
+if( is_array( $off_dates ) && !empty( $off_dates ) ){
+    $off_dates_str = implode( ',' , $off_dates);
+}
 $off_days = get_post_meta( $post_id, 'mpcrbm_off_days', true );
+
+//error_log( print_r( [ '$off_dates_str' => $off_dates_str, '$off_days' => $off_days ], true ) );
 
 
 $gallery_images = get_post_meta( $post_id, 'mpcrbm_gallery_images', true );
@@ -127,6 +133,9 @@ $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $st
     <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
     <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
+
+    <input type="hidden" id="mpcrbm_off_days" name="mpcrbm_car_off_days"  value="<?php echo esc_attr( $off_days );?>" />
+    <input type="hidden" id="mpcrbm_off_dates" name="mpcrbm_car_off_dates"  value="<?php echo esc_attr( $off_dates_str );?>" />
 
     <div class="mpcrbm_gallery_image_popup_wrapper">
         <div class="mpcrbm_gallery_image_popup_overlay"></div>
