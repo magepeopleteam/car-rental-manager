@@ -120,7 +120,7 @@
                     $args = array(
                         'hierarchical'      => $props['hierarchical'],
                         'labels'            => $labels,
-                        'show_ui'           => true,
+                        'show_ui'           => false,
                         'show_admin_column' => true,
                         'query_var'         => true,
                         'show_in_rest'      => true,
