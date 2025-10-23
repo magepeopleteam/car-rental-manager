@@ -333,8 +333,8 @@ $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $st
                             // Get service data
                             include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
 
-
                             <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
+
                         </div>
 
                         <!-- DRIVER INFO -->

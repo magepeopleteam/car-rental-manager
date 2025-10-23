@@ -81,9 +81,6 @@ if ($post_id) {
     $wc_price = MPCRBM_Global_Function::wc_price( $post_id, $price );
     $raw_price = MPCRBM_Global_Function::price_convert_raw( $wc_price );
 
-    $display_features = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_features', 'on');
-    $all_features = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_features');
-
     $all_car_type = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_car_type');
     $all_fuel_type = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_fuel_type');
     $all_seating_capacity = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_seating_capacity');
@@ -135,7 +132,25 @@ if ($post_id) {
     if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){
         $line_through = 'mpcrbm_line_through';
     }
+     
 
+    $car_type_id  = get_post_meta( $post_id, 'mpcrbm_car_type', true );
+    $car_type = get_term( $car_type_id,'mpcrbm_car_type' );
+
+    $fuel_type_id   = get_post_meta( $post_id, 'mpcrbm_fuel_type', true );
+    $fuel_type      = get_term( $fuel_type_id,'mpcrbm_fuel_type' );
+
+    $seating_id   = get_post_meta( $post_id, 'mpcrbm_seating_capacity', true );
+    $seats_capacity      = get_term( $seating_id,'mpcrbm_seating_capacity' );
+
+    $brand_id     = get_post_meta( $post_id, 'mpcrbm_car_brand', true );
+    $brands       = get_term( $brand_id,'mpcrbm_car_brand' );
+
+    
+    $year_id      = get_post_meta( $post_id, 'mpcrbm_make_year', true );
+    $make_year    = get_term( $year_id,'mpcrbm_make_year' );
+    
+    $maximum_bag  = get_post_meta( $post_id, 'mpcrbm_maximum_bag', true );
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder
          data-car-type="<?php echo esc_attr( $all_car_type_str)?>"
@@ -159,55 +174,50 @@ if ($post_id) {
         <div class="mpcrbm_list_details">
             <h2><?php echo esc_html(get_the_title($post_id)); ?></h2>
             <div class=" mpcrbm_list">
-                <?php if ($display_features === 'on' && is_array($all_features) && !empty($all_features)) { ?>
-                    <div class="mpcrbm_car_specs_lists">
-                        <?php
-                        $i = 1;
-
-                        $count_total_features = count( $all_features );
-                        $remaining_features = $count_total_features - 6;
-
-                        foreach ($all_features as $key => $features) {
-
-                            if (!is_array($features)) {
-                                continue;
-                            }
-                            $label = isset($features['label']) ? sanitize_text_field($features['label']) : '';
-                            $text = isset($features['text']) ? sanitize_text_field($features['text']) : '';
-                            $icon = isset($features['icon']) ? sanitize_text_field($features['icon']) : '';
-                            $image = isset($features['image']) ? sanitize_text_field($features['image']) : '';
-                            ?>
-                            <div class="mpcrbm_car_spec">
-                                <?php if ($icon) {
-                                    if( $i > 4 ){
-                                        $icon_class = 'mpcrbm_feature_icon_color';
-                                    }else{
-                                        $icon_class = 'mpcrbm_feature_icon_color_'.$i;
-                                    }
-                                    ?>
-                                    <span class="<?php echo esc_attr($icon); ?>"></span>
-                                <?php }  echo esc_html($text); ?>
-                            </div>
-                        <?php
-
-                            if( $i === 6 ){
-                                break;
-                            }
-                            $i++;
-                        }
-
-                        if( $remaining_features > 0 ){ ?>
-                            <div class="mpcrbm_car_spec">
-                                <span class="">+<?php echo esc_attr( $remaining_features );?> more</span>
-                            </div>
-                        <?php }?>
-
+                <div class="mpcrbm_car_specs_lists">
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-car"></i>
+                        <div>
+                            <div class="spec-label"><?php echo esc_html__('Car Type ','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($car_type->name); ?></div>
+                        </div>
                     </div>
-                <?php
-                } else { ?>
-                    <div></div>
-                <?php }
-                ?>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-gas-pump-alt"></i>
+                        <div>
+                            <div class="spec-label"><?php echo esc_html__('Fuel Type ','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($fuel_type->name); ?></div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-bonus"></i>
+                        <div>
+                            <div class="spec-label"><?php echo esc_html__('Brands','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($brands->name); ?></div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-time-quarter-to"></i>
+                        <div>
+                            <div class="spec-label"><?php echo esc_html__('Make Year','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($make_year->name); ?></div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-person-seat"></i>
+                        <div>
+                            <div class="spec-label"><?php echo esc_html__('Seating Capacity','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($seats_capacity->name); ?></div>
+                        </div>
+                    </div>
+                    <div class="mpcrbm_car_spec">
+                        <i class="mi mi-person-luggage"></i>
+                        <div>
+                            <div class="spec-label"><?php echo esc_html__('Maximum Bags','car-rental-manager'); ?></div>
+                            <div class="spec-value"><?php echo esc_html($maximum_bag); ?></div>
+                        </div>
+                    </div>
+                </div>
                 <div class="mpcrbm_discount_booking">
 
                     <div class="mpcrbm_price_holder">
