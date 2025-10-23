@@ -132,27 +132,23 @@ if ($post_id) {
     if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){
         $line_through = 'mpcrbm_line_through';
     }
-     
-
-    $car_type_id  = get_post_meta( $post_id, 'mpcrbm_car_type', true );
-    $car_type = get_term( $car_type_id,'mpcrbm_car_type' );
-
-    $fuel_type_id   = get_post_meta( $post_id, 'mpcrbm_fuel_type', true );
-    $fuel_type      = get_term( $fuel_type_id,'mpcrbm_fuel_type' );
-
-    $seating_id   = get_post_meta( $post_id, 'mpcrbm_seating_capacity', true );
-    $seats_capacity      = get_term( $seating_id,'mpcrbm_seating_capacity' );
-
-    $brand_id     = get_post_meta( $post_id, 'mpcrbm_car_brand', true );
-    $brands       = get_term( $brand_id,'mpcrbm_car_brand' );
-
     
-    $year_id      = get_post_meta( $post_id, 'mpcrbm_make_year', true );
-    $make_year    = get_term( $year_id,'mpcrbm_make_year' );
-    
-    $maximum_bag  = get_post_meta( $post_id, 'mpcrbm_maximum_bag', true );
+    $car_type_terms     = wp_get_post_terms($post_id, 'mpcrbm_car_type');
+    $fuel_type_terms    = wp_get_post_terms($post_id, 'mpcrbm_fuel_type');
+    $seating_terms      = wp_get_post_terms($post_id, 'mpcrbm_seating_capacity');
+    $brand_terms        = wp_get_post_terms($post_id, 'mpcrbm_car_brand');
+    $year_terms         = wp_get_post_terms($post_id, 'mpcrbm_make_year');
 
-    $default_text = '--';
+    // --- Fetch regular meta field ---
+    $maximum_bag        = get_post_meta($post_id, 'mpcrbm_maximum_bag', true);
+
+    // --- Safely extract names (handles single or multiple terms) ---
+    $car_type_name   = !empty($car_type_terms)  ? esc_html($car_type_terms[0]->name)   : '—';
+    $fuel_type_name  = !empty($fuel_type_terms) ? esc_html($fuel_type_terms[0]->name)  : '—';
+    $seating_name    = !empty($seating_terms)   ? esc_html($seating_terms[0]->name)    : '—';
+    $brand_name      = !empty($brand_terms)     ? esc_html($brand_terms[0]->name)      : '—';
+    $year_name       = !empty($year_terms)      ? esc_html($year_terms[0]->name)       : '—';
+    $bag_count       = !empty($maximum_bag)     ? esc_html($maximum_bag)               : '—';
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($hidden_class); ?> <?php echo esc_attr($feature_class); ?>" data-placeholder
          data-car-type="<?php echo esc_attr( $all_car_type_str)?>"
@@ -181,42 +177,42 @@ if ($post_id) {
                         <i class="mi mi-car"></i>
                         <div>
                             <div class="spec-label"><?php echo esc_html__('Car Type ','car-rental-manager'); ?></div>
-                            <div class="spec-value"><?php echo esc_html($car_type->name?$car_type->name:$default_text); ?></div>
+                            <div class="spec-value"><?php echo esc_html($car_type_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-gas-pump-alt"></i>
                         <div>
                             <div class="spec-label"><?php echo esc_html__('Fuel Type ','car-rental-manager'); ?></div>
-                            <div class="spec-value"><?php echo esc_html($fuel_type->name?$fuel_type->name:$default_text); ?></div>
+                            <div class="spec-value"><?php echo esc_html($fuel_type_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-bonus"></i>
                         <div>
                             <div class="spec-label"><?php echo esc_html__('Brands','car-rental-manager'); ?></div>
-                            <div class="spec-value"><?php echo esc_html($brands->name?$brands->name:$default_text); ?></div>
+                            <div class="spec-value"><?php echo esc_html($brand_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-time-quarter-to"></i>
                         <div>
                             <div class="spec-label"><?php echo esc_html__('Make Year','car-rental-manager'); ?></div>
-                            <div class="spec-value"><?php echo esc_html($make_year->name?$make_year->name:$default_text); ?></div>
+                            <div class="spec-value"><?php echo esc_html($year_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-person-seat"></i>
                         <div>
                             <div class="spec-label"><?php echo esc_html__('Seating Capacity','car-rental-manager'); ?></div>
-                            <div class="spec-value"><?php echo esc_html($seats_capacity->name?$seats_capacity->name:$default_text); ?></div>
+                            <div class="spec-value"><?php echo esc_html($seating_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-person-luggage"></i>
                         <div>
                             <div class="spec-label"><?php echo esc_html__('Maximum Bags','car-rental-manager'); ?></div>
-                            <div class="spec-value"><?php echo esc_html($maximum_bag?$maximum_bag->name:$default_text); ?></div>
+                            <div class="spec-value"><?php echo esc_html($bag_count); ?></div>
                         </div>
                     </div>
                 </div>
