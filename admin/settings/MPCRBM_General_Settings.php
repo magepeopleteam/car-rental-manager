@@ -11,6 +11,11 @@
 			public function __construct() {
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'general_settings' ] );
 				add_action( 'save_post', [ $this, 'save_general_settings' ] );
+				add_action('save_post', function() {
+					add_action('admin_notices', function() {
+						echo '<div class="notice notice-success"><p>Saved!</p></div>';
+					});
+				});
 			}
 
 			public function general_settings( $post_id ) {

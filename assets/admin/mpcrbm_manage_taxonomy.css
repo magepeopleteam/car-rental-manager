@@ -61,25 +61,7 @@
     margin-right: 5px;
     color: var(--color_theme);
 }
-/* hide notice */
-.wrap .notice, 
-.wrap .update-nag, 
-#message, 
-.notice-success, 
-.notice-error, 
-.notice-warning, 
-.notice-info {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-.wrap .mpcrbm-admin-notice { display: none !important; }
-.mpcrbm_rent_page_mpcrbm_car_rental [class*='notice']{
-display: none !important;
-}
-/* notice */
+
 .mpcrbm_taxonomies_tab:hover{
     background-color: #EAF6FF;
     color: var(--color_theme);
