@@ -309,7 +309,7 @@ h2#mpcrbm_title_change{color:white;}
 }
 .mpcrbm_car_spec i{
 	font-size: 22px;
-	color: #64748b;
+	color: var(--color_theme);
 }
 
 .mpcrbm_car_spec .spec-label{

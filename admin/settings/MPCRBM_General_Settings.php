@@ -90,7 +90,6 @@
                                 </div>
 								
 								<select name="mpcrbm_car_type" class="formControl">
-									<option value=""><?php esc_html_e( 'Select Car Type', 'car-rental-manager' ); ?></option>
 									<?php foreach ($car_types as $car_type):?>
 									<option value="<?php echo esc_html($car_type->term_id); ?>" <?php echo ($car_type->term_id==$selected_car_type)?'selected':''; ?>><?php echo esc_html($car_type->name); ?></option>
 									<?php endforeach; ?>
@@ -104,7 +103,6 @@
                                     <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
                                 </div>
 								<select name="mpcrbm_fuel_type" class="formControl">
-									<option value=""><?php esc_html_e( 'Select Fuel Type', 'car-rental-manager' ); ?></option>
 									<?php foreach ($fuel_types as $fuel_type):?>
 									<option value="<?php echo esc_html($fuel_type->term_id); ?>" <?php echo ($fuel_type->term_id==$selected_fuel_type)?'selected':''; ?>><?php echo esc_html($fuel_type->name); ?></option>
 									<?php endforeach; ?>
@@ -118,7 +116,6 @@
                                     <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
                                 </div>
 								<select name="mpcrbm_seating_capacity" class="formControl">
-									<option value=""><?php esc_html_e( 'Select Seating Capacity', 'car-rental-manager' ); ?></option>
 									<?php foreach ($seating_capacities as $seating_capacity):?>
 									<option value="<?php echo esc_html($seating_capacity->term_id); ?>" <?php echo ($seating_capacity->term_id==$selected_seating)?'selected':''; ?>><?php echo esc_html($seating_capacity->name); ?></option>
 									<?php endforeach; ?>
@@ -132,7 +129,6 @@
                                     <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
                                 </div>
 								<select name="mpcrbm_car_brand" class="formControl">
-									<option value=""><?php esc_html_e( 'Select Car Brand', 'car-rental-manager' ); ?></option>
 									<?php foreach ($car_brands as $car_brand):?>
 									<option value="<?php echo esc_html($car_brand->term_id); ?>" <?php echo ($car_brand->term_id==$selected_brand)?'selected':''; ?>><?php echo esc_html($car_brand->name); ?></option>
 									<?php endforeach; ?>
@@ -146,7 +142,6 @@
                                     <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_features' ); ?></span>
                                 </div>
 								<select name="mpcrbm_make_year" class="formControl">
-									<option value=""><?php esc_html_e( 'Select Making Year', 'car-rental-manager' ); ?></option>
 									<?php foreach ($make_years as $make_year):?>
 										<option value="<?php echo esc_html($make_year->term_id); ?>" <?php echo ($make_year->term_id==$selected_year)?'selected':''; ?>><?php echo esc_html($make_year->name); ?></option>
 									<?php endforeach; ?>
