@@ -313,10 +313,11 @@ h2#mpcrbm_title_change{color:white;}
 }
 
 .mpcrbm_car_spec .spec-label{
-	font-size: 10px;
+	font-size: 12px;
 	color: #64748b;
 }
 .mpcrbm_car_spec .spec-value{
+	font-size: 12px;
 	font-weight: bold;
 }
 
@@ -593,7 +594,7 @@ h2#mpcrbm_title_change{color:white;}
 .mpcrbm_summary_show p:not(.wp_editor p){
 	font-weight: bold;
 	color: #666;
-	font-size: 16px;
+	font-size: 14px;
  }
 
  .mpcrbm_location_icon_margin{
