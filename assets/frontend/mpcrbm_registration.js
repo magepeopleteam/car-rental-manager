@@ -991,7 +991,7 @@ jQuery(document).ready(function($) {
     $(document).on("click", ".mpcrbm_car_details_continue_btn", function() {
         let parent = $(this).closest('.mpcrbm_car_details_wrapper');
         let start_place = parent.find('#mpcrbm_manual_start_place').val();
-        let end_place = parent.find('#mpcrbm_drop_off_location').val();
+        let end_place = parent.find('#mpcrbm_manual_end_place').val();
         let mpcrbm_waiting_time = '';
         let mpcrbm_taxi_return = '';
         let mpcrbm_start_date = parent.find("#mpcrbm_map_start_date").val();
@@ -1056,7 +1056,6 @@ jQuery(document).ready(function($) {
                     mpcrbm_loader(parent.find('.tabsContentNext'));
                 },
                 success: function(data) {
-                    console.log( data );
                     if ( data ) {
                         window.location.href = mpcrbm_ajax.site_url+'/checkout/';
                     } else {

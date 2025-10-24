@@ -23,8 +23,25 @@ jQuery(document).ready(function ($) {
         });
     });*/
 
+    let mpcrbm_off_dates = '';
+    let mpcrbm_off_days = '';
     let mpcrbm_offDates = [];
-    let mpcrbm_day = '';
+    let mpcrbm_off_days_ary = [];
+
+    let parent = $('.mpcrbm_car_details');
+    mpcrbm_off_dates = parent.find("#mpcrbm_off_dates").val();
+    mpcrbm_off_days = parent.find( "#mpcrbm_off_days").val();
+
+    if( mpcrbm_off_dates ){
+        mpcrbm_offDates = mpcrbm_off_dates.split(',');
+    }
+    if( mpcrbm_off_days ){
+        mpcrbm_off_days_ary = mpcrbm_off_dates.split(',');
+    }
+
+
+
+
     let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
     selectors.forEach(function (selector) {
         flatpickr( selector, {
@@ -33,7 +50,9 @@ jQuery(document).ready(function ($) {
             dateFormat: "Y-m-d",
             showMonths: 2,
             disable: [
-                function(date) { return date.getDay() === mpcrbm_day; }, // disable Sunday = 0
+                function(date) {
+                    return mpcrbm_off_days_ary.includes(date.getDay());
+                },
                 ...mpcrbm_offDates.map(d => new Date(d))
             ],
 

@@ -91,7 +91,7 @@ if( is_array( $off_dates ) && !empty( $off_dates ) ){
 }
 $off_days = get_post_meta( $post_id, 'mpcrbm_off_days', true );
 
-//error_log( print_r( [ '$off_dates_str' => $off_dates_str, '$off_days' => $off_days ], true ) );
+error_log( print_r( [ '$location_prices' => $location_prices ], true ) );
 
 
 $gallery_images = get_post_meta( $post_id, 'mpcrbm_gallery_images', true );
@@ -110,10 +110,9 @@ $car_name = get_the_title( $post_id );
 $car_description = get_the_content( $post_id );
 
 $date = date('Y-m-d') . ' 10:00';
-$start_place = $end_place = 'Dhaka';
-// Get tomorrow's date
+$start_place = $end_place = isset( $location_prices[0]['pickup_location'] ) ? $location_prices[0]['pickup_location'] : '';
 $return_date = date('Y-m-d', strtotime('+1 day'));
-$start_time = $return_time = 10;
+$start_time = $return_time = 10.00;
 $two_way = 2;
 
 $return_date_time = $return_date. ' 10:00';
@@ -278,7 +277,7 @@ $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $st
 
                         <div id="location" class="mpcrbm_car_details_tab_content">
                             <div class="mpcrbm_car_details_map_box">
-                                <iframe src="https://maps.google.com/maps?q=Rajshahi&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                                <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $start_place );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
                             </div>
                         </div>
 
@@ -331,9 +330,10 @@ $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $st
 
                             <?php
                             $attribute = [
-                                'progressbar' => 'no',
-                                'title'       => 'no',
+                                'progressbar'       => 'no',
+                                'title'             => 'no',
                                 'single_page'       => 'yes',
+                                'pickup_location'   => $start_place,
                             ];
                             echo $mpcrbm_booking_form->mpcrbm_booking( $attribute );
 
