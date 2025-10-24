@@ -91,7 +91,7 @@ if( is_array( $off_dates ) && !empty( $off_dates ) ){
 }
 $off_days = get_post_meta( $post_id, 'mpcrbm_off_days', true );
 
-error_log( print_r( [ '$location_prices' => $location_prices ], true ) );
+//error_log( print_r( [ '$location_prices' => $location_prices ], true ) );
 
 
 $gallery_images = get_post_meta( $post_id, 'mpcrbm_gallery_images', true );
