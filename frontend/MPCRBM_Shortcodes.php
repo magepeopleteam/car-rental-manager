@@ -39,6 +39,7 @@
 					'title'=>'yes',
 					'ajax_search' => 'no',
 					'single_page' => 'no',
+					'pickup_location' => '',
 				);
 			}
 		}

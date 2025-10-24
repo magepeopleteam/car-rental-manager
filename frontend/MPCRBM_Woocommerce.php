@@ -59,7 +59,7 @@
 						if ( $return_time !== "" ) {
 							if ( $return_time !== "0" ) {
 								// Convert start time to hours and minutes
-								list( $hours, $decimal_part ) = explode( '.', $return_time );
+                                list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 								$interval_time = MPCRBM_Function::get_general_settings( 'pickup_interval_time' );
 								if ( $interval_time == "5" || $interval_time == "15" ) {
 									$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
@@ -203,8 +203,8 @@
 					$return_time = $values['mpcrbm_return_target_time'] ?? '';
 					if ( $return_time !== "" ) {
 						if ( $return_time !== "0" ) {
-							// Convert start time to hours and minutes
-							list( $hours, $decimal_part ) = explode( '.', $return_time );
+                            // Convert start time to hours and minutes
+                            list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 							$interval_time = MPCRBM_Function::get_general_settings( 'pickup_interval_time' );
 							if ( $interval_time == "5" || $interval_time == "15" ) {
 								$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
@@ -493,7 +493,7 @@
 									if ( $return_time !== "0" ) {
 										// Convert start time to hours and minutes
 										if ( MPCRBM_Global_Function::hasDecimal( $return_time ) ) {
-											list( $hours, $decimal_part ) = explode( '.', $return_time );
+                                            list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 										} else {
 											$hours        = $return_time;
 											$decimal_part = 0;
@@ -680,7 +680,7 @@
 					if ( $return_time !== "" ) {
 						if ( $return_time !== "0" ) {
 							// Convert start time to hours and minutes
-							list( $hours, $decimal_part ) = explode( '.', $return_time );
+                            list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 							$interval_time = MPCRBM_Function::get_general_settings( 'pickup_interval_time' );
 							if ( $interval_time == "5" || $interval_time == "15" ) {
 								$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
