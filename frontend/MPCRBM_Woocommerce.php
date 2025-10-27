@@ -59,7 +59,7 @@
 						if ( $return_time !== "" ) {
 							if ( $return_time !== "0" ) {
 								// Convert start time to hours and minutes
-								list( $hours, $decimal_part ) = explode( '.', $return_time );
+                                list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 								$interval_time = MPCRBM_Function::get_general_settings( 'pickup_interval_time' );
 								if ( $interval_time == "5" || $interval_time == "15" ) {
 									$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
@@ -203,8 +203,8 @@
 					$return_time = $values['mpcrbm_return_target_time'] ?? '';
 					if ( $return_time !== "" ) {
 						if ( $return_time !== "0" ) {
-							// Convert start time to hours and minutes
-							list( $hours, $decimal_part ) = explode( '.', $return_time );
+                            // Convert start time to hours and minutes
+                            list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 							$interval_time = MPCRBM_Function::get_general_settings( 'pickup_interval_time' );
 							if ( $interval_time == "5" || $interval_time == "15" ) {
 								$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
@@ -493,7 +493,7 @@
 									if ( $return_time !== "0" ) {
 										// Convert start time to hours and minutes
 										if ( MPCRBM_Global_Function::hasDecimal( $return_time ) ) {
-											list( $hours, $decimal_part ) = explode( '.', $return_time );
+                                            list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 										} else {
 											$hours        = $return_time;
 											$decimal_part = 0;
@@ -680,7 +680,7 @@
 					if ( $return_time !== "" ) {
 						if ( $return_time !== "0" ) {
 							// Convert start time to hours and minutes
-							list( $hours, $decimal_part ) = explode( '.', $return_time );
+                            list($hours, $decimal_part) = array_pad(explode('.', $return_time), 2, 0);
 							$interval_time = MPCRBM_Function::get_general_settings( 'pickup_interval_time' );
 							if ( $interval_time == "5" || $interval_time == "15" ) {
 								$minutes = isset( $decimal_part ) ? (int) $decimal_part * 1 : 0; // Multiply by 1 to convert to minutes
@@ -742,7 +742,48 @@
 				}
 			}
 
-			/****************************/
+            public static function mpcrbm_find_bookings_by_date( $given_date, $post_id = null ) {
+
+                $post_id = 59;
+                $args = [
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'mpcrbm_id'      => $post_id,
+                ];
+
+
+                $bookings = get_posts( $args );
+
+                if ( empty( $bookings ) ) {
+                    return false;
+                }
+
+
+                $given_ts = strtotime( $given_date );
+                if ( ! $given_ts ) return false;
+
+                foreach ( $bookings as $b_id ) {
+                    $start_date = get_post_meta( $b_id ->ID, 'mpcrbm_date', true );
+                    $end_date   = get_post_meta( $b_id ->ID, 'return_date_time', true );
+
+                    $start_ts = strtotime( $start_date );
+                    $end_ts   = strtotime( $end_date );
+
+                    if ( ! $start_ts || ! $end_ts ) continue;
+
+                    if ( $given_ts >= $start_ts && $given_ts <= $end_ts ) {
+                        return 'booked';
+                    }
+                }
+
+                return false;
+            }
+
+
+
+
+            /****************************/
 			public function mpcrbm_add_to_cart() {
 				if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
 					return;
@@ -752,19 +793,28 @@
 				if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
 					return;
 				}
-				$link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
-				$product_id        = apply_filters( 'woocommerce_add_to_cart_product_id', $link_id );
-				$quantity          = isset( $_POST['mpcrbm_car_quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 
-				$passed_validation = apply_filters( 'woocommerce_add_to_cart_validation', true, $product_id, $quantity );
-				$product_status    = get_post_status( $product_id );
-				WC()->cart->empty_cart();
-				ob_start();
-				if ( $passed_validation && WC()->cart->add_to_cart( $product_id, $quantity ) && 'publish' === $product_status ) {
-					echo esc_url( wc_get_checkout_url() );
-				}
-				echo wp_kses_post( ob_get_clean() );
-				die();
+				$link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
+
+                $already_booked = self::mpcrbm_find_bookings_by_date( $_POST['mpcrbm_date'], $link_id );
+
+                if( $already_booked === 'booked' ){
+
+                    return 0;
+                }else {
+                    $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
+                    $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field(wp_unslash($_POST['mpcrbm_car_quantity'])) : 1;
+
+                    $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
+                    $product_status = get_post_status($product_id);
+                    WC()->cart->empty_cart();
+                    ob_start();
+                    if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
+                        echo esc_url(wc_get_checkout_url());
+                    }
+                    echo wp_kses_post(ob_get_clean());
+                    die();
+                }
 			}
 		}
 		new MPCRBM_Woocommerce();

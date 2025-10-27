@@ -535,6 +535,7 @@ h2#mpcrbm_title_change{color:white;}
 	margin-bottom: 10px;
  }
  .mpcrbm_extra_service_layout_details{
+	 max-width: 360px;
     background: white;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
@@ -623,6 +624,10 @@ h2#mpcrbm_title_change{color:white;}
 	 }
 	 .mpcrbm_left_filter {
 		 width: 100%;
+	 }
+
+	 .mpcrbm_extra_service_layout_details {
+		 max-width: 100%;
 	 }
  }
 

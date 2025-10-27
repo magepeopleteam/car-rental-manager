@@ -673,6 +673,28 @@
                 return round( $total_price, 2 );
             }
 
+            public static function get_off_days_numbers( $off_days_string ) {
+                $days = array_map('trim', explode(',', strtolower($off_days_string)));
+                $day_map = [
+                    'monday'    => 1,
+                    'tuesday'   => 2,
+                    'wednesday' => 3,
+                    'thursday'  => 4,
+                    'friday'    => 5,
+                    'saturday'  => 6,
+                    'sunday'    => 0,
+                ];
+
+                $result = [];
+                foreach ($days as $day) {
+                    if (isset($day_map[$day])) {
+                        $result[] = $day_map[$day];
+                    }
+                }
+
+                return $result;
+            }
+
             public static function mpcrbm_array_strip( $array_or_string ) {
                 if ( is_string( $array_or_string ) ) {
                     $array_or_string = sanitize_text_field( $array_or_string );
