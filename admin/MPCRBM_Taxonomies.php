@@ -15,6 +15,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         public function __construct() {
             // Hook into admin_menu
             add_action('admin_menu', array($this, 'mpcrbm_register_submenu'));
+            add_action('admin_menu', array($this, 'remove_registered_submenu'));
 
             add_action( 'wp_ajax_mpcrbm_load_taxonomies', array( $this, 'ajax_load_taxonomies' ) );
             add_action( 'wp_ajax_mpcrbm_save_taxonomy', array( $this, 'ajax_save_taxonomy' ) );
@@ -306,10 +307,14 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 esc_html__('Car Rental', 'car-rental-manager'),
                 'manage_options',
                 'mpcrbm_car_rental',
-                array($this, 'mpcrbm_taxonomies_setup')
+                array($this, 'mpcrbm_taxonomies_setup'),
+                0,
             );
-
-
+        }
+        // remove submenu added by register_post_type
+        public function remove_registered_submenu() {
+            remove_submenu_page( 'edit.php?post_type=mpcrbm_rent', 'edit.php?post_type=mpcrbm_rent' );
+            remove_submenu_page( 'edit.php?post_type=mpcrbm_rent', 'post-new.php?post_type=mpcrbm_rent' );
         }
 
         // Callback to render page content
