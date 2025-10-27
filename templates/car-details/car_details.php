@@ -119,6 +119,8 @@ $return_date_time = $return_date. ' 10:00';
 
 $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $date, $return_date_time );
 
+$driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
+
 ?>
 <div class="mpcrbm_car_details">
     <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="" />
@@ -349,8 +351,32 @@ $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $st
                         <!-- DRIVER INFO -->
                         <div class="mpcrbm_car_details_driver_box">
                             <h4><?php esc_attr_e( 'Driver details', 'car-rental-manager' );?> <span class="verified">✔ <?php esc_attr_e( 'Verified', 'car-rental-manager' );?></span></h4>
-                            <p><strong><?php esc_attr_e( 'Abdullah Khan', 'car-rental-manager' );?></strong></p>
-                            <p><?php esc_attr_e( 'Age 24 Years', 'car-rental-manager' );?></p>
+                            <p>
+                                <strong>
+                                    <?php echo isset( $driver_info['name'] ) ? esc_attr( $driver_info['name'] ) : ''; ?>
+                                </strong>
+                            </p>
+                            <?php if( isset( $driver_info['age'] ) ){?>
+                            <p>
+                                <?php
+                                esc_attr_e( 'Age '.$driver_info['age'].' Years', 'car-rental-manager' );
+                                ?>
+                            </p>
+                            <?php }?>
+                            <?php if( isset( $driver_info['phone'] ) ){?>
+                            <p>
+                                <?php
+                                esc_attr_e( 'Phone: '.$driver_info['phone'].' ', 'car-rental-manager' );
+                                ?>
+                            </p>
+                            <?php }?>
+                            <?php if( isset( $driver_info['email'] ) ){?>
+                            <p>
+                                <?php
+                                esc_attr_e( 'Email: '.$driver_info['email'].' ', 'car-rental-manager' );
+                                ?>
+                            </p>
+                            <?php }?>
                         </div>
 
                         <!-- RENTER INFO -->
