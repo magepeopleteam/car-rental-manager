@@ -5,8 +5,7 @@
 	*/
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
-	} // Cannot access pages directly.
-//echo '<pre>';print_r();echo '</pre>';y.
+	} 
 	if ( ! class_exists( 'MPCRBM_Dummy_Import' ) ) {
 		class MPCRBM_Dummy_Import {
 			public function __construct() {
@@ -29,10 +28,10 @@
 				if ( array_key_exists( 'custom_post', $dummy_cpt ) ) {
 					foreach ( $dummy_cpt['custom_post'] as $custom_post => $dummy_post ) {
 						unset( $args );
-						$args = array(
+						$args = [
 							'post_type'      => $custom_post,
 							'posts_per_page' => - 1,
-						);
+						];
 						unset( $post );
 						$post = new WP_Query( $args );
 						if ( $post->post_count == 0 ) {
@@ -41,14 +40,16 @@
 								if ( isset( $dummy_data['name'] ) ) {
 									$args['post_title'] = $dummy_data['name'];
 								}
+
 								if ( isset( $dummy_data['content'] ) ) {
 									$args['post_content'] = $dummy_data['content'];
 								}
+
 								$args['post_status'] = 'publish';
 								$args['post_type']   = $custom_post;
 								$post_id             = wp_insert_post( $args );
 								$ex_id               = 0;
-//								if ( $custom_post == 'crm_extra_services' ) {
+								// if ( $custom_post == 'crm_extra_services' ) {
 								if ( $custom_post == 'mpcrbm_ex_services' ) {
 									$ex_id = $post_id;
 								}
@@ -89,7 +90,7 @@
 				return [
 					'custom_post' => [
 						'mpcrbm_extra_services' => [
-							0 => [
+							[
 								'name'      => 'Pre-defined Extra Services',
 								'post_data' => array(
 									'mpcrbm_extra_service_infos' => array(
@@ -133,7 +134,7 @@
 							],
 						],
 						'mpcrbm_rent'          => [
-							0 => [
+							[
 								'name'      => 'BMW 5 Series',
 								'post_data' => [
 									//General_settings
@@ -224,7 +225,7 @@
 									'mpcrbm_text'                    => 'Do not hesitate to give us a call. We are an expert team and we are happy to talk to you.',
 								]
 							],
-							1 => [
+							[
 								'name'      => 'Cadillac Escalade Limousine',
 								'post_data' => [
 									//General_settings
@@ -315,7 +316,7 @@
 									'mpcrbm_text'                    => 'Do not hesitage to give us a call. We are an expert team and we are happy to talk to you.',
 								]
 							],
-							2 => [
+							[
 								'name'      => 'Hummer New York Limousine',
 								'post_data' => [
 									//General_settings
@@ -406,7 +407,7 @@
 									'mpcrbm_text'                    => 'Do not hesitage to give us a call. We are an expert team and we are happy to talk to you.',
 								]
 							],
-							3 => [
+							[
 								'name'      => 'Cadillac Escalade SUV',
 								'post_data' => [
 									//General_settings
@@ -497,7 +498,7 @@
 									'mpcrbm_text'                    => 'Do not hesitate to give us a call. We are an expert team and we are happy to talk to you.',
 								]
 							],
-							4 => [
+							[
 								'name'      => 'Ford Tourneo',
 								'post_data' => [
 									//General_settings
@@ -588,7 +589,7 @@
 									'mpcrbm_text'                    => 'Do not hesitate to give us a call. We are an expert team and we are happy to talk to you.',
 								]
 							],
-							5 => [
+							[
 								'name'      => 'Mercedes-Benz E220',
 								'post_data' => [
 									//General_settings
@@ -679,7 +680,7 @@
 									'mpcrbm_text'                    => 'Do not hesitage to give us a call. We are an expert team and we are happy to talk to you.',
 								]
 							],
-							6 => [
+							[
 								'name'      => 'Fiat Panda',
 								'post_data' => [
 									//General_settings
