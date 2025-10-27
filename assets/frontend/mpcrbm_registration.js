@@ -1056,10 +1056,17 @@ jQuery(document).ready(function($) {
                     mpcrbm_loader(parent.find('.tabsContentNext'));
                 },
                 success: function(data) {
-                    if ( data ) {
-                        window.location.href = mpcrbm_ajax.site_url+'/checkout/';
-                    } else {
-                        window.location.href = data;
+
+                    if( data == 0 ){
+                        alert( 'This Day Is Already Booked Select Another Date');
+                        mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                    }else {
+                        if (data) {
+                            window.location.href = mpcrbm_ajax.site_url+'/checkout/';
+                        } else {
+                            mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                            window.location.href = data;
+                        }
                     }
                 },
                 error: function(response) {

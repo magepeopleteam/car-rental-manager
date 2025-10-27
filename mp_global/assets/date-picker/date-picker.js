@@ -94,7 +94,7 @@ jQuery(document).ready(function ($) {
 
                     // Set hidden inputs and trigger change
                     $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
-                    $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate);
+                    $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
                 }
             }
         });
