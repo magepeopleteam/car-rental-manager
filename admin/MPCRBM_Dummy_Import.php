@@ -65,24 +65,6 @@
 									}
 									if (array_key_exists('post_data', $dummy_data)) {
 										foreach ($dummy_data['post_data'] as $meta_key => $data) {
-											if ($meta_key == 'mpcrbm_gallery_images') {
-												if (is_array($data)) {
-													$thumnail_ids = array();
-													foreach ($data as $url_index) {
-														if (isset($dummy_images[$url_index])) {
-															$thumnail_ids[] = $dummy_images[$url_index];
-														}
-													}
-													update_post_meta($post_id, 'ttbm_gallery_images', $thumnail_ids);
-													if (count($thumnail_ids)) {
-														set_post_thumbnail($post_id, $thumnail_ids[0]);
-													}
-												} else {
-													update_post_meta($post_id, 'mpcrbm_gallery_images', array(isset($dummy_images[$data]) ? $dummy_images[$data] : ''));
-												}
-											} else {
-												update_post_meta($post_id, $meta_key, $data);
-											}
 											
 											if ($meta_key == 'mpcrbm_car_type') {
 												$term_ids = [];
@@ -99,6 +81,23 @@
 												update_post_meta( $post_id, $meta_key, $ex_id );
 											} else {
 												update_post_meta( $post_id, $meta_key, $data );
+											}
+
+											if ($meta_key == 'mpcrbm_gallery_images') {
+												if (is_array($data)) {
+													$thumnail_ids = array();
+													foreach ($data as $url_index) {
+														if (isset($dummy_images[$url_index])) {
+															$thumnail_ids[] = $dummy_images[$url_index];
+														}
+													}
+													update_post_meta($post_id, 'mpcrbm_gallery_images', $thumnail_ids);
+													if (count($thumnail_ids)) {
+														set_post_thumbnail($post_id, $thumnail_ids[0]);
+													}
+												}
+											} else {
+												update_post_meta($post_id, $meta_key, $data);
 											}
 										}
 									}									
@@ -424,7 +423,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array(4, 2, 0, 3, 1),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -534,7 +533,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array(1, 2, 0, 3, 4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -644,7 +643,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array(2, 0,3,1,4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -754,7 +753,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array(2,3, 4,1,0),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -864,7 +863,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array(4,1,2,0,3),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -974,7 +973,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array(2, 1, 0, 3, 4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
