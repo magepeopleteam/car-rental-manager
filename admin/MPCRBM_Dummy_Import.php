@@ -66,15 +66,34 @@
 									if (array_key_exists('post_data', $dummy_data)) {
 										foreach ($dummy_data['post_data'] as $meta_key => $data) {
 											
-											if ($meta_key == 'mpcrbm_car_type') {
+											$taxonomies = [
+												'mpcrbm_car_type',
+												'mpcrbm_fuel_type',
+												'mpcrbm_seating_capacity',
+												'mpcrbm_car_brand',
+												'mpcrbm_make_year',
+											];
+											
+											if ( in_array( $meta_key, $taxonomies, true ) ) {
+												$taxonomy = $meta_key;
 												$term_ids = [];
-												foreach ($data as $item) {
-													$term = get_term_by('name', $item, 'mpcrbm_car_type');
-													if ($term && !is_wp_error($term)) {
+
+												foreach ( $data as $item ) {
+													$term = get_term_by( 'name', $item, $taxonomy );
+
+													if ( ! $term ) {
+														$new_term = wp_insert_term( $item, $taxonomy );
+														if ( ! is_wp_error( $new_term ) ) {
+															$term_ids[] = (int) $new_term['term_id'];
+														}
+													} else {
 														$term_ids[] = (int) $term->term_id;
 													}
 												}
-												update_post_meta($post_id, $meta_key, $term_ids);
+
+												if ( ! empty( $term_ids ) ) {
+													wp_set_post_terms( $post_id, $term_ids, $taxonomy, false );
+												}
 											}
 
 											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
