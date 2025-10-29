@@ -20,30 +20,36 @@
                 $meta_query = [ 'relation' => 'AND' ];
 
                 if ( ! empty( $atts['car_type'] ) ) {
-                    $car_types = (array) $atts['car_type']; // ensure it's always an array
-                    $meta_query[] = [
-                        'key'     => 'mpcrbm_car_type',
-                        'value'   => array_map( 'sanitize_text_field', $car_types ),
-                        'compare' => 'IN',
-                    ];
+                    $car_types = (array) $atts['car_type'];
+                    foreach ( $car_types as $car_type ) {
+                        $meta_query[] = [
+                            'key'     => 'mpcrbm_car_type',
+                            'value'   => '"' . sanitize_text_field( $car_type ) . '"',
+                            'compare' => 'LIKE',
+                        ];
+                    }
                 }
 
                 if ( ! empty( $atts['fuel_type'] ) ) {
                     $fuel_types = (array) $atts['fuel_type'];
-                    $meta_query[] = [
-                        'key'     => 'mpcrbm_fuel_type',
-                        'value'   => array_map( 'sanitize_text_field', $fuel_types ),
-                        'compare' => 'IN',
-                    ];
+                    foreach ( $fuel_types as $fuel_type ) {
+                        $meta_query[] = [
+                            'key'     => 'mpcrbm_fuel_type',
+                            'value'   => '"' . sanitize_text_field( $fuel_type ) . '"',
+                            'compare' => 'LIKE',
+                        ];
+                    }
                 }
 
                 if ( ! empty( $atts['brand'] ) ) {
                     $brands = (array) $atts['brand'];
-                    $meta_query[] = [
-                        'key'     => 'mpcrbm_car_brand',
-                        'value'   => array_map( 'sanitize_text_field', $brands ),
-                        'compare' => 'IN',
-                    ];
+                    foreach ( $brands as $brand ) {
+                        $meta_query[] = [
+                            'key'     => 'mpcrbm_car_brand',
+                            'value'   => '"' . sanitize_text_field( $brand ) . '"',
+                            'compare' => 'LIKE',
+                        ];
+                    }
                 }
 
                 $args = [
@@ -118,6 +124,7 @@
                     'brand'         => '',
                     'per_page'      => 20,
                     'column'        => 3,
+                    'style'         => 'grid',
                     'mpcrbm_left_filter'   => 'no',
                 ], $atts, 'mpcrbm_car_list' );
 
@@ -125,6 +132,7 @@
                 $car_data = self::mpcrbm_get_car_data( $atts );
                 $cars = $car_data['cars'];
                 $car_ids = $car_data['car_ids'];
+
                 if( count( $car_ids ) > 0 ){
                     $left_side_filter = MPCRBM_Global_Function::get_meta_key( $car_ids );
                 }
@@ -132,13 +140,24 @@
                 $column = max( 1, min( 6, intval( $atts['column'] ) ) );
                 $left_filter =  sanitize_text_field( $atts['mpcrbm_left_filter'] );
 
+                $car_style = $atts['style'];
+                if( $car_style === 'list' ){
+                    $list_grid_class = 'mpcrbm_car_list_lists mpcrbm_car_list_list_view';
+                    $grid_active = '';
+                    $list_active = 'active';
+                }else{
+                    $list_grid_class = 'mpcrbm_car_list_grid mpcrbm_car_list_grid_view';
+                    $grid_active = 'active';
+                    $list_active = '';
+                }
+
                 ob_start(); ?>
 
                 <div class=" mpcrbm mpcrbm_transport_search_area ">
                     <div class="mpcrbm_car_list_grid_wrapper">
                         <div class="mpcrbm_car_list_grid_toggle">
-                            <button class="mpcrbm_car_list_grid_btn active" data-view="grid">Grid</button>
-                            <button class="mpcrbm_car_list_list_btn" data-view="list">List</button>
+                            <button class="mpcrbm_car_list_grid_btn <?php echo esc_html( $grid_active );?>" data-view="grid">Grid</button>
+                            <button class="mpcrbm_car_list_list_btn <?php echo esc_html( $list_active );?>" data-view="list">List</button>
                         </div>
                         <div class="mpcrbm_car_list_container ">
                             <?php if( $left_filter === 'yes' && count( $left_side_filter ) > 0 ){?>
@@ -148,7 +167,7 @@
                                     </div>
                                 </div>
                             <?php }?>
-                            <div id="mpcrbm_car_list_grid" class="mpcrbm_car_list_grid mpcrbm_car_list_grid_view mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>"
+                            <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>"
                                 >
                                 <?php if ( ! empty( $cars ) ) : ?>
                                     <?php foreach ( $cars as $car ) : ?>
