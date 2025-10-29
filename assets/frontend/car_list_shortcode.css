@@ -112,7 +112,7 @@
 
 .mpcrbm_car_list_grid_image img {
     width: 100%;
-    height: 250px !important;
+    height: 180px !important;
     object-fit: cover;
     transition: transform 0.6s ease, filter 0.6s ease;
     filter: brightness(0.9);
@@ -159,16 +159,20 @@
     flex-direction: row;
     justify-content: flex-start;
 }
-.mpcrbm_car_list_grid_meta span {
+.mpcrbm_car_list_grid_meta .mpcrbm_car_taxonomy {
+    color: #666666;
+
+}
+.mpcrbm_car_list_grid_meta .mpcrbm_car_taxonomy_data {
     padding: 5px 5px;
     border: 1px solid #f1e9e9;
-    color: #666666;
     border-radius: 5px;
     font-size: 14px;
     display: flex;
     align-items: center;
     gap: 2px
 }
+
 .mpcrbm_car_list_grid_meta li strong {
     width: 95px;
     color: #111827;

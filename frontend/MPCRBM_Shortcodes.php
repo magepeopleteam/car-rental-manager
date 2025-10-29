@@ -193,12 +193,25 @@
                                                     </div>
 
                                                     <div class="mpcrbm_car_list_grid_meta">
-                                                        <span><strong><i class="mi mi-bonus"></i></strong> <?php echo esc_html( $car['brand'] ); ?></span>
-                                                        <span><strong><i class="mi mi-tachometer-fast"></i></strong> <?php echo esc_html( $car['type'] ); ?></span>
-                                                        <span><strong><i class="mi mi-gas-pump-alt"></i></strong> <?php echo esc_html( $car['fuel'] ); ?></span>
-                                                        <span><strong><i class="mi mi-person-seat"></i></strong> <?php echo esc_html( $car['seating_capacity'] ); ?></span>
-                                                        <span><strong><i class="mi mi-time-quarter-to"></i></strong> <?php echo esc_html( $car['car_year'] ); ?></span>
-                                                        <span><strong><i class="fas fa-shopping-bag"></i></strong> <?php echo esc_html( $car['bag'] ); ?></span>
+                                                        <div class="mpcrbm_car_taxonomy_data">
+                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-bonus"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['brand'] ); ?></span>
+                                                        </div>
+                                                        <div class="mpcrbm_car_taxonomy_data">
+                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-tachometer-fast"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['type'] ); ?></span>
+                                                        </div>
+
+                                                        <div class="mpcrbm_car_taxonomy_data">
+                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-gas-pump-alt"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['fuel'] ); ?></span>
+                                                        </div>
+                                                        <div class="mpcrbm_car_taxonomy_data">
+                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-person-seat"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['seating_capacity'] ); ?></span>
+                                                        </div>
+                                                        <div class="mpcrbm_car_taxonomy_data">
+                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-time-quarter-to"></i></span class="mpcrbm_car_taxonomy"><span> <?php echo esc_html( $car['car_year'] ); ?></span>
+                                                        </div>
+                                                        <div class="mpcrbm_car_taxonomy_data">
+                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="fas fa-shopping-bag"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['bag'] ); ?></span>
+                                                        </div>
                                                     </div>
 
                                                     <div class="mpcrbm_car_list_price_display">
