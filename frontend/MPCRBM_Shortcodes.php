@@ -46,8 +46,6 @@
                     ];
                 }
 
-                error_log( print_r( [ '$meta_query' => $meta_query ], true ) );
-
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
                     'posts_per_page' => intval( $atts['per_page'] ),
@@ -87,6 +85,7 @@
                         $cars[] = [
                             'id'         => $car_id,
                             'title'      => get_the_title(),
+                            'content'    => get_the_content(),
                             'image'      => get_the_post_thumbnail_url( $car_id, 'medium' ),
                             'brand'      => isset( $brand[0] ) ? $brand[0] : '',
                             'type'       => isset( $type[0] ) ? $type[0] : '',
@@ -143,14 +142,14 @@
                         </div>
                         <div class="mpcrbm_car_list_container ">
                             <?php if( $left_filter === 'yes' && count( $left_side_filter ) > 0 ){?>
-                                <div class="mpcrbm_car_list_left_filter" style="width: 250px">
+                                <div class="mpcrbm_car_list_left_filter">
                                     <div class="mpcrbm_left_filter">
                                         <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
                                     </div>
                                 </div>
                             <?php }?>
-                            <div id="mpcrbm_car_list_grid" class="mpcrbm_car_list_grid mpcrbm_car_list_grid_view"
-                                 style="grid-template-columns: repeat(<?php echo esc_attr( $column ); ?>, 1fr);">
+                            <div id="mpcrbm_car_list_grid" class="mpcrbm_car_list_grid mpcrbm_car_list_grid_view mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>"
+                                >
                                 <?php if ( ! empty( $cars ) ) : ?>
                                     <?php foreach ( $cars as $car ) : ?>
                                 <a href="<?php echo esc_url( get_permalink( $car['id'] ) ); ?>">
@@ -170,14 +169,29 @@
                                                 </div>
                                                 <div class="mpcrbm_car_list_grid_content">
                                                     <h3 class="mpcrbm_car_list_grid_title"><?php echo esc_html( $car['title'] ); ?></h3>
-                                                    <ul class="mpcrbm_car_list_grid_meta">
-                                                        <li><strong><?php esc_attr_e( 'Brand', 'car-rental-manager' )?>:</strong> <?php echo esc_html( $car['brand'] ); ?></li>
-                                                        <li><strong><?php esc_attr_e( 'Brand', 'car-rental-manager' )?>:</strong> <?php echo esc_html( $car['type'] ); ?></li>
-                                                        <li><strong><?php esc_attr_e( 'Type', 'car-rental-manager' )?>:</strong> <?php echo esc_html( $car['fuel'] ); ?></li>
-                                                        <li><strong><?php esc_attr_e( 'Passenger', 'car-rental-manager' )?>:</strong> <?php echo esc_html( $car['passenger'] ); ?></li>
-                                                        <li><strong><?php esc_attr_e( 'Bag', 'car-rental-manager' )?>:</strong> <?php echo esc_html( $car['bag'] ); ?></li>
-                                                        <li><strong><?php esc_attr_e( 'Day Price', 'car-rental-manager' )?>:</strong> <?php echo esc_html( $car['day_price'] ); ?></li>
-                                                    </ul>
+                                                    <div class="mpcrbm_car_list_content_holder">
+                                                        <p class="mpcrbm_car_list_content"><?php echo strip_tags (wp_kses_post( $car['content'] ) ); ?></p>
+                                                    </div>
+
+                                                    <div class="mpcrbm_car_list_grid_meta">
+                                                        <span><strong><i class="mi mi-bonus"></i></strong> <?php echo esc_html( $car['brand'] ); ?></span>
+                                                        <span><strong><i class="mi mi-tachometer-fast"></i></strong> <?php echo esc_html( $car['type'] ); ?></span>
+                                                        <span><strong><i class="mi mi-gas-pump-alt"></i></strong> <?php echo esc_html( $car['fuel'] ); ?></span>
+                                                        <span><strong><i class="mi mi-person-seat"></i></strong> <?php echo esc_html( $car['seating_capacity'] ); ?></span>
+                                                        <span><strong><i class="mi mi-time-quarter-to"></i></strong> <?php echo esc_html( $car['car_year'] ); ?></span>
+                                                        <span><strong><i class="fas fa-shopping-bag"></i></strong> <?php echo esc_html( $car['bag'] ); ?></span>
+                                                    </div>
+
+                                                    <div class="mpcrbm_car_list_price_display">
+                                                        <div class="mpcrbm_car_list_price">
+                                                            <h3>
+                                                                <span class="woocommerce-Price-amount amount">
+                                                                    <?php echo wc_price( $car['day_price'] );?>
+                                                                </span>
+                                                                <small>/ day</small>
+                                                            </h3>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                         </div>

@@ -23,6 +23,26 @@
     gap: 10px;
     margin-bottom: 20px;
 }
+
+.mpcrbm_car_list_grid_1{
+    grid-template-columns: repeat(1, 1fr);
+}
+.mpcrbm_car_list_grid_2{
+    grid-template-columns: repeat(2, 1fr);
+}
+.mpcrbm_car_list_grid_3{
+    grid-template-columns: repeat(3, 1fr);
+}
+.mpcrbm_car_list_grid_4{
+    grid-template-columns: repeat(4, 1fr);
+}
+.mpcrbm_car_list_grid_5{
+    grid-template-columns: repeat(5, 1fr);
+}
+.mpcrbm_car_list_grid_5{
+    grid-template-columns: repeat(6, 1fr);
+}
+
 .mpcrbm_car_list_grid_toggle button {
     background: #f3f4f6;
     border: 1px solid #d1d5db;
@@ -46,7 +66,7 @@
 /* Grid Layout */
 .mpcrbm_car_list_grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /*grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));*/
     gap: 25px;
 }
 
@@ -71,10 +91,28 @@
 .mpcrbm_car_list_grid_image {
     position: relative;
     overflow: hidden;
+    padding: 5px;
 }
+
+.mpcrbm_car_list_content_holder{
+    padding: 5px 0;
+}
+.mpcrbm_car_list_content {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    color: #666666 !important;
+    max-height: calc(1.5em * 3);
+    word-break: break-word;
+}
+
 .mpcrbm_car_list_grid_image img {
     width: 100%;
-    height: 200px;
+    height: 250px !important;
     object-fit: cover;
     transition: transform 0.6s ease, filter 0.6s ease;
     filter: brightness(0.9);
@@ -99,13 +137,14 @@
 
 /* Content Area */
 .mpcrbm_car_list_grid_content {
-    padding: 15px 20px 20px;
+    padding: 5px 20px 20px;
 }
 .mpcrbm_car_list_grid_title {
     font-size: 18px;
     font-weight: 600;
-    color: #111827;
+    color: #111827 !important;
     margin-bottom: 8px;
+    margin-top: 5px !important;
     transition: color 0.3s ease;
 }
 .mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_title {
@@ -114,16 +153,21 @@
 
 /* Meta Info */
 .mpcrbm_car_list_grid_meta {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
 }
-.mpcrbm_car_list_grid_meta li {
+.mpcrbm_car_list_grid_meta span {
+    padding: 5px 5px;
+    border: 1px solid #f1e9e9;
+    color: #666666;
+    border-radius: 5px;
     font-size: 14px;
-    color: #4b5563;
-    margin: 5px 0;
     display: flex;
     align-items: center;
+    gap: 2px
 }
 .mpcrbm_car_list_grid_meta li strong {
     width: 95px;
@@ -156,7 +200,17 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    /*justify-content: center;*/
+}
+
+.mpcrbm_car_list_left_filter{
+    width: 250px;
+}
+
+.mpcrbm_car_list_price_display{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 /* Animation */
@@ -180,5 +234,47 @@
     .mpcrbm_car_list_list_view .mpcrbm_car_list_grid_image {
         flex: unset;
         height: 200px;
+    }
+}
+
+@media (max-width: 992px) {
+    .mpcrbm_car_list_grid_6,
+    .mpcrbm_car_list_grid_5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .mpcrbm_car_list_grid_4,
+    .mpcrbm_car_list_grid_3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .mpcrbm_car_list_grid_6,
+    .mpcrbm_car_list_grid_5,
+    .mpcrbm_car_list_grid_4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .mpcrbm_car_list_grid_3,
+    .mpcrbm_car_list_grid_2 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .mpcrbm_car_list_grid_6,
+    .mpcrbm_car_list_grid_5,
+    .mpcrbm_car_list_grid_4,
+    .mpcrbm_car_list_grid_3,
+    .mpcrbm_car_list_grid_2,
+    .mpcrbm_car_list_grid_1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .mpcrbm_car_list_container{
+        flex-direction: column;
+    }
+
+    .mpcrbm_car_list_left_filter{
+        width: 100%;
     }
 }
