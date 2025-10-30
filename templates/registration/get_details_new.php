@@ -153,7 +153,7 @@ if (sizeof($all_dates) > 0) {
     $waiting_time_check = MPCRBM_Function::get_general_settings('taxi_waiting_time', 'enable');
     ?>
     <div class="<?php echo esc_attr($area_class); ?> ">
-        <div class=" mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>" style="width: 100%">
+        <div class=" mpcrbm_search_area <?php echo esc_attr($form_style_class); ?> <?php echo esc_attr($price_based == 'manual' ? 'mAuto' : ''); ?>">
             <?php if( $is_title === 'yes'){?>
                 <div class="booking-header">
                     <div class="header-content">
