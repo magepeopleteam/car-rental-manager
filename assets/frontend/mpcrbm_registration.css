@@ -119,7 +119,7 @@
 		background-color: var(--color_theme);
 		border: 1px solid var(--color_theme);
 		color: #fff;
-		padding: 10px 15px;
+		padding: 10px;
   		border-radius: 50px;
 	}
 
@@ -146,20 +146,37 @@
 	}
 	 .mpcrbm-image-box{
 		width:35%;
+		height: 200px;
 	}
 	 .mpcrbm-image-box .bg_image_area{
 		width: 100%;
-		height: 100%;
+		
 		border-radius: 18px;
 	 }
 
 	div.mpcrbm_transport_search_area div.mpcrbm_list_details {
 		width: 65%;
-		padding: 15px;
+		padding:10px;
 	}
 	div.mpcrbm_list_details h2{
 		font-size: 20px;
 		margin-bottom: 10px;
+	}
+	.mpcrbm-price{
+		font-size: 1.2em; 
+		font-weight: bold; 
+		color: #333; 
+		text-align: end;
+	}
+	.mpcrbm_price-total{
+		margin-top: 2px; 
+		color: #666; 
+		font-size: 0.85em;
+	}
+	.mpcrbm_price-total span{
+		color: #4CAF50; 
+		font-weight: bold; 
+		margin-left: 5px;
 	}
 }
 /******************************************************************** Responsive ************************************************/
@@ -346,7 +363,7 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_price-main {
 	 font-size: 18px;
 	 font-weight: 800;
-	 color: #1e293b;
+	 color: var(--color_success);
  }
  .mpcrbm_seasonal-info {
 	 font-size: 10px;
@@ -362,9 +379,7 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_discount_info{
 	 display: flex;
 	 flex-direction: column;
-	 /*min-width: 100px;*/
-	 /*width: 200px;*/
-	 text-align: right;
+	 text-align: center;
 	 gap:5px;
  }
 
@@ -483,9 +498,12 @@ h2#mpcrbm_title_change{color:white;}
 	 border-radius: 10px;
 	 box-shadow: 0 2px 5px rgba(0,0,0,0.1);
  }
- .mpcrbm-filter-group {
-	 margin-bottom: 20px;
- }
+	.mpcrbm-filter-group {
+		margin-bottom: 20px;
+		border: 1px solid #ddd;
+		border-radius: 10px;
+		padding: 10px;
+	}
    div.mpcrbm .mpcrbm-filter-title {
 	font-size: 16px;
 	font-weight: 600;
@@ -571,7 +589,8 @@ h2#mpcrbm_title_change{color:white;}
 
  .mpcrbm_price_holder{
 	 display: flex;
-	 justify-content: end;
+	 justify-content: space-between;
+	 align-items: center;
 	 flex-direction: row;
 	 gap: 20px;
  }
@@ -590,11 +609,18 @@ h2#mpcrbm_title_change{color:white;}
 	 font-weight: 600;
  }
 
- .mpcrbm_summary_show span{color: #999;font-weight: 300;font-size: 16px;}
+ .mpcrbm_summary_show span{
+	color: #333;
+	font-weight: 300;
+	font-size: 14px;
+}
+.mpcrbm_summary_show i{
+	color: var(--color_theme);
+}
 
 .mpcrbm_summary_show p:not(.wp_editor p){
 	font-weight: bold;
-	color: #666;
+	color: #333;
 	font-size: 14px;
  }
 
