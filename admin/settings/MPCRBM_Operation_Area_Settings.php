@@ -26,34 +26,43 @@
                 <div class="tabsItem" data-tabs="#mpcrbm_setting_operation_area">
                     <h2><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h2>
                     <p><?php esc_html_e( 'You can choose multiple regions as your operational area', 'car-rental-manager' ); ?></p>
-                    <label for="operation_area_select">
-                        <select name="mpcrbm_terms_start_location[]" id="operation_area_select" class="formControl" multiple>
-							<?php
-								if ( ! empty( $saved_locations_array ) && ! is_array( $saved_locations_array ) ) {
-									$saved_locations_array = [ $saved_locations_array ]; // Convert single value to array
-								} elseif ( empty( $saved_locations_array ) ) {
-									$saved_locations_array = []; // Initialize as an empty array
-								}
-								if ( ! empty( $location_terms ) && ! is_wp_error( $location_terms ) ) {
-									foreach ( $location_terms as $term ) {
-										// Check if the term is saved and mark it as selected
-										$selected = in_array( $term->slug, $saved_locations_array ) ? 'selected' : '';
+                    <section class="bg-light">
+						<h6><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h6>
+						<span><?php esc_html_e( 'Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager' ); ?></span>
+					</section>
+					<section>
+						<label class="label">
+							<div>
+								<h6><?php esc_html_e('Select Operation area', 'car-rental-manager'); ?></h6>
+								<span class="desc"><?php esc_html_e( 'Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager' ); ?></span>
+							</div>
+							<select name="mpcrbm_terms_start_location[]" id="operation_area_select" class="formControl" multiple>
+								<?php
+									if ( ! empty( $saved_locations_array ) && ! is_array( $saved_locations_array ) ) {
+										$saved_locations_array = [ $saved_locations_array ]; // Convert single value to array
+									} elseif ( empty( $saved_locations_array ) ) {
+										$saved_locations_array = []; // Initialize as an empty array
+									}
+									if ( ! empty( $location_terms ) && ! is_wp_error( $location_terms ) ) {
+										foreach ( $location_terms as $term ) {
+											// Check if the term is saved and mark it as selected
+											$selected = in_array( $term->slug, $saved_locations_array ) ? 'selected' : '';
+											?>
+											<option value="<?php echo esc_attr( $term->slug ); ?>" <?php echo esc_attr( $selected ); ?>>
+												<?php echo esc_html( $term->name ); ?>
+											</option>
+											<?php
+										}
+									} else {
 										?>
-                                        <option value="<?php echo esc_attr( $term->slug ); ?>" <?php echo esc_attr( $selected ); ?>>
-											<?php echo esc_html( $term->name ); ?>
-                                        </option>
+										<option value=""><?php esc_html_e( 'No locations found', 'car-rental-manager' ); ?></option>
 										<?php
 									}
-								} else {
-									?>
-                                    <option value=""><?php esc_html_e( 'No locations found', 'car-rental-manager' ); ?></option>
-									<?php
-								}
-							?>
-                        </select>
-                    </label>
-                    <p class="description"><?php esc_html_e( 'Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager' ); ?></p>
-                </div>
+								?>
+							</select>
+						</label>
+					</section>
+				</div>
 				<?php
 			}
 
