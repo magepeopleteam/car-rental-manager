@@ -28,7 +28,7 @@
                     <p><?php esc_html_e( 'You can choose multiple regions as your operational area', 'car-rental-manager' ); ?></p>
                     <section class="bg-light">
 						<h6><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h6>
-						<span><?php esc_html_e( 'Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager' ); ?></span>
+						<span><?php esc_html_e( 'Operation Area settings', 'car-rental-manager' ); ?></span>
 					</section>
 					<section>
 						<label class="label">
