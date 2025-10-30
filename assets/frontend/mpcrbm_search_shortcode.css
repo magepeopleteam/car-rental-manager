@@ -51,7 +51,7 @@ div.header-text h2 {
 }
 
 .mpcrbm_search-button {
-    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    background: var(--color_theme);
     color: white;
     border: none;
     padding: 10px;
@@ -118,7 +118,7 @@ div.header-text h2 {
 }
 
 .mpcrbm_search_title{
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .custom-divider {

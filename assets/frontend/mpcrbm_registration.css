@@ -80,7 +80,7 @@
 		height: 37px;
 		color: #222222;
 		font-weight: 400;
-		font-size: 12px;
+		font-size: 14px;
 
 		border-color: #EBECEE;
 		background-image: url('../../mp_global/assets/images/arrow_down.svg');
@@ -90,6 +90,10 @@
 		-webkit-appearance: none;
 		border: unset !important;
 		/*border-radius: 10px;*/
+	}
+	.mpcrbm .mpBtn, .mpcrbm [class*="_mpBtn"], .mpcrbm button {
+		font-size:14px;
+    	font-weight:bold;
 	}
 	.mpcrbm_transport_search_area .input_select{
 		width: 100%;
@@ -451,12 +455,10 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_duration-highlight {
 	color: var(--color_success);
 	border-radius: 12px;
-	padding: 5px 10px;
 	text-align: center;
-	/*margin: 20px 0;*/
  }
  .mpcrbm_duration-days {
-	 font-size: 24px;
+	 font-size:14px;
 	 font-weight: 700;
  }
 
@@ -621,9 +623,12 @@ h2#mpcrbm_title_change{color:white;}
 	 padding:10px;
 	 background-color: #fff;
 	 border: 2px solid #f0f0f0;
-	 justify-content: center;
+	 justify-content: start;
 	 border-radius: 8px;
 	 font-weight: 600;
+ }
+ .mpcrbm_summary_show:nth-of-type(4){
+	border:2px solid var(--color_success);
  }
 
  .mpcrbm_summary_show span{
