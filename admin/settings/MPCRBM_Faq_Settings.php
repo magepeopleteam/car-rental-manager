@@ -13,13 +13,10 @@
 				add_action('admin_enqueue_scripts', [$this, 'my_custom_editor_enqueue']);
 				// save faq data
 				add_action('wp_ajax_mpcrbm_faq_data_save', [$this, 'save_faq_data_settings']);
-				add_action('wp_ajax_nopriv_mpcrbm_faq_data_save', [$this, 'save_faq_data_settings']);
 				// update faq data
 				add_action('wp_ajax_mpcrbm_faq_data_update', [$this, 'faq_data_update']);
-				add_action('wp_ajax_nopriv_mpcrbm_faq_data_update', [$this, 'faq_data_update']);
 				// mpcrbm_delete_faq_data
 				add_action('wp_ajax_mpcrbm_faq_delete_item', [$this, 'faq_delete_item']);
-				add_action('wp_ajax_nopriv_mpcrbm_faq_delete_item', [$this, 'faq_delete_item']);
 				// FAQ sort_faq
 				add_action('wp_ajax_mpcrbm_sort_faq', [$this, 'sort_faq']);
 
@@ -44,7 +41,7 @@
             }
 
 			public function sort_faq() {
-				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_admin_nonce')) {
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_extra_service')) {
 					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
 				}
 				$post_id = isset($_POST['postID']) ? sanitize_text_field(wp_unslash($_POST['postID'])) : '';
@@ -178,7 +175,7 @@
 				endif;
 			}
 			public function faq_data_update() {
-				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_admin_nonce')) {
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_extra_service')) {
 					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
 				}
 				$post_id = isset($_POST['mpcrbm_faq_postID']) ? sanitize_text_field(wp_unslash($_POST['mpcrbm_faq_postID'])) : '';
@@ -204,7 +201,7 @@
 				die;
 			}
 			public function save_faq_data_settings() {
-				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_admin_nonce')) {
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_extra_service')) {
 					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
 				}
 				$post_id = isset($_POST['mpcrbm_faq_postID']) ? sanitize_text_field(wp_unslash($_POST['mpcrbm_faq_postID'])) : '';
@@ -236,7 +233,7 @@
 				die;
 			}
 			public function faq_delete_item() {
-				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_admin_nonce')) {
+				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_extra_service')) {
 					wp_send_json_error('Invalid nonce!'); // Prevent unauthorized access
 				}
 				$post_id = isset($_POST['mpcrbm_faq_postID']) ? sanitize_text_field(wp_unslash($_POST['mpcrbm_faq_postID'])) : '';
