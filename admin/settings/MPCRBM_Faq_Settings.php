@@ -22,7 +22,26 @@
 				add_action('wp_ajax_nopriv_mpcrbm_faq_delete_item', [$this, 'faq_delete_item']);
 				// FAQ sort_faq
 				add_action('wp_ajax_mpcrbm_sort_faq', [$this, 'sort_faq']);
+
+                add_action( 'save_post', [ $this, 'save_general_settings' ] );
 			}
+
+            public function save_general_settings( $post_id ) {
+				// Check if nonce is set
+				if ( ! isset( $_POST['mpcrbm_nonce'] ) ) {
+					return;
+				};
+				// Sanitize and verify the nonce
+				$nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_nonce'] ) );
+				if ( ! wp_verify_nonce( $nonce, 'mpcrbm_save_general_settings' ) ) {
+					return;
+				};
+				if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+                    $faq_active       = isset( $_POST['mpcrbm_faq_active'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_faq_active'] ) ) : 'off';
+                    update_post_meta($post_id, 'mpcrbm_faq_active', $faq_active);
+                    	
+                }
+            }
 
 			public function sort_faq() {
 				if (!isset($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'mpcrbm_admin_nonce')) {

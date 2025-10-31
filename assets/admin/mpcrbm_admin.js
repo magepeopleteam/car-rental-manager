@@ -246,7 +246,7 @@
         var postID = $('input[name="mpcrbm_post_id"]');
         var itemId = $('input[name="mpcrbm_faq_item_id"]');
         $.ajax({
-            url: mpcrbm_admin_ajax.ajax_url,
+            url: mpcrbm_ajax_url,
             type: 'POST',
             data: {
                 action: 'mpcrbm_faq_data_update',
@@ -254,7 +254,7 @@
                 mpcrbm_faq_content: content,
                 mpcrbm_faq_postID: postID.val(),
                 mpcrbm_faq_itemID: itemId.val(),
-                nonce: mpcrbm_admin_ajax.nonce
+                nonce: mpcrbm_admin_nonce.nonce
             },
             success: function (response) {
                 $('#mpcrbm-faq-msg').html(response.data.message);
@@ -275,14 +275,14 @@
         var content = tinyMCE.get('mpcrbm_faq_content').getContent();
         var postID = $('input[name="mpcrbm_post_id"]');
         $.ajax({
-            url: mpcrbm_admin_ajax.ajax_url,
+            url: mpcrbm_ajax_url,
             type: 'POST',
             data: {
                 action: 'mpcrbm_faq_data_save',
                 mpcrbm_faq_title: title.val(),
                 mpcrbm_faq_content: content,
                 mpcrbm_faq_postID: postID.val(),
-                nonce: mpcrbm_admin_ajax.nonce
+                nonce: mpcrbm_admin_nonce.nonce
             },
             success: function (response) {
                 $('#mpcrbm-faq-msg').html(response.data.message);
@@ -298,13 +298,13 @@
     function delete_faq_item(itemId) {
         var postID = $('input[name="mpcrbm_post_id"]');
         $.ajax({
-            url: mpcrbm_admin_ajax.ajax_url,
+            url: mpcrbm_ajax_url,
             type: 'POST',
             data: {
                 action: 'mpcrbm_faq_delete_item',
                 mpcrbm_faq_postID: postID.val(),
                 itemId: itemId,
-                nonce: mpcrbm_admin_ajax.nonce
+                nonce: mpcrbm_admin_nonce.nonce
             },
             success: function (response) {
                 $('.mpcrbm-faq-items').html('');
@@ -323,13 +323,13 @@
                 event.preventDefault();
                 var sortedIDs = $(this).sortable("toArray", { attribute: "data-id" });
                 $.ajax({
-                    url: mpcrbm_admin_ajax.ajax_url,
+                    url: mpcrbm_ajax_url,
                     type: 'POST',
                     data: {
                         action: 'mpcrbm_sort_faq',
                         postID: $('input[name="mpcrbm_post_id"]').val(),
                         sortedIDs: sortedIDs,
-                        nonce: mpcrbm_admin_ajax.nonce
+                        nonce: mpcrbm_admin_nonce.nonce
                     },
                     success: function (response) {
                         $('.mpcrbm-faq-items').html('');
