@@ -78,7 +78,7 @@
 		height: 37px;
 		color: #222222;
 		font-weight: 400;
-		font-size: 14px;
+		font-size: 16px;
 
 		border-color: #EBECEE;
 		background-image: url('../../mp_global/assets/images/arrow_down.svg');
@@ -90,7 +90,7 @@
 		/*border-radius: 10px;*/
 	}
 	.mpcrbm .mpBtn, .mpcrbm [class*="_mpBtn"], .mpcrbm button {
-		font-size:14px;
+		font-size:16px;
     	font-weight:bold;
 	}
 	.mpcrbm_transport_search_area .input_select{
@@ -148,7 +148,7 @@
 	}
 	 .mpcrbm-image-box{
 		width:35%;
-		height: 200px;
+		height:166px;
 	}
 	 .mpcrbm-image-box .bg_image_area{
 		width: 100%;
@@ -330,12 +330,11 @@ h2#mpcrbm_title_change{color:white;}
 .mpcrbm_car_spec{
 	display: flex;
 	align-items: start;
-	gap:10px;
+	gap:5px;
 	width: 48%;
-	margin:6px 0;
 }
 .mpcrbm_car_spec i{
-	font-size: 22px;
+	font-size:18px;
 	color: #394454;
 }
 
@@ -660,6 +659,9 @@ h2#mpcrbm_title_change{color:white;}
 		border-top: 1px solid #e5e7eb;
 	}
 	.mpcrbm_discount_booking, .mpcrbm_car_specs_lists {
+		width: 100%;
+	}
+	.mpcrbm_summary_show {
 		width: 100%;
 	}
 }

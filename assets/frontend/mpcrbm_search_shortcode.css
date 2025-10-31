@@ -120,9 +120,11 @@ div.header-text h2 {
 }
 
 .mpcrbm_search_title{
-    font-size: 14px;
+    font-size: 16px;
 }
-
+.mpcrbm_search_title i{
+    color: var(--color_theme);
+}
 .custom-divider {
     border: none;
     border-top: 1px solid #ccc; /* change color if needed */
