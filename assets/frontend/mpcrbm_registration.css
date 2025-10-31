@@ -54,9 +54,7 @@
 	.mpcrbm_transport_summary .total h6,.mpcrbm_transport_summary .total h3{
 		margin: 0;
 	}
-}
-/******************************************************************** ************************************************/
-@media only screen and (min-width: 10px) {
+
 	div.mpcrbm_transport_search_area{
 		margin: auto;
 	}
@@ -182,13 +180,24 @@
 		font-weight: bold; 
 		margin-left: 5px;
 	}
+	.mpcrbm_summary_show{
+		width: 25%;
+		display: flex;
+		position: relative;
+		flex-direction: column;
+		gap: 2px;
+		padding:10px;
+		background-color: #fff;
+		border: 2px solid #f0f0f0;
+		justify-content: start;
+		border-radius: 8px;
+		font-weight: 600;
+	}
+
+	
 }
 /******************************************************************** Responsive ************************************************/
-@media only screen and (max-width: 1000px) {
-	div.mpcrbm_transport_search_area .mpcrbm_search_area {
-		/*padding: 30px;*/
-	}
-}
+
 @media only screen and (max-width:1200px) {
 	div.mpcrbm_transport_search_area .mpcrbm_map_area{width:100%;max-width:100%;}
 	div.mpcrbm_transport_search_area div.mpcrbm_booking_item,
@@ -203,6 +212,7 @@
 	div.mpcrbm_transport_search_area ul.list_inline_two li {width: 100%;}
 	div.mpcrbm_transport_search_area div.mpcrbm_list_details [class*="_min_150"],
 	div.mpcrbm_transport_search_area button.mpcrbm_transport_select {width: auto;min-width: 100px;}
+	
 	.mpcrbm_booking_item .mpcrbm-image-box{
 		width: 100%;
 		flex-shrink: 0;
@@ -219,6 +229,12 @@
 	 div.mpcrbm_transport_search_area div.mpcrbm_list_details {
 		width:100%;
 		padding: 10px;
+	}
+	.mpcrbm_booking_summary_description{
+		flex-wrap: wrap;
+	}
+	.mpcrbm_summary_show{
+	 width:48.5%;
 	}
 }
 @media only screen and (max-width: 600px) {
@@ -241,37 +257,7 @@
 	border-width: 5px;
 }
 
- .mpcrbm_horizontal_section_divider {
-	 height: 1px;
-	 background-color: #e5e7eb;
-	 margin: 26px 0 !important;
- }
- .mpcrbm_horizontal_section_label {
-	 font-size: 12px;
-	 font-weight: 600;
-	 color: #6b7280;
-	 text-transform: uppercase;
-	 letter-spacing: 0.5px;
-	 margin: 12px 0;
- }
-.mpcrbm_horizontal_date_time_input{
-	 background: #fff;
-	 border-radius: 12px;
-	 padding:12px 8px 8px 8px;
-	 width: 33.33%;
-	 display: flex;
-	 gap: 1px;
- }
- .mpcrbm_horizontal_booking_title{
-	 color: #666666;
-	 text-align: center;
- }
 
-.mpcrbm_inline_search_form label span i{ 
-	margin: 0 !important;
-	margin-left: 5px !important;
-	margin-right: 5px !important;
-}
 
  .mpcrbm_next_button{
 	 width: 90% !important;
@@ -407,9 +393,7 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_100_width{
 	 width: 100%;
  }
- .mpcrbm_width_33{
-	 width: 33.33%;
- }
+ 
 
  .mpcrbm_price-total {
 	 font-size: 11px;
@@ -614,19 +598,7 @@ h2#mpcrbm_title_change{color:white;}
 	 gap: 20px;
  }
 
- .mpcrbm_summary_show{
-	 width: 25%;
-	 display: flex;
-	 position: relative;
-	 flex-direction: column;
-	 gap: 2px;
-	 padding:10px;
-	 background-color: #fff;
-	 border: 2px solid #f0f0f0;
-	 justify-content: start;
-	 border-radius: 8px;
-	 font-weight: 600;
- }
+ 
  .mpcrbm_summary_show:nth-of-type(4){
 	border:2px solid var(--color_success);
  }
@@ -676,12 +648,6 @@ h2#mpcrbm_title_change{color:white;}
 	 .mpcrbm_left_filter {
 		 width: 100%;
 	 }
-	.mpcrbm_booking_summary_description{
-		flex-direction: column;
-	}
-	.mpcrbm_summary_show{
-		width: 100%;
-	}
 	
 	div.mpcrbm_transport_search_area div.mpcrbm_list_details {
 		width: 100%;
