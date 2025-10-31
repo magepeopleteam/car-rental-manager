@@ -283,6 +283,9 @@
 	 align-items: center;
 	 gap: 5px;
  }
+ .mpcrbm_summary_title i{
+	color: var(--color_theme);
+ }
  .mpcrbm_booking_vehicle {
 	 background: white;
 	 border: 1px solid #e5e7eb;
