@@ -64,9 +64,14 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
                 if (!is_array($excluded)) $excluded = [];
 
                 ?>
-                <div class="mpcrbm_faq_all_question_box">
-                    <h3>Include Features</h3>
-                    <div class="mpcrbm_include_feature">
+                
+                <section class="mpcrbm_include_feature">
+                    <div class="label">
+                        <div>
+                            <h6><?php esc_html_e('Include Features', 'car-rental-manager'); ?></h6>
+                            <span><?php esc_html_e('Include Features', 'car-rental-manager'); ?></span>
+                        </div>
+                    </div>
                         <input type="hidden" class="mpcrbm_include_feature_term_id" name="mpcrbm_include_feature_term_id" value="<?php echo esc_attr(implode(',', $included)); ?>">
                         <?php foreach ($terms as $term) : ?>
                             <label>
@@ -75,8 +80,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
                                 <?php echo esc_html( $term->name ); ?>
                             </label><br>
                         <?php endforeach; ?>
-                    </div>
-                </div>
+                </section>
 
                 <div class="mpcrbm_selected_faq_question_box">
                 <h3>Exclude Features</h3>
