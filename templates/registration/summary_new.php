@@ -20,23 +20,23 @@ $price_based = $price_based ?? '';
             <div class="sticky_on_scroll">
                 <div class="mpcrbm_dFlex_fdColumn_btLight">
                     <div class="mpcrbm_summary_title">
-                        📋 <?php esc_html_e('Booking Summary', 'car-rental-manager'); ?>
+                        <i class="mi mi-summary-check"></i><?php _e('Booking Summary','car-rental-manager'); ?>
                     </div>
 
                     <div class="mpcrbm_booking_summary_description">
 
                         <div class="mpcrbm_summary_show">
-                            <span class=""><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
+                            <span class=""><i class="mi mi-marker"></i> <?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
                             <?php if($price_based == 'manual'){ ?>
-                                <p class="_textLight_1 mpcrbm_manual_start_place"><i class="fas fa-map-marker-alt mpcrbm_location_icon_margin"></i><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $start_place,'mpcrbm_locations' )); ?></p>
+                                <p class="_textLight_1 mpcrbm_manual_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $start_place,'mpcrbm_locations' )); ?></p>
                             <?php }else{ ?>
-                                <p class="_textLight_1 mpcrbm_map_start_place"><i class="fas fa-map-marker-alt mpcrbm_location_icon_margin"></i><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_place, 'mpcrbm_locations')); ?></p>
+                                <p class="_textLight_1 mpcrbm_map_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_place, 'mpcrbm_locations')); ?></p>
                             <?php } ?>
                         </div>
 
                         <div class="mpcrbm_summary_show">
-                            <span class=""><?php esc_html_e('Pickup Date & Time', 'car-rental-manager'); ?></span>
-                            <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($date)) .'.'. esc_html(MPCRBM_Global_Function::date_format($date, 'time')); ?></p>
+                            <span><i class="mi mi-calendar"></i> <?php esc_html_e('Pickup Date & Time', 'car-rental-manager'); ?></span>
+                            <p><?php echo esc_html(MPCRBM_Global_Function::date_format($date,'date')) .'. '. esc_html(MPCRBM_Global_Function::date_format($date, 'time')); ?></p>
                         </div>
 
 
@@ -53,8 +53,8 @@ $price_based = $price_based ?? '';
                             ?>
                             <?php if(!empty($return_date_time)){ ?>
                             <div class="mpcrbm_summary_show">
-                                <span class=""><?php esc_html_e('Return Date & Time', 'car-rental-manager'); ?></span>
-                                <p class="_textLight_1"><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time)) .'.'.esc_html(MPCRBM_Global_Function::date_format($return_date_time,'time')) ?></p>
+                                <span><i class="mi mi-calendar"></i> <?php esc_html_e('Return Date & Time', 'car-rental-manager'); ?></span>
+                                <p><?php echo esc_html(MPCRBM_Global_Function::date_format($return_date_time)) .'. '.esc_html(MPCRBM_Global_Function::date_format($return_date_time,'time')) ?></p>
                             </div>
                             <?php } ?>
                         <?php } ?>

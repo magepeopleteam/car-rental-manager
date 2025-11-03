@@ -36,19 +36,19 @@
 						<h6><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h6>
 						<span><?php esc_html_e( 'Configure multiple locations and pricing', 'car-rental-manager' ); ?></span>
 					</section>
-					
+
 					<section>
-						<label class="label">
-							<div>
-								<h6><?php esc_html_e( 'Enable Multi-Location Support', 'car-rental-manager' ); ?></h6>
-								<span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
-							</div>
-							<input type="checkbox" name="mpcrbm_multi_location_enabled" value="1" <?php echo esc_attr( $enabled_checked ); ?> class="mpcrbm-toggle-multi-location" />
-						</label>
-					</section>
+                        <div class="label">
+                            <div>
+                                <h6><?php esc_html_e( 'Enable Multi-Location Support', 'car-rental-manager' ); ?></h6>
+                                <span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
+                            </div>
+							<?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_multi_location_enabled', $enabled_checked ); ?>
+                        </div>
+                    </section>
 					
 					<!-- Multi-Location Configuration -->
-					<div id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>">
+					<div id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_multi_location_enabled">
 						
 						<!-- Location-Based Pricing -->
 						<section class="bg-light" style="margin-top: 20px;">

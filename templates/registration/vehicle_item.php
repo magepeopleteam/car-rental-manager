@@ -268,15 +268,15 @@ if ($post_id) {
                                         </div>
                                     </div>
                                 <?php else: ?>
-                                    <div class="mpcrbm-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338; text-align: end">
+                                    <div class="mpcrbm-price">
                                         <?php echo wp_kses_post(wc_price($raw_price)); ?>
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="mpcrbm_price-total" style="margin-top: 2px; color: #666; font-size: 0.85em;">
+                                <div class="mpcrbm_price-total">
                                     <?php echo esc_attr($minutes_to_day); ?>-day total
                                     <?php if ($early_bird_discount > 0): ?>
-                                        <span style="color: #4CAF50; font-weight: bold; margin-left: 5px;">
+                                        <span>
                                     (<?php echo wp_kses_post(wc_price($early_bird_discount)); ?> saved)
                                 </span>
                                     <?php endif; ?>

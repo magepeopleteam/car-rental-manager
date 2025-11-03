@@ -51,7 +51,7 @@ div.header-text h2 {
 }
 
 .mpcrbm_search-button {
-    background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    background: var(--color_theme);
     color: white;
     border: none;
     padding: 10px;
@@ -86,7 +86,9 @@ div.header-text h2 {
 .mpcrbm_manual_end_place{
     margin-top: 0 !important;
 }
-
+.mpcrbm_width_33{
+    width: 33.33%;
+}
 .mprcbm_checkbox_group {
     display: flex;
     align-items: center;
@@ -118,9 +120,11 @@ div.header-text h2 {
 }
 
 .mpcrbm_search_title{
-    font-size: 12px;
+    font-size: 16px;
 }
-
+.mpcrbm_search_title i{
+    color: var(--color_theme);
+}
 .custom-divider {
     border: none;
     border-top: 1px solid #ccc; /* change color if needed */
@@ -130,4 +134,48 @@ div.header-text h2 {
     width: 2px;
     background-color: #dddddd;
     padding:0;
+}
+
+ .mpcrbm_horizontal_section_divider {
+	 height: 1px;
+	 background-color: #e5e7eb;
+	 margin: 26px 0 !important;
+ }
+ .mpcrbm_horizontal_section_label {
+	 font-size: 12px;
+	 font-weight: 600;
+	 color: #6b7280;
+	 text-transform: uppercase;
+	 letter-spacing: 0.5px;
+	 margin: 12px 0;
+ }
+.mpcrbm_horizontal_date_time_input{
+	 background: #fff;
+	 border-radius: 12px;
+	 padding:12px 8px 8px 8px;
+	 width: 33.33%;
+	 display: flex;
+	 gap: 1px;
+ }
+ .mpcrbm_horizontal_booking_title{
+	 color: #666666;
+	 text-align: center;
+ }
+
+.mpcrbm_inline_search_form label span i{ 
+	margin: 0 !important;
+	margin-left: 5px !important;
+	margin-right: 5px !important;
+}
+.mpcrbm_search_area{
+    width: 100%;
+}
+@media only screen and (max-width:1200px) {
+    .mpcrbm_inline_search_form{
+        flex-direction: column;
+    }
+    .mpcrbm_horizontal_date_time_input{
+        width: 100%;
+    }
+
 }

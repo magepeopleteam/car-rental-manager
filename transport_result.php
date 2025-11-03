@@ -78,7 +78,7 @@ if ( wp_is_block_theme() ) {
     </script>
 
     <div id="maincontent" class="transport-result-page">
-        <div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto">
+        <div class="mpcrbm mpcrbm_transport_search_area">
             <div class="mpcrbm_tab_next _mT">
                 <div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
                     <div data-tabs-target-next="#mpcrbm_pick_up_details" class="tabItemNext active" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
