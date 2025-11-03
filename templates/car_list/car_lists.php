@@ -1,7 +1,7 @@
 <?php
 
 $car_result_data = MPCRBM_Global_Function::mpcrbm_get_car_data();
-$display_limit = 20;
+$display_limit = 10;
 
 $car_data = isset( $car_result_data['cars'] ) && !empty( $car_result_data['cars'] )
     ? $car_result_data['cars'] : [] ;
@@ -169,14 +169,14 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
             </div>
             <div class="mpcrbm_multiple_delete_btn_holder" style="display: none">
                 <input type="hidden" id="mpcrbm_delete_car_ids" value="" name="">
-                <span class="mpcrbm_multiple_delete">Delete</span>
+                <span class="mpcrbm_multiple_delete"><?php esc_html_e( 'Delete', 'car-rental-manager' );?></span>
             </div>
 
             <div class="mpcrbm_loadMoreContainer" id="mpcrbm_loadMoreContainer" style="display: <?php echo esc_attr( $load_more_display );?>">
                 <input id="mpcrbm_number_of_car_load"  type="hidden" value="<?php echo esc_attr( $display_limit );?>">
                 <input id="mpcrbm_number_load"  type="hidden" value="<?php echo esc_attr( $display_limit );?>">
                 <button class="mpcrbm_btn_load_more">
-                    <span class="mpcrbm_loadmore_text" id="mpcrbm_loadmore_text">Load More </span>
+                    <span class="mpcrbm_loadmore_text" id="mpcrbm_loadmore_text"><?php esc_html_e( 'Load More', 'car-rental-manager' );?> </span>
                     <span class="mpcrbm_remaining_count" id="mpcrbm_remaining_count"> (<?php echo esc_attr( $remaining );?>)</span>
                 </button>
             </div>
