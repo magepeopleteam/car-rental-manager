@@ -98,6 +98,16 @@ div.mpcrbm_faq_all_question_box h3,div.mpcrbm_selected_faq_question_box  h3{
   font-size: 16px;
 }
 
+.mpcrbm_include_feature label,.mpcrbm_exclude_feature label{
+  margin-bottom:10px;
+  display: flex;
+  align-items: center;
+  gap:10px;
+  background-color: #f8f9fa;
+  padding: 10px ;
+  border-radius: 5px;
+}
+
 #mpcrbm_meta_box_panel .tabsContent .tabsItem{
     border-radius: 8px;
     background-color: #FFF;
@@ -570,7 +580,10 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
     height: 100% !important;
     object-fit: cover;
     border-radius: 0;
-    margin-top: 10px;
+}
+
+.mpcrbm_gallery-images-lists{
+  margin: 20px;
 }
 
 .mpcrbm_driver_details{

@@ -74,7 +74,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
                                     <input type="checkbox" class="mpcrbm_include_checkbox" value="<?php echo esc_attr($term->term_id); ?>"
                                         <?php checked( in_array($term->term_id, $included ) ); ?>>
                                     <?php echo esc_html( $term->name ); ?>
-                                </label><br>
+                                </label>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -88,7 +88,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
                                     <input type="checkbox" class="mpcrbm_exclude_checkbox" value="<?php echo esc_attr($term->term_id); ?>"
                                         <?php checked(in_array($term->term_id, $excluded)); ?>>
                                     <?php echo esc_html($term->name); ?>
-                                </label><br>
+                                </label>
                             <?php endforeach; ?>
                         </div>
                     </div>
