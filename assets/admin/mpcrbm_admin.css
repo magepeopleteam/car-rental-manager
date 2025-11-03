@@ -532,3 +532,15 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
     object-fit: cover;
     border-radius: 0;
 }
+
+.mpcrbm_driver_details{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mpcrbm_driver_info_wrap{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}

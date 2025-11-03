@@ -126,6 +126,7 @@
 					'mpcrbm_increase_price_percentage'        => esc_html__( "Specify the percentage by which the price will be increased", "car-rental-manager" ),
 					'mpcrbm_increase_price_direction'         => esc_html__( "Select the direction of travel: 'Origin to Destination' or 'Both ways' for round trips", "car-rental-manager" ),
 					'mpcrbm_return_discount'                  => esc_html__( 'This is to way return discount fixed or percentage', 'car-rental-manager' ),
+					'mpcrbm_driver_details'                   => esc_html__( 'Car Driver Details ', 'car-rental-manager' ),
 				);
 				$des = apply_filters( 'mpcrbm_filter_description_array', $des );
 
@@ -140,6 +141,39 @@
 					<?php
 				}
 			}
+
+            public static function mpcrbm_driver_info_box_callback( $post_id ) {
+                $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
+                $driver_info = wp_parse_args( $driver_info, [
+                    'name'  => '',
+                    'phone' => '',
+                    'email' => '',
+                    'age'   => '',
+                ] );
+                wp_nonce_field( 'mpcrbm_driver_info_save', 'mpcrbm_driver_info_nonce' );
+                ?>
+                <div class="mpcrbm_driver_info_wrap">
+                    <p>
+                        <label for="mpcrbm_driver_info_name"><?php esc_html_e( 'Name:', 'car-rental-manager' );?></label><br>
+                        <input type="text" id="mpcrbm_driver_info_name" name="mpcrbm_driver_info[name]" value="<?php echo esc_attr( $driver_info['name'] ); ?>" />
+                    </p>
+                    <p>
+                        <label for="mpcrbm_driver_info_phone"><?php esc_html_e( 'Phone:', 'car-rental-manager' );?></label><br>
+                        <input type="text" id="mpcrbm_driver_info_phone" name="mpcrbm_driver_info[phone]" value="<?php echo esc_attr( $driver_info['phone'] ); ?>" />
+                    </p>
+                    <p>
+                        <label for="mpcrbm_driver_info_email"><?php esc_html_e( 'Email:', 'car-rental-manager' );?></label><br>
+                        <input type="email" id="mpcrbm_driver_info_email" name="mpcrbm_driver_info[email]" value="<?php echo esc_attr( $driver_info['email'] ); ?>" />
+                    </p>
+                    <p>
+                        <label for="mpcrbm_driver_info_age"><?php esc_html_e( 'Age:', 'car-rental-manager' );?></label><br>
+                        <input type="number" id="mpcrbm_driver_info_age" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" min="18" max="100" />
+                    </p>
+                </div>
+                <?php
+            }
+
 		}
+
 		new MPCRBM_Settings();
 	}

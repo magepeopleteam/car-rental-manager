@@ -1,0 +1,284 @@
+/* Wrapper */
+.mpcrbm_car_list_container{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.mpcrbm_car_list_grid_wrapper {
+    margin: 40px auto;
+    max-width: 1200px;
+    padding: 0 15px;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Toggle Buttons */
+.mpcrbm_car_list_grid_toggle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.mpcrbm_car_list_grid_1{
+    grid-template-columns: repeat(1, 1fr);
+}
+.mpcrbm_car_list_grid_2{
+    grid-template-columns: repeat(2, 1fr);
+}
+.mpcrbm_car_list_grid_3{
+    grid-template-columns: repeat(3, 1fr);
+}
+.mpcrbm_car_list_grid_4{
+    grid-template-columns: repeat(4, 1fr);
+}
+.mpcrbm_car_list_grid_5{
+    grid-template-columns: repeat(5, 1fr);
+}
+.mpcrbm_car_list_grid_5{
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.mpcrbm_car_list_grid_toggle button {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #111827;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.mpcrbm_car_list_grid_toggle button:hover {
+    background: #0073aa;
+    color: #fff;
+    transform: translateY(-2px);
+}
+.mpcrbm_car_list_grid_toggle .active {
+    background: #0073aa;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,115,170,0.4);
+}
+
+/* Grid Layout */
+.mpcrbm_car_list_grid {
+    display: grid;
+    /*grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));*/
+    gap: 25px;
+}
+
+/* Card Container */
+.mpcrbm_car_list_grid_item {
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transform: translateY(0);
+    transition: all 0.4s ease;
+    opacity: 0;
+    animation: fadeInUp 0.8s forwards;
+}
+.mpcrbm_car_list_grid_item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Image with Animation */
+.mpcrbm_car_list_grid_image {
+    position: relative;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.mpcrbm_car_list_content_holder{
+    padding: 5px 0;
+}
+.mpcrbm_car_list_content {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    color: #666666 !important;
+    max-height: calc(1.5em * 3);
+    word-break: break-word;
+}
+
+.mpcrbm_car_list_grid_image img {
+    width: 100%;
+    height: 180px !important;
+    object-fit: cover;
+    transition: transform 0.6s ease, filter 0.6s ease;
+    filter: brightness(0.9);
+}
+.mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_image img {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+/* Text Overlay Focus Effect */
+.mpcrbm_car_list_grid_image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 60%, rgba(0,0,0,0.6));
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_image::after {
+    opacity: 1;
+}
+
+/* Content Area */
+.mpcrbm_car_list_grid_content {
+    padding: 5px 20px 20px;
+}
+.mpcrbm_car_list_grid_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827 !important;
+    margin-bottom: 8px;
+    margin-top: 5px !important;
+    transition: color 0.3s ease;
+}
+.mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_title {
+    color: #0073aa;
+}
+
+/* Meta Info */
+.mpcrbm_car_list_grid_meta {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+.mpcrbm_car_list_grid_meta .mpcrbm_car_taxonomy {
+    color: #666666;
+
+}
+.mpcrbm_car_list_grid_meta .mpcrbm_car_taxonomy_data {
+    padding: 5px 5px;
+    border: 1px solid #f1e9e9;
+    border-radius: 5px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 2px
+}
+
+.mpcrbm_car_list_grid_meta li strong {
+    width: 95px;
+    color: #111827;
+    font-weight: 500;
+}
+
+/* List View */
+.mpcrbm_car_list_list_view {
+    display: flex;
+    width: calc( 100% - 250px );
+    flex-direction: column;
+    gap: 20px;
+}
+.mpcrbm_car_list_list_view .mpcrbm_car_list_grid_item {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 220px;
+}
+.mpcrbm_car_list_list_view .mpcrbm_car_list_grid_image {
+    flex: 0 0 300px;
+    height: 100%;
+}
+.mpcrbm_car_list_list_view .mpcrbm_car_list_grid_image img {
+    height: 100%;
+    object-fit: cover;
+}
+.mpcrbm_car_list_list_view .mpcrbm_car_list_grid_content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /*justify-content: center;*/
+}
+
+.mpcrbm_car_list_left_filter{
+    width: 250px;
+}
+
+.mpcrbm_car_list_price_display{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mpcrbm_car_list_list_view .mpcrbm_car_list_grid_item {
+        flex-direction: column;
+        height: auto;
+    }
+    .mpcrbm_car_list_list_view .mpcrbm_car_list_grid_image {
+        flex: unset;
+        height: 200px;
+    }
+}
+
+@media (max-width: 992px) {
+    .mpcrbm_car_list_grid_6,
+    .mpcrbm_car_list_grid_5 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .mpcrbm_car_list_grid_4,
+    .mpcrbm_car_list_grid_3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .mpcrbm_car_list_grid_6,
+    .mpcrbm_car_list_grid_5,
+    .mpcrbm_car_list_grid_4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .mpcrbm_car_list_grid_3,
+    .mpcrbm_car_list_grid_2 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .mpcrbm_car_list_grid_6,
+    .mpcrbm_car_list_grid_5,
+    .mpcrbm_car_list_grid_4,
+    .mpcrbm_car_list_grid_3,
+    .mpcrbm_car_list_grid_2,
+    .mpcrbm_car_list_grid_1 {
+        grid-template-columns: repeat(1, 1fr);
+    }
+
+    .mpcrbm_car_list_container{
+        flex-direction: column;
+    }
+
+    .mpcrbm_car_list_left_filter{
+        width: 100%;
+    }
+}

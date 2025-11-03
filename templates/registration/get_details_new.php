@@ -122,14 +122,29 @@ if( $is_title === 'no' ){
 
 $pickup_location = '';
 $return_location = '';
-$start_date = '';
+
+
+/*$start_date = '';
 $formatted_start_date = '';
 $start_time = '';
 $formatted_start_time = '';
 $end_date = '';
 $formatted_end_date = '';
 $end_time = '';
-$formatted_end_time = '';
+$formatted_end_time = '';*/
+
+
+$start_time = $end_time = 10.00;
+$start_date = date('Y-m-d');
+$formatted_start_date = date('D d M, Y', strtotime( $start_date ));
+$formatted_start_time = MPCRBM_Global_Function::format_custom_time( $start_time );
+$end_date = date('Y-m-d', strtotime('+1 day'));
+$formatted_end_date = date('D d M, Y', strtotime( $end_date ));
+$formatted_end_time = MPCRBM_Global_Function::format_custom_time( $end_time );
+
+
+
+
 if( is_array( $search_date ) && !empty( $search_date ) ){
     $pickup_location = isset( $search_date['start_place'] ) ? $search_date['start_place'] : '' ;
     $return_location =  isset( $search_date['end_place'] ) ? $search_date['end_place'] : '' ;
@@ -143,8 +158,11 @@ if( is_array( $search_date ) && !empty( $search_date ) ){
     $formatted_end_time = MPCRBM_Global_Function::format_custom_time( $end_time );
 }
 
+$single_page = isset( $params['single_page'] ) ? $params['single_page'] : '';
+if( $single_page === 'yes' ){
+    $pickup_location = $return_location = $params['pickup_location'];
+}
 
-$single_page = $params['single_page'];
 
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
