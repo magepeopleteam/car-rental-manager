@@ -126,9 +126,104 @@
 					}
 					//$this->craete_pages();
 					//$this->update_related_products($custom_post);
+					$faqs = $this->set_FAQ_data();
+					$Terms = $this->set_Terms_data();
+					update_option( 'mpcrbm_faq_list', $faqs );
+					update_option( 'mpcrbm_term_condition_list', $Terms );
 					flush_rewrite_rules();
 					update_option('mpcrbm_dummy_already_inserted', 'yes');
 				}
+			}
+
+			public function set_Terms_data() {
+				update_option( 'mpcrbm_term_condition_list', []);
+				return[
+						'term_1' => [
+							'title' => 'Age and License Requirements',
+							'description' => 'The renter must be at least 21 years old and possess a valid driving license recognized by local authorities.',
+						],
+						'term_2' => [
+							'title' => 'Security Deposit',
+							'description' => 'A refundable security deposit is required before the rental begins. The amount varies depending on the vehicle type.',
+						],
+						'term_3' => [
+							'title' => 'Fuel Policy',
+							'description' => 'Vehicles must be returned with the same fuel level as provided at pickup. Additional charges apply for missing fuel.',
+						],
+						'term_4' => [
+							'title' => 'Mileage Limit',
+							'description' => 'Some rental packages include limited mileage. Extra mileage will be charged as per company policy.',
+						],
+						'term_5' => [
+							'title' => 'Damage Responsibility',
+							'description' => 'The renter is responsible for any damage, loss, or theft of the vehicle during the rental period, except when covered by insurance.',
+						],
+						'term_6' => [
+							'title' => 'Insurance Coverage',
+							'description' => 'Basic insurance is included, but it may not cover all damages. Additional coverage can be purchased for full protection.',
+						],
+						'term_7' => [
+							'title' => 'Late Return',
+							'description' => 'Returning the car later than the agreed time will result in extra hourly or daily charges.',
+						],
+						'term_8' => [
+							'title' => 'Use Restrictions',
+							'description' => 'Vehicles must not be used for racing, towing, or off-road driving. Violating this may void the rental agreement.',
+						],
+						'term_9' => [
+							'title' => 'Cancellation Policy',
+							'description' => 'Cancellations made within 24 hours of the pickup time may incur a fee. Please review the cancellation policy for full details.',
+						],
+						'term_10' => [
+							'title' => 'Cleanliness and Smoking',
+							'description' => 'Smoking or carrying pets inside the car is strictly prohibited. Cleaning fees apply if the car is returned in poor condition.',
+						],
+					];
+			}
+			public function set_FAQ_data() {
+				update_option( 'mpcrbm_faq_list', []);
+				return [
+						'faq_1' => [
+							'title' => 'What documents are required to rent a car?',
+							'answer' => 'You’ll need a valid driving license, national ID/passport, and sometimes a credit/debit card for security deposit.',
+						],
+						'faq_2' => [
+							'title' => 'Can I rent a car without a driver?',
+							'answer' => 'Yes, self-drive options are available. However, the renter must have a valid driving license and meet the age requirement.',
+						],
+						'faq_3' => [
+							'title' => 'What happens if I return the car late?',
+							'answer' => 'Late returns may incur additional hourly or daily charges as per the rental policy.',
+						],
+						'faq_4' => [
+							'title' => 'Is fuel included in the rental price?',
+							'answer' => 'Usually, fuel is not included. You’ll receive the car with a certain fuel level and must return it with the same level.',
+						],
+						'faq_5' => [
+							'title' => 'Are there any mileage limits?',
+							'answer' => 'Some rentals have unlimited mileage, while others have a daily limit. Check your rental agreement for details.',
+						],
+						'faq_6' => [
+							'title' => 'What should I do in case of an accident or breakdown?',
+							'answer' => 'Contact our support team immediately. We’ll assist with roadside help and guide you through the process.',
+						],
+						'faq_7' => [
+							'title' => 'Can I modify or cancel my booking?',
+							'answer' => 'Yes, you can modify or cancel your booking depending on the cancellation policy and timing.',
+						],
+						'faq_8' => [
+							'title' => 'Do you provide airport pickup or drop-off services?',
+							'answer' => 'Yes, airport pickup and drop-off can be arranged at an additional cost.',
+						],
+						'faq_9' => [
+							'title' => 'Can I rent a car for long-term use?',
+							'answer' => 'Of course! We offer daily, weekly, and monthly rental plans.',
+						],
+						'faq_10' => [
+							'title' => 'Is there a security deposit required?',
+							'answer' => 'Yes, a refundable security deposit is usually required when renting a car.',
+						],
+					];
 			}
 
 			public function update_related_products($custom_post) {
