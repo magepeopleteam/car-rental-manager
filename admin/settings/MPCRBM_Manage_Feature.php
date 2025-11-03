@@ -41,7 +41,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
         public function feature_tab_content( $post_id ){ ?>
 
             <div class="tabsItem" data-tabs="#mpcrbm_setting_feature">
-                <h3><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?></h3>
+                <h2><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?></h2>
                 <p><?php esc_html_e( 'Car Feature settings.', 'car-rental-manager' ); ?></p>
 
                 <?php wp_nonce_field( 'manage_car_feature_settings', 'faq_settings_nonce' ); ?>

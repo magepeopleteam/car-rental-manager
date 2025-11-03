@@ -49,7 +49,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
 
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_setting_manage_faq">
-                <h3><?php esc_html_e( 'FAQ', 'car-rental-manager' ); ?></h3>
+                <h2><?php esc_html_e( 'FAQ', 'car-rental-manager' ); ?></h2>
                 <p><?php esc_html_e( 'Manage FAQ settings.', 'car-rental-manager' ); ?></p>
 
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>

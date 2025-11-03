@@ -33,7 +33,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_term_and_condition">
-                <h3><?php esc_html_e( 'Term Condition', 'car-rental-manager' ); ?></h3>
+                <h2><?php esc_html_e( 'Term Condition', 'car-rental-manager' ); ?></h2>
                 <p><?php esc_html_e( 'Manage Term Condition settings.', 'car-rental-manager' ); ?></p>
 
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>

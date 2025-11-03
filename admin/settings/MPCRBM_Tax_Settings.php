@@ -16,7 +16,7 @@
 			public function tab_content( $post_id ) {
 				?>
                 <div class="tabsItem" data-tabs="#wbtm_settings_tax">
-                    <h3><?php esc_html_e( 'Tax Configuration', 'car-rental-manager' ); ?></h3>
+                    <h2><?php esc_html_e( 'Tax Configuration', 'car-rental-manager' ); ?></h2>
                     <p><?php esc_html_e( 'Tax Configuration settings.', 'car-rental-manager' ); ?></p>
 					<?php
 						$tax_status    = MPCRBM_Global_Function::get_post_info( $post_id, '_tax_status' );
