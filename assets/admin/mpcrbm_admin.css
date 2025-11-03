@@ -88,6 +88,10 @@
   padding: 2% 5%;
   background-color: var(--mpcrbm-light);
 }
+input.small{
+  width: 100px;
+}
+
 
 #mpcrbm_meta_box_panel .tabsContent .tabsItem{
     border-radius: 8px;
@@ -535,7 +539,7 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
 }
 
 .mpcrbm_gallery-image {
-    width: 227px;
+    width: 215px;
     height: 150px;
     margin: 5px;
     position: relative;
@@ -561,6 +565,7 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
     height: 100% !important;
     object-fit: cover;
     border-radius: 0;
+    margin-top: 10px;
 }
 
 .mpcrbm_driver_details{

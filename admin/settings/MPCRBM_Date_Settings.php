@@ -71,7 +71,7 @@
 				$end_time = MPCRBM_Global_Function::get_post_info( $post_id, $end_name, $default_end_time );
 				?>
                 <tr>
-                    <th style="text-transform: capitalize;"><?php echo esc_html( $day ); ?></th>
+                    <th style="text-transform: capitalize; vertical-align: middle;"><strong><?php echo esc_html( $day ); ?></strong></th>
                     <td class="mpcrbm_start_time" data-day-name="<?php echo esc_attr( $day ); ?>">
                         <label>
                             <select class="formControl" name="<?php echo esc_attr( $start_name ); ?>">
@@ -82,7 +82,7 @@
                             </select>
                         </label>
                     </td>
-                    <td class="textCenter">
+                    <td class="textCenter" style="text-transform: capitalize; vertical-align: middle;">
                         <strong><?php esc_html_e( 'To', 'car-rental-manager' ); ?></strong>
                     </td>
                     <td class="mpcrbm_end_time">
