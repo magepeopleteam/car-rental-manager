@@ -317,8 +317,68 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             remove_submenu_page( 'edit.php?post_type=mpcrbm_rent', 'post-new.php?post_type=mpcrbm_rent' );
         }
 
+        public static function count_this_month_cars( $car_result_data ){
+            $currentMonth = date('m'); // e.g., 11
+            $currentYear  = date('Y'); // e.g., 2025
+            $carsThisMonth = 0;
+
+            foreach ( $car_result_data as $car ) {
+                $carMonth = date('m', strtotime($car['post_date']));
+                $carYear  = date('Y', strtotime($car['post_date']));
+
+                if ($carMonth == $currentMonth && $carYear == $currentYear) {
+                    $carsThisMonth++;
+                }
+            }
+
+            return $carsThisMonth;
+        }
+
+        public static function mpcrbm_get_current_rented_cars_count() {
+            $today = current_time('Y-m-d H:i');
+
+            $args = [
+                'post_type'      => 'mpcrbm_booking',
+                'post_status'    => 'publish',
+                'posts_per_page' => -1,
+                'meta_query'     => [
+                    'relation' => 'AND',
+                    [
+                        'key'     => 'mpcrbm_date',
+                        'value'   => $today,
+                        'compare' => '<=',
+                        'type'    => 'DATETIME',
+                    ],
+                    [
+                        'key'     => 'return_date_time',
+                        'value'   => $today,
+                        'compare' => '>=',
+                        'type'    => 'DATETIME',
+                    ],
+                ],
+            ];
+
+            $query = new WP_Query($args);
+
+            // Return the number of bookings active today
+            $count = $query->found_posts;
+
+            wp_reset_postdata();
+
+            return $count;
+        }
+
         // Callback to render page content
         public function mpcrbm_taxonomies_setup() {
+
+            $car_result_data = MPCRBM_Global_Function::mpcrbm_get_car_data();
+            $total_publish_car = count( $car_result_data['cars'] );
+
+            $this_month_car = self::count_this_month_cars( $car_result_data['cars'] );
+            $current_order_count = self::mpcrbm_get_current_rented_cars_count();
+
+//            error_log( print_r( [ '$current_order_count' => $current_order_count ], true ) );
+
             ?>
             <div class="mpcrbm_taxonomies_wrap">
                 <div class="mpcrbm_left_sidebar">
@@ -348,10 +408,10 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 <i class="mi mi-cars"></i>
                                 <div>
                                     <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Total Cars', 'car-rental-manager' );?></div>
-                                    <div class="mpcrbm_stat-value">56</div>
+                                    <div class="mpcrbm_stat-value"><?php echo esc_attr( $total_publish_car );?></div>
                                 </div>
                             </div>
-                            <div class="mpcrbm_stat-change positive">↑ 2 <?php esc_attr_e( 'new this month', 'car-rental-manager' );?></div>
+                            <div class="mpcrbm_stat-change positive">↑ <?php echo esc_attr( $this_month_car );?> <?php esc_attr_e( 'new this month', 'car-rental-manager' );?></div>
                         </div>
 
                         <div class="mpcrbm_stat-card available">

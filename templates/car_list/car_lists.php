@@ -1,6 +1,6 @@
 <?php
 
-$car_result_data = MPCRBM_Global_Function::mpcrbm_get_car_data();
+
 $display_limit = 10;
 
 $car_data = isset( $car_result_data['cars'] ) && !empty( $car_result_data['cars'] )

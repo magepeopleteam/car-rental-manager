@@ -700,6 +700,7 @@
                     while ($query->have_posts()) {
                         $query->the_post();
                         $post_id = get_the_ID();
+                        $post_date = get_the_date('Y-m-d');
 
                         $mpcrbm_car_type         = get_post_meta($post_id, 'mpcrbm_car_type', true);
                         $mpcrbm_fuel_type        = get_post_meta($post_id, 'mpcrbm_fuel_type', true);
@@ -729,6 +730,7 @@
                             'year'      => $mpcrbm_make_year,
                             'price'     => get_post_meta($post_id, 'mpcrbm_day_price', true),
                             'status'    => get_post_status($post_id),
+                            'post_date'    => $post_date,
                         );
                     }
 
