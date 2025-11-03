@@ -165,7 +165,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                                 'textarea_name' => 'mpcrbm_faq_answer',
                                 'textarea_rows' => 8,
                                 'media_buttons' => true,
-                                'editor_height' => 400,
+                                'editor_height' => 250,
                                 'tinymce' => [
                                     'toolbar1' => 'bold italic underline | bullist numlist | link unlink | undo redo | formatselect',
                                 ],

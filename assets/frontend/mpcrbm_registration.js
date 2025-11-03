@@ -1039,6 +1039,7 @@ jQuery(document).ready(function($) {
                 data: {
                     action: "mpcrbm_add_to_cart",
                     link_id: link_id,
+                    post_id: post_id,
                     mpcrbm_start_place: start_place,
                     mpcrbm_end_place: end_place,
                     mpcrbm_waiting_time: mpcrbm_waiting_time,

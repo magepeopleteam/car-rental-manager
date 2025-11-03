@@ -744,21 +744,23 @@
 
             public static function mpcrbm_find_bookings_by_date( $given_date, $post_id = null ) {
 
-                $post_id = 59;
                 $args = [
                     'post_type'      => 'mpcrbm_booking',
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
-                    'mpcrbm_id'      => $post_id,
+                    'meta_query'     => [
+                        [
+                            'key'     => 'mpcrbm_id',
+                            'value'   => $post_id,
+                            'compare' => '=',
+                        ],
+                    ],
                 ];
-
-
                 $bookings = get_posts( $args );
 
                 if ( empty( $bookings ) ) {
                     return false;
                 }
-
 
                 $given_ts = strtotime( $given_date );
                 if ( ! $given_ts ) return false;
@@ -795,11 +797,11 @@
 				}
 
 				$link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
+				$post_id           = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
-                $already_booked = self::mpcrbm_find_bookings_by_date( $_POST['mpcrbm_date'], $link_id );
+                $already_booked = self::mpcrbm_find_bookings_by_date( $_POST['mpcrbm_date'], $post_id );
 
                 if( $already_booked === 'booked' ){
-
                     return 0;
                 }else {
                     $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
