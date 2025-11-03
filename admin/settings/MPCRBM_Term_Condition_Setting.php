@@ -42,7 +42,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                     <span><?php esc_html_e( 'Configure and manage term condition', 'car-rental-manager' ); ?></span>
                 </section>
 
-                <div class="mpcrbm_faq_question_holder">
+                <section class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_faq_all_question_box">
                         <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_faq_all_question">
@@ -84,7 +84,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                     </div>
 
                     <input type="hidden" id="mpcrbm_added_term_condition_input" name="mpcrbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_faqs_data)); ?>">
-                </div>
+                </section>
 
 
             </div>

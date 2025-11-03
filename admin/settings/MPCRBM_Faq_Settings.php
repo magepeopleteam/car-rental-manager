@@ -58,7 +58,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                     <span><?php esc_html_e( 'Configure and manage faq', 'car-rental-manager' ); ?></span>
                 </section>
 
-                <div class="mpcrbm_faq_question_holder">
+                <section class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_faq_all_question_box">
                         <h3><?php esc_html_e( 'Available FAQs', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_faq_all_question">
@@ -100,7 +100,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                     </div>
 
                     <input type="hidden" id="mpcrbm_added_faq_input" name="mpcrbm_added_faq" value="<?php echo esc_attr(json_encode($selected_faqs_data)); ?>">
-                </div>
+                </section>
 
 
             </div>

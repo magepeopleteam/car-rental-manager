@@ -92,6 +92,11 @@ input.small{
   width: 100px;
 }
 
+div.mpcrbm_faq_all_question_box h3,div.mpcrbm_selected_faq_question_box  h3{
+  margin: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
 
 #mpcrbm_meta_box_panel .tabsContent .tabsItem{
     border-radius: 8px;
