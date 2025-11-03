@@ -377,6 +377,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             $this_month_car = self::count_this_month_cars( $car_result_data['cars'] );
             $current_order_count = self::mpcrbm_get_current_rented_cars_count();
 
+            $available = $total_publish_car - $current_order_count;
+
 //            error_log( print_r( [ '$current_order_count' => $current_order_count ], true ) );
 
             ?>
@@ -419,10 +421,10 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 <i class="mi mi-car"></i>
                                 <div>
                                     <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Available', 'car-rental-manager' );?></div>
-                                    <div class="mpcrbm_stat-value">7</div>
+                                    <div class="mpcrbm_stat-value"><?php echo esc_attr( $available );?></div>
                                 </div>
                             </div>
-                            <div class="mpcrbm_stat-change positive">100% <?php esc_attr_e( 'availability', 'car-rental-manager' );?></div>
+                            <div class="mpcrbm_stat-change positive" style="display: none">100% <?php esc_attr_e( 'availability', 'car-rental-manager' );?></div>
                         </div>
 
                         <div class="mpcrbm_stat-card rented">
@@ -430,7 +432,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 <i class="mi mi-car-journey"></i>
                                 <div>
                                     <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Currently Rented', 'car-rental-manager' );?></div>
-                                    <div class="mpcrbm_stat-value">0</div>
+                                    <div class="mpcrbm_stat-value"><?php echo esc_attr( $current_order_count );?></div>
                                 </div>
                             </div>
                             <div class="mpcrbm_stat-change positive"><?php esc_attr_e( 'Ready to rent', 'car-rental-manager' );?></div>
