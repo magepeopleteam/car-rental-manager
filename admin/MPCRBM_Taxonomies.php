@@ -360,12 +360,24 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             $query = new WP_Query($args);
 
-            // Return the number of bookings active today
             $count = $query->found_posts;
+            $total_price = 0;
+
+            if ( $query->have_posts() ) {
+                while ( $query->have_posts() ) {
+                    $query->the_post();
+                    $price = get_post_meta( get_the_ID(), 'mpcrbm_tp', true );
+                    $total_price += floatval( $price );
+                }
+            }
 
             wp_reset_postdata();
 
-            return $count;
+            // Return both count and total
+            return [
+                'count'        => $count,
+                'total_price'  => $total_price,
+            ];
         }
 
         // Callback to render page content
@@ -377,7 +389,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             $this_month_car = self::count_this_month_cars( $car_result_data['cars'] );
             $current_order_count = self::mpcrbm_get_current_rented_cars_count();
 
-            $available = $total_publish_car - $current_order_count;
+            $available = $total_publish_car - $current_order_count['count'];
+            $total_revenue = $current_order_count['total_price'];
 
 //            error_log( print_r( [ '$current_order_count' => $current_order_count ], true ) );
 
@@ -432,7 +445,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 <i class="mi mi-car-journey"></i>
                                 <div>
                                     <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Currently Rented', 'car-rental-manager' );?></div>
-                                    <div class="mpcrbm_stat-value"><?php echo esc_attr( $current_order_count );?></div>
+                                    <div class="mpcrbm_stat-value"><?php echo esc_attr( $current_order_count['count'] );?></div>
                                 </div>
                             </div>
                             <div class="mpcrbm_stat-change positive"><?php esc_attr_e( 'Ready to rent', 'car-rental-manager' );?></div>
@@ -443,10 +456,10 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 <i class="mi mi-coins"></i>
                                 <div>
                                     <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Daily Revenue', 'car-rental-manager' );?></div>
-                                    <div class="mpcrbm_stat-value">$70</div>
+                                    <div class="mpcrbm_stat-value"><?php echo wp_kses_post( wc_price( $total_revenue ) );?></div>
                                 </div>
                             </div>
-                            <div class="mpcrbm_stat-change positive">↑ $10/day <?php esc_attr_e( 'avg', 'car-rental-manager' );?></div>
+                            <div class="mpcrbm_stat-change positive" style="display: none">↑ $10/day <?php esc_attr_e( 'avg', 'car-rental-manager' );?></div>
                         </div>
                     </div>
 
