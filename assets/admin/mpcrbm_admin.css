@@ -30,52 +30,101 @@
 #mpcrbm_meta_box_panel .mpcrbm_settings {
   background-color: var(--mpcrbm-white);
 }
+
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists {
   width: 20%;
-  padding: 25px;
-  background-color: var(--mpcrbm-light);
-  padding-right: 0;
+  padding:10px;
+  background-color:#fff;
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li {
-  border-left: 0;
-  border-right: 0;
-  padding: 15px;
+  padding:10px;
   color: var(--mpcrbm-secondary);
-  border-left: 2px solid transparent;
+  margin: 5px 0;
+  background-color: #f8f8f8;
+  border-left: 0;
+}
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li::after{
+  border-bottom: 0;
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li span {
   margin-right:10px;
   color: var(--mpcrbm-primary);
 }
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -1px;
-  border-bottom: 1px solid #d8d8d8;
-  width: 91%;
-}
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active, #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li:hover {
-  background-color: var(--mpcrbm-white);
-  color: #333;
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active:hover{
+  background-color: var(--mpcrbm-primary);
+  color: #fff;
   font-weight: normal;
-  border-left: 2px solid var(--mpcrbm-primary);
+  border-left: 0
 }
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active::after, #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li:hover::after {
-  width: 100%;
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 8px solid var(--mpcrbm-primary);
+  }
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active span{
+  color: #fff;
 }
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li:hover {
+  background-color: #EAF6FF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 119, 204, 0.15);
+  border-left: 0;
+}
+
+
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent {
   width: 80%;
   padding: 2% 5%;
+  background-color: var(--mpcrbm-light);
 }
+input.small{
+  width: 100px;
+}
+
+div.mpcrbm_faq_all_question_box h3,div.mpcrbm_selected_faq_question_box  h3{
+  margin: 0;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.mpcrbm_include_feature label,.mpcrbm_exclude_feature label{
+  margin-bottom:10px;
+  display: flex;
+  align-items: center;
+  gap:10px;
+  background-color: #f8f9fa;
+  padding: 10px ;
+  border-radius: 5px;
+}
+
+#mpcrbm_meta_box_panel .tabsContent .tabsItem{
+    border-radius: 8px;
+    background-color: #FFF;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1019607843);
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem > h2 {
   padding: 0;
   color: var(--mpcrbm-secondary);
-  margin: 30px 0 20px 0;
-  margin-bottom: 20px;
+  margin: 0 0 20px 0;
   font-size: 22px;
   line-height: 26px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-weight: 700;
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem > p {
@@ -84,7 +133,7 @@
   font-size: 16px;
   font-weight: 300;
   line-height: 24px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section {
   border: 1px solid #d8d8d8;
@@ -505,8 +554,8 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
 }
 
 .mpcrbm_gallery-image {
-    width: 16.38em;
-    height: 120px;
+    width: 215px;
+    height: 150px;
     margin: 5px;
     position: relative;
 }
@@ -531,6 +580,10 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
     height: 100% !important;
     object-fit: cover;
     border-radius: 0;
+}
+
+.mpcrbm_gallery-images-lists{
+  margin: 20px;
 }
 
 .mpcrbm_driver_details{

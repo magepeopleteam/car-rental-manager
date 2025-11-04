@@ -150,20 +150,18 @@
                                 <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                             </label>
                         </section>
-                        <section>
-                            <label class="label">
-                                <div class="mpcrbm_driver_details">
-                                    <div class="mpcrbm_driver_detail_title">
-                                        <h6><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h6>
-                                        <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); ?></span>
-                                    </div>
-                                    <div class="mpcrbm_driver_info">
-                                        <?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
-                                    </div>
-                                </div>
 
-                            </label>
+                        <section class="bg-light" style="margin-top: 20px;">
+							<label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); ?></span>
+                                </div>
+							</label>	
                         </section>
+						<div class="mpcrbm_driver_info">
+							<?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
+						</div>
                     </div>
                 </div>
 				<?php

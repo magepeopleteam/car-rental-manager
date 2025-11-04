@@ -152,28 +152,44 @@
                 ] );
                 wp_nonce_field( 'mpcrbm_driver_info_save', 'mpcrbm_driver_info_nonce' );
                 ?>
-                <div class="mpcrbm_driver_info_wrap">
-                    <p>
-                        <label for="mpcrbm_driver_info_name"><?php esc_html_e( 'Name:', 'car-rental-manager' );?></label><br>
-                        <input type="text" id="mpcrbm_driver_info_name" name="mpcrbm_driver_info[name]" value="<?php echo esc_attr( $driver_info['name'] ); ?>" />
-                    </p>
-                    <p>
-                        <label for="mpcrbm_driver_info_phone"><?php esc_html_e( 'Phone:', 'car-rental-manager' );?></label><br>
-                        <input type="text" id="mpcrbm_driver_info_phone" name="mpcrbm_driver_info[phone]" value="<?php echo esc_attr( $driver_info['phone'] ); ?>" />
-                    </p>
-                    <p>
-                        <label for="mpcrbm_driver_info_email"><?php esc_html_e( 'Email:', 'car-rental-manager' );?></label><br>
-                        <input type="email" id="mpcrbm_driver_info_email" name="mpcrbm_driver_info[email]" value="<?php echo esc_attr( $driver_info['email'] ); ?>" />
-                    </p>
-                    <p>
-                        <label for="mpcrbm_driver_info_age"><?php esc_html_e( 'Age:', 'car-rental-manager' );?></label><br>
-                        <input type="number" id="mpcrbm_driver_info_age" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" min="18" max="100" />
-                    </p>
-                </div>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Name:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver name','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_name" class="formControl" placeholder="Jon Don" name="mpcrbm_driver_info[name]" value="<?php echo esc_attr( $driver_info['name'] ); ?>" />
+					</label>
+				</section>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Phone:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver phone','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_phone" class="formControl" placeholder="+xxxxxxxxx" name="mpcrbm_driver_info[phone]" value="<?php echo esc_attr( $driver_info['phone'] ); ?>" />
+					</label>
+				</section>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Email:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver email','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_email" class="formControl" placeholder="email@domain.com" name="mpcrbm_driver_info[email]" value="<?php echo esc_attr( $driver_info['email'] ); ?>" />
+					</label>
+				</section>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Age:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver Age','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_age" class="formControl" placeholder="33" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" />
+					</label>
+				</section>
                 <?php
             }
-
 		}
-
 		new MPCRBM_Settings();
 	}

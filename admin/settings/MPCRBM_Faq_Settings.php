@@ -49,7 +49,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
 
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_setting_manage_faq">
-                <h3><?php esc_html_e( 'FAQ', 'car-rental-manager' ); ?></h3>
+                <h2><?php esc_html_e( 'FAQ', 'car-rental-manager' ); ?></h2>
                 <p><?php esc_html_e( 'Manage FAQ settings.', 'car-rental-manager' ); ?></p>
 
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>
@@ -58,7 +58,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                     <span><?php esc_html_e( 'Configure and manage faq', 'car-rental-manager' ); ?></span>
                 </section>
 
-                <div class="mpcrbm_faq_question_holder">
+                <section class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_faq_all_question_box">
                         <h3><?php esc_html_e( 'Available FAQs', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_faq_all_question">
@@ -100,7 +100,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                     </div>
 
                     <input type="hidden" id="mpcrbm_added_faq_input" name="mpcrbm_added_faq" value="<?php echo esc_attr(json_encode($selected_faqs_data)); ?>">
-                </div>
+                </section>
 
 
             </div>
