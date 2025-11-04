@@ -183,7 +183,7 @@
 					'has_archive'         => false,  // it shouldn't have archive page
 					'rewrite'             => [ 'slug' => $slug ],
 				];
-				register_post_type( $cpt, $args );
+				// register_post_type( $cpt, $args );
 				
 				$ex_args = array(
 					'public'              => false,
@@ -246,3 +246,6 @@
 		}
 		new MPCRBM_CPT();
 	}
+
+
+	
