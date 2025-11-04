@@ -15,6 +15,7 @@
 				$dummy_post_inserted = get_option('mpcrbm_dummy_already_inserted', 'no');
 				$count_existing_event = wp_count_posts('mpcrbm_rent')->publish;
 				$plugin_active = MPCRBM_Global_Function::check_plugin( 'car-rental-manager', 'car-rental-manager.php' );
+				$ex_id = 0;
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 					$dummy_taxonomies = $this->dummy_taxonomy();
 					if (array_key_exists('taxonomy', $dummy_taxonomies)) {
@@ -37,8 +38,10 @@
 						}
 					}
 					$dummy_cpt = $this->dummy_cpt();
+					
 					if (array_key_exists('custom_post', $dummy_cpt)) {
 						$dummy_images = self::dummy_images();
+						
 						foreach ($dummy_cpt['custom_post'] as $custom_post => $dummy_post) {
 							unset($args);
 							$args = array(
@@ -47,6 +50,7 @@
 							);
 							unset($post);
 							$post = new WP_Query($args);
+							
 							if ($post->post_count == 0) {
 								foreach ($dummy_post as $dummy_data) {
 									$args = array();
@@ -57,7 +61,11 @@
 									$args['post_status'] = 'publish';
 									$args['post_type'] = $custom_post;
 									$post_id = wp_insert_post($args);
-									$ex_id = 0;
+
+									if($custom_post=='mpcrbm_ex_services'){
+										$ex_id = $post_id;
+									}
+									
 									if (array_key_exists('taxonomy_terms', $dummy_data) && count($dummy_data['taxonomy_terms'])) {
 										foreach ($dummy_data['taxonomy_terms'] as $taxonomy_term) {
 											wp_set_object_terms($post_id, $taxonomy_term['terms'], $taxonomy_term['taxonomy_name'], true);
@@ -96,12 +104,6 @@
 												}
 											}
 
-											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
-												update_post_meta( $post_id, $meta_key, $ex_id );
-											} else {
-												update_post_meta( $post_id, $meta_key, $data );
-											}
-
 											if ($meta_key == 'mpcrbm_gallery_images') {
 												if (is_array($data)) {
 													$thumnail_ids = array();
@@ -117,6 +119,10 @@
 												}
 											} else {
 												update_post_meta($post_id, $meta_key, $data);
+											}
+
+											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
+												update_post_meta( $post_id, $meta_key, $ex_id );
 											}
 										}
 									}									
@@ -236,11 +242,11 @@
 			
 			public static function dummy_images() {
 				$urls = array(
-					'https://img.freepik.com/free-photo/blue-villa-beautiful-sea-hotel_1203-5316.jpg',
-					'https://img.freepik.com/free-photo/beautiful-mountains-ratchaprapha-dam-khao-sok-national-park-surat-thani-province-thailand_335224-851.jpg',
-					'https://img.freepik.com/free-photo/photographer-taking-picture-ocean-coast_657883-287.jpg',
-					'https://img.freepik.com/free-photo/pileh-blue-lagoon-phi-phi-island-thailand_231208-1487.jpg',
-					'https://img.freepik.com/free-photo/godafoss-waterfall-sunset-winter-iceland-guy-red-jacket-looks-godafoss-waterfall_335224-673.jpg',
+					'https://img.freepik.com/free-photo/vintage-sedan-car-driving-sunlight-road_114579-5066.jpg',
+					'https://img.freepik.com/premium-photo/dirty-bmw-with-hood-up-hood-up-is-dirty_1194579-15023.jpg',
+					'https://img.freepik.com/premium-photo/predatory-car-headlight-with-blue-lights-hood-powerful-grey-blue-car-sports-car-with-matte-grey-paint-wheel-with-blue-disc_308547-3156.jpg',
+					'https://img.freepik.com/premium-photo/photo-pickup-off-road-landscape_7023-176355.jpg',
+					'https://img.freepik.com/premium-photo/rainbow-colored-bmw-car-with-lights_1194579-14229.jpg',
 				);
 				unset($image_ids);
 				$image_ids = array();
@@ -333,45 +339,45 @@
 			public function dummy_cpt(): array {
 				return [
 					'custom_post' => [
-						'mpcrbm_extra_services' => [
+						'mpcrbm_ex_services' => [
 							[
 								'name'      => 'Pre-defined Extra Services',
 								'post_data' => array(
 									'mpcrbm_extra_service_infos' => array(
 										0 => array(
-											'service_icon'              => 'fas fa-baby',
+											'service_icon'              => 'mi mi-child-head',
 											'service_name'              => 'Child Seat',
 											'service_price'             => '50',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Safe and comfortable seating for your little ones.",
 										),
 										1 => array(
-											'service_icon'              => 'fas fa-seedling',
+											'service_icon'              => 'mi mi-flower-bouquet',
 											'service_name'              => 'Bouquet of Flowers',
 											'service_price'             => '150',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "A fresh floral surprise for special moments.",
 										),
 										2 => array(
-											'service_icon'              => 'fas fa-wine-glass-alt',
+											'service_icon'              => 'mi mi-drink-alt',
 											'service_name'              => 'Welcome Drink',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Refresh yourself with a cool welcome beverage.",
 										),
 										3 => array(
-											'service_icon'              => 'fas fa-user-alt',
+											'service_icon'              => 'mi mi-user',
 											'service_name'              => 'Airport Assistance and Hostess Service',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Smooth airport pickup with personal assistance.",
 										),
 										4 => array(
-											'service_icon'              => 'fas fa-skating',
+											'service_icon'              => 'mi mi-hiking',
 											'service_name'              => 'Bodyguard Service',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Professional protection for your peace of mind.",
 										),
 									)
 								)
@@ -426,7 +432,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array( 0, 3, 2, 4, 1),
 
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
@@ -537,7 +543,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(4, 2, 0, 3, 1),
+									'mpcrbm_gallery_images' => array( 1, 4, 2, 0, 3),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -647,7 +653,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(1, 2, 0, 3, 4),
+									'mpcrbm_gallery_images' => array( 2, 1, 0, 3, 4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -757,7 +763,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0,3,1,4),
+									'mpcrbm_gallery_images' => array(3, 2, 0,1,4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -867,7 +873,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2,3, 4,1,0),
+									'mpcrbm_gallery_images' => array(4,2,3,1,0),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -977,7 +983,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(4,1,2,0,3),
+									'mpcrbm_gallery_images' => array(0,4,1,2,3),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -1087,7 +1093,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 1, 0, 3, 4),
+									'mpcrbm_gallery_images' => array( 1,2,0, 3, 4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,

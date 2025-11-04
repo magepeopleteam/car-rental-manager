@@ -76,10 +76,10 @@
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label {font-weight: 400;color: #152C5B;}
 	div.mpcrbm_transport_search_area .mpcrbm_search_area label .formControl {
 		height: 37px;
-		color: #222222;
+		color: #5b6b7a;
 		font-weight: 400;
 		font-size: 16px;
-
+		padding: 8px 17px;
 		border-color: #EBECEE;
 		background-image: url('../../mp_global/assets/images/arrow_down.svg');
 		background-repeat: no-repeat; 
@@ -148,17 +148,17 @@
 	}
 	 .mpcrbm-image-box{
 		width:35%;
-		height:166px;
+		min-height:200px;
+		height:200px;
 	}
 	 .mpcrbm-image-box .bg_image_area{
 		width: 100%;
-		
 		border-radius: 18px;
 	 }
 
 	div.mpcrbm_transport_search_area div.mpcrbm_list_details {
 		width: 65%;
-		padding:10px;
+		padding:10px 20px;
 	}
 	div.mpcrbm_list_details h2{
 		font-size: 20px;
@@ -286,6 +286,7 @@
  .mpcrbm_summary_title i{
 	color: var(--color_theme);
  }
+
  .mpcrbm_booking_vehicle {
 	 background: white;
 	 border: 1px solid #e5e7eb;
@@ -301,6 +302,7 @@
  .mpcrbm .mpcrbm-image-box img:not(.wp_editor img){
 	height: 100%;
 	display: block;
+	object-fit: cover;
  }
  .mpcrbm_group {
 	 margin: 20px 0 10px 0;
@@ -335,10 +337,11 @@ h2#mpcrbm_title_change{color:white;}
 	align-items: start;
 	gap:5px;
 	width: 48%;
+	margin: 5px 0;
 }
 .mpcrbm_car_spec i{
 	font-size:18px;
-	color: #394454;
+	color: #64748b;
 }
 
 .mpcrbm_car_spec .spec-label{
@@ -346,8 +349,8 @@ h2#mpcrbm_title_change{color:white;}
 	color: #64748b;
 }
 .mpcrbm_car_spec .spec-value{
-	font-size: 12px;
-	font-weight: bold;
+	font-size: 14px;
+	font-weight: 400;
 }
 
 .mpcrbm_price-breakdown {
