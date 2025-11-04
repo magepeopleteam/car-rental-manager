@@ -355,7 +355,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             <div class="divider"></div>
                             <div class="driver-data">
                                 <div class="driver-picuture">
-                                    <img src="" alt="">
+                                    <img src="https://img.freepik.com/premium-vector/driver-orange-uniform-worker-with-steering-wheel_176411-3181.jpg" alt="">
                                     <span class="verified">✔ <?php esc_attr_e( 'Verified', 'car-rental-manager' );?></span>
                                 </div>
                                 <div class="driver-info">
@@ -384,9 +384,36 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         </div>
 
                         <!-- RENTER INFO -->
-                        <div class="mpcrbm_car_details_renter_box">
-                            <h3><?php esc_attr_e( 'Renters Information', 'car-rental-manager' );?></h3>
-                            <p><strong><?php esc_attr_e( 'Shelley Mcconnell', 'car-rental-manager' );?></strong></p>
+                        <div class="mpcrbm_car_details_driver_box">
+                            <h3><?php esc_attr_e( 'Renter details', 'car-rental-manager' );?></h3>
+                            <div class="divider"></div>
+                            <div class="driver-data">
+                                <div class="driver-picuture">
+                                    <img src="https://img.freepik.com/premium-vector/business-profile-vector-illustration-style_717774-3108.jpg" alt="">
+                                </div>
+                                <div class="driver-info">
+                                    <div>
+                                        <?php _e( 'Name:','car-rental-manager' ); ?>
+                                        <?php echo isset( $driver_info['name'] ) ? esc_attr( $driver_info['name'] ) : ''; ?>
+                                    </div>
+                                    <?php if( isset( $driver_info['age'] ) ){?>
+                                    <div>
+                                        <?php _e( 'Age:', 'car-rental-manager' ); echo $driver_info['age']; ?>
+                                    </div>
+                                    <?php }?>
+                                    <?php if( isset( $driver_info['phone'] ) ){?>
+                                    <div>
+                                        <?php _e( 'Phone: ', 'car-rental-manager' ); echo $driver_info['phone'];?>
+                                        
+                                    </div>
+                                    <?php }?>
+                                    <?php if( isset( $driver_info['email'] ) ){?>
+                                    <div>
+                                        <?php  _e( 'Email:', 'car-rental-manager' ); echo $driver_info['email']; ?>
+                                    </div>
+                                    <?php }?>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
