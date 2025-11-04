@@ -583,7 +583,9 @@ div.global_settings .mpcrbm_panel .panel_body .mpcrbm_tabs .tabLists {
 }
 
 .mpcrbm_gallery-images-lists{
-  margin: 20px;
+  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .mpcrbm_driver_details{
