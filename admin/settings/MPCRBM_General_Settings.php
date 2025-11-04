@@ -20,40 +20,23 @@
 
 			public function general_settings( $post_id ) {
 				wp_nonce_field( 'mpcrbm_save_general_settings', 'mpcrbm_nonce' );
+				// Get all taxonomy terms
+				$car_types = get_terms(['taxonomy' => 'mpcrbm_car_type', 'hide_empty' => false]);
+				$fuel_types = get_terms(['taxonomy' => 'mpcrbm_fuel_type', 'hide_empty' => false]);
+				$seating_capacities = get_terms(['taxonomy' => 'mpcrbm_seating_capacity', 'hide_empty' => false]);
+				$car_brands = get_terms(['taxonomy' => 'mpcrbm_car_brand', 'hide_empty' => false]);
+				$make_years = get_terms(['taxonomy' => 'mpcrbm_make_year', 'hide_empty' => false]);
+
+				// Get selected taxonomy terms for this post
+				$selected_car_type  = wp_get_post_terms($post_id, 'mpcrbm_car_type', ['fields' => 'ids']);
+				$selected_fuel_type = wp_get_post_terms($post_id, 'mpcrbm_fuel_type', ['fields' => 'ids']);
+				$selected_seating   = wp_get_post_terms($post_id, 'mpcrbm_seating_capacity', ['fields' => 'ids']);
+				$selected_brand     = wp_get_post_terms($post_id, 'mpcrbm_car_brand', ['fields' => 'ids']);
+				$selected_year      = wp_get_post_terms($post_id, 'mpcrbm_make_year', ['fields' => 'ids']);
+				
 				$max_passenger    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_passenger' );
 				$max_bag          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_bag' );
-				$display_features = MPCRBM_Global_Function::get_post_info( $post_id, 'display_mpcrbm_features', 'on' );
-				$active           = $display_features == 'off' ? '' : 'mActive';
-				$checked          = $display_features == 'off' ? '' : 'checked';
-				$all_features     = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_features' );
-				if ( ! $all_features ) {
-					$all_features = array(
-						array(
-							'label' => esc_html__( 'Name', 'car-rental-manager' ),
-							'icon'  => 'fas fa-car-side',
-							'image' => '',
-							'text'  => ''
-						),
-						array(
-							'label' => esc_html__( 'Model', 'car-rental-manager' ),
-							'icon'  => 'fas fa-car',
-							'image' => '',
-							'text'  => ''
-						),
-						array(
-							'label' => esc_html__( 'Engine', 'car-rental-manager' ),
-							'icon'  => 'fas fa-cogs',
-							'image' => '',
-							'text'  => ''
-						),
-						array(
-							'label' => esc_html__( 'Fuel Type', 'car-rental-manager' ),
-							'icon'  => 'fas fa-gas-pump',
-							'image' => '',
-							'text'  => ''
-						)
-					);
-				}
+
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_general_info">
                     <h2><?php esc_html_e( 'General Information Settings', 'car-rental-manager' ); ?></h2>
@@ -63,23 +46,6 @@
                             <h6><?php esc_html_e( 'Feature Configuration', 'car-rental-manager' ); ?></h6>
                             <span><?php esc_html_e( 'Here you can On/Off feature list and create new feature.', 'car-rental-manager' ); ?></span>
                         </section>
-                        
-						<?php
-							// Get all taxonomy terms
-							$car_types = get_terms(['taxonomy' => 'mpcrbm_car_type', 'hide_empty' => false]);
-							$fuel_types = get_terms(['taxonomy' => 'mpcrbm_fuel_type', 'hide_empty' => false]);
-							$seating_capacities = get_terms(['taxonomy' => 'mpcrbm_seating_capacity', 'hide_empty' => false]);
-							$car_brands = get_terms(['taxonomy' => 'mpcrbm_car_brand', 'hide_empty' => false]);
-							$make_years = get_terms(['taxonomy' => 'mpcrbm_make_year', 'hide_empty' => false]);
-
-							// Get selected taxonomy terms for this post
-							$selected_car_type  = wp_get_post_terms($post_id, 'mpcrbm_car_type', ['fields' => 'ids']);
-							$selected_fuel_type = wp_get_post_terms($post_id, 'mpcrbm_fuel_type', ['fields' => 'ids']);
-							$selected_seating   = wp_get_post_terms($post_id, 'mpcrbm_seating_capacity', ['fields' => 'ids']);
-							$selected_brand     = wp_get_post_terms($post_id, 'mpcrbm_car_brand', ['fields' => 'ids']);
-							$selected_year      = wp_get_post_terms($post_id, 'mpcrbm_make_year', ['fields' => 'ids']);
-
-						?>
 						<!-- Car Type -->
 						<section>
 							<label class="label">
@@ -184,20 +150,18 @@
                                 <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                             </label>
                         </section>
-                        <section>
-                            <label class="label">
-                                <div class="mpcrbm_driver_details">
-                                    <div class="mpcrbm_driver_detail_title">
-                                        <h6><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h6>
-                                        <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); ?></span>
-                                    </div>
-                                    <div class="mpcrbm_driver_info">
-                                        <?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
-                                    </div>
-                                </div>
 
-                            </label>
+                        <section class="bg-light" style="margin-top: 20px;">
+							<label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); ?></span>
+                                </div>
+							</label>	
                         </section>
+						<div class="mpcrbm_driver_info">
+							<?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
+						</div>
                     </div>
                 </div>
 				<?php

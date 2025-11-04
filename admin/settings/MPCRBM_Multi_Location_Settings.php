@@ -36,53 +36,54 @@
 						<h6><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h6>
 						<span><?php esc_html_e( 'Configure multiple locations and pricing', 'car-rental-manager' ); ?></span>
 					</section>
-					
+
 					<section>
-						<label class="label">
-							<div>
-								<h6><?php esc_html_e( 'Enable Multi-Location Support', 'car-rental-manager' ); ?></h6>
-								<span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
-							</div>
-							<input type="checkbox" name="mpcrbm_multi_location_enabled" value="1" <?php echo esc_attr( $enabled_checked ); ?> class="mpcrbm-toggle-multi-location" />
-						</label>
-					</section>
+                        <div class="label">
+                            <div>
+                                <h6><?php esc_html_e( 'Enable Multi-Location Support', 'car-rental-manager' ); ?></h6>
+                                <span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
+                            </div>
+							<?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_multi_location_enabled', $enabled_checked ); ?>
+                        </div>
+                    </section>
 					
 					<!-- Multi-Location Configuration -->
-					<div id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>">
+					<div class="mpcrbm-section" id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_multi_location_enabled">
 						
-						<!-- Location-Based Pricing -->
-						<section class="bg-light" style="margin-top: 20px;">
+						
+						<section class="bg-light">
 							<h6><?php esc_html_e( 'Location-Based Pricing', 'car-rental-manager' ); ?></h6>
 							<span><?php esc_html_e( 'Set different prices for different pickup/drop-off location combinations', 'car-rental-manager' ); ?></span>
 						</section>
 						
-						<div id="mpcrbm-location-prices-container">
-							<?php
-							if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
-								foreach ( $location_prices as $index => $price_data ) {
-									$this->render_location_price_row( $index, $price_data, $location_terms );
+						<section>
+							<!-- Location Management Info -->
+							<div class="mpcrbm-info-box">
+								<h6><?php esc_html_e( 'How Multi-Location Works:', 'car-rental-manager' ); ?></h6>
+								<ul style="margin: 10px 0; padding-left: 20px;">
+									<li><?php esc_html_e( 'Daily rates are taken from the main pricing settings - no need to set them here', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Configure transfer fees for rentals between different pickup/dropoff locations', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Customers can select their preferred pickup and dropoff locations', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Pricing automatically adjusts based on selected locations', 'car-rental-manager' ); ?></li>
+								</ul>
+							</div>
+
+							<div id="mpcrbm-location-prices-container">
+								<?php
+								if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
+									foreach ( $location_prices as $index => $price_data ) {
+										$this->render_location_price_row( $index, $price_data, $location_terms );
+									}
+								} else {
+									// Add at least one empty row if no data exists
+									$this->render_location_price_row( 0, array(), $location_terms );
 								}
-							} else {
-								// Add at least one empty row if no data exists
-								$this->render_location_price_row( 0, array(), $location_terms );
-							}
-							?>
-						</div>
-						
-						<button type="button" id="mpcrbm-add-location-price" class="button button-secondary">
-							<?php esc_html_e( '+ Add Location Price', 'car-rental-manager' ); ?>
-						</button>
-						
-						<!-- Location Management Info -->
-						<div class="mpcrbm-info-box" style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-left: 4px solid #0073aa;">
-							<h6><?php esc_html_e( 'How Multi-Location Works:', 'car-rental-manager' ); ?></h6>
-							<ul style="margin: 10px 0; padding-left: 20px;">
-								<li><?php esc_html_e( 'Daily rates are taken from the main pricing settings - no need to set them here', 'car-rental-manager' ); ?></li>
-								<li><?php esc_html_e( 'Configure transfer fees for rentals between different pickup/dropoff locations', 'car-rental-manager' ); ?></li>
-								<li><?php esc_html_e( 'Customers can select their preferred pickup and dropoff locations', 'car-rental-manager' ); ?></li>
-								<li><?php esc_html_e( 'Pricing automatically adjusts based on selected locations', 'car-rental-manager' ); ?></li>
-							</ul>
-						</div>
+								?>
+							</div>
+							<button type="button" id="mpcrbm-add-location-price" class="_themeButton_xs_mT_xs ">
+								<i class="mi mi-plus"></i> <?php esc_html_e( 'Add Location Price', 'car-rental-manager' ); ?>
+							</button>
+						</section>
 					</div>
 				</div>
 				<?php

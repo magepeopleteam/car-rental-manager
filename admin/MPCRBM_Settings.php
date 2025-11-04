@@ -33,37 +33,37 @@
                     <div class="mpcrbm_tabs leftTabs">
                         <ul class="tabLists">
                             <li data-tabs-target="#mpcrbm_general_info">
-                                <span class="fas fa-tools"></span><?php esc_html_e( 'General Info', 'car-rental-manager' ); ?>
+                                <span class="mi mi-settings"></span><?php esc_html_e( 'General Info', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_date">
-                                <span class="fas fa-calendar-alt"></span><?php esc_html_e( 'Date', 'car-rental-manager' ); ?>
+                                <span class="mi mi-calendar"></span><?php esc_html_e( 'Date', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_pricing">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
+                                <span class="mi mi-coins"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_gallery_images">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?>
+                                <span class="mi mi-images"></span><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_settings_ex_service">
-                                <span class="fas fa-puzzle-piece"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
+                                <span class="mi mi-basket-shopping-plus"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#wbtm_settings_tax">
-                                <span class="fas fa-hand-holding-usd"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
+                                <span class="mi mi-calendar-event-tax"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_operation_area">
-                                <span class="fas fa-map-marker-alt"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
+                                <span class="mi mi-map-location-track"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_multi_location">
-                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Multi-Location', 'car-rental-manager' ); ?>
+                                <span class="mi mi-map-marker"></span><?php esc_html_e( 'Multi-Location', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_manage_faq">
-                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>
+                                <span class="mi mi-messages-question"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_feature">
-                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>
+                                <span class="mi mi-list-timeline"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_term_and_condition">
-                                <span class="fas fa-map-marked-alt"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
+                                <span class="mi mi-wishlist-star"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
                             </li>
                             <?php
                                 // Allow pro plugins to add their own tabs
@@ -152,28 +152,44 @@
                 ] );
                 wp_nonce_field( 'mpcrbm_driver_info_save', 'mpcrbm_driver_info_nonce' );
                 ?>
-                <div class="mpcrbm_driver_info_wrap">
-                    <p>
-                        <label for="mpcrbm_driver_info_name"><?php esc_html_e( 'Name:', 'car-rental-manager' );?></label><br>
-                        <input type="text" id="mpcrbm_driver_info_name" name="mpcrbm_driver_info[name]" value="<?php echo esc_attr( $driver_info['name'] ); ?>" />
-                    </p>
-                    <p>
-                        <label for="mpcrbm_driver_info_phone"><?php esc_html_e( 'Phone:', 'car-rental-manager' );?></label><br>
-                        <input type="text" id="mpcrbm_driver_info_phone" name="mpcrbm_driver_info[phone]" value="<?php echo esc_attr( $driver_info['phone'] ); ?>" />
-                    </p>
-                    <p>
-                        <label for="mpcrbm_driver_info_email"><?php esc_html_e( 'Email:', 'car-rental-manager' );?></label><br>
-                        <input type="email" id="mpcrbm_driver_info_email" name="mpcrbm_driver_info[email]" value="<?php echo esc_attr( $driver_info['email'] ); ?>" />
-                    </p>
-                    <p>
-                        <label for="mpcrbm_driver_info_age"><?php esc_html_e( 'Age:', 'car-rental-manager' );?></label><br>
-                        <input type="number" id="mpcrbm_driver_info_age" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" min="18" max="100" />
-                    </p>
-                </div>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Name:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver name','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_name" class="formControl" placeholder="Jon Don" name="mpcrbm_driver_info[name]" value="<?php echo esc_attr( $driver_info['name'] ); ?>" />
+					</label>
+				</section>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Phone:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver phone','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_phone" class="formControl" placeholder="+xxxxxxxxx" name="mpcrbm_driver_info[phone]" value="<?php echo esc_attr( $driver_info['phone'] ); ?>" />
+					</label>
+				</section>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Email:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver email','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_email" class="formControl" placeholder="email@domain.com" name="mpcrbm_driver_info[email]" value="<?php echo esc_attr( $driver_info['email'] ); ?>" />
+					</label>
+				</section>
+				<section>
+					<label class="label">
+						<div>
+							<h6><?php esc_html_e( 'Age:', 'car-rental-manager' );?></h6>
+							<span class="desc"><?php _e( 'Input driver Age','car-rental-manager' ); ?></span>
+						</div>
+						<input type="text" id="mpcrbm_driver_info_age" class="formControl" placeholder="33" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" />
+					</label>
+				</section>
                 <?php
             }
-
 		}
-
 		new MPCRBM_Settings();
 	}

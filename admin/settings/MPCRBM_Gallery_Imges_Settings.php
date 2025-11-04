@@ -46,7 +46,7 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
                         <div class='button clear' id='media_clear_<?php echo $post_id; ?>'>
                             <?php echo __('Clear','pickplugins-options-framework');?>
                         </div>
-                        <div class="mpcrbm_gallery-images media-list-<?php echo esc_attr($post_id); ?> ">
+                        <div class="mpcrbm_gallery-images-lists media-list-<?php echo esc_attr($post_id); ?> ">
                             <?php
                             $gallery_images = get_post_meta($post_id,'mpcrbm_gallery_images',true);
                             $gallery_images = $gallery_images ? $gallery_images : [];
@@ -79,7 +79,7 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
                                 attachment_url = attachment.url;
                                 html = '<div class=" mpcrbm_gallery-image">';
                                 html += '<span class="mpcrbm_gallery_image_remove" onclick="jQuery(this).parent().remove()">X</i></span>';
-                                html += '<img src="'+attachment_url+'" style="width:100%"/>';
+                                html += '<img src="'+attachment_url+'" class="mpcrbm_gallery-images"/>';
                                 html += '<input type="hidden" name="mpcrbm_gallery_images[]" value="'+attachment_id+'" />';
                                 html += '</div>';
                                 $('.media-list-<?php echo esc_attr($post_id); ?>').append(html);

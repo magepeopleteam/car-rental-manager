@@ -41,7 +41,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
         public function feature_tab_content( $post_id ){ ?>
 
             <div class="tabsItem" data-tabs="#mpcrbm_setting_feature">
-                <h3><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?></h3>
+                <h2><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?></h2>
                 <p><?php esc_html_e( 'Car Feature settings.', 'car-rental-manager' ); ?></p>
 
                 <?php wp_nonce_field( 'manage_car_feature_settings', 'faq_settings_nonce' ); ?>
@@ -64,33 +64,35 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
                 if (!is_array($excluded)) $excluded = [];
 
                 ?>
-                <div class="mpcrbm_faq_all_question_box">
-                    <h3>Include Features</h3>
-                    <div class="mpcrbm_include_feature">
-                        <input type="hidden" class="mpcrbm_include_feature_term_id" name="mpcrbm_include_feature_term_id" value="<?php echo esc_attr(implode(',', $included)); ?>">
-                        <?php foreach ($terms as $term) : ?>
-                            <label>
-                                <input type="checkbox" class="mpcrbm_include_checkbox" value="<?php echo esc_attr($term->term_id); ?>"
-                                    <?php checked( in_array($term->term_id, $included ) ); ?>>
-                                <?php echo esc_html( $term->name ); ?>
-                            </label><br>
-                        <?php endforeach; ?>
+                <section class="mpcrbm_faq_question_holder">
+                    <div class="mpcrbm_faq_all_question_box">
+                        <h3>Include Features</h3>
+                        <div class="mpcrbm_include_feature">
+                            <input type="hidden" class="mpcrbm_include_feature_term_id" name="mpcrbm_include_feature_term_id" value="<?php echo esc_attr(implode(',', $included)); ?>">
+                            <?php foreach ($terms as $term) : ?>
+                                <label>
+                                    <input type="checkbox" class="mpcrbm_include_checkbox" value="<?php echo esc_attr($term->term_id); ?>"
+                                        <?php checked( in_array($term->term_id, $included ) ); ?>>
+                                    <?php echo esc_html( $term->name ); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
-                </div>
 
-                <div class="mpcrbm_selected_faq_question_box">
-                <h3>Exclude Features</h3>
-                <div class="mpcrbm_exclude_feature">
-                    <input type="hidden" class="mpcrbm_exclude_feature_term_id" name="mpcrbm_exclude_feature_term_id" value="<?php echo esc_attr(implode(',', $excluded)); ?>">
-                    <?php foreach ($terms as $term) : ?>
-                        <label>
-                            <input type="checkbox" class="mpcrbm_exclude_checkbox" value="<?php echo esc_attr($term->term_id); ?>"
-                                <?php checked(in_array($term->term_id, $excluded)); ?>>
-                            <?php echo esc_html($term->name); ?>
-                        </label><br>
-                    <?php endforeach; ?>
-                </div>
-            </div>
+                    <div class="mpcrbm_selected_faq_question_box">
+                        <h3>Exclude Features</h3>
+                        <div class="mpcrbm_exclude_feature">
+                            <input type="hidden" class="mpcrbm_exclude_feature_term_id" name="mpcrbm_exclude_feature_term_id" value="<?php echo esc_attr(implode(',', $excluded)); ?>">
+                            <?php foreach ($terms as $term) : ?>
+                                <label>
+                                    <input type="checkbox" class="mpcrbm_exclude_checkbox" value="<?php echo esc_attr($term->term_id); ?>"
+                                        <?php checked(in_array($term->term_id, $excluded)); ?>>
+                                    <?php echo esc_html($term->name); ?>
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </section>
             </div>
         <?php }
 

@@ -63,27 +63,12 @@
     background: #c82333 !important;
 }
 
-#mpcrbm-add-location-price {
-    background: #28a745 !important;
-    color: white !important;
-    border: none !important;
-    padding: 10px 20px !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    font-size: 14px !important;
-    margin-top: 10px !important;
-}
-
-#mpcrbm-add-location-price:hover {
-    background: #218838 !important;
-}
-
 .mpcrbm-info-box {
     background: #f0f8ff;
     border-left: 4px solid #0073aa;
     padding: 15px;
-    margin-top: 20px;
     border-radius: 4px;
+    margin-bottom: 20px; 
 }
 
 .mpcrbm-info-box h6 {
@@ -150,7 +135,9 @@
         margin-bottom: 10px;
     }
 }
-
+.mpcrbm-location-field label{
+    margin-bottom: 10px;
+}
 /* Animation for adding/removing rows */
 .mpcrbm-location-price-row {
     animation: slideIn 0.3s ease-in-out;

@@ -46,8 +46,5 @@
     gap: 20px;
     align-items: center;
   }
-  .mpcrbm_booking_item .mpcrbm-image-box{
-    max-width: 100%;
-    flex-shrink: 0;
-  }
+  
 }
