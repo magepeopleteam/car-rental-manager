@@ -302,6 +302,7 @@
  .mpcrbm .mpcrbm-image-box img:not(.wp_editor img){
 	height: 100%;
 	display: block;
+	object-fit: cover;
  }
  .mpcrbm_group {
 	 margin: 20px 0 10px 0;

@@ -236,11 +236,11 @@
 			
 			public static function dummy_images() {
 				$urls = array(
-					'https://img.freepik.com/free-photo/blue-villa-beautiful-sea-hotel_1203-5316.jpg',
-					'https://img.freepik.com/free-photo/beautiful-mountains-ratchaprapha-dam-khao-sok-national-park-surat-thani-province-thailand_335224-851.jpg',
-					'https://img.freepik.com/free-photo/photographer-taking-picture-ocean-coast_657883-287.jpg',
-					'https://img.freepik.com/free-photo/pileh-blue-lagoon-phi-phi-island-thailand_231208-1487.jpg',
-					'https://img.freepik.com/free-photo/godafoss-waterfall-sunset-winter-iceland-guy-red-jacket-looks-godafoss-waterfall_335224-673.jpg',
+					'https://img.freepik.com/free-photo/vintage-sedan-car-driving-sunlight-road_114579-5066.jpg',
+					'https://img.freepik.com/premium-photo/dirty-bmw-with-hood-up-hood-up-is-dirty_1194579-15023.jpg',
+					'https://img.freepik.com/premium-photo/predatory-car-headlight-with-blue-lights-hood-powerful-grey-blue-car-sports-car-with-matte-grey-paint-wheel-with-blue-disc_308547-3156.jpg',
+					'https://img.freepik.com/premium-photo/photo-pickup-off-road-landscape_7023-176355.jpg',
+					'https://img.freepik.com/premium-photo/rainbow-colored-bmw-car-with-lights_1194579-14229.jpg',
 				);
 				unset($image_ids);
 				$image_ids = array();
@@ -426,7 +426,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0, 3, 4, 1),
+									'mpcrbm_gallery_images' => array( 0, 3, 2, 4, 1),
 
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
@@ -537,7 +537,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(4, 2, 0, 3, 1),
+									'mpcrbm_gallery_images' => array( 1, 4, 2, 0, 3),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -647,7 +647,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(1, 2, 0, 3, 4),
+									'mpcrbm_gallery_images' => array( 2, 1, 0, 3, 4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -757,7 +757,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 0,3,1,4),
+									'mpcrbm_gallery_images' => array(3, 2, 0,1,4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -867,7 +867,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2,3, 4,1,0),
+									'mpcrbm_gallery_images' => array(4,2,3,1,0),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -977,7 +977,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(4,1,2,0,3),
+									'mpcrbm_gallery_images' => array(0,4,1,2,3),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
@@ -1087,7 +1087,7 @@
 										'2025'
 									],
 									//gallery_settings
-									'mpcrbm_gallery_images' => array(2, 1, 0, 3, 4),
+									'mpcrbm_gallery_images' => array( 1,2,0, 3, 4),
 									//price_settings
 									'mpcrbm_price_based'             => 'manual',
 									'mpcrbm_day_price'               => 10,
