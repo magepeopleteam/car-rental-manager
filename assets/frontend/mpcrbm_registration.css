@@ -43,14 +43,15 @@
 		margin: 10px 0;
 	}
 	.mpcrbm_transport_summary .total{
-		background-color: #07a85b;
-		color: #fff;
-		padding: 10px;
-		border-radius: 5px;
-		margin: 10px 0;
-		display: flex;
-    	align-items: center;
+		background-color: #ced1d2;
+        color: #000000;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
 	}
+
 	.mpcrbm_transport_summary .total h6,.mpcrbm_transport_summary .total h3{
 		margin: 0;
 	}
