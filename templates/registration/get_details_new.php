@@ -334,7 +334,7 @@ if (sizeof($all_dates) > 0) {
                             <div class="input_select" >
                                 <label class="fdColumn1">
                                     <input type="hidden" id="mpcrbm_map_return_date" value="<?php echo esc_attr( $end_date );?>" />
-                                    <span class="mpcrbm_search_title"><i class="mi mi-calendar-clock"></i><?php esc_html_e($type_text_return.' Date', 'car-rental-manager'); ?></span>
+                                    <span class="mpcrbm_search_title"><i class="mi mi-calendar"></i><?php esc_html_e($type_text_return.' Date', 'car-rental-manager'); ?></span>
                                     <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_date );?>" readonly name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
                                 </label>
