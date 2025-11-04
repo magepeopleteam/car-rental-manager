@@ -431,6 +431,14 @@
 									'mpcrbm_make_year' => [
 										'2025'
 									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
+									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 0, 3, 2, 4, 1),
 
@@ -542,6 +550,14 @@
 									'mpcrbm_make_year' => [
 										'2025'
 									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
+									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 1, 4, 2, 0, 3),
 									//price_settings
@@ -651,6 +667,14 @@
 									],
 									'mpcrbm_make_year' => [
 										'2025'
+									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
 									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 2, 1, 0, 3, 4),
@@ -762,6 +786,14 @@
 									'mpcrbm_make_year' => [
 										'2025'
 									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
+									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(3, 2, 0,1,4),
 									//price_settings
@@ -871,6 +903,14 @@
 									],
 									'mpcrbm_make_year' => [
 										'2025'
+									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
 									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(4,2,3,1,0),
@@ -982,6 +1022,14 @@
 									'mpcrbm_make_year' => [
 										'2025'
 									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
+									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(0,4,1,2,3),
 									//price_settings
@@ -1091,6 +1139,14 @@
 									],
 									'mpcrbm_make_year' => [
 										'2025'
+									],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
 									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 1,2,0, 3, 4),
