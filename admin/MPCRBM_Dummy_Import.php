@@ -15,6 +15,7 @@
 				$dummy_post_inserted = get_option('mpcrbm_dummy_already_inserted', 'no');
 				$count_existing_event = wp_count_posts('mpcrbm_rent')->publish;
 				$plugin_active = MPCRBM_Global_Function::check_plugin( 'car-rental-manager', 'car-rental-manager.php' );
+				
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 					$dummy_taxonomies = $this->dummy_taxonomy();
 					if (array_key_exists('taxonomy', $dummy_taxonomies)) {
@@ -57,7 +58,11 @@
 									$args['post_status'] = 'publish';
 									$args['post_type'] = $custom_post;
 									$post_id = wp_insert_post($args);
-									$ex_id = 0;
+
+									if($custom_post=='mpcrbm_ex_services'){
+										$ex_id = $post_id;
+									}
+									
 									if (array_key_exists('taxonomy_terms', $dummy_data) && count($dummy_data['taxonomy_terms'])) {
 										foreach ($dummy_data['taxonomy_terms'] as $taxonomy_term) {
 											wp_set_object_terms($post_id, $taxonomy_term['terms'], $taxonomy_term['taxonomy_name'], true);
@@ -333,41 +338,41 @@
 			public function dummy_cpt(): array {
 				return [
 					'custom_post' => [
-						'mpcrbm_extra_services' => [
+						'mpcrbm_ex_services' => [
 							[
 								'name'      => 'Pre-defined Extra Services',
 								'post_data' => array(
 									'mpcrbm_extra_service_infos' => array(
 										0 => array(
-											'service_icon'              => 'fas fa-baby',
+											'service_icon'              => 'mi mi-child-head',
 											'service_name'              => 'Child Seat',
 											'service_price'             => '50',
 											'service_qty_type'          => 'inputbox',
 											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 										),
 										1 => array(
-											'service_icon'              => 'fas fa-seedling',
+											'service_icon'              => 'mi mi-flower-bouquet',
 											'service_name'              => 'Bouquet of Flowers',
 											'service_price'             => '150',
 											'service_qty_type'          => 'inputbox',
 											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 										),
 										2 => array(
-											'service_icon'              => 'fas fa-wine-glass-alt',
+											'service_icon'              => 'mi mi-drink-alt',
 											'service_name'              => 'Welcome Drink',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
 											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 										),
 										3 => array(
-											'service_icon'              => 'fas fa-user-alt',
+											'service_icon'              => 'mi mi-user',
 											'service_name'              => 'Airport Assistance and Hostess Service',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
 											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
 										),
 										4 => array(
-											'service_icon'              => 'fas fa-skating',
+											'service_icon'              => 'mi mi-hiking',
 											'service_name'              => 'Bodyguard Service',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
