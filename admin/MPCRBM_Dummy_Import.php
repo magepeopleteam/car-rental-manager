@@ -15,7 +15,7 @@
 				$dummy_post_inserted = get_option('mpcrbm_dummy_already_inserted', 'no');
 				$count_existing_event = wp_count_posts('mpcrbm_rent')->publish;
 				$plugin_active = MPCRBM_Global_Function::check_plugin( 'car-rental-manager', 'car-rental-manager.php' );
-				
+				$ex_id = 0;
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 					$dummy_taxonomies = $this->dummy_taxonomy();
 					if (array_key_exists('taxonomy', $dummy_taxonomies)) {
@@ -38,8 +38,10 @@
 						}
 					}
 					$dummy_cpt = $this->dummy_cpt();
+					
 					if (array_key_exists('custom_post', $dummy_cpt)) {
 						$dummy_images = self::dummy_images();
+						
 						foreach ($dummy_cpt['custom_post'] as $custom_post => $dummy_post) {
 							unset($args);
 							$args = array(
@@ -48,6 +50,7 @@
 							);
 							unset($post);
 							$post = new WP_Query($args);
+							
 							if ($post->post_count == 0) {
 								foreach ($dummy_post as $dummy_data) {
 									$args = array();
@@ -101,12 +104,6 @@
 												}
 											}
 
-											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
-												update_post_meta( $post_id, $meta_key, $ex_id );
-											} else {
-												update_post_meta( $post_id, $meta_key, $data );
-											}
-
 											if ($meta_key == 'mpcrbm_gallery_images') {
 												if (is_array($data)) {
 													$thumnail_ids = array();
@@ -122,6 +119,10 @@
 												}
 											} else {
 												update_post_meta($post_id, $meta_key, $data);
+											}
+
+											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
+												update_post_meta( $post_id, $meta_key, $ex_id );
 											}
 										}
 									}									
@@ -348,35 +349,35 @@
 											'service_name'              => 'Child Seat',
 											'service_price'             => '50',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Safe and comfortable seating for your little ones.",
 										),
 										1 => array(
 											'service_icon'              => 'mi mi-flower-bouquet',
 											'service_name'              => 'Bouquet of Flowers',
 											'service_price'             => '150',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "A fresh floral surprise for special moments.",
 										),
 										2 => array(
 											'service_icon'              => 'mi mi-drink-alt',
 											'service_name'              => 'Welcome Drink',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Refresh yourself with a cool welcome beverage.",
 										),
 										3 => array(
 											'service_icon'              => 'mi mi-user',
 											'service_name'              => 'Airport Assistance and Hostess Service',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Smooth airport pickup with personal assistance.",
 										),
 										4 => array(
 											'service_icon'              => 'mi mi-hiking',
 											'service_name'              => 'Bodyguard Service',
 											'service_price'             => '30',
 											'service_qty_type'          => 'inputbox',
-											'extra_service_description' => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+											'extra_service_description' => "Professional protection for your peace of mind.",
 										),
 									)
 								)
