@@ -30,6 +30,9 @@
 				return $template;
 			}
 
+            // 
+
+
             public function mpcrbm_display_search_result( $content ) {
 
                 $search_page_slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page');
