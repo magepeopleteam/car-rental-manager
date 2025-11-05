@@ -3,7 +3,7 @@
 	 * Plugin Name:       Car Rental Manager
 	 * Plugin URI:        https://wordpress.org/plugins/car-rental-manager
 	 * Description:       A complete car rental solution for WordPress by MagePeople. Manage bookings, vehicles, pricing, and availability with ease.
-	 * Version:           1.0.4
+	 * Version:           1.0.6
 	 * Requires at least: 5.6
 	 * Requires PHP:      7.2
 	 * Author:            MagePeople Team
@@ -42,9 +42,12 @@
 				}
 				require_once MPCRBM_PLUGIN_DIR . '/mp_global/MPCRBM_Global_File_Load.php';
 				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
+
 					add_action( 'activated_plugin', array( $this, 'activation_redirect' ), 90, 1 );
 					self::on_activation_page_create();
 					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Dependencies.php';
+                	add_action('init', array($this, 'mpcrbm_register_cpt'));
+
 				} else {
 					require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Quick_Setup.php';
 					//add_action('admin_notices', [$this, 'woocommerce_not_active']);
@@ -153,11 +156,60 @@
                 }
             }
 
+			function mpcrbm_register_cpt() {
+				$cpt   = MPCRBM_Function::get_cpt();
+				$label = MPCRBM_Function::get_name();
+				$slug  = MPCRBM_Function::get_slug();
+				$icon  = MPCRBM_Function::get_icon();
+
+				$labels = [
+								'name'                  => $label,
+								'singular_name'         => $label,
+								'menu_name'             => $label,
+								'name_admin_bar'        => $label,
+								'archives'              => $label . ' ' . esc_html__( ' List', 'car-rental-manager' ),
+								'attributes'            => $label . ' ' . esc_html__( ' List', 'car-rental-manager' ),
+								'parent_item_colon'     => $label . ' ' . esc_html__( ' Item:', 'car-rental-manager' ),
+								'all_items'             => esc_html__( 'All ', 'car-rental-manager' ) . ' ' . $label,
+								'add_new_item'          => esc_html__( 'Add New ', 'car-rental-manager' ) . ' ' . $label,
+								'add_new'               => esc_html__( 'Add New ', 'car-rental-manager' ) . ' ' . $label,
+								'new_item'              => esc_html__( 'New ', 'car-rental-manager' ) . ' ' . $label,
+								'edit_item'             => esc_html__( 'Edit ', 'car-rental-manager' ) . ' ' . $label,
+								'update_item'           => esc_html__( 'Update ', 'car-rental-manager' ) . ' ' . $label,
+								'view_item'             => esc_html__( 'View ', 'car-rental-manager' ) . ' ' . $label,
+								'view_items'            => esc_html__( 'View ', 'car-rental-manager' ) . ' ' . $label,
+								'search_items'          => esc_html__( 'Search ', 'car-rental-manager' ) . ' ' . $label,
+								'not_found'             => $label . ' ' . esc_html__( ' Not found', 'car-rental-manager' ),
+								'not_found_in_trash'    => $label . ' ' . esc_html__( ' Not found in Trash', 'car-rental-manager' ),
+								'featured_image'        => $label . ' ' . esc_html__( ' Feature Image', 'car-rental-manager' ),
+								'set_featured_image'    => esc_html__( 'Set ', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' featured image', 'car-rental-manager' ),
+								'remove_featured_image' => esc_html__( 'Remove ', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' featured image', 'car-rental-manager' ),
+								'use_featured_image'    => esc_html__( 'Use as featured image', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' featured image', 'car-rental-manager' ),
+								'insert_into_item'      => esc_html__( 'Insert into ', 'car-rental-manager' ) . ' ' . $label,
+								'uploaded_to_this_item' => esc_html__( 'Uploaded to this ', 'car-rental-manager' ) . ' ' . $label,
+								'items_list'            => $label . ' ' . esc_html__( ' list', 'car-rental-manager' ),
+								'items_list_navigation' => $label . ' ' . esc_html__( ' list navigation', 'car-rental-manager' ),
+								'filter_items_list'     => esc_html__( 'Filter ', 'car-rental-manager' ) . ' ' . $label . ' ' . esc_html__( ' list', 'car-rental-manager' )
+				];
+
+				$args = [
+					'public'              => true,
+					'labels'              => $labels,
+					'menu_icon'           => $icon,
+					'supports'            => [ 'title', 'thumbnail' ],
+					'show_in_rest'        => true,
+					'capability_type'     => 'post',
+					'publicly_queryable'  => true,
+					'show_ui'             => true,
+					'exclude_from_search' => false,  // try enabling this
+					'show_in_nav_menus'   => true,
+					'has_archive'         => true,   // this helps with single pages too
+					'rewrite'             => [ 'slug' => $slug, 'with_front' => false ],
+				];
+
+				register_post_type( $cpt, $args );
+			}
+
 		}
 		new MPCRBM_Plugin();
 	}
-
-
-
-
-
