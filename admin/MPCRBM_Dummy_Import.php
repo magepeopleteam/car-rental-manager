@@ -137,6 +137,19 @@
 													update_post_meta($post_id, 'mpcrbm_added_faq', $faq_keys);
 												}
 											}
+											if ($meta_key == 'mpcrbm_term_condition_list') {
+												if (is_array($data)) {
+													$faq_keys = [];
+													$faq_keys_list = array_keys($Terms);
+
+													foreach ($data as $index) {
+														if (isset($faq_keys_list[$index])) {
+															$faq_keys[] = $faq_keys_list[$index];
+														}
+													}
+													update_post_meta($post_id, 'mpcrbm_term_condition_list', $faq_keys);
+												}
+											}
 											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
 												update_post_meta( $post_id, $meta_key, $ex_id );
 											}
@@ -482,6 +495,7 @@
 									],
 									// FAQ settings
 									'mpcrbm_added_faq'             => [0,4,2,1],
+									'mpcrbm_term_condition_list'   => [0,4,2,1],
 									//gallery_settings
 									'mpcrbm_slider_images'              => [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ],
 									//date_settings
@@ -568,6 +582,7 @@
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [5,4,1,2],
+									'mpcrbm_term_condition_list'   => [5,4,1,2],
 									//Extra Services
 									'display_mpcrbm_extra_services' => 'on',
 									'mpcrbm_extra_services_id'      => '',
@@ -673,6 +688,7 @@
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [0,4,1,5,2],
+									'mpcrbm_term_condition_list'   => [0,4,1,5,2],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 2, 1, 0, 3, 4),
 									//price_settings
@@ -808,6 +824,7 @@
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [1,5,2,0,4],
+									'mpcrbm_term_condition_list'   => [1,5,2,0,4],
 									//Extra Services
 									'display_mpcrbm_extra_services' => 'on',
 									'mpcrbm_extra_services_id'      => '',
@@ -913,6 +930,7 @@
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [0,4,2,5],
+									'mpcrbm_term_condition_list'   => [0,4,2,5],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(4,2,3,1,0),
 									//price_settings
@@ -1033,6 +1051,7 @@
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [2,5,0,4,1],
+									'mpcrbm_term_condition_list'   => [2,5,0,4,1],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(0,4,1,2,3),
 									//price_settings
@@ -1153,6 +1172,7 @@
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [2,5,1,0,4],
+									'mpcrbm_term_condition_list'   => [2,5,1,0,4],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 1,2,0, 3, 4),
 									//price_settings
