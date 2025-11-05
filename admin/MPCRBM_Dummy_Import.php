@@ -17,6 +17,7 @@
 				$plugin_active = MPCRBM_Global_Function::check_plugin( 'car-rental-manager', 'car-rental-manager.php' );
 				$ex_id = 0;
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
+				// if (1) {
 					$dummy_taxonomies = $this->dummy_taxonomy();
 					if (array_key_exists('taxonomy', $dummy_taxonomies)) {
 						foreach ($dummy_taxonomies['taxonomy'] as $taxonomy => $dummy_taxonomy) {
@@ -38,6 +39,8 @@
 						}
 					}
 					$dummy_cpt = $this->dummy_cpt();
+					$faqs = $this->set_FAQ_data();
+					$Terms = $this->set_Terms_data();
 					
 					if (array_key_exists('custom_post', $dummy_cpt)) {
 						$dummy_images = self::dummy_images();
@@ -51,6 +54,7 @@
 							unset($post);
 							$post = new WP_Query($args);
 							
+							// if (1) {
 							if ($post->post_count == 0) {
 								foreach ($dummy_post as $dummy_data) {
 									$args = array();
@@ -120,6 +124,55 @@
 											} else {
 												update_post_meta($post_id, $meta_key, $data);
 											}
+											if ($meta_key == 'mpcrbm_added_faq') {
+												if (is_array($data)) {
+													$faq_keys = [];
+													$faq_keys_list = array_keys($faqs);
+
+													foreach ($data as $index) {
+														if (isset($faq_keys_list[$index])) {
+															$faq_keys[] = $faq_keys_list[$index];
+														}
+													}
+													update_post_meta($post_id, 'mpcrbm_added_faq', $faq_keys);
+												}
+											}
+											
+											if ($meta_key == 'mpcrbm_term_condition_list') {
+												if (is_array($data)) {
+													$faq_keys = [];
+													$faq_keys_list = array_keys($Terms);
+
+													foreach ($data as $index) {
+														if (isset($faq_keys_list[$index])) {
+															$faq_keys[] = $faq_keys_list[$index];
+														}
+													}
+													update_post_meta($post_id, 'mpcrbm_term_condition_list', $faq_keys);
+												}
+											}
+
+											if ($meta_key == 'mpcrbm_include_features') {
+												$include_features=[];
+												if (is_array($data)) {
+													foreach ($data as $item) {
+														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
+														$include_features[] = $term->term_id;
+													}
+													update_post_meta($post_id, 'mpcrbm_include_features', $include_features);
+												}
+											}
+
+											if ($meta_key == 'mpcrbm_exclude_features') {
+												$exclude_features=[];
+												if (is_array($data)) {
+													foreach ($data as $item) {
+														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
+														$exclude_features[] = $term->term_id;
+													}
+													update_post_meta($post_id, 'mpcrbm_exclude_features', $exclude_features);
+												}
+											}
 
 											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
 												update_post_meta( $post_id, $meta_key, $ex_id );
@@ -132,8 +185,7 @@
 					}
 					//$this->craete_pages();
 					//$this->update_related_products($custom_post);
-					$faqs = $this->set_FAQ_data();
-					$Terms = $this->set_Terms_data();
+					
 					update_option( 'mpcrbm_faq_list', $faqs );
 					update_option( 'mpcrbm_term_condition_list', $Terms );
 					flush_rewrite_rules();
@@ -383,12 +435,12 @@
 								)
 							],
 						],
-						'mpcrbm_rent'          => [
+						'mpcrbm_rent'        => [
 							[
 								'name'      => 'BMW 5 Series',
 								'post_data' => [
 									//General_settings
-									'mpcrbm_features'                => [
+									'mpcrbm_features' => [
 										0 => array(
 											'label' => 'Name',
 											'icon'  => 'fas fa-car-side',
@@ -418,6 +470,18 @@
 									'mpcrbm_maximum_bag' => 4,
 									'mpcrbm_car_type' => [
 										'Hatchback'
+									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										'Sunroof',
 									],
 									'mpcrbm_fuel_type' => [
 										'Octane'
@@ -458,30 +522,6 @@
 									//Extra Services
 									'display_mpcrbm_extra_services' => 'on',
 									'mpcrbm_extra_services_id'      => '',
-									//faq_settings
-									'mpcrbm_display_faq'             => 'on',
-									'mpcrbm_faq'                     => [
-										0 => [
-											'title'   => 'What can I expect to see at The Mentalist at Planet Hollywood Resort and Casino?',
-											'content' => 'Comedy, magic and mind-reading! The Mentalist has the ability to get inside the minds of audience members, revealing everything from their names, hometowns and anniversaries to their wildest wishes.',
-										],
-										1 => [
-											'title'   => 'Where is The Mentalist located?',
-											'content' => 'The V Theater is located inside the Miracle Mile Shops at the Planet Hollywood Resort & Casino.',
-										],
-										2 => [
-											'title'   => 'Can I purchase alcohol at the venue during The Mentalist!?',
-											'content' => 'Absolutely! Drinks are available for purchase at the Showgirl Bar outside of the theater and may be brought into the showroom, however, no other outside food or drink will be allowed in the theater.',
-										],
-										3 => [
-											'title'   => 'Is The Mentalist appropriate for children?',
-											'content' => 'Due to language, this show is recommended for guests 16 years old and over.',
-										],
-										4 => [
-											'title'   => 'Do I need to exchange my ticket upon arrival at The Mentalist!?',
-											'content' => 'Please pick up your tickets at the V Theater Box Office with a valid photo ID for the lead traveler at least 30 minutes prior to show time (box office opens at 11 am). Seating will begin 15 minutes before showtime.',
-										],
-									],
 									//why chose us_settings
 									'mpcrbm_display_why_choose_us'   => 'on',
 									'mpcrbm_why_choose_us'           => [
@@ -489,6 +529,9 @@
 										1 => 'Enjoy a taste of Las Vegas glitz at the mind-bending magic show',
 										2 => 'Watch as Gerry McCambridge performs comedy and magic',
 									],
+									// FAQ settings
+									'mpcrbm_added_faq'             => [0,4,2,1],
+									'mpcrbm_term_condition_list'   => [0,4,2,1],
 									//gallery_settings
 									'mpcrbm_slider_images'              => [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ],
 									//date_settings
@@ -558,6 +601,20 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 1, 4, 2, 0, 3),
 									//price_settings
@@ -573,6 +630,9 @@
 											'end_location'   => 'rajshahi'
 										]
 									],
+									//faq_settings
+									'mpcrbm_added_faq'             => [5,4,1,2],
+									'mpcrbm_term_condition_list'   => [5,4,1,2],
 									//Extra Services
 									'display_mpcrbm_extra_services' => 'on',
 									'mpcrbm_extra_services_id'      => '',
@@ -676,6 +736,23 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
+									//faq_settings
+									'mpcrbm_added_faq'             => [0,4,1,5,2],
+									'mpcrbm_term_condition_list'   => [0,4,1,5,2],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 2, 1, 0, 3, 4),
 									//price_settings
@@ -794,6 +871,20 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(3, 2, 0,1,4),
 									//price_settings
@@ -809,6 +900,9 @@
 											'end_location'   => 'rajshahi'
 										]
 									],
+									//faq_settings
+									'mpcrbm_added_faq'             => [1,5,2,0,4],
+									'mpcrbm_term_condition_list'   => [1,5,2,0,4],
 									//Extra Services
 									'display_mpcrbm_extra_services' => 'on',
 									'mpcrbm_extra_services_id'      => '',
@@ -912,6 +1006,23 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
+									//faq_settings
+									'mpcrbm_added_faq'             => [0,4,2,5],
+									'mpcrbm_term_condition_list'   => [0,4,2,5],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(4,2,3,1,0),
 									//price_settings
@@ -1030,6 +1141,23 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
+									//faq_settings
+									'mpcrbm_added_faq'             => [2,5,0,4,1],
+									'mpcrbm_term_condition_list'   => [2,5,0,4,1],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(0,4,1,2,3),
 									//price_settings
@@ -1148,6 +1276,23 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
+									//faq_settings
+									'mpcrbm_added_faq'             => [2,5,1,0,4],
+									'mpcrbm_term_condition_list'   => [2,5,1,0,4],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 1,2,0, 3, 4),
 									//price_settings

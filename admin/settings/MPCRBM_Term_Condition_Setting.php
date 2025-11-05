@@ -19,13 +19,13 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
         }
         public function term_tab_content( $post_id ){
 
-            $faqs = get_option( $this->term_option_key, [] );
-            $added_faqs = get_post_meta( $post_id, $this->term_option_key, true );
-            $selected_faqs_data = [];
-            if (!empty($added_faqs) && !empty( $faqs ) ) {
-                foreach ($added_faqs as $faq_key) {
-                    if (isset($faqs[$faq_key])) {
-                        $selected_faqs_data[$faq_key] = $faqs[$faq_key];
+            $terms = get_option( $this->term_option_key, [] );
+            $added_terms = get_post_meta( $post_id, $this->term_option_key, true );
+            $selected_terms_data = [];
+            if (!empty($added_terms) && !empty( $terms ) ) {
+                foreach ($added_terms as $faq_key) {
+                    if (isset($terms[$faq_key])) {
+                        $selected_terms_data[$faq_key] = $terms[$faq_key];
                     }
                 }
             }
@@ -45,10 +45,10 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                 <section class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_faq_all_question_box">
                         <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
-                        <div class="mpcrbm_all_term_condition">
-                            <?php if (!empty($faqs)) : ?>
-                                <?php foreach ($faqs as $key => $faq) :
-                                    if ( isset( $selected_faqs_data[$key] ) ) continue;
+                        <div class="mpcrbm_faq_all_question">
+                            <?php if (!empty($terms)) : ?>
+                                <?php foreach ($terms as $key => $faq) :
+                                    if ( isset( $selected_terms_data[$key] ) ) continue;
                                     ?>
                                     <div class="mpcrbm_faq_item"
                                          data-key="<?php echo esc_attr($key); ?>"
@@ -66,9 +66,9 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
                     <div class="mpcrbm_selected_faq_question_box">
                         <h3><?php esc_html_e( 'Added Term & Condition', 'car-rental-manager' ); ?></h3>
-                        <div class="mpcrbm_selected_term_condition">
-                            <?php if (!empty($selected_faqs_data)) : ?>
-                                <?php foreach ($selected_faqs_data as $key => $faq) : ?>
+                        <div class="mpcrbm_selected_faq_question">
+                            <?php if (!empty($selected_terms_data)) : ?>
+                                <?php foreach ($selected_terms_data as $key => $faq) : ?>
                                     <div class="mpcrbm_selected_item"
                                          data-key="<?php echo esc_attr($key); ?>"
                                          data-title="<?php echo esc_attr( $faq['title'] ); ?>"
@@ -83,7 +83,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                         </div>
                     </div>
 
-                    <input type="hidden" id="mpcrbm_added_term_condition_input" name="mpcrbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_faqs_data)); ?>">
+                    <input type="hidden" id="mpcrbm_added_term_condition_input" name="mpcrbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_terms_data)); ?>">
                 </section>
 
 
