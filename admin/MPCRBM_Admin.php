@@ -31,6 +31,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Guideline.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_License.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Taxonomies.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Manage_Faq.php';
 				//****************Global settings************************//
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Settings_Global.php';
 				//****************Taxi settings************************//
@@ -43,7 +44,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Operation_Area_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Multi_Location_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Gallery_Imges_Settings.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Faq.php';
+				
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Faq_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Feature.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Term_Condition_Setting.php';

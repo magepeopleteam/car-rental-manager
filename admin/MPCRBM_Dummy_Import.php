@@ -383,12 +383,12 @@
 								)
 							],
 						],
-						'mpcrbm_rent'          => [
+						'mpcrbm_rent'        => [
 							[
 								'name'      => 'BMW 5 Series',
 								'post_data' => [
 									//General_settings
-									'mpcrbm_features'                => [
+									'mpcrbm_features' => [
 										0 => array(
 											'label' => 'Name',
 											'icon'  => 'fas fa-car-side',
@@ -489,6 +489,8 @@
 										1 => 'Enjoy a taste of Las Vegas glitz at the mind-bending magic show',
 										2 => 'Watch as Gerry McCambridge performs comedy and magic',
 									],
+									// FAQ settings
+									'mpcrbm_display_faq'             => [],
 									//gallery_settings
 									'mpcrbm_slider_images'              => [ 10, 20, 30, 40, 50, 60, 70, 80, 90, 100 ],
 									//date_settings
