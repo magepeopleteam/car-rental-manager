@@ -153,22 +153,24 @@
 											}
 
 											if ($meta_key == 'mpcrbm_include_features') {
+												$include_features=[];
 												if (is_array($data)) {
 													foreach ($data as $item) {
 														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
-														$features_id[] = $term->term_id;
+														$include_features[] = $term->term_id;
 													}
-													update_post_meta($post_id, 'mpcrbm_include_features', $features_id);
+													update_post_meta($post_id, 'mpcrbm_include_features', $include_features);
 												}
 											}
 
 											if ($meta_key == 'mpcrbm_exclude_features') {
+												$exclude_features=[];
 												if (is_array($data)) {
 													foreach ($data as $item) {
 														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
-														$features_id[] = $term->term_id;
+														$exclude_features[] = $term->term_id;
 													}
-													update_post_meta($post_id, 'mpcrbm_exclude_features', $features_id);
+													update_post_meta($post_id, 'mpcrbm_exclude_features', $exclude_features);
 												}
 											}
 
