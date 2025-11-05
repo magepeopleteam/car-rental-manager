@@ -137,6 +137,7 @@
 													update_post_meta($post_id, 'mpcrbm_added_faq', $faq_keys);
 												}
 											}
+											
 											if ($meta_key == 'mpcrbm_term_condition_list') {
 												if (is_array($data)) {
 													$faq_keys = [];
@@ -150,6 +151,27 @@
 													update_post_meta($post_id, 'mpcrbm_term_condition_list', $faq_keys);
 												}
 											}
+
+											if ($meta_key == 'mpcrbm_include_features') {
+												if (is_array($data)) {
+													foreach ($data as $item) {
+														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
+														$features_id[] = $term->term_id;
+													}
+													update_post_meta($post_id, 'mpcrbm_include_features', $features_id);
+												}
+											}
+
+											if ($meta_key == 'mpcrbm_exclude_features') {
+												if (is_array($data)) {
+													foreach ($data as $item) {
+														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
+														$features_id[] = $term->term_id;
+													}
+													update_post_meta($post_id, 'mpcrbm_exclude_features', $features_id);
+												}
+											}
+
 											if ( $meta_key == 'mpcrbm_extra_services_id' ) {
 												update_post_meta( $post_id, $meta_key, $ex_id );
 											}
@@ -447,6 +469,18 @@
 									'mpcrbm_car_type' => [
 										'Hatchback'
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										'Sunroof',
+									],
 									'mpcrbm_fuel_type' => [
 										'Octane'
 									],
@@ -564,6 +598,20 @@
 										'phone'    => '+1234567890',
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
+									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
 									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 1, 4, 2, 0, 3),
@@ -686,6 +734,20 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [0,4,1,5,2],
 									'mpcrbm_term_condition_list'   => [0,4,1,5,2],
@@ -806,6 +868,20 @@
 										'phone'    => '+1234567890',
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
+									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
 									],
 									//gallery_settings
 									'mpcrbm_gallery_images' => array(3, 2, 0,1,4),
@@ -928,6 +1004,20 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [0,4,2,5],
 									'mpcrbm_term_condition_list'   => [0,4,2,5],
@@ -1049,6 +1139,20 @@
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
 									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
+									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [2,5,0,4,1],
 									'mpcrbm_term_condition_list'   => [2,5,0,4,1],
@@ -1169,6 +1273,20 @@
 										'phone'    => '+1234567890',
 										'email'    => 'john@domain.com',
 										'age'    => '22+',
+									],
+									// features_settings
+									'mpcrbm_include_features' => [
+										'ABS Brakes',
+										'Air Conditioning',
+										'Airbags',
+										'Alloy Wheels',
+									],
+									'mpcrbm_exclude_features' => [
+										'Alloy Wheels',
+										'Automatic Transmission ',
+										'Cruise Control',
+										' Child Seat Available',
+										'Sunroof',
 									],
 									//faq_settings
 									'mpcrbm_added_faq'             => [2,5,1,0,4],
