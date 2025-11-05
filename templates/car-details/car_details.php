@@ -247,6 +247,8 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             </div>
 
                             <div id="include" class="mpcrbm_car_details_tab_content">
+                                <h3><?php _e('Car Features','car-rental-manager'); ?></h3>
+                                <div class="divider"></div>
                                 <div class="mpcrbm_car_details_include_exclude">
                                     <div class="mpcrbm_car_details_include">
                                         <h4><?php esc_attr_e( 'Include Feature', 'car-rental-manager' );?></h4>
@@ -255,7 +257,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                             if( !empty( $include_feature_names ) ){
                                                 foreach ( $include_feature_names as $include_feature ){
                                                     ?>
-                                                    <li>✅ <?php echo esc_attr( $include_feature );?></li>
+                                                    <li><i class="mi mi-check"></i> <?php echo esc_attr( $include_feature );?></li>
                                                     <?php
                                                 }
                                             }
@@ -269,7 +271,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                             if( !empty( $exclude_feature_names ) ){
                                                 foreach ( $exclude_feature_names as $exclude_feature ){
                                                     ?>
-                                                    <li>❌ <?php echo esc_attr( $exclude_feature );?></li>
+                                                    <li><i class="mi mi-cross-small"></i> <?php echo esc_attr( $exclude_feature );?></li>
                                                     <?php
                                                 }
                                             }

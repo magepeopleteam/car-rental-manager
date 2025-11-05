@@ -100,21 +100,38 @@
 }
 
 /* ===== INCLUDE/EXCLUDE ===== */
+.mpcrbm_car_details_tab_content{
+
+box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
+  padding: 10px;
+  border-radius: 12px;
+}
 .mpcrbm_car_details_include_exclude {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
 }
-.mpcrbm_car_details_include, .mpcrbm_car_details_exclude {
+.mpcrbm_car_details_include_exclude ul li{
+    margin: 10px 0;
+    font-size: 14px;
+}
+.mpcrbm_car_details_include, 
+.mpcrbm_car_details_exclude {
     flex: 1 1 45%;
-    background: #f9f9f9;
     padding: 15px;
     border-radius: 10px;
 }
-.mpcrbm_car_details_include h4, .mpcrbm_car_details_exclude h4 {
-    margin-bottom: 10px;
+.mpcrbm_car_details_include i{
+    color: rgb(20, 198, 20);
+}
+.mpcrbm_car_details_exclude i{
+    color: rgb(198, 20, 20);
 }
 
+div.mpcrbm_car_details_left h4{
+    margin-bottom: 10px;
+    font-size: 16px;
+}
 /* ===== MAP ===== */
 .mpcrbm_car_details_map_box iframe {
     width: 100%;
@@ -124,7 +141,7 @@
 }
 
 /* ===== RIGHT BOX ===== */
-div.mpcrbm_car_details_right h3{
+div.mpcrbm_car_details_container h3{
     margin:10px 0;
     margin-top: 0;
 }
