@@ -514,7 +514,6 @@
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
             </div>`;
-            // $('.mpcrbm_selected_faq_question').append( html );
 
             updateFaqMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
 
@@ -535,7 +534,6 @@
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
             </div>`;
-            // $('.mpcrbm_faq_all_question').append(html);
 
             updateFaqMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
 
@@ -557,9 +555,8 @@
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
             </div>`;
-            // $('.mpcrbm_selected_faq_question').append( html );
 
-            updateTermMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
+            updateTermMeta( $this, item, 'add', 'mpcrbm_selected_term_condition', html );
 
         });
         // ===== REMOVE FAQ =====
@@ -578,9 +575,8 @@
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
             </div>`;
-            // $('.mpcrbm_faq_all_question').append(html);
 
-            updateTermMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
+            updateTermMeta( $this, item, 'remove', 'mpcrbm_all_term_condition', html  );
 
         });
 
@@ -620,7 +616,7 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert('✅ FAQs saved successfully');
+                        // alert('✅ FAQs saved successfully');
 
                         clickBtn.text( action );
                         $('.'+append_section).append(html);
@@ -667,7 +663,7 @@
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert('✅ FAQs saved successfully');
+                        // alert('✅ FAQs saved successfully');
 
                         clickBtn.text( action );
                         $('.'+append_section).append(html);
@@ -696,7 +692,7 @@
                 },
                 success: function(res) {
                     if (res.success) {
-                        alert('Feature meta updated');
+                        console.log('Feature meta updated');
                     }
                 }
             });
