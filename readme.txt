@@ -57,6 +57,9 @@ Let's look at the key features that make the plugin more acceptable in its categ
 ## Explore The Demo:
 &#9989;  [Live Demo for Car Rental ](https://car.wprently.com/)
 
+## Buy Pro Version:
+&#9989;  [Get Pro Version ](https://mage-people.com/product/wordpress-car-rental-plugin/)
+
 == Guideline ==
 Shortcode:
 [mpcrbm_booking form='inline' progressbar='no']
