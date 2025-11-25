@@ -466,10 +466,20 @@
 											'text'  => 'Diesel'
 										),
 									],
-									'mpcrbm_maximum_passenger' => 4,
-									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
+									'mpcrbm_maximum_passenger' => 15,
+									'mpcrbm_maximum_bag' => 8,
+									'mpcrbm_car_type' => ['Microbus'],
+									'mpcrbm_fuel_type' => ['Electric'],
+									'mpcrbm_car_brand' => ['Mercedes-Benz'],
+									'mpcrbm_seating_capacity' => ['15 Seater'],
+									'mpcrbm_make_year' => ['2022'],
+									'mpcrbm_driver_info' =>[
+										'name'       => 'John Doe',
+										'license'    => 'D1234567',
+										'experience' => '5 years',
+										'phone'    => '+1234567890',
+										'email'    => 'john@domain.com',
+										'age'    => '22+',
 									],
 									// features_settings
 									'mpcrbm_include_features' => [
@@ -483,26 +493,7 @@
 										'Cruise Control',
 										'Sunroof',
 									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
-									'mpcrbm_driver_info' =>[
-										'name'       => 'John Doe',
-										'license'    => 'D1234567',
-										'experience' => '5 years',
-										'phone'    => '+1234567890',
-										'email'    => 'john@domain.com',
-										'age'    => '22+',
-									],
+
 									//gallery_settings
 									'mpcrbm_gallery_images' => array( 0, 3, 2, 4, 1),
 
@@ -576,23 +567,13 @@
 											'text'  => 'Diesel'
 										),
 									],
-									'mpcrbm_maximum_passenger' => 4,
-									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
-									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
+									'mpcrbm_maximum_passenger' => 7,
+									'mpcrbm_maximum_bag' => 5,
+									'mpcrbm_car_type' => ['Pickup Truck'],
+									'mpcrbm_fuel_type' => ['Diesel'],
+									'mpcrbm_car_brand' => ['Mitsubishi'],
+									'mpcrbm_seating_capacity' => ['5 Seater'],
+									'mpcrbm_make_year' => ['2020'],
 									'mpcrbm_driver_info' =>[
 										'name'       => 'John Doe',
 										'license'    => 'D1234567',
@@ -712,22 +693,12 @@
 										),
 									],
 									'mpcrbm_maximum_passenger' => 4,
-									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
-									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
+									'mpcrbm_maximum_bag' => 2,
+									'mpcrbm_car_type' => ['Hatchback'],
+									'mpcrbm_fuel_type' => ['Octane'],
+									'mpcrbm_car_brand' => ['Honda'],
+									'mpcrbm_seating_capacity' => ['4 Seater'],
+									'mpcrbm_make_year' => ['2019'],
 									'mpcrbm_driver_info' =>[
 										'name'       => 'John Doe',
 										'license'    => 'D1234567',
@@ -846,23 +817,13 @@
 											'text'  => 'Diesel'
 										),
 									],
-									'mpcrbm_maximum_passenger' => 4,
-									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
-									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
+									'mpcrbm_maximum_passenger' => 10,
+									'mpcrbm_maximum_bag' => 6,
+									'mpcrbm_car_type' => ['Microbus'],
+									'mpcrbm_fuel_type' => ['CNG'],
+									'mpcrbm_car_brand' => ['Nissan'],
+									'mpcrbm_seating_capacity' => ['10 Seater'],
+									'mpcrbm_make_year' => ['2021'],
 									'mpcrbm_driver_info' =>[
 										'name'       => 'John Doe',
 										'license'    => 'D1234567',
@@ -981,23 +942,13 @@
 											'text'  => 'Diesel'
 										),
 									],
-									'mpcrbm_maximum_passenger' => 4,
+									'mpcrbm_maximum_passenger' => 5,
 									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
-									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
+									'mpcrbm_car_type' => ['Sedan'],
+									'mpcrbm_fuel_type' => ['Hybrid'],
+									'mpcrbm_car_brand' => ['Toyota'],
+									'mpcrbm_seating_capacity' => ['5 Seater'],
+									'mpcrbm_make_year' => ['2025'],
 									'mpcrbm_driver_info' =>[
 										'name'       => 'John Doe',
 										'license'    => 'D1234567',
@@ -1116,23 +1067,13 @@
 											'text'  => 'Octane'
 										),
 									],
-									'mpcrbm_maximum_passenger' => 4,
-									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
-									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
+									'mpcrbm_maximum_passenger' => 2,
+									'mpcrbm_maximum_bag' => 1,
+									'mpcrbm_car_type' => ['Luxury Car'],
+									'mpcrbm_fuel_type' => ['Petrol'],
+									'mpcrbm_car_brand' => ['BMW'],
+									'mpcrbm_seating_capacity' => ['2 Seater'],
+									'mpcrbm_make_year' => ['2024'],
 									'mpcrbm_driver_info' =>[
 										'name'       => 'John Doe',
 										'license'    => 'D1234567',
@@ -1252,22 +1193,12 @@
 										),
 									],
 									'mpcrbm_maximum_passenger' => 4,
-									'mpcrbm_maximum_bag' => 4,
-									'mpcrbm_car_type' => [
-										'Hatchback'
-									],
-									'mpcrbm_fuel_type' => [
-										'Octane'
-									],
-									'mpcrbm_seating_capacity' => [
-										'4 Seater'
-									],
-									'mpcrbm_car_brand' => [
-										'Toyota'
-									],
-									'mpcrbm_make_year' => [
-										'2025'
-									],
+									'mpcrbm_maximum_bag' => 3,
+									'mpcrbm_car_type' => ['SUV'],
+									'mpcrbm_fuel_type' => ['Diesel'],
+									'mpcrbm_car_brand' => ['Hyundai'],
+									'mpcrbm_seating_capacity' => ['7 Seater'],
+									'mpcrbm_make_year' => ['2023'],
 									'mpcrbm_driver_info' =>[
 										'name'       => 'John Doe',
 										'license'    => 'D1234567',
