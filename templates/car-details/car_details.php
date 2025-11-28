@@ -318,10 +318,11 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                         <div class="divider"></div>
                                         <table class="mpcrbm_car_details_table">
                                             <tbody>
-                                            <?php foreach ( $selected_term_condition as $term_condition ){?>
+                                            <?php
+                                            foreach ( $selected_term_condition as $term_condition ){?>
                                                 <tr>
                                                     <th><?php echo wp_strip_all_tags( $term_condition['title'] )?></th>
-                                                    <td><?php echo wp_strip_all_tags( $term_condition['answer'] )?></td>
+                                                    <td><?php echo wp_strip_all_tags( $term_condition['description'] )?></td>
                                                 </tr>
                                             <?php }?>
                                             </tbody>
