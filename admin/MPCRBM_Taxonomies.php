@@ -31,16 +31,49 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         function mpcrbm_delete_multiple_cars() {
             check_ajax_referer('mpcrbm_extra_service', '_wpnonce');
 
-            $ids = isset($_POST['ids']) ? explode(',', sanitize_text_field($_POST['ids'])) : [];
-
-            if (!empty($ids)) {
-                foreach ($ids as $id) {
-                    wp_trash_post((int)$id);
-                }
-                wp_send_json_success(['trashed' => $ids]);
-            } else {
-                wp_send_json_error(['message' => 'No IDs provided']);
+            if ( ! current_user_can( 'delete_posts' ) ) {
+                wp_send_json_error( [
+                    'message' => __( 'You are not allowed to delete cars.', 'car-rental-manager' ),
+                ], 403 );
             }
+
+            $ids = isset( $_POST['ids'] ) ? explode( ',', sanitize_text_field( wp_unslash( $_POST['ids'] ) ) ) : [];
+            $ids = array_filter( array_map( 'absint', $ids ) );
+
+            if ( empty( $ids ) ) {
+                wp_send_json_error( [
+                    'message' => __( 'No valid IDs provided.', 'car-rental-manager' ),
+                ], 400 );
+            }
+
+            $trashed = [];
+            $cpt = MPCRBM_Function::get_cpt();
+
+            foreach ( $ids as $id ) {
+                $post = get_post( $id );
+
+                if ( ! $post || $post->post_type !== $cpt ) {
+                    continue;
+                }
+
+                if ( ! current_user_can( 'delete_post', $id ) ) {
+                    continue;
+                }
+
+                if ( false !== wp_trash_post( $id ) ) {
+                    $trashed[] = $id;
+                }
+            }
+
+            if ( empty( $trashed ) ) {
+                wp_send_json_error( [
+                    'message' => __( 'No cars could be deleted.', 'car-rental-manager' ),
+                ], 400 );
+            }
+
+            wp_send_json_success( [
+                'trashed' => $trashed,
+            ] );
         }
 
 
