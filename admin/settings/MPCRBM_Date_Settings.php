@@ -382,10 +382,33 @@
 				return $this->data_sanitize( $value );
 			}
 
+			/**
+			 * Safe unserialize function that prevents PHP object injection
+			 * Uses allowed_classes => false to prevent deserializing objects
+			 * 
+			 * @param mixed $data The data to unserialize
+			 * @return mixed Unserialized data (arrays and primitives only, no objects)
+			 */
+			private function safe_unserialize( $data ) {
+				if ( ! is_string( $data ) || ! is_serialized( $data ) ) {
+					return $data;
+				}
+				
+				// Use unserialize with allowed_classes => false to prevent object injection
+				$unserialized = @unserialize( $data, [ 'allowed_classes' => false ] );
+				
+				// If unserialize failed, return original data
+				if ( $unserialized === false && $data !== serialize( false ) ) {
+					return $data;
+				}
+				
+				return $unserialized;
+			}
+
 			public function data_sanitize( $data ) {
-				$data = maybe_unserialize( $data );
+				$data = $this->safe_unserialize( $data );
 				if ( is_string( $data ) ) {
-					$data = maybe_unserialize( $data );
+					$data = $this->safe_unserialize( $data );
 					if ( is_array( $data ) ) {
 						$data = $this->data_sanitize( $data );
 					} else {
