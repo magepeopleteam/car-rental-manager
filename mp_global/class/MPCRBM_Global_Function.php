@@ -137,33 +137,10 @@
 				return sanitize_text_field( $value );
 			}
 
-			/**
-			 * Safe unserialize function that prevents PHP object injection
-			 * Uses allowed_classes => false to prevent deserializing objects
-			 * 
-			 * @param mixed $data The data to unserialize
-			 * @return mixed Unserialized data (arrays and primitives only, no objects)
-			 */
-			public static function safe_unserialize( $data ) {
-				if ( ! is_string( $data ) || ! is_serialized( $data ) ) {
-					return $data;
-				}
-				
-				// Use unserialize with allowed_classes => false to prevent object injection
-				$unserialized = @unserialize( $data, [ 'allowed_classes' => false ] );
-				
-				// If unserialize failed, return original data
-				if ( $unserialized === false && $data !== serialize( false ) ) {
-					return $data;
-				}
-				
-				return $unserialized;
-			}
-
 			public static function data_sanitize( $data ) {
-				$data = self::safe_unserialize( $data );
+				$data = maybe_unserialize( $data );
 				if ( is_string( $data ) ) {
-					$data = self::safe_unserialize( $data );
+					$data = maybe_unserialize( $data );
 					if ( is_array( $data ) ) {
 						$data = self::data_sanitize( $data );
 					} else {
@@ -677,9 +654,9 @@
                     foreach ($meta_keys as $key) {
                         $value = get_post_meta($post_id, $key, true);
 
-                        // Unserialize if needed (safe unserialize to prevent object injection)
+                        // Unserialize if needed
                         if (is_serialized($value)) {
-                            $value = self::safe_unserialize($value);
+                            $value = maybe_unserialize($value);
                         }
 
                         // Merge arrays or single values

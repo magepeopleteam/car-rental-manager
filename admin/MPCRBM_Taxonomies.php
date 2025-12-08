@@ -66,16 +66,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             $new_post_id = wp_insert_post( $new_post );
 
-            // Copy meta (using safe unserialize to prevent object injection)
+            // Copy meta
             $metas = get_post_meta( $post_id );
             foreach ( $metas as $key => $values ) {
                 foreach ( $values as $value ) {
-                    // Use safe unserialize to prevent PHP object injection vulnerability
-                    if ( is_serialized( $value ) ) {
-                        $unserialized = @unserialize( $value, [ 'allowed_classes' => false ] );
-                        $value = ( $unserialized !== false || $value === serialize( false ) ) ? $unserialized : $value;
-                    }
-                    update_post_meta( $new_post_id, $key, $value );
+                    update_post_meta( $new_post_id, $key, maybe_unserialize( $value ) );
                 }
             }
             wp_redirect( get_edit_post_link( $new_post_id, 'url' ) );
