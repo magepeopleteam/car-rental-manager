@@ -39,11 +39,11 @@ if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extr
                     </div>
                 <?php } ?>
                 <div class="fdColumn _fullWidth">
-                    <h4>
+                    <h4 class="mpcrbm_search_title">
                         <?php if ($service_icon) { ?>
                             <span class="<?php echo esc_attr($service_icon); ?>"></span>
                         <?php } ?>
-                        <?php echo esc_html($service_name); ?>
+                        <span class="mprcbm_text"><?php echo esc_html($service_name); ?></span>
                     </h4>
                     <div class="price-quantity-box">
                         <div class="_mR_xs">
