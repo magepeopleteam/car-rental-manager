@@ -79,7 +79,7 @@
 		height: 37px;
 		color: #5b6b7a;
 		font-weight: 400;
-		font-size: 16px;
+		font-size: 13px;
 		padding: 8px 17px;
 		border-color: #EBECEE;
 		background-image: url('../../mp_global/assets/images/arrow_down.svg');
@@ -350,7 +350,7 @@ h2#mpcrbm_title_change{color:white;}
 	color: #64748b;
 }
 .mpcrbm_car_spec .spec-value{
-	font-size: 14px;
+	font-size: 12px;
 	font-weight: 400;
 }
 
@@ -622,7 +622,7 @@ h2#mpcrbm_title_change{color:white;}
 .mpcrbm_summary_show p:not(.wp_editor p){
 	font-weight: bold;
 	color: #333;
-	font-size: 14px;
+	font-size: 12px;
  }
 
  .mpcrbm_location_icon_margin{

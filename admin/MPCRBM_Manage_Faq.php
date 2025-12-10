@@ -68,8 +68,17 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                                     data-key="<?php echo esc_attr( $key ); ?>"
                                     data-title="<?php echo esc_attr( $term_and_condition['title'] ); ?>"
                             >
-                                <td class="faq-title"><?php echo esc_html( $term_and_condition['title'] ); ?></td>
-                                <td class="faq-answer"><?php echo wp_kses_post( wp_trim_words( $term_and_condition['answer'], 15 ) ); ?></td>
+                                <td class="faq-title">
+								    <?php echo array_key_exists( 'title', $term_and_condition ) ? esc_html( $term_and_condition['title'] ) : ''; ?>
+								</td>
+
+								<td class="faq-answer">
+								    <?php
+								        $answer = array_key_exists( 'answer', $term_and_condition ) ? $term_and_condition['answer'] : '';
+								        echo wp_kses_post( wp_trim_words( $answer, 15 ) );
+								    ?>
+								</td>
+
                                 <td>
                                     <button class="button mpcrbm_edit_term"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
                                     <button class="button mpcrbm_delete_term"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>

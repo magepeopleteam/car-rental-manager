@@ -160,12 +160,14 @@ if ($post_id) {
     >
         <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
-                <?php if( $ajax_search === 'yes' ){
+                <img src="<?php echo esc_attr($thumbnail); ?>">
+                <!-- <?php if( $ajax_search === 'yes' ){
                     ?>
                     <img src="<?php echo esc_attr($thumbnail); ?>">
                 <?php }else{?>
                     <div data-bg-image="<?php echo esc_attr($thumbnail); ?>"></div>
-                <?php }?>
+                    <img src="<?php echo esc_attr($thumbnail); ?>">
+                <?php }?> -->
 
             </div>
         </div>

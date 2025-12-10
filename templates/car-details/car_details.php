@@ -222,14 +222,16 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             </div>
 
                             <div id="carinfo" class="mpcrbm_car_details_tab_content">
+                                <h3><?php _e('Car specification','car-rental-manager'); ?></h3>
+                                <div class="divider"></div>
                                 <div class="mpcrbm_car_details_info_grid">
-                                    <div class="sss"><i class="mi mi-tachometer-fast"></i> <?php echo esc_attr( $car_type );?></div>
-                                    <div class="sss"><i class="mi mi-bonus"></i> <?php echo esc_attr( $car_brand );?></div>
-                                    <div class="sss">👤 <?php echo esc_attr( $seating_capacity );?> <?php esc_attr_e( 'Persons', 'car-rental-manager' );?></div>
-                                    <div class="sss">🧳 <?php echo esc_attr( $maximum_bag );?> <?php esc_attr_e( 'Bags', 'car-rental-manager' );?></div>
-                                    <div class="sss">📅 <?php echo esc_attr( $make_year );?></div>
-                                    <div class="sss">∞ <?php esc_attr_e( 'Unlimited', 'car-rental-manager' );?></div>
-                                    <div class="sss">⛽ <?php echo esc_attr( $fuel_type );?></div>
+                                    <div class="specification"><i class="mi mi-tachometer-fast"></i> <?php echo esc_attr( $car_type );?></div>
+                                    <div class="specification"><i class="mi mi-bonus"></i> <?php echo esc_attr( $car_brand );?></div>
+                                    <div class="specification"><i class="mi mi-person-seat"></i> <?php echo esc_attr( $seating_capacity );?></div>
+                                    <div class="specification"><i class="mi mi-person-luggage"></i> <?php echo esc_attr( $maximum_bag );?> <?php esc_attr_e( 'Bags', 'car-rental-manager' );?></div>
+                                    <div class="specification"><i class="mi mi-calendar"></i>  <?php echo esc_attr( $make_year );?></div>
+                                    <div class="specification"><i class="mi mi-infinity"></i> <?php esc_attr_e( 'Unlimited', 'car-rental-manager' );?></div>
+                                    <div class="specification"><i class="mi mi-gas-pump-alt"></i> <?php echo esc_attr( $fuel_type );?></div>
 
                                 </div>
                             </div>
@@ -247,6 +249,8 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             </div>
 
                             <div id="include" class="mpcrbm_car_details_tab_content">
+                                <h3><?php _e('Car Features','car-rental-manager'); ?></h3>
+                                <div class="divider"></div>
                                 <div class="mpcrbm_car_details_include_exclude">
                                     <div class="mpcrbm_car_details_include">
                                         <h4><?php esc_attr_e( 'Include Feature', 'car-rental-manager' );?></h4>
@@ -255,7 +259,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                             if( !empty( $include_feature_names ) ){
                                                 foreach ( $include_feature_names as $include_feature ){
                                                     ?>
-                                                    <li>✅ <?php echo esc_attr( $include_feature );?></li>
+                                                    <li><i class="mi mi-check"></i> <?php echo esc_attr( $include_feature );?></li>
                                                     <?php
                                                 }
                                             }
@@ -269,7 +273,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                             if( !empty( $exclude_feature_names ) ){
                                                 foreach ( $exclude_feature_names as $exclude_feature ){
                                                     ?>
-                                                    <li>❌ <?php echo esc_attr( $exclude_feature );?></li>
+                                                    <li><i class="mi mi-cross-small"></i> <?php echo esc_attr( $exclude_feature );?></li>
                                                     <?php
                                                 }
                                             }
@@ -280,17 +284,22 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             </div>
 
                             <div id="location" class="mpcrbm_car_details_tab_content">
+                                <h3><?php _e('Pickup Location','car-rental-manager') ?></h3>
+                                <div class="divider"></div>
                                 <div class="mpcrbm_car_details_map_box">
                                     <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $start_place );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
                                 </div>
                             </div>
 
                             <div id="reviews" class="mpcrbm_car_details_tab_content">
+                                <h3><?php _e('Reviews','car-rental-manager') ?></h3>
+                                <div class="divider"></div>
                                 <p><?php esc_attr_e( 'No reviews yet. Be the first to share your experience!', 'car-rental-manager' );?></p>
                             </div>
 
                             <div id="faq" class="mpcrbm_car_details_tab_content">
-                                <h4><?php esc_attr_e( 'Frequently Asked Questions', 'car-rental-manager' );?></h4>
+                                <h3><?php esc_attr_e( 'Frequently Asked Questions', 'car-rental-manager' );?></h3>
+                                <div class="divider"></div>
                                 <?php
                                 if( !empty( $selected_faqs_data ) ){
                                     foreach ( $selected_faqs_data as $faq_data  ){
@@ -305,13 +314,15 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             <div id="terms" class="mpcrbm_car_details_tab_content">
                                 <?php if ( ! empty( $selected_term_condition ) ) : ?>
                                     <div class="tf-car-conditions-section" id="tf-tc">
-                                        <h3><?php esc_attr_e( 'Tour Terms &amp; Conditions', 'car-rental-manager' );?></h3>
+                                        <h3><?php _e('Terms and Condition','car-rental-manager') ?></h3>
+                                        <div class="divider"></div>
                                         <table class="mpcrbm_car_details_table">
                                             <tbody>
-                                            <?php foreach ( $selected_term_condition as $term_condition ){?>
+                                            <?php
+                                            foreach ( $selected_term_condition as $term_condition ){?>
                                                 <tr>
                                                     <th><?php echo wp_strip_all_tags( $term_condition['title'] )?></th>
-                                                    <td><?php echo wp_strip_all_tags( $term_condition['answer'] )?></td>
+                                                    <td><?php echo wp_strip_all_tags( $term_condition['description'] )?></td>
                                                 </tr>
                                             <?php }?>
                                             </tbody>
@@ -356,7 +367,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             <div class="driver-data">
                                 <div class="driver-picuture">
                                     <img src="https://img.freepik.com/premium-vector/driver-orange-uniform-worker-with-steering-wheel_176411-3181.jpg" alt="">
-                                    <span class="verified">✔ <?php esc_attr_e( 'Verified', 'car-rental-manager' );?></span>
+                                    <span class="verified"><i class="mi mi-badge-check"></i> <?php esc_attr_e( 'Verified', 'car-rental-manager' );?></span>
                                 </div>
                                 <div class="driver-info">
                                     <div>
