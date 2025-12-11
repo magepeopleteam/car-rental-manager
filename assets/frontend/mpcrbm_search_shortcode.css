@@ -121,6 +121,8 @@ div.header-text h2 {
 }
 
 .mpcrbm_search_title{
+    display: flex !important;
+    align-items: center;
     font-size: 14px;
     padding: 10px 0;
     padding-top: 0;
@@ -131,6 +133,11 @@ div.header-text h2 {
     font-size: 16px;
     color: #566676;
 }
+
+.mprcbm_text{
+    margin: 2px;
+}
+
 .custom-divider {
     border: none;
     border-top: 1px solid #ccc; /* change color if needed */
