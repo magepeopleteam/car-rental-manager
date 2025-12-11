@@ -38,6 +38,20 @@
 			public static function get_post_info( $post_id, $key, $default = '' ) {
 				$data = get_post_meta( $post_id, $key, true ) ?: $default;
 
+				// Security fix: Special handling for mpcrbm_day_price to prevent PHP Object Injection
+				// Ensure it always returns a numeric value, never unserialized objects
+				if ( $key === 'mpcrbm_day_price' ) {
+					// If data is serialized, reject it and return default
+					if ( is_serialized( $data ) ) {
+						return is_numeric( $default ) ? floatval( $default ) : 0;
+					}
+					// Ensure the value is numeric
+					if ( ! is_numeric( $data ) ) {
+						return is_numeric( $default ) ? floatval( $default ) : 0;
+					}
+					return floatval( $data );
+				}
+
 				return self::data_sanitize( $data );
 			}
 
@@ -138,12 +152,49 @@
 			}
 
 			public static function data_sanitize( $data ) {
-				$data = maybe_unserialize( $data );
-				if ( is_string( $data ) ) {
+				// Security fix: Prevent PHP Object Injection by checking for serialized objects
+				// Only allow unserialization of arrays and primitive types, reject objects
+				if ( is_string( $data ) && is_serialized( $data ) ) {
+					$unserialized = @unserialize( $data );
+					// Reject if unserialized data is an object (potential security risk)
+					if ( is_object( $unserialized ) ) {
+						// Return empty string for objects to prevent object injection
+						return '';
+					}
+					// Only proceed if it's an array or primitive type
+					if ( $unserialized !== false ) {
+						$data = $unserialized;
+					}
+				} else {
 					$data = maybe_unserialize( $data );
+				}
+				
+				// Additional security check: if data is still an object after unserialization, reject it
+				if ( is_object( $data ) ) {
+					return '';
+				}
+				
+				if ( is_string( $data ) ) {
+					// Check again if it's serialized (double-serialized case)
+					if ( is_serialized( $data ) ) {
+						$unserialized = @unserialize( $data );
+						// Reject objects
+						if ( is_object( $unserialized ) ) {
+							return '';
+						}
+						if ( $unserialized !== false ) {
+							$data = $unserialized;
+						}
+					}
+					
+					// Additional check after second unserialization
+					if ( is_object( $data ) ) {
+						return '';
+					}
+					
 					if ( is_array( $data ) ) {
 						$data = self::data_sanitize( $data );
-					} else {
+					} else if ( is_string( $data ) ) {
 						// Determine type of data and sanitize accordingly
 						if ( is_email( $data ) ) {
 							$data = sanitize_email( $data );

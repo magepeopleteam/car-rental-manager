@@ -273,7 +273,22 @@
 				if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 					$price_based = "manual";
 					update_post_meta( $post_id, 'mpcrbm_price_based', $price_based );
-					$hour_price = isset( $_POST['mpcrbm_day_price'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) ) : 0;
+					// Security fix: Validate mpcrbm_day_price to prevent PHP Object Injection
+					// Only accept numeric values, reject serialized data
+					if ( isset( $_POST['mpcrbm_day_price'] ) ) {
+						$raw_price = wp_unslash( $_POST['mpcrbm_day_price'] );
+						// Check if the value is serialized (potential security risk)
+						if ( is_serialized( $raw_price ) ) {
+							$hour_price = 0;
+						} else {
+							// Validate and sanitize as numeric value only
+							$hour_price = is_numeric( $raw_price ) ? floatval( $raw_price ) : 0;
+							// Ensure non-negative price
+							$hour_price = max( 0, $hour_price );
+						}
+					} else {
+						$hour_price = 0;
+					}
 					update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
 
 
