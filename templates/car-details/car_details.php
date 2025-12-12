@@ -336,6 +336,10 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         <?php
                         $mpcrbm_booking_form = new MPCRBM_Shortcodes();
 
+                        $start_date = date("Y-m-d H:i");
+                        $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $day_price );
+//                        error_log( print_r( [ '$day_price' => $day_price ], true ) );
+
                         ?>
 
                         <div class="mpcrbm_car_details_price_box">
