@@ -573,11 +573,24 @@ h2#mpcrbm_title_change{color:white;}
  }
 	.price-quantity-box{
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: space-between;
 		gap: 10px;
 	}
 	.price-quantity-box .mpcrbm-price{
+		font-size: 1.2em;
+		font-weight: bold;
+		color: #2c3338;
+		text-align: end;
+	}
+	.mpcrbm-ex-quantity-box{
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+	}
+	.mpcrbm-ex-quantity-box .mpcrbm-price{
 		font-size: 1.2em;
 		font-weight: bold;
 		color: #2c3338;
