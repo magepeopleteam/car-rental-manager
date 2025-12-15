@@ -51,7 +51,8 @@ if (!empty($added_term_condition) && !empty( $all_term_condition ) ) {
 }
 
 //$daily_price = get_post_meta( $post_id, 'mpcrbm_base_daily_price', true );
-$day_price = get_post_meta( $post_id, 'mpcrbm_day_price', true );
+//$day_price = get_post_meta( $post_id, 'mpcrbm_day_price', true );
+$price = get_post_meta( $post_id, 'mpcrbm_day_price', true );
 $extra_service = get_post_meta( $post_id, 'mpcrbm_extra_service_infos', true );
 $price_based = get_post_meta( $post_id, 'mpcrbm_price_based', true );
 $link_wc_product = get_post_meta( $post_id, 'link_wc_product', true );
@@ -90,8 +91,6 @@ if( is_array( $off_dates ) && !empty( $off_dates ) ){
     $off_dates_str = implode( ',' , $off_dates);
 }
 $off_days = get_post_meta( $post_id, 'mpcrbm_off_days', true );
-
-//error_log( print_r( [ '$location_prices' => $location_prices ], true ) );
 
 
 $gallery_images = get_post_meta( $post_id, 'mpcrbm_gallery_images', true );
@@ -336,10 +335,30 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         <?php
                         $mpcrbm_booking_form = new MPCRBM_Shortcodes();
 
+                        $start_date = date("Y-m-d H:i");
+                        $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
+
+                        $pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
+                        $is_discount = isset( $pricing_rule_data['is_discount'] ) ? $pricing_rule_data['is_discount'] : false;
+
                         ?>
 
                         <div class="mpcrbm_car_details_price_box">
+                            <?php if( $is_discount ){
+                                $pricing_rules = isset( $pricing_rule_data['pricing_rules'] ) ? $pricing_rule_data['pricing_rules'] : '';
+                                ?>
+                                <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
+                                    <div class="mpcrbm_price-breakdown mpcrbm_line_through"><?php echo wp_kses_post( wc_price($price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                    <div class="mpcrbm_price_hover_wrap">
+                                        <span class="mpcrbm_price_info">
+                                            ℹ Price Rules
+                                        </span>
+                                        <div class=""><?php echo wp_kses_post( $pricing_rules );?></div>
+                                    </div>
+                                </div>
+                            <?php }?>
                             <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span><?php echo wp_kses_post( wc_price( $day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
+
                             <p><?php esc_attr_e( 'Without Taxes', 'car-rental-manager' );?></p>
 
                             <?php

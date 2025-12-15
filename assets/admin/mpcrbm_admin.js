@@ -115,7 +115,8 @@
 						<select name="mpcrbm_seasonal_pricing[type][]">\
 						<option value="percentage_increase">% Increase</option>\
 						<option value="percentage_decrease">% Decrease</option>\
-						<option value="fixed">Fixed</option>\
+						<option value="fixed_increase">Fixed Increase</option>\
+						<option value="fixed_decrease">Fixed Decrease</option>\
 					</select>\
 					<input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" placeholder="Value">\
 					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\

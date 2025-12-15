@@ -34,6 +34,140 @@
   display: flex;
 }
 
+
+
+/*Pricing Rules*/
+.mpcrbm_price_hover_wrap {
+    position: relative;
+    display: inline-block;
+}
+
+/* Hover trigger */
+.mpcrbm_price_info {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2563eb;
+    cursor: pointer;
+    background: #e0e7ff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.mpcrbm_price_info:hover {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Tooltip container */
+.mpcrbm_display_pricing_rules {
+    position: absolute;
+    top: 110%;
+    right: 0;
+    width: 320px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    color: #e5e7eb;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(6px) scale(0.98);
+    transition: all 0.25s ease;
+    z-index: 999;
+}
+
+/* Show on hover */
+.mpcrbm_price_hover_wrap:hover .mpcrbm_display_pricing_rules {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Titles */
+.mpcrbm_display_pricing_rules h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 10px 0 6px;
+    color: #93c5fd;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mpcrbm_display_pricing_rules h4:first-child {
+    margin-top: 0;
+}
+
+/* Base price highlight */
+.mpcrbm_display_pricing_rules p {
+    font-size: 12px;
+    background: #020617;
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+/* Compact list */
+.mpcrbm_display_pricing_rules ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mpcrbm_display_pricing_rules ul li {
+    background: #020617;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin-bottom: 5px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Increase badge */
+.mpcrbm_display_pricing_rules .increase {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: #ecfdf5;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+/* Decrease badge */
+.mpcrbm_display_pricing_rules .decrease {
+    background: linear-gradient(135deg, #dc2626, #f87171);
+    color: #fff1f2;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+/* Arrow */
+.mpcrbm_display_pricing_rules::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 18px;
+    width: 12px;
+    height: 12px;
+    background: #1e293b;
+    transform: rotate(45deg);
+}
+
+/* Mobile support */
+@media (max-width: 480px) {
+    .mpcrbm_display_pricing_rules {
+        right: auto;
+        left: 0;
+        width: 280px;
+    }
+}
+
+
 @media (max-width: 768px) {
   .mpcrbm_list{
     flex-direction: column;

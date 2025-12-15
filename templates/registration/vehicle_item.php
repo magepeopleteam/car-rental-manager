@@ -24,6 +24,10 @@ $return_date_time = $return_date_time ?? '';
 $post_id = $post_id ?? '';
 $original_price_based = $price_based ?? '';
 
+
+$pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
+$is_discount = isset( $pricing_rule_data['is_discount'] ) ? $pricing_rule_data['is_discount'] : false;
+
 // Validate post_id
 if (!$post_id || !get_post($post_id)) {
     wp_send_json_error(array('message' => esc_html__('Invalid vehicle', 'car-rental-manager')));
@@ -222,7 +226,21 @@ if ($post_id) {
 
                     <div class="mpcrbm_price_holder">
                         <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
-                            <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                            <div class="" style="display: flex;justify-content: space-between">
+                                <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                <?php if( $is_discount ){
+                                    $pricing_rules = isset( $pricing_rule_data['pricing_rules'] ) ? $pricing_rule_data['pricing_rules'] : '';
+                                    ?>
+                                    <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
+                                        <div class="mpcrbm_price_hover_wrap">
+                                        <span class="mpcrbm_price_info">
+                                            ℹ
+                                        </span>
+                                            <div class=""><?php echo wp_kses_post( $pricing_rules );?></div>
+                                        </div>
+                                    </div>
+                                <?php }?>
+                            </div>
                             <?php
                             if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){ ?>
                                 <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>

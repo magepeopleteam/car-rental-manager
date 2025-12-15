@@ -1178,11 +1178,21 @@ jQuery(document).ready(function($) {
         }, 300);
     });
     $(".mpcrbm_car_details_tabs button").on("click", function(){
-        let tabId = $(this).data("tab");
-        $(".mpcrbm_car_details_tabs button").removeClass("active");
-        $(this).addClass("active");
-        $(".mpcrbm_car_details_tab_content").removeClass("active");
-        $("#" + tabId).addClass("active");
+        var tabId = $(this).data('tab');
+
+        $('.mpcrbm_car_details_tabs button').removeClass('active');
+        $(this).addClass('active');
+
+        $('html, body').animate({
+            scrollTop: $('#' + tabId).offset().top - 50
+        }, 400);
+
+        const target = $('#' + tabId);
+        target.addClass('focus-highlight');
+
+        setTimeout(() => {
+            target.removeClass('focus-highlight');
+        }, 800);
     });
 
 
