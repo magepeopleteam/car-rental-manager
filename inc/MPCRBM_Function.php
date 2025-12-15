@@ -412,8 +412,6 @@
              */
             public static function mpcrbm_calculate_price( $post_id, $start_date, $days, $price ) {
 
-                // Get metadata
-//                $base_price = (float) get_post_meta($post_id, 'mpcrbm_base_daily_price', true);
                 $base_price = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
                 $daywise    = (array) get_post_meta($post_id, 'mpcrbm_daywise_pricing', true);
                 $tiered     = (array) get_post_meta($post_id, 'mpcrbm_tiered_discounts', true);
@@ -424,13 +422,6 @@
                 $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
 
                 $start_timestamp = strtotime($start_date);
-
-                /*if ( $enable_day_wise === 1 && (int)$days === 1 && (float)$price === (float)$base_price ) {
-                    $day_of_week = strtolower(date('D', $start_timestamp));
-                    if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] !== '' && $daywise[$day_of_week] > 0 ) {
-                        $price = (float) $daywise[$day_of_week];
-                    }
-                }*/
 
                 if ( $enable_day_wise === 1 && is_array( $daywise )  && !empty( $daywise ) ) {
                     $total_price = 0;
@@ -455,9 +446,11 @@
                 // 1. Seasonal Pricing
                 if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
 
+                    $seasonal_price = 0;
                     foreach ($seasonal as $s) {
                         $season_start = strtotime( $s['start'] );
                         $season_end   = strtotime( $s['end'] );
+
                         if ( $start_timestamp >= $season_start && $start_timestamp <= $season_end ) {
                             switch ($s['type']) {
                                 case 'percentage_increase':
@@ -467,17 +460,20 @@
                                     $price -= $price * ($s['value'] / 100);
                                     break;
                                 case 'fixed_increase':
-                                    $price =  $price + $s['value'];
+//                                    $price =  $price + $s['value'];
+                                    $price =  self::seasonal_price_calc( $price, $days, $s['value'], 'fixed_increase' );
+
                                     break;
                                 case 'fixed_decrease':
-                                    $price =  $price - $s['value'];
+//                                    $price =  $price - $s['value'];
+                                    $price = self::seasonal_price_calc( $price, $days, $s['value'], 'fixed_decrease' );
                                     break;
                             }
+
                             break;
                         }
                     }
                 }
-
                 // 3. Tiered discount based on rental duration
 
                 if ( $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
@@ -495,6 +491,133 @@
 
                 return round( $price, 2 );
             }
+
+
+            public static function seasonal_price_calc( $price, $days, $value, $type ){
+
+                $seasonal_price = 0;
+                for( $i = 0; $i < (int)$days; $i++ ) {
+                    if( $type === 'fixed_increase' ){
+                        $seasonal_price =  $seasonal_price + $value;
+                    }else{
+                        $seasonal_price =  $seasonal_price - $value;
+                    }
+
+                }
+
+                return $price + $seasonal_price;
+            }
+
+            public static function display_pricing_rules( $post_id ) {
+
+                $is_discount = false;
+
+                $base_price = (float) MPCRBM_Global_Function::get_post_info(
+                    $post_id,
+                    'mpcrbm_day_price',
+                    0
+                );
+
+                $enable_seasonal = (int) get_post_meta( $post_id, 'mpcrbm_enable_seasonal_discount', true );
+                $enable_day_wise = (int) get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );
+                $enable_tired    = (int) get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
+
+                $seasonal = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
+                $day_wise = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
+                $tiered   = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
+
+                ob_start();
+                ?>
+                <div class="mpcrbm_display_pricing_rules">
+
+                    <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
+                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wc_price( $base_price ); ?></strong></p>
+
+                    <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
+                        $is_discount = true;
+                        ?>
+                        <h4><?php esc_attr_e( 'Seasonal Pricing', 'car-rental-manager' );?></h4>
+                        <ul>
+                            <?php foreach ( $seasonal as $rule ) : ?>
+                                <li>
+                                    <strong><?php echo esc_html( ucfirst( $rule['name'] ) ); ?></strong>
+                                    (<?php echo esc_html( $rule['start'] ); ?> to <?php echo esc_html( $rule['end'] ); ?>):
+                                    <?php
+                                    if ( $rule['type'] === 'percentage_increase' ) {
+                                        echo '+' . abs( $rule['value'] ) . '% increase';
+                                    } elseif ( $rule['type'] === 'percentage_decrease' ) {
+                                        echo '-' . abs( $rule['value'] ) . '% discount';
+                                    } elseif ( $rule['type'] === 'fixed_increase' ) {
+                                        echo '+' . wc_price( abs( $rule['value'] ) ) . ' increase';
+                                    } elseif ( $rule['type'] === 'fixed_decrease' ) {
+                                        echo '-' . wc_price( abs( $rule['value'] ) ) . ' discount';
+                                    }
+                                    ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+
+                    <?php if ( $enable_day_wise && ! empty( $day_wise ) ) :
+                        $is_discount = true;
+                        ?>
+                        <h4><?php esc_attr_e( 'Day-wise Pricing', 'car-rental-manager' );?></h4>
+                        <ul>
+                            <?php
+                            foreach ( $day_wise as $day => $day_price ) :
+
+//                                $diff = $day_price - $base_price;
+
+                                if ( $day_price > 0 ) {
+                                    $label =  wc_price( abs( $day_price ) );
+                                    $class = 'increase';
+                                } else {
+                                    $label = 'Same as base price';
+                                    $class = 'same';
+                                }
+                                ?>
+                                <li>
+                                    <span><?php echo ucfirst( $day ); ?></span>
+                                    <span class="<?php echo esc_attr( $class ); ?>">
+                                        <?php echo $label; ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+
+                    <?php if ( $enable_tired && ! empty( $tiered ) ) :
+
+                        $is_discount = true;
+                        ?>
+                        <h4><?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
+                        <ul>
+                            <?php foreach ( $tiered as $rule ) : ?>
+                                <li>
+                                    <?php esc_attr_e( 'For', 'car-rental-manager' );?> <strong><?php echo esc_html( $rule['min'] ); ?> –
+                                        <?php echo esc_html( $rule['max'] ); ?></strong> <?php esc_attr_e( 'days', 'car-rental-manager' );?>:
+                                    <?php echo ( $rule['percent'] >= 0 )
+                                        ? '+' . abs( $rule['percent'] ) . '% increase'
+                                        : '-' . abs( $rule['percent'] ) . '% discount';
+                                    ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+
+                </div>
+                <?php
+
+                $pricing_rules = ob_get_clean();
+
+                return array(
+                    'is_discount' => $is_discount,
+                    'pricing_rules' => $pricing_rules,
+                );
+
+            }
+
+
 
             public static function get_seasonal_rate( $post_id, $price_per_day, $start_date, $enable_seasonal,  ){
                 $seasonal   = (array) get_post_meta($post_id, 'mpcrbm_seasonal_pricing', true);
