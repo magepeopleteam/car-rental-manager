@@ -336,7 +336,13 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         $mpcrbm_booking_form = new MPCRBM_Shortcodes();
 
                         $start_date = date("Y-m-d H:i");
-                        $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
+
+                        if( $post_id && $price > 0 ){
+                            $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
+                        }else{
+                            $day_price = $price;
+                        }
+
 
                         $pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
                         $is_discount = isset( $pricing_rule_data['is_discount'] ) ? $pricing_rule_data['is_discount'] : false;
