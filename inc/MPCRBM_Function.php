@@ -613,6 +613,7 @@
                 return array(
                     'is_discount' => $is_discount,
                     'pricing_rules' => $pricing_rules,
+                    'base_price' => $base_price,
                 );
 
             }
