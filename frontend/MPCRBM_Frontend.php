@@ -118,6 +118,74 @@
 
                 return $content;
             }
-		}
+
+
+            /**
+             * Get all booking dates between mpcrbm_date and return_date_time
+             * from all mpcrbm_booking posts
+             *
+             * @return array
+             */
+            public static function mpcrbm_get_all_booking_dates_between_start_end( $post_id ) {
+
+                $args = [
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'meta_query'     => [
+                        [
+                            'key'     => 'mpcrbm_id',
+                            'value'   => $post_id,
+                            'compare' => '=',
+                            'type'    => 'NUMERIC',
+                        ]
+                    ]
+                ];
+
+                $query = new WP_Query( $args );
+
+                $all_dates = [];
+
+                if ( $query->have_posts() ) {
+                    while ( $query->have_posts() ) {
+                        $query->the_post();
+
+                        $start_datetime = get_post_meta( get_the_ID(), 'mpcrbm_date', true );
+                        $end_datetime   = get_post_meta( get_the_ID(), 'return_date_time', true );
+
+                        if ( empty( $start_datetime ) || empty( $end_datetime ) ) {
+                            continue;
+                        }
+
+                        $start = new DateTime( $start_datetime );
+                        $end   = new DateTime( $end_datetime );
+
+                        $start->setTime( 0, 0, 0 );
+                        $end->setTime( 0, 0, 0 );
+
+                        $end->modify( '+1 day' );
+
+                        $interval = new DateInterval( 'P1D' );
+                        $period   = new DatePeriod( $start, $interval, $end );
+
+                        foreach ( $period as $date ) {
+                            $all_dates[] = $date->format( 'Y-m-d' );
+                        }
+                    }
+
+                    wp_reset_postdata();
+                }
+
+                $all_dates = array_values( array_unique( $all_dates ) );
+                sort( $all_dates );
+
+                return $all_dates;
+            }
+
+
+
+
+
+        }
 		new MPCRBM_Frontend();
 	}
