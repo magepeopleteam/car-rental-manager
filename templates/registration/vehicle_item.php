@@ -27,6 +27,7 @@ $original_price_based = $price_based ?? '';
 
 $pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
 $is_discount = isset( $pricing_rule_data['is_discount'] ) ? $pricing_rule_data['is_discount'] : false;
+$base_price = isset( $pricing_rule_data['base_price'] ) ? $pricing_rule_data['base_price'] : false;
 
 // Validate post_id
 if (!$post_id || !get_post($post_id)) {
@@ -133,7 +134,7 @@ if ($post_id) {
     $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
 
     $line_through = '';
-    if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){
+    if( $is_discount && $base_price !== $day_price ){
         $line_through = 'mpcrbm_line_through';
     }
     
@@ -225,10 +226,10 @@ if ($post_id) {
                 <div class="mpcrbm_discount_booking">
 
                     <div class="mpcrbm_price_holder">
-                        <div class="mpcrbm_discount_info <?php echo esc_attr(( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ) ? 'mpcrbm-discount-seasonal':''); ?>">
+                        <div class="mpcrbm_discount_info <?php echo esc_attr(( $is_discount && $base_price !== $day_price ) ? 'mpcrbm-discount-seasonal':''); ?>">
                             <div class="" style="display: flex;justify-content: space-between">
                                 <div class="mpcrbm_price-breakdown <?php echo esc_attr( $line_through );?>"><?php echo wp_kses_post( wc_price($price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                                <?php if( $is_discount ){
+                                <?php if( $is_discount && $base_price !== $day_price ){
                                     $pricing_rules = isset( $pricing_rule_data['pricing_rules'] ) ? $pricing_rule_data['pricing_rules'] : '';
                                     ?>
                                     <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
@@ -242,7 +243,8 @@ if ($post_id) {
                                 <?php }?>
                             </div>
                             <?php
-                            if( $enable_seasonal === 1 || $enable_tired == 1 || $enable_day_wise === 1 ){ ?>
+//                            error_log( print_r( [ '$base_price' =>$base_price, '$day_price' =>$day_price ], true ) );
+                            if( $is_discount && $base_price !== $day_price ){ ?>
                                 <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                             <?php } ?>
                         </div>

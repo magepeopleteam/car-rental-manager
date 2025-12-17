@@ -86,6 +86,12 @@ $maximum_bag = !empty($maximum_bag) ? $maximum_bag : '';
 
 
 $off_dates = get_post_meta( $post_id, 'mpcrbm_off_dates', true );
+
+$booking_dates = [];
+//$booking_dates = MPCRBM_Frontend::mpcrbm_get_all_booking_dates_between_start_end( $post_id );
+
+$off_dates = array_merge( $off_dates, $booking_dates);
+
 $off_dates_str = '';
 if( is_array( $off_dates ) && !empty( $off_dates ) ){
     $off_dates_str = implode( ',' , $off_dates);
@@ -336,7 +342,13 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         $mpcrbm_booking_form = new MPCRBM_Shortcodes();
 
                         $start_date = date("Y-m-d H:i");
-                        $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
+
+                        if( $post_id && $price > 0 ){
+                            $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
+                        }else{
+                            $day_price = $price;
+                        }
+
 
                         $pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
                         $is_discount = isset( $pricing_rule_data['is_discount'] ) ? $pricing_rule_data['is_discount'] : false;
