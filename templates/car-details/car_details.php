@@ -88,9 +88,9 @@ $maximum_bag = !empty($maximum_bag) ? $maximum_bag : '';
 $off_dates = get_post_meta( $post_id, 'mpcrbm_off_dates', true );
 
 $booking_dates = [];
-//$booking_dates = MPCRBM_Frontend::mpcrbm_get_all_booking_dates_between_start_end( $post_id );
+$booking_dates = MPCRBM_Frontend::mpcrbm_get_all_booking_dates_between_start_end( $post_id );
 
-$off_dates = array_merge( $off_dates, $booking_dates);
+$off_dates = array_merge( $off_dates, $booking_dates );
 
 $off_dates_str = '';
 if( is_array( $off_dates ) && !empty( $off_dates ) ){
