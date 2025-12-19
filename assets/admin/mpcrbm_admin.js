@@ -1,5 +1,6 @@
 (function ($) {
 	"use strict";
+
 	$(document).on('change', '.mpcrbm_extra_services_setting [name="mpcrbm_extra_services_id"]', function () {
 		let ex_id = $(this).val();
 		let parent = $(this).closest('.mpcrbm_extra_services_setting');
@@ -171,4 +172,33 @@
 
 
 	});
+
+	jQuery(document).on('change', '.mpcrbm_order_list__select', function () {
+		let status = jQuery(this).val();
+		let order_id = $(this).attr('data-order-id').trim();
+		console.log( status, order_id );
+
+		jQuery.ajax({
+			url: mpcrbm_ajax_url, // WordPress AJAX endpoint
+			type: 'POST',
+			data: {
+				action: 'mpcrbm_update_order_status',
+				order_id: order_id,
+				status: status,
+				nonce:  mpcrbm_admin_nonce.nonce
+			},
+			success: function(response) {
+				if(response.success) {
+					alert('Order status updated successfully!');
+				} else {
+					alert('Failed to update order status: ' + response.data);
+				}
+			},
+			error: function(xhr, status, error) {
+				console.log('AJAX Error:', error);
+			}
+		});
+
+	});
+
 })(jQuery);
