@@ -48,6 +48,15 @@ jQuery(document).ready(function ($) {
 
         return result;
     }
+    function mpcrbm_get_selected_days(){
+       let getStartDate = $("#mpcrbm_map_start_date").val();
+       let getEndDate = $("#mpcrbm_map_return_date").val();
+       let start_time = $("#mpcrbm_map_start_time").val();
+       let return_time = $("#mpcrbm_map_return_time").val();
+
+       console.log( getStartDate, getEndDate, start_time, return_time );
+
+    }
 
     let mpcrbm_off_dates = '';
     let mpcrbm_off_days = '';
@@ -95,6 +104,8 @@ jQuery(document).ready(function ($) {
                     // Set hidden inputs and trigger change
                     $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
                     $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
+
+                    // mpcrbm_get_selected_days();
                 }
             }
         });
