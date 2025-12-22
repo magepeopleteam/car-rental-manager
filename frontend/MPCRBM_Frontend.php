@@ -36,6 +36,10 @@
 
                 if ( ! empty( $search_page_slug ) && is_page( $search_page_slug ) ) {
 
+                    $search_form_with_result = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'search_form_with_search_result', 'on' );
+
+                    error_log( print_r( [ '$search_form_with_result' => $search_form_with_result ], true ) );
+
                     if ( session_status() === PHP_SESSION_NONE ) {
                         session_start();
                     }
@@ -54,9 +58,14 @@
                     $search_defaults = MPCRBM_Shortcodes::default_attribute();
                     $params = shortcode_atts( $search_defaults, $search_attribute );
 
-                    ob_start();
-                    do_action( 'mpcrbm_transport_search', $params, $search_date );
-                    $action_output = ob_get_clean();
+                    if( $search_form_with_result === 'yes' ){
+                        ob_start();
+                        do_action( 'mpcrbm_transport_search', $params, $search_date );
+                        $action_output = ob_get_clean();
+                    }else{
+                        $action_output = '';
+                    }
+
 
 
 

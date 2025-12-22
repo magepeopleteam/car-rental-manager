@@ -23,6 +23,7 @@
 				$wc_i_text  = $wc_i == 1 ? esc_html__( 'Yes', 'car-rental-manager' ) : esc_html__( 'No', 'car-rental-manager' );
 				$wp_v       = get_bloginfo( 'version' );
 				$wc_v       = WC()->version;
+                $is_modern = version_compare( $wc_v, '4.8', '>' );
 				$from_name  = get_option( 'woocommerce_email_from_name' );
 				$from_email = get_option( 'woocommerce_email_from_address' );
 				?>
@@ -49,8 +50,9 @@
 							<?php if ( $wc_i == 1 ) { ?>
                                 <tr>
                                     <th data-export-label="WC Version"><?php esc_html_e( 'Woocommerce Version : ', 'car-rental-manager' ); ?></th>
-                                    <th class="<?php echo esc_attr( $wc_v > 4.8 ? 'textSuccess' : 'textWarning' ); ?>">
-                                        <span class="<?php echo esc_attr( $wc_v > 4.8 ? 'far fa-check-circle' : 'fas fa-exclamation-triangle' ); ?> mR_xs"></span><?php echo esc_html( $wc_v ); ?>
+                                    <th class="<?php echo esc_attr( $is_modern ? 'textSuccess' : 'textWarning' ); ?>">
+<!--                                    <th class="--><?php //echo esc_attr( $wc_v > 4.8 ? 'textSuccess' : 'textWarning' ); ?><!--">-->
+                                        <span class="<?php echo esc_attr( $is_modern ? 'far fa-check-circle' : 'fas fa-exclamation-triangle' ); ?> mR_xs"></span><?php echo esc_html( $wc_v ); ?>
                                     </th>
                                 </tr>
                                 <tr>
