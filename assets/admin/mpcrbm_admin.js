@@ -176,6 +176,7 @@
 	jQuery(document).on('change', '.mpcrbm_order_list__select', function () {
 		let status = jQuery(this).val();
 		let order_id = $(this).attr('data-order-id').trim();
+		let order_post_id = $(this).attr('data-order-post-id').trim();
 		console.log( status, order_id );
 
 		jQuery.ajax({
@@ -184,6 +185,7 @@
 			data: {
 				action: 'mpcrbm_update_order_status',
 				order_id: order_id,
+				order_post_id: order_post_id,
 				status: status,
 				nonce:  mpcrbm_admin_nonce.nonce
 			},

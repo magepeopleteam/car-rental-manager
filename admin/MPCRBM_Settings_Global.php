@@ -349,6 +349,17 @@
 								'M' => date_i18n('M', strtotime($current_date)),
 							)
 						),
+                        array(
+                            'name' => 'search_form_with_search_result',
+                            'label' => esc_html__('Search Form With Search Result', 'car-rental-manager'),
+                            'desc' => esc_html__('Turn this off if you do not want the search form to appear with the search results', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('Off', 'car-rental-manager'),
+                                'yes' => esc_html__('On', 'car-rental-manager')
+                            )
+                        ),
 					)),
 					'mpcrbm_style_settings' => apply_filters('mpcrbm_filter_style_settings', array(
 						array(
