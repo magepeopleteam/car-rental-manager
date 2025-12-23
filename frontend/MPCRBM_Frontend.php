@@ -13,6 +13,13 @@
 				add_filter('single_template', array($this, 'load_single_template'));
 
                 add_filter('the_content', array($this, 'mpcrbm_display_search_result'));
+
+
+                add_action( 'wp_ajax_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
+                add_action( 'wp_ajax_nopriv_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
+
+
+
 			}
 			private function load_file(): void {
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Shortcodes.php';
@@ -35,11 +42,7 @@
                 $search_page_slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page');
 
                 if ( ! empty( $search_page_slug ) && is_page( $search_page_slug ) ) {
-
                     $search_form_with_result = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'search_form_with_search_result', 'on' );
-
-                    error_log( print_r( [ '$search_form_with_result' => $search_form_with_result ], true ) );
-
                     if ( session_status() === PHP_SESSION_NONE ) {
                         session_start();
                     }
@@ -191,9 +194,40 @@
                 return $all_dates;
             }
 
+            public function mpcrbm_get_total_count_price_selected_car() {
+                $nonce = sanitize_text_field( wp_unslash( $_POST['_nonce'] ?? '' ) );
+                if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
+                    wp_send_json_error( array(
+                        'message' => __( 'Security check failed', 'mpcrbm' ),
+                    ) );
+                }
+
+                $start_date = sanitize_text_field( wp_unslash( $_POST['start_date'] ) );
+                $start_time = sanitize_text_field( wp_unslash( $_POST['start_time'] ) );
+
+                $start_date_time = date(
+                    'Y-m-d H:i',
+                    strtotime(
+                        $start_date . ' ' .
+                        sprintf('%02d:%02d', $start_time, $start_time)
+                    )
+                );
 
 
+                // Get posted values
+                $car_id = isset( $_POST['car_id'] ) ? absint( wp_unslash( $_POST['car_id'] ) ) : 0;
+                $days  = isset( $_POST['total_days'] ) ? absint( wp_unslash( $_POST['total_days'] ) ) : 1;
+                $total_price  = isset( $_POST['total_price'] ) ? absint( wp_unslash( $_POST['total_price'] ) ) : 0;
 
+                $calculated_price = 0;
+                if ( $car_id && $days > 0 ) {
+                    $calculated_price = MPCRBM_Function::mpcrbm_calculate_price( $car_id, $start_date_time, $days, $total_price );
+                }
+
+                wp_send_json_success( array(
+                    'calculated_price' => $calculated_price,
+                ) );
+            }
 
         }
 		new MPCRBM_Frontend();

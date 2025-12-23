@@ -129,11 +129,12 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
 ?>
 <div class="mpcrbm_car_details">
     <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="" />
+    <input type="hidden" name="mpcrbm_car_title" id="mpcrbm_car_title" value="<?php echo esc_attr( $car_name );?>" />
     <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
     <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
     <input type="hidden" name="mpcrbm_date" value="<?php echo esc_attr($date); ?>" />
     <input type="hidden" name="mpcrbm_start_time" id="mpcrbm_start_time" value="<?php echo esc_attr($start_time); ?>" />
-    <input type="hidden" name="mpcrbm_taxi_return" value="<?php echo esc_attr($two_way); ?>" />
+<!--    <input type="hidden" name="mpcrbm_taxi_return" value="--><?php //echo esc_attr($two_way); ?><!--" />-->
 
     <input type="hidden" name="mpcrbm_map_return_date" id="mpcrbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
     <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
@@ -173,6 +174,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
             <div class="mpcrbm_car_details_wrapper">
                 <h1 ><?php echo $car_name;?></h1>
                 <div class="mpcrbm_car_details_container">
+                    <input type="hidden" id="mpcrbm_car_id" value="<?php echo esc_attr( $post_id );?>">
                     <div class="mpcrbm_car_details_left">
 
                         <div class="mpcrbm_car_details_images">
@@ -358,6 +360,8 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         ?>
 
                         <div class="mpcrbm_car_details_price_box">
+                            <input type="hidden" name="mpcrbm_car_day_price" id="mpcrbm_car_day_price" value="<?php echo esc_attr( $day_price );?>">
+                            <input type="hidden" name="mpcrbm_car_day_wise_price" id="mpcrbm_car_day_wise_price" value="<?php echo esc_attr( $price );?>">
                             <?php if( $is_discount ){
                                 $pricing_rules = isset( $pricing_rule_data['pricing_rules'] ) ? $pricing_rule_data['pricing_rules'] : '';
                                 ?>
@@ -389,9 +393,31 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             // Get service data
                             include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
 
+                            <div class="mpcrbm_transport_summary" id="mpcrbm_car_summary" style="display: block">
+                                <h3 ><?php esc_html_e(' Details', 'car-rental-manager') ?></h3>
+                                <div class="divider"></div>
+                                <div class="_textColor_4 justifyBetween book-items">
+                                    <p class="_dFlex_alignCenter">
+                                        <span class="fas fa-check-square _textTheme_mR_xs"></span>
+                                        <span class="mpcrbm_product_name" id="mpcrbm_selected_car_name"><?php echo esc_attr( $car_name );?></span>&nbsp;
+                                        <span class="textTheme mpcrbm_car_qty_display">x1</span>
+
+                                    </p>
+                                    <p class="textTheme mpcrbm_car_day"><span id="mpcrbm_car_selected_day">1</span> x days</p>
+                                    <p class="mpcrbm_product_price _textTheme" id="mpcrbm_selected_car_price"><?php echo wp_kses_post( wc_price( $day_price ) );?></p>
+                                </div>
+                                <div class="mpcrbm_extra_service_summary"></div>
+                                <div class="justifyBetween total">
+                                    <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
+                                    <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( wc_price( $day_price ) );?></h3>
+                                </div>
+                            </div>
+
                             <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
 
                         </div>
+
+
 
                         <!-- DRIVER INFO -->
                         <div class="mpcrbm_car_details_driver_box">

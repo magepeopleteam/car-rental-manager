@@ -98,11 +98,11 @@ function mpcrbmCreateMarker(place) {
     });
 }
 jQuery(document).ready(function($) {
-    
+
     // Multi-location support functionality
     function updateDropoffLocations(pickupLocation) {
         if (!pickupLocation) return;
-        
+
         // Get all vehicle IDs
         let vehicleIds = [];
         $('input[name="mpcrbm_post_id"]').each(function() {
@@ -115,7 +115,7 @@ jQuery(document).ready(function($) {
             // This will be populated when vehicles are loaded
             return;
         }
-        
+
         // Get available dropoff locations for the selected pickup location
         $.ajax({
             type: 'POST',
@@ -131,7 +131,7 @@ jQuery(document).ready(function($) {
                     let dropoffSelect = $('#mpcrbm_manual_end_place');
                     dropoffSelect.empty();
                     dropoffSelect.append('<option selected disabled><?php esc_html_e(" Select Return Location", "car-rental-manager"); ?></option>');
-                    
+
                     response.data.locations.forEach(function(location) {
                         dropoffSelect.append('<option value="' + location.slug + '">' + location.name + '</option>');
                     });
@@ -139,7 +139,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    
+
     // Handle pickup location change for multi-location support
     $(document).on('change', '#mpcrbm_manual_start_place', function() {
         let pickupLocation = $(this).val();
@@ -157,24 +157,24 @@ jQuery(document).ready(function($) {
             let start_place_autoload = new google.maps.places.Autocomplete(start_place);
                 let mpcrbm_restrict_search_to_country = $('[name="mpcrbm_restrict_search_country"]').val();
                 let mpcrbm_country = $('[name="mpcrbm_country"]').val();
-                
+
                 if(mpcrbm_restrict_search_to_country == 'yes'){
                     start_place_autoload.setComponentRestrictions({
                         country: [mpcrbm_country]
                     });
                 }
-                
+
             google.maps.event.addListener(start_place_autoload, "place_changed", function() {
                 mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
             });
-            
+
             let end_place_autoload = new google.maps.places.Autocomplete(end_place);
                 if(mpcrbm_restrict_search_to_country == 'yes'){
                     end_place_autoload.setComponentRestrictions({
                         country: [mpcrbm_country]
                     });
                 }
-                
+
             google.maps.event.addListener(end_place_autoload, "place_changed", function() {
                 mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
             });
@@ -206,11 +206,11 @@ jQuery(document).ready(function($) {
         // Clear all extra services when selecting a new vehicle
         target_extra_service_summary.empty();
         target_extra_service.empty();
-        
+
         // Reset all extra service inputs
         parent.find('[name="mpcrbm_extra_service[]"]').val('').trigger('change');
         parent.find('[name="mpcrbm_extra_service_qty[]"]').val('1');
-        
+
         if ($this.hasClass('active_select')) {
             // Deselect vehicle
             $this.removeClass('active_select');
@@ -221,26 +221,26 @@ jQuery(document).ready(function($) {
         } else {
             // Select new vehicle
             parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
-            
+
             let transport_name = $this.attr('data-transport-name');
             let transport_price = parseFloat($this.attr('data-transport-price'));
             let post_id = $this.attr('data-post-id');
-            
+
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
             target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(transport_price));
             target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(transport_price));
-            
+
             $this.addClass('active_select');
             parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', transport_price);
-            
+
             // Show summary sections
             target_summary.slideDown(400);
             target_extra_service.slideDown(400);
             target_extra_service_summary.slideDown(400);
 
             parent.find('.mpcrbm_car_qty_display').text( 'x1' );
-            
+
             // Fetch available extra services
             $.ajax({
                 type: 'POST',
@@ -337,7 +337,7 @@ jQuery(document).ready(function($) {
         let start_date = target_date.val();
         let return_date = return_target_date.val();
         let return_time = return_target_time.val();
-        
+
         let start_time = target_time.val();
         if (!start_date) {
             target_date.trigger("click");
@@ -398,9 +398,9 @@ jQuery(document).ready(function($) {
                 });
                 return deferred.promise();
             }
-            
+
             if (price_based !== 'manual') {
-               
+
                 $.when(
                     getCoordinatesAsync(start_place.value),
                     getCoordinatesAsync(end_place.value)
@@ -410,7 +410,7 @@ jQuery(document).ready(function($) {
                         if ( mpcrbm_enable_view_search_result_page == 'No' ) {
 
                             actionValue = "mpcrbm_get_map_search_result";
-                            
+
                             $.ajax({
                                 type: "POST",
                                 url: mpcrbm_ajax_url,
@@ -490,7 +490,7 @@ jQuery(document).ready(function($) {
                                         }
                                         return;
                                     }
-                                    
+
                                     // Handle successful response
                                     if (typeof data === 'string') {
                                         var cleanedURL = data.replace(/"/g, ""); // Remove all double quotes from the string
@@ -514,11 +514,11 @@ jQuery(document).ready(function($) {
                 });
             } else {
                 if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
-                    
+
                     let actionValue;
                     if ( mpcrbm_enable_view_search_result_page === 'No' ) {
                         actionValue = "mpcrbm_get_map_search_result";
-                       
+
                         $.ajax({
                             type: "POST",
                             url: mpcrbm_ajax_url,
@@ -604,7 +604,7 @@ jQuery(document).ready(function($) {
                                     }
                                     return;
                                 }
-                                
+
                                 // Handle successful response
                                 if (typeof data === 'string') {
                                     window.location.href = data.replace(/"/g, ""); // Remove all double quotes from the string
@@ -638,14 +638,14 @@ jQuery(document).ready(function($) {
         let mpcrbm_first_calendar_date = $('[name="mpcrbm_first_calendar_date"]').val();
         var selectedDate = $('#mpcrbm_map_start_date').val();
         var formattedDate = $.datepicker.parseDate('yy-mm-dd', selectedDate);
-        
+
         // Get today's date in YYYY-MM-DD format
         var today = new Date();
         var day = String(today.getDate()).padStart(2, '0');
         var month = String(today.getMonth() + 1).padStart(2, '0');
         var year = today.getFullYear();
         var currentDate = year + '-' + month + '-' + day;
-        
+
         if (selectedDate == currentDate) {
             var currentTime = new Date();
             var currentHour = currentTime.getHours();
@@ -676,8 +676,8 @@ jQuery(document).ready(function($) {
                     $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
                 });
             }
-            
-            
+
+
         }
 
         // Update the return date picker if needed
@@ -736,11 +736,15 @@ jQuery(document).ready(function($) {
     $(document).on("click", ".start_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
         $('#mpcrbm_map_start_time').val(selectedValue).trigger('change');
+
+        mpcrbm_get_selected_days();
     });
 
     $(document).on("click", ".return_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
         $('#mpcrbm_map_return_time').val(selectedValue).trigger('change');
+
+        mpcrbm_get_selected_days();
     });
 
     // Handle place changes
@@ -776,6 +780,8 @@ jQuery(document).ready(function($) {
         let parent = $(this).closest('.mpcrbm_transport_search_area');
         checkAndToggleBookNowButton(parent);
     });
+
+
 
     // Handle extra service selection
     $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service[]"]', function () {
@@ -865,7 +871,6 @@ jQuery(document).ready(function($) {
     // Price calculation function
     function mpcrbm_price_calculation(parent) {
         let number_of_car = mpcrbm_number_of_car_booked( parent );
-        console.log( number_of_car );
 
         let target_summary = parent.find(".mpcrbm_transport_summary");
         let total = 0;
@@ -917,7 +922,7 @@ jQuery(document).ready(function($) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
-            
+
             // Collect extra service data
             parent.find('[name="mpcrbm_extra_service[]"]').each(function() {
                 let ex_name = $(this).val();
@@ -1098,12 +1103,12 @@ jQuery(document).ready(function($) {
 
             // Get the referrer URL from cookie
             var httpReferrerValue = getCookie("httpReferrer");
-            
+
             // Function to delete a cookie
             function deleteCookie(name) {
                 document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
             }
-            
+
             // Delete the referrer cookie and redirect
             deleteCookie("httpReferrer");
             window.location.href = httpReferrerValue;
@@ -1242,7 +1247,7 @@ function checkAndToggleBookNowButton(parent) {
     var $parent = jQuery(parent);
     var hasSelectedVehicle = $parent.find('.mpcrbm_transport_select.active_select').length > 0;
     var $bookNowButton = $parent.find('.mpcrbm_book_now[type="button"]');
-    
+
     if (hasSelectedVehicle) {
         $bookNowButton.show();
     } else {
