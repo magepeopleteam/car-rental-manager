@@ -1229,6 +1229,66 @@ jQuery(document).ready(function($) {
         $images.eq(index).addClass('active').animate({ opacity: 1 }, 300);
     }
 
+    function mpcrbm_get_selected_days() {
+        let parentClass = $('.mpcrbm_car_details_container');
+
+        let startDate = parentClass.find("#mpcrbm_map_start_date").val();
+        let endDate = parentClass.find("#mpcrbm_map_return_date").val();
+        if (!endDate || endDate.trim() === "") {
+            return;
+        }
+
+        let start_time = parseFloat(parentClass.find("#mpcrbm_map_start_time").val() );
+        let return_time = parseFloat(parentClass.find("#mpcrbm_map_return_time") .val() );
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+
+        let startDateTime = new Date(start);
+        startDateTime.setHours(start_time);
+        let endDateTime = new Date(end);
+        endDateTime.setHours(return_time);
+
+        let diffMs = endDateTime - startDateTime;
+
+        if (diffMs < 0) {
+            console.log("End date/time must be after start date/time");
+            return;
+        }
+        let diffDays = diffMs / (1000 * 60 * 60 * 24);
+        let totalDays = Math.ceil(diffDays);
+        let dayPrice = parseFloat( parentClass.find("#mpcrbm_car_day_price").val() );
+        let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() );
+        let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val() );
+        let get_price = dayWisePrice * totalDays;
+        dayPrice = mpcrbm_price_format( dayPrice );
+        parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
+        parentClass.find("#mpcrbm_selected_car_price").html(dayPrice);
+
+        $.ajax({
+            type: 'POST',
+            url: mpcrbm_ajax.ajax_url,
+            data: {
+                action: "mpcrbm_get_total_count_price_selected_car",
+                start_date: startDate,
+                start_time: start_time,
+                car_id: car_id,
+                total_price: get_price,
+                total_days: totalDays,
+                _nonce: mpcrbm_ajax.nonce
+            },
+            success: function (data) {
+
+                if (data.success && data.data && data.data.calculated_price !== undefined) {
+                    let calculated_price = mpcrbm_price_format( data.data.calculated_price );
+                    parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
+                }
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+
+    }
 
 });
 

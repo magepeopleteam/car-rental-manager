@@ -388,10 +388,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             ];
                             echo $mpcrbm_booking_form->mpcrbm_booking( $attribute );
 
-                            $extra_service_class = 'mpcrbm_extra_service_layout_details';
-
-                            // Get service data
-                            include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
+                            $extra_service_class = 'mpcrbm_extra_service_layout_details'; ?>
 
                             <div class="mpcrbm_transport_summary" id="mpcrbm_car_summary" style="display: block">
                                 <h3 ><?php esc_html_e(' Details', 'car-rental-manager') ?></h3>
@@ -412,6 +409,12 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                     <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( wc_price( $day_price ) );?></h3>
                                 </div>
                             </div>
+
+                            <?php
+                            // Get service data
+                            include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
+
+
 
                             <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
 
