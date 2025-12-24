@@ -291,7 +291,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             </div>
 
                             <div id="location" class="mpcrbm_car_details_tab_content">
-                                <h3><?php _e('Pickup Location','car-rental-manager') ?></h3>
+                                <h3><?php esc_attr_e('Pickup Location','car-rental-manager') ?></h3>
                                 <div class="divider"></div>
                                 <div class="mpcrbm_car_details_map_box">
                                     <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $start_place );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
@@ -299,7 +299,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             </div>
 
                             <div id="reviews" class="mpcrbm_car_details_tab_content">
-                                <h3><?php _e('Reviews','car-rental-manager') ?></h3>
+                                <h3><?php esc_attr_e('Reviews','car-rental-manager') ?></h3>
                                 <div class="divider"></div>
                                 <p><?php esc_attr_e( 'No reviews yet. Be the first to share your experience!', 'car-rental-manager' );?></p>
                             </div>
