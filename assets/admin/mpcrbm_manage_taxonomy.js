@@ -509,7 +509,7 @@
             let html = `
             <div class="mpcrbm_selected_item" 
             data-key="${key}"
-            data-key="${title}"
+            data-title="${title}"
             >
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
@@ -529,7 +529,7 @@
             let html = `
             <div class="mpcrbm_faq_item" 
             data-key="${key}"
-            data-key="${title}"
+            data-title="${title}"
             >
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
@@ -665,6 +665,7 @@
                     if (response.success) {
                         // alert('✅ FAQs saved successfully');
 
+                        console.log(append_section);
                         clickBtn.text( action );
                         $('.'+append_section).append(html);
                         item.remove();

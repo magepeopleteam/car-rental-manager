@@ -43,7 +43,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                 </section>
 
                 <section class="mpcrbm_faq_question_holder">
-                    <div class="mpcrbm_faq_all_question_box">
+                    <div class="mpcrbm_all_term_condition">
                         <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
                         <div class="mpcrbm_faq_all_question">
                             <?php if (!empty($terms)) : ?>
@@ -66,7 +66,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
                     <div class="mpcrbm_selected_faq_question_box">
                         <h3><?php esc_html_e( 'Added Term & Condition', 'car-rental-manager' ); ?></h3>
-                        <div class="mpcrbm_selected_faq_question">
+                        <div class="mpcrbm_selected_term_condition">
                             <?php if (!empty($selected_terms_data)) : ?>
                                 <?php foreach ($selected_terms_data as $key => $faq) : ?>
                                     <div class="mpcrbm_selected_item"

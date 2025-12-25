@@ -14,10 +14,10 @@
 				add_action( 'manage_mpcrbm_rent_posts_custom_column', array( $this, 'rent_custom_column' ), 10, 2 );
 				add_filter( 'manage_edit-mpcrbm_rent_sortable_columns', array( $this, 'rent_sortable_columns' ) );
 
-                add_action('save_post', array( $this, 'pa_save_car_taxonomies_names_as_meta'), 10, 3);
+                add_action('save_post', array( $this, 'mpcrbm_save_car_taxonomies_names_as_meta'), 10, 3);
 			}
 
-            public function pa_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {
+            public function mpcrbm_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {
                 $cpt = MPCRBM_Function::get_cpt();
 
                 if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
@@ -95,7 +95,7 @@
 				return $columns;
 			}
 
-            function pa_register_car_taxonomies( $cpt ) {
+            function mpcrbm_register_car_taxonomies( $cpt ) {
                 $taxonomies = array(
                     'mpcrbm_car_type' => array('label' => 'Car Type', 'hierarchical' => true),
                     'mpcrbm_fuel_type' => array('label' => 'Fuel Type', 'hierarchical' => true),
@@ -239,7 +239,7 @@
 					register_post_type( 'mpcrbm_operate_areas', $dx_args );
 				}
 
-                $this->pa_register_car_taxonomies( $cpt );
+                $this->mpcrbm_register_car_taxonomies( $cpt );
 
 
             }
