@@ -383,10 +383,11 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                             $attribute = [
                                 'progressbar'       => 'no',
                                 'title'             => 'no',
+                                'car_id'             => $post_id,
                                 'single_page'       => 'yes',
                                 'pickup_location'   => $start_place,
                             ];
-                            echo $mpcrbm_booking_form->mpcrbm_booking( $attribute );
+                            echo $mpcrbm_booking_form->mpcrbm_single_page_car_booking( $attribute, $post_id );
 
                             $extra_service_class = 'mpcrbm_extra_service_layout_details'; ?>
 
