@@ -3,7 +3,8 @@
 $link_wc_product = MPCRBM_Global_Function::get_post_info($post_id, 'link_wc_product');
 $display_extra_services = MPCRBM_Global_Function::get_post_info($post_id, 'display_mpcrbm_extra_services', 'on');
 $service_id = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_extra_services_id', $post_id);
-$extra_services = MPCRBM_Global_Function::get_post_info($service_id, 'mpcrbm_extra_service_infos', []);
+//$extra_services = MPCRBM_Global_Function::get_post_info($service_id, 'mpcrbm_extra_service_infos', []);
+$extra_services = MPCRBM_Global_Function::get_post_info($post_id, 'mpcrbm_extra_service_infos', []);
 
 if ($display_extra_services == 'on' && is_array($extra_services) && sizeof($extra_services) > 0) { ?>
     <div class="<?php echo esc_attr( $extra_service_class );?>">
