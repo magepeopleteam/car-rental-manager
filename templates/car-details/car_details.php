@@ -360,25 +360,26 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                         ?>
 
                         <div class="mpcrbm_car_details_price_box">
-                            <input type="hidden" name="mpcrbm_car_day_price" id="mpcrbm_car_day_price" value="<?php echo esc_attr( $day_price );?>">
-                            <input type="hidden" name="mpcrbm_car_day_wise_price" id="mpcrbm_car_day_wise_price" value="<?php echo esc_attr( $price );?>">
-                            <?php if( $is_discount ){
-                                $pricing_rules = isset( $pricing_rule_data['pricing_rules'] ) ? $pricing_rule_data['pricing_rules'] : '';
-                                ?>
-                                <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
-                                    <div class="mpcrbm_price-breakdown mpcrbm_line_through"><?php echo wp_kses_post( wc_price($price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
-                                    <div class="mpcrbm_price_hover_wrap">
-                                        <span class="mpcrbm_price_info">
-                                            ℹ Price Rules
-                                        </span>
-                                        <div class=""><?php echo wp_kses_post( $pricing_rules );?></div>
+                            <div class="mpcrbm-car-price-header">
+                                <input type="hidden" name="mpcrbm_car_day_price" id="mpcrbm_car_day_price" value="<?php echo esc_attr( $day_price );?>">
+                                <input type="hidden" name="mpcrbm_car_day_wise_price" id="mpcrbm_car_day_wise_price" value="<?php echo esc_attr( $price );?>">
+                                <?php if( $is_discount ){
+                                    $pricing_rules = isset( $pricing_rule_data['pricing_rules'] ) ? $pricing_rule_data['pricing_rules'] : '';
+                                    ?>
+                                    <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
+                                        <div class="mpcrbm_price-breakdown mpcrbm_line_through"><?php echo wp_kses_post( wc_price($price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                        <div class="mpcrbm_price_hover_wrap">
+                                            <span class="mpcrbm_price_info">
+                                                ℹ Price Rules
+                                            </span>
+                                            <div class=""><?php echo wp_kses_post( $pricing_rules );?></div>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php }?>
-                            <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span><?php echo wp_kses_post( wc_price( $day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
+                                <?php }?>
+                                <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span><?php echo wp_kses_post( wc_price( $day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
 
-                            <p><?php esc_attr_e( 'Without Taxes', 'car-rental-manager' );?></p>
-
+                                <p><?php esc_attr_e( 'Without Taxes', 'car-rental-manager' );?></p>
+                            </div>
                             <?php
                             $attribute = [
                                 'progressbar'       => 'no',

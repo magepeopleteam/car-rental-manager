@@ -19,8 +19,19 @@
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
 }
-
+.mpcrbm-car-price-header{
+    background-color: var(--color_theme);
+    color: var(--color_theme_alter);
+    padding: 10px ;
+    border-radius: 10px;
+}
+  div.mpcrbm h1{
+    font-size:32px;
+    font-weight: normal;
+    margin-top: 30px;
+  }
 /* ===== FEATURE IMAGE ===== */
 .mpcrbm_car_details_feature_image img {
     width: 100%;
@@ -63,14 +74,18 @@
     padding: 10px 0;
 }
 
-.mpcrbm_car_details_tabs button {
+.mpcrbm_car_details .mpcrbm_car_details_tabs button {
     background: #fff;
     padding: 10px;
     cursor: pointer;
     border: 1px solid #999;
     color: #333;
+    font-size: 14px;
+    font-weight: 500;
 }
-
+div.mpcrbm .mpcrbm_car_details_container h3{
+    font-weight: normal;
+ }
 .mpcrbm_car_details_tabs button.active {
     background-color: var(--color_theme);
     color: var(--color_theme_alter);
@@ -143,7 +158,7 @@ div.mpcrbm_car_details_container h3{
 }
 
 .mpcrbm_car_details_price_box h3 span {
-    color: #0a58ca;
+    color: var(--color_theme_alter);
 }
 .mpcrbm_car_details_price_box  div.mpcrbm_transport_search_area{
     margin:0;
