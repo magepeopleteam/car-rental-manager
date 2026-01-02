@@ -185,9 +185,6 @@
                                                 </div>
                                                 <div class="mpcrbm_car_list_grid_content">
                                                     <h3 class="mpcrbm_car_list_grid_title"><?php echo esc_html( $car['title'] ); ?></h3>
-                                                    <div class="mpcrbm_car_list_content_holder">
-                                                        <p class="mpcrbm_car_list_content"><?php echo strip_tags (wp_kses_post( $car['content'] ) ); ?></p>
-                                                    </div>
                                                     <div class="mpcrbm_car_specs_lists">
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-car"></i>
