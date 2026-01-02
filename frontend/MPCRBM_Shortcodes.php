@@ -54,7 +54,8 @@
 
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
-                    'posts_per_page' => intval( $atts['per_page'] ),
+//                    'posts_per_page' => intval( $atts['per_page'] ),
+                    'posts_per_page' => intval( $atts['show'] ),
                     'meta_query'     => $meta_query,
                 ];
 
@@ -123,6 +124,7 @@
                     'fuel_type'     => '',
                     'brand'         => '',
                     'per_page'      => 20,
+                    'show'          => 20,
                     'column'        => 3,
                     'style'         => 'grid',
                     'mpcrbm_left_filter'   => 'no',
