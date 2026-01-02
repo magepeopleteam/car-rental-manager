@@ -497,7 +497,7 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_left_filter{
 	 display: flex;
 	 flex-direction: column;
-	 /*width: 330px;*/
+	 width: 330px;
 	 border-radius: 5px;
  }
 
