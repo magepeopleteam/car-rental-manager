@@ -163,14 +163,11 @@
                         </div>
                         <div class="mpcrbm_car_list_container ">
                             <?php if( $left_filter === 'yes' && count( $left_side_filter ) > 0 ){?>
-                                <div class="mpcrbm_car_list_left_filter">
-                                    <div class="mpcrbm_left_filter">
-                                        <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
-                                    </div>
+                                <div class="mpcrbm_left_filter">
+                                    <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
                                 </div>
                             <?php }?>
-                            <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>"
-                                >
+                            <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>">
                                 <?php if ( ! empty( $cars ) ) : ?>
                                     <?php foreach ( $cars as $car ) : ?>
                                 <a href="<?php echo esc_url( get_permalink( $car['id'] ) ); ?>">
@@ -190,32 +187,50 @@
                                                 </div>
                                                 <div class="mpcrbm_car_list_grid_content">
                                                     <h3 class="mpcrbm_car_list_grid_title"><?php echo esc_html( $car['title'] ); ?></h3>
-                                                    <div class="mpcrbm_car_list_content_holder">
-                                                        <p class="mpcrbm_car_list_content"><?php echo strip_tags (wp_kses_post( $car['content'] ) ); ?></p>
+                                                    <div class="mpcrbm_car_specs_lists">
+                                                        <div class="mpcrbm_car_spec">
+                                                            <i class="mi mi-car"></i>
+                                                            <div>
+                                                                <div class="spec-label"><?php echo esc_html__('Car Type ','car-rental-manager'); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['type']); ?></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mpcrbm_car_spec">
+                                                            <i class="mi mi-gas-pump-alt"></i>
+                                                            <div>
+                                                                <div class="spec-label"><?php echo esc_html__('Fuel Type ','car-rental-manager'); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html( $car['fuel']); ?></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mpcrbm_car_spec">
+                                                            <i class="mi mi-bonus"></i>
+                                                            <div>
+                                                                <div class="spec-label"><?php echo esc_html__('Brands','car-rental-manager'); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['brand']); ?></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mpcrbm_car_spec">
+                                                            <i class="mi mi-time-quarter-to"></i>
+                                                            <div>
+                                                                <div class="spec-label"><?php echo esc_html__('Make Year','car-rental-manager'); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['year']); ?></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mpcrbm_car_spec">
+                                                            <i class="mi mi-person-seat"></i>
+                                                            <div>
+                                                                <div class="spec-label"><?php echo esc_html__('Seat Capacity','car-rental-manager'); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['seating']); ?></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mpcrbm_car_spec">
+                                                            <i class="mi mi-person-luggage"></i>
+                                                            <div>
+                                                                <div class="spec-label"><?php echo esc_html__('Maximum Bags','car-rental-manager'); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['bag_count']); ?></div>
+                                                            </div>
+                                                        </div>
                                                     </div>
-
-                                                    <div class="mpcrbm_car_list_grid_meta">
-                                                        <div class="mpcrbm_car_taxonomy_data">
-                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-bonus"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['brand'] ); ?></span>
-                                                        </div>
-                                                        <div class="mpcrbm_car_taxonomy_data">
-                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-tachometer-fast"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['type'] ); ?></span>
-                                                        </div>
-
-                                                        <div class="mpcrbm_car_taxonomy_data">
-                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-gas-pump-alt"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['fuel'] ); ?></span>
-                                                        </div>
-                                                        <div class="mpcrbm_car_taxonomy_data">
-                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-person-seat"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['seating_capacity'] ); ?></span>
-                                                        </div>
-                                                        <div class="mpcrbm_car_taxonomy_data">
-                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="mi mi-time-quarter-to"></i></span class="mpcrbm_car_taxonomy"><span> <?php echo esc_html( $car['car_year'] ); ?></span>
-                                                        </div>
-                                                        <div class="mpcrbm_car_taxonomy_data">
-                                                            <span class="mpcrbm_car_taxonomy_icon"><i class="fas fa-shopping-bag"></i></span><span class="mpcrbm_car_taxonomy"> <?php echo esc_html( $car['bag'] ); ?></span>
-                                                        </div>
-                                                    </div>
-
                                                     <div class="mpcrbm_car_list_price_display">
                                                         <div class="mpcrbm_car_list_price">
                                                             <h3>
