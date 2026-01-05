@@ -224,7 +224,11 @@
 
 			public function ex_service_table( $service_id, $post_id ) {
 				if ( $service_id && $post_id ) {
-					$extra_services = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
+//					$extra_services = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
+					$extra_services = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_service_infos', [] );
+
+
+
 					?>
                     <section>
                         <div>

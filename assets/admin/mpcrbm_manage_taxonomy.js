@@ -58,7 +58,7 @@
         // Search filter
         $('.mpcrbm_taxonomies_search').on('input', function () {
             let query = $(this).val().toLowerCase();
-            $('#mpcrbm_taxonomies_holder .mpcrbm_taxonomy_item').filter(function () {
+            $('.mpcrbm_taxonomy_item').filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
             });
         });
@@ -174,7 +174,7 @@
         });
 
         function mpcrbm_filterCars_and() {
-            const searchInput = String($('#mpcrbm_searchInput').val() || '').toLowerCase();
+            const searchInput  = String($('#mpcrbm_searchInput').val() || '').toLowerCase();
             const selectedType = String($('#mpcrbm_typeFilter').val() || '').toLowerCase();
             const selectedFuel = String($('#mpcrbm_fuelFilter').val() || '').toLowerCase();
             const selectedYear = String($('#mpcrbm_yearFilter').val() || '').toLowerCase();
@@ -226,6 +226,7 @@
             $('#mpcrbm_number_of_car_load').val(number_load ); // reset visible count on new filter
             mpcrbm_filterCars_and();
         });
+        
         $(document).on('change', '#mpcrbm_typeFilter, #mpcrbm_fuelFilter, #mpcrbm_yearFilter', function () {
             let number_load = parseInt($('#mpcrbm_number_load').val()) || 5;
             $('#mpcrbm_number_of_car_load').val( number_load ); // reset visible count on new filter
@@ -509,7 +510,7 @@
             let html = `
             <div class="mpcrbm_selected_item" 
             data-key="${key}"
-            data-key="${title}"
+            data-title="${title}"
             >
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
@@ -529,7 +530,7 @@
             let html = `
             <div class="mpcrbm_faq_item" 
             data-key="${key}"
-            data-key="${title}"
+            data-title="${title}"
             >
                 <div class="mpcrbm_faq_title">${title}</div>
                 <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
@@ -665,6 +666,7 @@
                     if (response.success) {
                         // alert('✅ FAQs saved successfully');
 
+                        console.log(append_section);
                         clickBtn.text( action );
                         $('.'+append_section).append(html);
                         item.remove();

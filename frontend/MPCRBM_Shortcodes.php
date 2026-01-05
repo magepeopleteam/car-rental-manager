@@ -54,7 +54,8 @@
 
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
-                    'posts_per_page' => intval( $atts['per_page'] ),
+//                    'posts_per_page' => intval( $atts['per_page'] ),
+                    'posts_per_page' => intval( $atts['show'] ),
                     'meta_query'     => $meta_query,
                 ];
 
@@ -123,6 +124,7 @@
                     'fuel_type'     => '',
                     'brand'         => '',
                     'per_page'      => 20,
+                    'show'          => 20,
                     'column'        => 3,
                     'style'         => 'grid',
                     'mpcrbm_left_filter'   => 'no',
@@ -343,6 +345,30 @@
 				$params = shortcode_atts($defaults, $attribute);
 				ob_start();
 				do_action('mpcrbm_transport_search', $params);
+				return ob_get_clean();
+			}
+
+			public function mpcrbm_single_page_car_booking($attribute, $post_id,  $search_date = [] ) {
+				$defaults = self::default_attribute();
+				$params = shortcode_atts($defaults, $attribute);
+				ob_start();
+//				do_action('mpcrbm_transport_search', $params);
+                $display_map = MPCRBM_Global_Function::get_settings( 'mpcrbm_map_api_settings', 'display_map', 'enable' );
+                $price_based = $params['price_based'] ?: 'dynamic';
+                $price_based = $display_map == 'disable' ? 'manual' : $price_based;
+                $progressbar = $params['progressbar'] ?: 'yes';
+                $form_style  = $params['form'] ?: 'horizontal';
+                $map         = $params['map'] ?: 'yes';
+                $map         = $display_map == 'disable' ? 'no' : $map;
+
+                $is_title    = $params['title'] ?: 'no';
+                $ajax_search    = $params['ajax_search'] ?: 'no';
+
+                ob_start();
+                do_shortcode( '[shop_messages]' );
+                echo wp_kses_post( ob_get_clean() );
+                //echo '<pre>';print_r($params);echo '</pre>';
+                include( MPCRBM_Function::template_path( 'registration/registration_layout.php' ) );
 				return ob_get_clean();
 			}
 			public static function default_attribute() {
