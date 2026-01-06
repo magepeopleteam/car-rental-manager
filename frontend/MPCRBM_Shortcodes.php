@@ -169,7 +169,7 @@
                             <?php }?>
                             <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>">
                                 <?php if ( ! empty( $cars ) ) : ?>
-                                    <?php foreach ( $cars as $car ) : ?>
+                                    <?php foreach ( $cars as $car ) :?>
                                 <a href="<?php echo esc_url( get_permalink( $car['id'] ) ); ?>">
                                         <div class="mpcrbm_car_list_grid_item mpcrbm_booking_item "
                                              data-car-type="<?php echo esc_attr( $car['type'])?>"
@@ -213,21 +213,21 @@
                                                             <i class="mi mi-time-quarter-to"></i>
                                                             <div>
                                                                 <div class="spec-label"><?php echo esc_html__('Make Year','car-rental-manager'); ?></div>
-                                                                <div class="spec-value"><?php echo esc_html($car['year']); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['car_year']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-person-seat"></i>
                                                             <div>
                                                                 <div class="spec-label"><?php echo esc_html__('Seat Capacity','car-rental-manager'); ?></div>
-                                                                <div class="spec-value"><?php echo esc_html($car['seating']); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['seating_capacity']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-person-luggage"></i>
                                                             <div>
                                                                 <div class="spec-label"><?php echo esc_html__('Maximum Bags','car-rental-manager'); ?></div>
-                                                                <div class="spec-value"><?php echo esc_html($car['bag_count']); ?></div>
+                                                                <div class="spec-value"><?php echo esc_html($car['bag']); ?></div>
                                                             </div>
                                                         </div>
                                                     </div>
