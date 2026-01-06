@@ -835,5 +835,273 @@
                 return $array_or_string;
             }
 
+            public static function mpcrbm_get_available_vehicle_ids_and_filter( $args = [] ) {
+
+                // -----------------------------
+                // Defaults
+                // -----------------------------
+                $defaults = [
+                    'start_date'            => '2026-01-06',
+                    'start_time'            => '10',
+                    'return_date'           => '2026-01-07',
+                    'return_time'           => '10',
+                    'start_place'           => 'rajshahi',
+                    'end_place'             => 'rajshahi',
+                    'two_way'               => 2,
+                    'price_based'           => '',
+                ];
+
+                $args = wp_parse_args( $args, $defaults );
+
+                // -----------------------------
+                // Prepare day & time
+                // -----------------------------
+                $days      = MPCRBM_Global_Function::week_day();
+                $days_name = array_keys( $days );
+
+                $start_time_schedule  = sanitize_text_field( $args['start_time'] );
+                $return_time_schedule = ( $args['two_way'] > 1 )
+                    ? sanitize_text_field( $args['return_time'] )
+                    : null;
+
+                $start_place = sanitize_text_field( $args['start_place'] );
+                $end_place   = sanitize_text_field( $args['end_place'] );
+                $price_based = sanitize_text_field( $args['price_based'] );
+
+                // -----------------------------
+                // Query vehicles
+                // -----------------------------
+                $query = MPCRBM_Query::query_transport_list( $price_based );
+
+                $post_ids = [];
+
+                if ( $query && $query->have_posts() ) {
+                    foreach ( $query->posts as $post ) {
+
+                        $post_id = absint( $post->ID );
+
+                        if ( ! $post_id || ! get_post( $post_id ) ) {
+                            continue;
+                        }
+
+                        $check_schedule = self::mpcrbm_get_schedule(
+                            $post_id,
+                            $days_name,
+                            $args['start_date'],
+                            $start_time_schedule,
+                            $return_time_schedule,
+                            $price_based
+                        );
+
+                        $check_operation_area = self::mpcrbm_check_operation_area(
+                            $post_id,
+                            $start_place,
+                            $end_place
+                        );
+
+                        if ( $check_schedule && $check_operation_area ) {
+                            $post_ids[] = $post_id;
+                        }
+                    }
+                }
+
+                // -----------------------------
+                // Build left filter data
+                // -----------------------------
+                $left_side_filter = [];
+
+                if ( ! empty( $post_ids ) ) {
+                    $left_side_filter = MPCRBM_Global_Function::get_meta_key( $post_ids );
+                }
+
+                // -----------------------------
+                // Return result
+                // -----------------------------
+                return [
+                    'post_ids'         => $post_ids,
+                    'left_side_filter' => $left_side_filter,
+                ];
+            }
+
+            public static function mpcrbm_get_schedule($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $price_based){
+                // Validate inputs
+                $post_id = absint($post_id);
+                if (!$post_id || !get_post($post_id)) {
+                    return false;
+                }
+
+                // Sanitize and validate date/time inputs
+                $selected_day = sanitize_text_field($selected_day);
+                $start_time_schedule = sanitize_text_field($start_time_schedule);
+                $return_time_schedule = $return_time_schedule ? sanitize_text_field($return_time_schedule) : '';
+
+                // Validate coordinates
+
+                // Validate price based
+                $price_based = sanitize_text_field($price_based);
+
+                // Check if available for all time
+                $available_all_time = get_post_meta($post_id, 'mpcrbm_available_for_all_time', true);
+                if ($available_all_time === 'on') {
+                    return true;
+                }
+
+                // Initialize schedule array
+                $schedule = [];
+
+                // Get schedule for each day
+                foreach ($days_name as $name) {
+                    // Sanitize day name
+                    $name = sanitize_text_field($name);
+
+                    // Get start time
+                    $start_time = get_post_meta($post_id, "mpcrbm_" . $name . "_start_time", true);
+                    if ($start_time === '') {
+                        $start_time = get_post_meta($post_id, "mpcrbm_default_start_time", true);
+                    }
+
+                    // Get end time
+                    $end_time = get_post_meta($post_id, "mpcrbm_" . $name . "_end_time", true);
+                    if ($end_time === '') {
+                        $end_time = get_post_meta($post_id, "mpcrbm_default_end_time", true);
+                    }
+
+                    // Only add to schedule if both times are set
+                    if ($start_time !== "" && $end_time !== "") {
+                        $schedule[$name] = [
+                            sanitize_text_field($start_time),
+                            sanitize_text_field($end_time)
+                        ];
+                    }
+                }
+
+                // Check schedule for selected day
+                foreach ($schedule as $day => $times) {
+                    $day_start_time = $times[0];
+                    $day_end_time = $times[1];
+                    $day = ucwords($day);
+
+                    if ($selected_day == $day) {
+                        if ($return_time_schedule !== "") {
+                            if (
+                                $return_time_schedule >= $day_start_time &&
+                                $return_time_schedule <= $day_end_time &&
+                                $start_time_schedule >= $day_start_time &&
+                                $start_time_schedule <= $day_end_time
+                            ) {
+                                return true;
+                            }
+                        } else {
+                            if ($start_time_schedule >= $day_start_time && $start_time_schedule <= $day_end_time) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+
+                // Check default times if no schedule found
+                $all_empty = true;
+                foreach ($schedule as $times) {
+                    if (!empty($times[0]) || !empty($times[1])) {
+                        $all_empty = false;
+                        break;
+                    }
+                }
+
+                if ($all_empty) {
+                    $default_start_time = get_post_meta($post_id, "mpcrbm_default_start_time", true);
+                    $default_end_time = get_post_meta($post_id, "mpcrbm_default_end_time", true);
+
+                    if ($default_start_time !== "" && $default_end_time !== "") {
+                        if ($return_time_schedule !== "") {
+                            if (
+                                $return_time_schedule >= $default_start_time &&
+                                $return_time_schedule <= $default_end_time &&
+                                $start_time_schedule >= $default_start_time &&
+                                $start_time_schedule <= $default_end_time
+                            ) {
+                                return true;
+                            }
+                        } else {
+                            if ($start_time_schedule >= $default_start_time && $start_time_schedule <= $default_end_time) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+            public static function mpcrbm_check_operation_area($post_id, $start_place, $end_place){
+                // Check if multi-location is enabled for this vehicle
+                $multi_location_enabled = get_post_meta($post_id, 'mpcrbm_multi_location_enabled', true);
+
+                if ($multi_location_enabled) {
+                    // Use new multi-location system
+                    $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
+
+                    if (!empty($location_prices) && is_array($location_prices)) {
+                        // First, try to find exact match
+                        foreach ($location_prices as $price_data) {
+                            if ($price_data['pickup_location'] === $start_place &&
+                                $price_data['dropoff_location'] === $end_place) {
+                                return true; // Found exact matching location combination
+                            }
+                        }
+
+                        // If no exact match, check if both locations exist in any combination
+                        $start_found = false;
+                        $end_found = false;
+
+                        foreach ($location_prices as $price_data) {
+                            if ($price_data['pickup_location'] === $start_place ||
+                                $price_data['dropoff_location'] === $start_place) {
+                                $start_found = true;
+                            }
+                            if ($price_data['pickup_location'] === $end_place ||
+                                $price_data['dropoff_location'] === $end_place) {
+                                $end_found = true;
+                            }
+
+                            if ($start_found && $end_found) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                } else {
+                    // Use old location system - be more flexible
+                    $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
+
+                    // If no saved locations, allow the vehicle to be shown (fallback)
+                    if (!is_array($saved_locations) || empty($saved_locations)) {
+                        return true; // Show vehicle even without specific location data
+                    }
+
+                    // Check if any of the saved locations match our search
+                    foreach ($saved_locations as $location) {
+                        // Check if start_place matches any location
+                        if (isset($location['start_location']) && $location['start_location'] === $start_place) {
+                            return true;
+                        }
+                        if (isset($location['end_location']) && $location['end_location'] === $start_place) {
+                            return true;
+                        }
+
+                        // Check if end_place matches any location
+                        if (isset($location['start_location']) && $location['start_location'] === $end_place) {
+                            return true;
+                        }
+                        if (isset($location['end_location']) && $location['end_location'] === $end_place) {
+                            return true;
+                        }
+                    }
+
+                    // If no specific matches found, still show the vehicle (more flexible approach)
+                    return true;
+                }
+            }
+
+
         }
 	}
