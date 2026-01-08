@@ -197,7 +197,7 @@ if( count( $post_ids ) > 0 ){
                         foreach ( $post_ids as $post_id) {
                             include MPCRBM_Function::template_path("registration/vehicle_item_search_form.php");
                         }
-                        if( count( $post_ids ) > 0 ){ ?>
+                        if( count( $post_ids ) > 10 ){ ?>
                             <div class="mpcrbm_search_result_load_more_holder">
                                 <div class="mpcrbm_load_more_btn">Load More Car</div>
                             </div>
