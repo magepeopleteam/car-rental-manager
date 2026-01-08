@@ -907,10 +907,11 @@
                     return true;
                 }
             }
-            public static function mpcrbm_get_schedule_search_form($post_id, $days_name, $selected_day, $start_time_schedule, $return_time_schedule, $price_based)
+            public static function mpcrbm_get_schedule_search_form($post_id, $days_name, $selected_date, $start_time_schedule, $return_time_schedule, $price_based)
             {
                 // Validate inputs
                 $post_id = absint($post_id);
+                $selected_day = strtolower(date('l', strtotime($selected_date)));
                 if (!$post_id || !get_post($post_id)) {
                     return false;
                 }
@@ -964,7 +965,7 @@
                 foreach ($schedule as $day => $times) {
                     $day_start_time = $times[0];
                     $day_end_time = $times[1];
-                    $day = ucwords($day);
+//                    $day = ucwords($day);
 
                     if ($selected_day == $day) {
                         if ($return_time_schedule !== "") {

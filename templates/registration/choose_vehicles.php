@@ -410,8 +410,12 @@ if ( $all_posts->found_posts > 0 ) {
     $remove_class_item_post_id = [];
     foreach ($posts as $post) {
         $post_id = $post->ID;
-        $check_schedule = mpcrbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
-        $check_operation_area = mpcrbm_check_operation_area($post_id, $start_place, $end_place);
+       /* $check_schedule = mpcrbm_get_schedule($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $start_place_coordinates, $end_place_coordinates, $price_based);
+        $check_operation_area = mpcrbm_check_operation_area($post_id, $start_place, $end_place);*/
+
+        $check_schedule = MPCRBM_Function::mpcrbm_get_schedule_search_form($post_id, $days_name, $start_date, $start_time_schedule, $return_time_schedule, $price_based);
+        $check_operation_area = MPCRBM_Function::mpcrbm_check_operation_area_seach_form($post_id, $start_place, $end_place);
+
 
         if ($check_schedule && $check_operation_area) {
             $post_ids[] = $post_id;
