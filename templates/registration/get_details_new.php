@@ -492,3 +492,11 @@ if (sizeof($all_dates) > 0) {
     </div>
     <?php
 }
+if( $search_result_show === 'yes' ){
+?>
+<div class="mpcrbm_search_result_holder">
+    <?php
+        include MPCRBM_Function::template_path("registration/get_search_result.php");
+    ?>
+</div>
+<?php }?>
