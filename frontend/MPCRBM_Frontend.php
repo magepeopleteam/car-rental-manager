@@ -37,7 +37,23 @@
 				return $template;
 			}
 
+            public static function mpcrbm_get_conyent_shortcode( $content ) {
+                $atts = [];
+                if ( has_shortcode( $content, 'mpcrbm_booking' ) ) {
+                    $pattern = get_shortcode_regex( array( 'mpcrbm_booking' ) );
+                    if ( preg_match_all( '/' . $pattern . '/s', $content, $matches ) ) {
+                        foreach ( $matches[0] as $key => $shortcode ) {
+                            $atts = shortcode_parse_atts( $matches[3][ $key ] );
+                        }
+                    }
+                }
+
+                return $atts;
+            }
+
             public function mpcrbm_display_search_result( $content ) {
+
+                $search_shortcode_code = self::mpcrbm_get_conyent_shortcode( $content );
 
                 $search_page_slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page');
 
@@ -47,6 +63,7 @@
                         session_start();
                     }
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
+
                     $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
                     $search_date = isset($_SESSION['search_date']) ? $_SESSION['search_date'] : '';
                     if ( isset($_SESSION['custom_content'] ) ) {
@@ -57,17 +74,30 @@
                     session_write_close();
 
                     $content = '';
-                    $search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
+                    if( $result_data ){
+                        $search_result = 'no';
+                    }else{
+                        $search_result = isset( $search_shortcode_code['search_result'] ) ? $search_shortcode_code['search_result'] : 'no';
+                    }
+                    $title        = isset( $search_shortcode_code['title'] ) ? $search_shortcode_code['title'] : 'no';
+                    $ajax_search  = isset( $search_shortcode_code['ajax_search'] ) ? $search_shortcode_code['ajax_search'] : 'no';
+                    $progressbar  = isset( $search_shortcode_code['progressbar'] ) ? $search_shortcode_code['progressbar'] : 'no';
+
+                    $search_attribute = [
+                        'form'=>'inline',
+                        'title'=>$title,
+                        'ajax_search' => $ajax_search,
+                        'progressbar' => $progressbar,
+                        'search_result' => $search_result,
+                    ];
+
+
                     $search_defaults = MPCRBM_Shortcodes::default_attribute();
                     $params = shortcode_atts( $search_defaults, $search_attribute );
-
-                    if( $search_form_with_result === 'yes' ){
-                        ob_start();
-                        do_action( 'mpcrbm_transport_search', $params, $search_date );
-                        $action_output = ob_get_clean();
-                    }else{
-                        $action_output = '';
-                    }
+                    ob_start();
+                    do_action( 'mpcrbm_transport_search', $params, $search_date );
+                    $action_output = ob_get_clean();
+                   // }
 
 
 
@@ -124,7 +154,10 @@
 
                     }else{
                         $content .= $action_output;
-                        $content .= '<p class="mpcrbm_empty_result" id="mpcrbm_empty_result">No search results found.</p>';
+                        if( empty( $action_output ) ){
+                            $content .= '<p class="mpcrbm_empty_result" id="mpcrbm_empty_result">No search results found.</p>';
+                        }
+
                     }
                 }
 
