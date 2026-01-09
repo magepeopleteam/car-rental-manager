@@ -82,6 +82,7 @@
 
                 $is_title    = $params['title'] ?: 'no';
                 $ajax_search    = $params['ajax_search'] ?: 'no';
+                $search_result_show    = $params['search_result'] ?: 'no';
 
 				ob_start();
 				do_shortcode( '[shop_messages]' );

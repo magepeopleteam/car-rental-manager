@@ -378,6 +378,7 @@
 
                 $is_title    = $params['title'] ?: 'no';
                 $ajax_search    = $params['ajax_search'] ?: 'no';
+                $search_result_show    = $params['search_result'] ?: 'no';
 
                 ob_start();
                 do_shortcode( '[shop_messages]' );
@@ -407,6 +408,7 @@
 					'ajax_search' => 'no',
 					'single_page' => 'no',
 					'pickup_location' => '',
+					'search_result' => 'no',
 				);
 			}
 		}
