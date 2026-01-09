@@ -83,6 +83,7 @@
                 $is_title    = $params['title'] ?: 'no';
                 $ajax_search    = $params['ajax_search'] ?: 'no';
                 $search_result_show    = $params['search_result'] ?: 'no';
+                $search_result_same_page    = $params['search_result_same_page'] ?: 'no';
 
 				ob_start();
 				do_shortcode( '[shop_messages]' );
@@ -94,39 +95,6 @@
 			public function mpcrbm_get_map_search_result() {
                 $is_redirect = 'no';
 				include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
-				die(); // Ensure further execution stops after outputting the JavaScript
-			}
-
-			public function mpcrbm_get_map_search_result_redirect_old() {
-				ob_start(); // Start output buffering
-				// Check if nonce is set
-				if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
-					wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
-				}
-				// Unslash and verify the nonce
-				$nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
-				if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
-					wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
-				}
-				$distance = isset( $_COOKIE['mpcrbm_distance'] ) ? absint( $_COOKIE['mpcrbm_distance'] ) : '';
-				$duration = isset( $_COOKIE['mpcrbm_duration'] ) ? absint( $_COOKIE['mpcrbm_duration'] ) : '';
-				// if ($distance && $duration) {
-                $is_redirect = 'yes';
-				include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
-				// }
-				$content = ob_get_clean(); // Get the buffered content and clean the buffer
-				// Store the content in a session variable
-				session_start();
-				$_SESSION['custom_content'] = $content;
-				session_write_close(); // Close the session to release the lock
-				// Sanitize and validate redirect URL
-				$redirect_url = isset( $_POST['mpcrbm_enable_view_search_result_page'] )
-					?  sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_view_search_result_page'] ) )
-					: '';
-				if ( $redirect_url == '' ) {
-					$redirect_url = 'transport-result';
-				}
-				echo wp_json_encode( $redirect_url );
 				die(); // Ensure further execution stops after outputting the JavaScript
 			}
 
