@@ -202,7 +202,7 @@
 					'public'              => false,
 					'label'               => esc_html__( 'Operation Areas', 'car-rental-manager' ),
 					'supports'            => array( 'title' ),
-					'show_in_menu'        => 'edit.php?post_type=' . $cpt,
+					'show_in_menu'        => false,
 					'capability_type'     => 'post',
 					'publicly_queryable'  => true,  // you should be able to query it
 					'show_ui'             => true,  // you should be able to edit it in wp-admin
