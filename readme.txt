@@ -62,14 +62,14 @@ Let's look at the key features that make the plugin more acceptable in its categ
 
 == Guideline ==
 Shortcode:
-[mpcrbm_booking form='inline' progressbar='no']
+`[mpcrbm_booking form='inline' progressbar='no']`
 This is a simple shortcode that will display only the search form, similar to our homepage
-[mpcrbm_booking form='inline' title='yes' progressbar='no' search_result='yes' ajax_search='yes']  
+`[mpcrbm_booking form='inline' title='yes' progressbar='no' search_result='yes' ajax_search='yes']`  
 This is a shortcode that you will decide when the title will show or not. If title=no, then the search form title bar will not show, and if search_result='yes' then the  default search result will show with form, and if ajax_search='yes' thenthe  search result will show as ajax, not a redirection.
 This shortcode will show the form as an inline form, and  it can also be a  horizontal form, and the progressbar can be yes or no
-[mpcrbm_booking form='horizontal' progressbar='no']
+`[mpcrbm_booking form='horizontal' progressbar='no']`
 
-and also [mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6' ] this is a shortcode to display car list with left filter.
+and also `[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6' ]` this is a shortcode to display car list with left filter.
 
 With **Car Rental Manager**, you can transform your WordPress site into a fully functional car rental platform in just a few steps:
 
