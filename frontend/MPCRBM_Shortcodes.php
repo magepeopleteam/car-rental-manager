@@ -179,7 +179,7 @@
                                              data-car-year="<?php echo esc_attr( $car['car_year'])?>"
                                              data-filter-category-items="<?php echo esc_attr( $car['filter_string'])?>"
                                         >
-
+                                            
                                                 <div class="mpcrbm_car_list_grid_image">
                                                     <?php if ( $car['image'] ) : ?>
                                                         <img src="<?php echo esc_url( $car['image'] ); ?>" alt="<?php echo esc_attr( $car['title'] ); ?>">
@@ -190,44 +190,38 @@
                                                     <div class="mpcrbm_car_specs_lists">
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-car"></i>
-                                                            <div>
-                                                                <div class="spec-label"><?php echo esc_html__('Car Type ','car-rental-manager'); ?></div>
+                                                            <div title="<?php echo __('Car Type: ','car-rental-manager').esc_attr($car['type']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['type']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-gas-pump-alt"></i>
-                                                            <div>
-                                                                <div class="spec-label"><?php echo esc_html__('Fuel Type ','car-rental-manager'); ?></div>
+                                                            <div title="<?php echo __('Fuel Type: ','car-rental-manager').esc_attr($car['fuel']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html( $car['fuel']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-bonus"></i>
-                                                            <div>
-                                                                <div class="spec-label"><?php echo esc_html__('Brands','car-rental-manager'); ?></div>
+                                                            <div title="<?php echo __('Brands: ','car-rental-manager').esc_attr($car['brand']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['brand']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-time-quarter-to"></i>
-                                                            <div>
-                                                                <div class="spec-label"><?php echo esc_html__('Make Year','car-rental-manager'); ?></div>
+                                                            <div title="<?php echo __('Making Year: ','car-rental-manager').esc_attr($car['car_year']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['car_year']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-person-seat"></i>
-                                                            <div>
-                                                                <div class="spec-label"><?php echo esc_html__('Seat Capacity','car-rental-manager'); ?></div>
+                                                            <div title="<?php echo __('Seating Capacity: ','car-rental-manager').esc_attr($car['seating_capacity']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['seating_capacity']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-person-luggage"></i>
-                                                            <div>
-                                                                <div class="spec-label"><?php echo esc_html__('Maximum Bags','car-rental-manager'); ?></div>
-                                                                <div class="spec-value"><?php echo esc_html($car['bag']); ?></div>
+                                                            <div title="<?php echo __('Maximum Bags: ','car-rental-manager').esc_attr($car['bag']); ?>">
+                                                                <div class="spec-value"><?php echo esc_html($car['bag']).__(' Bags','car-rental-manager'); ?></div>
                                                             </div>
                                                         </div>
                                                     </div>
