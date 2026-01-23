@@ -54,7 +54,7 @@
                                 <span class="mi mi-map-location-track"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_multi_location">
-                                <span class="mi mi-map-marker"></span><?php esc_html_e( 'Multi-Location', 'car-rental-manager' ); ?>
+                                <span class="mi mi-map-marker"></span><?php esc_html_e( 'Multi-Location Fee', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_manage_faq">
                                 <span class="mi mi-messages-question"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>

@@ -1224,6 +1224,49 @@ jQuery(document).ready(function($) {
         $popup.fadeOut(300);
     });
 
+    //Load moore car with search form handle
+    function mpcrbmLoadMore(options) {
+
+        const settings = $.extend({
+            wrapper: '.mpcrbm_search_result_holder',
+            itemClass: '.mpcrbm_with_search_form',
+            loadMoreWrapper: '.mpcrbm_search_result_load_more_holder',
+            loadMoreBtn: '.mpcrbm_load_more_btn',
+            itemsPerLoad: 10
+        }, options);
+
+        const wrapper = $(settings.wrapper);
+        const items = wrapper.find(settings.itemClass);
+        const loadMoreWrapper = $(settings.loadMoreWrapper);
+
+        let visibleCount = settings.itemsPerLoad;
+        const totalItems = items.length;
+
+        // Initial setup
+        items.hide();
+        items.slice(0, settings.itemsPerLoad).show();
+
+        if (totalItems <= settings.itemsPerLoad) {
+            loadMoreWrapper.hide();
+        }
+        loadMoreWrapper.on('click', settings.loadMoreBtn, function () {
+
+            const nextCount = visibleCount + settings.itemsPerLoad;
+            items.slice(visibleCount, nextCount).fadeIn(300);
+            visibleCount = nextCount;
+
+            if (visibleCount >= totalItems) {
+                loadMoreWrapper.fadeOut(300);
+            }
+        });
+    }
+    $(document).ready(function () {
+        mpcrbmLoadMore({
+            itemsPerLoad: 10
+        });
+    });
+    //End
+
     function showImage(index) {
         $images.removeClass('active').css({ opacity: 0 });
         $images.eq(index).addClass('active').animate({ opacity: 1 }, 300);

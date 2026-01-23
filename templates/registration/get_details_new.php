@@ -163,7 +163,6 @@ if( $single_page === 'yes' ){
     $pickup_location = $return_location = $params['pickup_location'];
 }
 
-
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
     $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time', '30');
@@ -197,13 +196,17 @@ if (sizeof($all_dates) > 0) {
                     <input type="hidden" id="mpcrbm_km_or_mile" name="mpcrbm_km_or_mile" value="<?php echo esc_attr($km_or_mile); ?>" />
                     <input type="hidden" name="mpcrbm_price_based" value="<?php echo esc_attr($price_based); ?>" />
                     <input type="hidden" name="mpcrbm_post_id" value="" />
-                    <?php if( $ajax_search === 'yes' ){?>
+                    <?php
+
+                   if( $ajax_search === 'yes' ){?>
                         <input type="hidden" id="mpcrbm_enable_view_search_result_page" name="mpcrbm_enable_view_search_result_page" value="No" />
                         <input type="hidden" id="mpcrbm_enable_ajax_search" name="mpcrbm_enable_ajax_search" value="yes" />
                     <?php }else {?>
                         <input type="hidden" id="mpcrbm_enable_ajax_search" name="mpcrbm_enable_ajax_search" value="no" />
                         <input type="hidden" id="mpcrbm_enable_view_search_result_page" name="mpcrbm_enable_view_search_result_page" value="<?php echo MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page') ?>" />
-                    <?php }?>
+                    <?php }
+
+                   ?>
                     <input type='hidden' id="mpcrbm_enable_return_in_different_date" name="mpcrbm_enable_return_in_different_date" value="yes" />
                     <input type="hidden" id="mpcrbm_enable_filter_via_features" name="mpcrbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
                     <input type="hidden" id="mpcrbm_buffer_end_minutes" name="mpcrbm_buffer_end_minutes" value="<?php echo esc_attr( $buffer_end_minutes ); ?>" />
@@ -234,11 +237,16 @@ if (sizeof($all_dates) > 0) {
 
                                         // Combine with existing locations
                                         $all_locations = array_unique(array_merge($all_start_locations, $multi_location_locations));
+
                                         ?>
                                         <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
                                             <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
                                             <?php if (sizeof($all_locations) > 0) { ?>
-                                                <?php foreach ($all_locations as $start_location) {
+                                                <?php foreach ($all_locations as $key => $start_location) {
+                                                    if( $key === 0 ){
+                                                        $get_start_location = $start_location;
+                                                    }
+
                                                     $start_selected = ( $pickup_location === $start_location) ? 'selected' : '';
                                                     ?>
                                                     <option value="<?php echo esc_attr($start_location); ?>" <?php echo $start_selected; ?>>
@@ -487,3 +495,11 @@ if (sizeof($all_dates) > 0) {
     </div>
     <?php
 }
+if( $search_result_show === 'yes' ){
+?>
+<div class="mpcrbm_search_result_holder">
+    <?php
+        include MPCRBM_Function::template_path("registration/get_search_result.php");
+    ?>
+</div>
+<?php }?>

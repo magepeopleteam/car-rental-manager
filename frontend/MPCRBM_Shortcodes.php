@@ -54,7 +54,8 @@
 
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
-                    'posts_per_page' => intval( $atts['per_page'] ),
+//                    'posts_per_page' => intval( $atts['per_page'] ),
+                    'posts_per_page' => intval( $atts['show'] ),
                     'meta_query'     => $meta_query,
                 ];
 
@@ -123,6 +124,7 @@
                     'fuel_type'     => '',
                     'brand'         => '',
                     'per_page'      => 20,
+                    'show'          => 20,
                     'column'        => 3,
                     'style'         => 'grid',
                     'mpcrbm_left_filter'   => 'no',
@@ -167,7 +169,7 @@
                             <?php }?>
                             <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>">
                                 <?php if ( ! empty( $cars ) ) : ?>
-                                    <?php foreach ( $cars as $car ) : ?>
+                                    <?php foreach ( $cars as $car ) :?>
                                 <a href="<?php echo esc_url( get_permalink( $car['id'] ) ); ?>">
                                         <div class="mpcrbm_car_list_grid_item mpcrbm_booking_item "
                                              data-car-type="<?php echo esc_attr( $car['type'])?>"
@@ -370,6 +372,8 @@
 
                 $is_title    = $params['title'] ?: 'no';
                 $ajax_search    = $params['ajax_search'] ?: 'no';
+                $search_result_show    = $params['search_result'] ?: 'no';
+                $search_result_same_page    = $params['search_result_same_page'] ?: 'no';
 
                 ob_start();
                 do_shortcode( '[shop_messages]' );
@@ -399,6 +403,8 @@
 					'ajax_search' => 'no',
 					'single_page' => 'no',
 					'pickup_location' => '',
+					'search_result' => 'no',
+					'search_result_same_page' => 'no',
 				);
 			}
 		}
