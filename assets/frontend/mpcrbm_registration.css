@@ -352,6 +352,7 @@ h2#mpcrbm_title_change{color:white;}
 .mpcrbm_car_spec .spec-value{
 	font-size: 12px;
 	font-weight: 400;
+	color: #64748b;
 }
 
 .mpcrbm_price-breakdown {
