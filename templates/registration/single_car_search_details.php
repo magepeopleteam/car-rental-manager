@@ -154,7 +154,7 @@ if( $single_page === 'yes' ){
 
 $hide_time_input_field = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'hide_time_input_field_search_form', 'no' );
 $input_time = 'block';
-if( $hide_time_input_field === 'no' ){
+if( $hide_time_input_field === 'yes' ){
     $input_time = 'none';
     $end_time = 23;
 }
