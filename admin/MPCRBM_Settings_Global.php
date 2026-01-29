@@ -363,7 +363,7 @@
                         array(
                             'name' => 'hide_time_input_field_search_form',
                             'label' => esc_html__('Hide Time Input Field From Search Form', 'car-rental-manager'),
-                            'desc' => esc_html__('Turn this no if you do not want time input field in search form', 'car-rental-manager'),
+                            'desc' => esc_html__('Turn this yes if you do not want time input field in search form', 'car-rental-manager'),
                             'type' => 'select',
                             'default' => 'no',
                             'options' => array(
