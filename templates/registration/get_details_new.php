@@ -163,6 +163,13 @@ if( $single_page === 'yes' ){
     $pickup_location = $return_location = $params['pickup_location'];
 }
 
+$hide_time_input_field = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'hide_time_input_field_search_form', 'no' );
+$input_time = 'block';
+/*if( $hide_time_input_field === 'yes' ){
+    $input_time = 'none';
+    $end_time = 23;
+}*/
+
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
     $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time', '30');
@@ -300,9 +307,9 @@ if (sizeof($all_dates) > 0) {
                                 </label>
                             </div>
 
-                            <div class="mpcrbm-vertical-divider"></div>
+                            <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $input_time );?>"></div>
 
-                            <div class=" input_select">
+                            <div class=" input_select" style="display: <?php echo esc_attr( $input_time );?>">
                                 <input type="hidden" id="mpcrbm_map_start_time" value="<?php echo esc_attr( $start_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title">
@@ -362,8 +369,8 @@ if (sizeof($all_dates) > 0) {
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
                                 </label>
                             </div>
-                            <div class="mpcrbm-vertical-divider"></div>
-                            <div class=" input_select">
+                            <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $input_time );?>"></div>
+                            <div class=" input_select" style="display: <?php echo esc_attr( $input_time );?>">
                                 <input type="hidden" id="mpcrbm_map_return_time" value="<?php echo esc_attr( $end_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title">
