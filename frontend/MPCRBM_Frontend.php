@@ -177,13 +177,19 @@
                     'post_type'      => 'mpcrbm_booking',
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
+                    'relation' => 'AND',
                     'meta_query'     => [
                         [
                             'key'     => 'mpcrbm_id',
                             'value'   => $post_id,
                             'compare' => '=',
                             'type'    => 'NUMERIC',
-                        ]
+                        ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
                     ]
                 ];
 
