@@ -360,6 +360,17 @@
                                 'yes' => esc_html__('On', 'car-rental-manager')
                             )
                         ),
+                        array(
+                            'name' => 'hide_time_input_field_search_form',
+                            'label' => esc_html__('Hide Time Input Field From Search Form', 'car-rental-manager'),
+                            'desc' => esc_html__('Turn this no if you do not want time input field in search form', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+                        ),
 					)),
 					'mpcrbm_style_settings' => apply_filters('mpcrbm_filter_style_settings', array(
 						array(
