@@ -739,6 +739,7 @@
 				if ( $cpt_name == 'mpcrbm_booking' ) {
 					$mpcrbm_pin = $meta_data['mpcrbm_user_id'] . $meta_data['mpcrbm_order_id'] . $meta_data['mpcrbm_id'] . $post_id;
 					update_post_meta( $post_id, 'mpcrbm_pin', $mpcrbm_pin );
+					update_post_meta( $post_id, 'mpcrbm_order_post_id', $post_id );
 				}
 			}
 
