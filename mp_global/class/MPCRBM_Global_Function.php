@@ -35,6 +35,48 @@
 				return array_unique( $all_data );
 			}
 
+            public static function get_mpcrbm_ids_by_datetime( $given_datetime ) {
+
+                $args = array(
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                    'meta_query'     => array(
+                        'relation' => 'AND',
+                        array(
+                            'key'     => 'mpcrbm_date',
+                            'value'   => $given_datetime,
+                            'compare' => '<=',
+                            'type'    => 'DATETIME',
+                        ),
+                        array(
+                            'key'     => 'return_date_time',
+                            'value'   => $given_datetime,
+                            'compare' => '>=',
+                            'type'    => 'DATETIME',
+                        ),
+                    ),
+                );
+
+                $query = new WP_Query( $args );
+
+                if ( empty( $query->posts ) ) {
+                    return array();
+                }
+
+                $mpcrbm_ids = array();
+
+                foreach ( $query->posts as $post_id ) {
+                    $mpcrbm_id = get_post_meta( $post_id, 'mpcrbm_id', true );
+                    if ( ! empty( $mpcrbm_id ) ) {
+                        $mpcrbm_ids[] = $mpcrbm_id;
+                    }
+                }
+
+                return $mpcrbm_ids;
+            }
+
 			public static function get_post_info( $post_id, $key, $default = '' ) {
 				$data = get_post_meta( $post_id, $key, true ) ?: $default;
 
