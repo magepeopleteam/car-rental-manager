@@ -427,7 +427,13 @@ if( count( $post_ids ) > 0 ){
     $left_side_filter = MPCRBM_Global_Function::get_meta_key( $post_ids );
 }
 
+// Given datetime
+$final_start_datetime = $start_date . ' ' . $start_time . ':00';
+$mpcrbm_all_booked_car_ids = MPCRBM_Global_Function::get_mpcrbm_ids_by_datetime( $final_start_datetime );
 
+if( is_array( $post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
+    $post_ids = array_diff( $post_ids, $mpcrbm_all_booked_car_ids);
+}
 
 
 if( $is_redirect === 'yes' ){
