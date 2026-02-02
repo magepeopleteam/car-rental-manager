@@ -56,6 +56,11 @@
                             'compare' => '>=',
                             'type'    => 'DATETIME',
                         ),
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
                     ),
                 );
 
