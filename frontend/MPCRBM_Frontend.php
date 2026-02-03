@@ -59,7 +59,7 @@
 
                 if ( ! empty( $search_page_slug ) && is_page( $search_page_slug ) ) {
                     $search_form_with_result = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'search_form_with_search_result', 'on' );
-                    if ( session_status() === PHP_SESSION_NONE ) {
+                    /*if ( session_status() === PHP_SESSION_NONE ) {
                         session_start();
                     }
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
@@ -71,7 +71,16 @@
                         unset($_SESSION['progress_bar']);
                         unset($_SESSION['search_date']);
                     }
-                    session_write_close();
+                    session_write_close();*/
+
+                    $user_id = get_current_user_id();
+                    $result_data = get_transient('wtbm_custom_content_' . $user_id);
+                    $progress_bar = get_transient('wtbm_progress_bar_' . $user_id);
+                    $search_date = get_transient('wtbm_search_date_' . $user_id);
+
+                    delete_transient('wtbm_custom_content_' . $user_id);
+                    delete_transient('wtbm_progress_bar_' . $user_id);
+                    delete_transient('wtbm_search_date_' . $user_id);
 
                     $content = '';
                     if( $result_data ){

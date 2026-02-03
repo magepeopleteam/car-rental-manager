@@ -127,13 +127,18 @@
                 $is_redirect = 'yes';
                 include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 
-                $content = ob_get_clean(); // Buffer content get & clean
-
-                session_start();
+//                $content = ob_get_clean(); // Buffer content get & clean
+                /*session_start();
                 $_SESSION['custom_content'] = $content;
                 $_SESSION['progress_bar'] = $progress_bar;
                 $_SESSION['search_date'] = $_POST;
-                session_write_close();
+                session_write_close();*/
+
+                $content = ob_get_clean();
+                set_transient('wtbm_custom_content_' . get_current_user_id(), $content, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_progress_bar_' . get_current_user_id(), $progress_bar, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_search_date_' . get_current_user_id(), $_POST, 5 * MINUTE_IN_SECONDS);
+
 
                 // Plugin settings থেকে search result page slug আনো
                 $search_page_slug = isset( $_POST['mpcrbm_enable_view_search_result_page'] )
