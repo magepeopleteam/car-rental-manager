@@ -73,7 +73,8 @@
                     }
                     session_write_close();*/
 
-                    $user_id = get_current_user_id();
+//                    $user_id = get_current_user_id();
+                    $user_id = MPCRBM_Transport_Search::get_guest_unique_id();
                     $result_data = get_transient('wtbm_custom_content_' . $user_id);
                     $progress_bar = get_transient('wtbm_progress_bar_' . $user_id);
                     $search_date = get_transient('wtbm_search_date_' . $user_id);
