@@ -755,6 +755,11 @@
                             'value'   => $post_id,
                             'compare' => '=',
                         ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
                     ],
                 ];
                 $bookings = get_posts( $args );
