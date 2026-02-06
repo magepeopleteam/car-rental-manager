@@ -106,6 +106,28 @@
                 return ( $page !== null );
             }
 
+            public static function get_guest_unique_id() {
+
+                if (is_user_logged_in()) {
+                    return 'user_' . get_current_user_id();
+                }
+
+                if (!isset($_COOKIE['guest_uid'])) {
+                    $guest_id = wp_generate_uuid4();
+
+                    setcookie(
+                        'guest_uid',
+                        $guest_id,
+                        time() + DAY_IN_SECONDS,
+                        COOKIEPATH,
+                        COOKIE_DOMAIN
+                    );
+
+                    $_COOKIE['guest_uid'] = $guest_id;
+                }
+
+                return 'guest_' . $_COOKIE['guest_uid'];
+            }
             public function mpcrbm_get_map_search_result_redirect() {
                 ob_start(); // Output buffering শুরু
 
@@ -127,17 +149,18 @@
                 $is_redirect = 'yes';
                 include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 
-//                $content = ob_get_clean(); // Buffer content get & clean
-                /*session_start();
+                $content = ob_get_clean(); // Buffer content get & clean
+                session_start();
                 $_SESSION['custom_content'] = $content;
                 $_SESSION['progress_bar'] = $progress_bar;
                 $_SESSION['search_date'] = $_POST;
-                session_write_close();*/
+                session_write_close();
 
-                $content = ob_get_clean();
-                set_transient('wtbm_custom_content_' . get_current_user_id(), $content, 5 * MINUTE_IN_SECONDS);
-                set_transient('wtbm_progress_bar_' . get_current_user_id(), $progress_bar, 5 * MINUTE_IN_SECONDS);
-                set_transient('wtbm_search_date_' . get_current_user_id(), $_POST, 5 * MINUTE_IN_SECONDS);
+
+                /*$uid = self::get_guest_unique_id();
+                set_transient('wtbm_custom_content_' . $uid, $content, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_progress_bar_' . $uid, $progress_bar, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_search_date_' . $uid, $_POST, 5 * MINUTE_IN_SECONDS);*/
 
 
                 // Plugin settings থেকে search result page slug আনো
