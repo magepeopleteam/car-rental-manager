@@ -149,20 +149,18 @@
                 $is_redirect = 'yes';
                 include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 
-//                $content = ob_get_clean(); // Buffer content get & clean
-                /*session_start();
+                $content = ob_get_clean(); // Buffer content get & clean
+                session_start();
                 $_SESSION['custom_content'] = $content;
                 $_SESSION['progress_bar'] = $progress_bar;
                 $_SESSION['search_date'] = $_POST;
-                session_write_close();*/
+                session_write_close();
 
 
-                $uid = self::get_guest_unique_id();
-
-                $content = ob_get_clean();
+                /*$uid = self::get_guest_unique_id();
                 set_transient('wtbm_custom_content_' . $uid, $content, 5 * MINUTE_IN_SECONDS);
                 set_transient('wtbm_progress_bar_' . $uid, $progress_bar, 5 * MINUTE_IN_SECONDS);
-                set_transient('wtbm_search_date_' . $uid, $_POST, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_search_date_' . $uid, $_POST, 5 * MINUTE_IN_SECONDS);*/
 
 
                 // Plugin settings থেকে search result page slug আনো
