@@ -128,6 +128,8 @@ $discount_price = MPCRBM_Function::calculate_multi_location_price( $post_id, $st
 
 $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
 
+$start_day = get_option('start_of_week', 0);
+
 ?>
 <div class="mpcrbm_car_details">
     <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="" />
@@ -138,6 +140,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
     <input type="hidden" name="mpcrbm_start_time" id="mpcrbm_start_time" value="<?php echo esc_attr($start_time); ?>" />
 <!--    <input type="hidden" name="mpcrbm_taxi_return" value="--><?php //echo esc_attr($two_way); ?><!--" />-->
 
+    <input type="hidden" id="mpcrbm_start_calendar_day" name="mpcrbm_start_calendar_day" value="<?php echo esc_attr($start_day); ?>" />
     <input type="hidden" name="mpcrbm_map_return_date" id="mpcrbm_map_return_date" value="<?php echo esc_attr($return_date); ?>" />
     <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($return_time); ?>" />
 
@@ -427,6 +430,9 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
 
 
                         <!-- DRIVER INFO -->
+                        <?php
+                        $enable_driver_information    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
+                        if( $enable_driver_information === 'on' ){?>
                         <div class="mpcrbm_car_details_driver_box">
                             <h3><?php esc_attr_e( 'Driver details', 'car-rental-manager' );?></h3>
                             <div class="divider"></div>
@@ -459,6 +465,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                                 </div>
                             </div>
                         </div>
+                        <?php }?>
 
                         <!-- RENTER INFO -->
                         <div class="mpcrbm_car_details_driver_box">

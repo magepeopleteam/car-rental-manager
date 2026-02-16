@@ -128,12 +128,16 @@ jQuery(document).ready(function ($) {
     }
 
     let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
+    let mpcrbm_start_date = parent.find( "#mpcrbm_start_calendar_day").val();
     selectors.forEach(function (selector) {
         flatpickr( selector, {
             mode: "range",
             minDate: "today",
             dateFormat: "Y-m-d",
             showMonths: 2,
+            locale: {
+                firstDayOfWeek: mpcrbm_start_date // 1 = Monday
+            },
             disable: [
                 function(date) {
                     return mpcrbm_off_days_ary.includes(date.getDay());

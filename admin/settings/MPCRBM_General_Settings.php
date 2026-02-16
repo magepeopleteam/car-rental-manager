@@ -36,6 +36,14 @@
 				
 				$max_passenger    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_passenger' );
 				$max_bag          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_bag' );
+                $enable_driver_information    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
+
+                $is_driver_checked = '';
+                $is_info_show = 'none';
+                if( $enable_driver_information === 'on' ){
+                    $is_driver_checked = 'checked';
+                    $is_info_show = 'block';
+                }
 
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_general_info">
@@ -151,17 +159,31 @@
                             </label>
                         </section>
 
-                        <section class="bg-light" style="margin-top: 20px;">
-							<label class="label">
-                                <div>
-                                    <h6><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); ?></span>
+                        <div class="mpcrbm_driver_info_holder" id="mpcrbm_driver_info_holder">
+                            <section class="bg-light" style="margin-top: 20px;">
+                                <!--<label class="label">
+                                    <div>
+                                        <h6><?php /*esc_html_e( 'Driver Information', 'car-rental-manager' ); */?></h6>
+                                        <span class="desc"><?php /*MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); */?></span>
+                                    </div>
+                                </label>-->
+
+                                <div class="label">
+                                    <div>
+                                        <h6>Enable Driver Information</h6>
+                                        <span class="desc">By default show driver information in car OFF but you can keep it on by switching this option</span>
+                                    </div>
+                                    <label class="roundSwitchLabel">
+                                        <input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked );?> >
+                                        <span class="roundSwitch" data-collapse-target="#mpcrbm_enable_driver_information"></span>
+                                    </label>
                                 </div>
-							</label>	
-                        </section>
-						<div class="mpcrbm_driver_info">
-							<?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
+                            </section>
+                            <div class="mpcrbm_driver_info" id="mpcrbm_get_driver_info" style="display: <?php echo esc_attr($is_info_show);?>">
+                                <?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
+                            </div>
 						</div>
+
                     </div>
                 </div>
 				<?php
@@ -197,8 +219,12 @@
 						}
 					}
 
+                    $mpcrbm_enable_driver_information = isset( $_POST['mpcrbm_enable_driver_information'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_driver_information'] ) ) ? 'on' : 'off';
+//                    error_log( print_r( [ '$mpcrbm_enable_driver_information' => $mpcrbm_enable_driver_information ], true ) );
+
 					update_post_meta( $post_id, 'mpcrbm_maximum_passenger', $max_passenger );
 					update_post_meta( $post_id, 'mpcrbm_maximum_bag', $max_bag );
+					update_post_meta( $post_id, 'mpcrbm_enable_driver_information', $mpcrbm_enable_driver_information );
 
                     if ( isset( $_POST['mpcrbm_driver_info'] ) && is_array( $_POST['mpcrbm_driver_info'] ) ) {
                         $driver_info = array_map( 'sanitize_text_field', $_POST['mpcrbm_driver_info'] );
