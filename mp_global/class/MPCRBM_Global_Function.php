@@ -859,7 +859,7 @@
                 if ( ! empty( $query->posts ) ) {
                     foreach ( $query->posts as $car_id ) {
 //                        $stock = (int) get_post_meta( $car_id, 'mpcrbm_car_stock', true );
-                        $stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );;
+                        $stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
                         if ( $stock > 0 ) {
                             $cars[$car_id] = $stock;
                         }

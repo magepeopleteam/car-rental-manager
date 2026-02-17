@@ -241,6 +241,90 @@
 
                 return $all_dates;
             }
+            public static function mpcrbm_get_unavailable_dates_by_stock( $post_id ) {
+
+                $stock = (int) MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
+
+                if ( $stock <= 0 ) {
+                    return [];
+                }
+
+                // 🔹 Step 2: Get all active bookings for this car
+                $args = [
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                    'meta_query'     => [
+                        'relation' => 'AND',
+                        [
+                            'key'     => 'mpcrbm_id',
+                            'value'   => $post_id,
+                            'compare' => '=',
+                            'type'    => 'NUMERIC',
+                        ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
+                    ]
+                ];
+
+                $query = new WP_Query( $args );
+
+                $daily_bookings = [];
+
+                if ( ! empty( $query->posts ) ) {
+
+                    foreach ( $query->posts as $booking_id ) {
+
+                        $start_datetime = get_post_meta( $booking_id, 'mpcrbm_date', true );
+                        $end_datetime   = get_post_meta( $booking_id, 'return_date_time', true );
+                        $qty            = (int) get_post_meta( $booking_id, 'mpcrbm_car_quantity', true );
+
+                        if ( empty( $start_datetime ) || empty( $end_datetime ) ) {
+                            continue;
+                        }
+
+                        $start = new DateTime( $start_datetime );
+                        $end   = new DateTime( $end_datetime );
+
+                        $start->setTime( 0, 0, 0 );
+                        $end->setTime( 0, 0, 0 );
+                        $end->modify( '+1 day' );
+
+                        $interval = new DateInterval( 'P1D' );
+                        $period   = new DatePeriod( $start, $interval, $end );
+
+                        foreach ( $period as $date ) {
+
+                            $formatted = $date->format( 'Y-m-d' );
+
+                            if ( ! isset( $daily_bookings[$formatted] ) ) {
+                                $daily_bookings[$formatted] = 0;
+                            }
+
+                            $daily_bookings[$formatted] += $qty;
+                        }
+                    }
+                }
+
+                // 🔹 Step 3: Find fully booked dates
+                $unavailable_dates = [];
+
+                foreach ( $daily_bookings as $date => $booked_qty ) {
+
+                    if ( $booked_qty >= $stock ) {
+                        $unavailable_dates[] = $date;
+                    }
+                }
+
+                sort( $unavailable_dates );
+
+                return $unavailable_dates;
+            }
+
 
             public function mpcrbm_get_total_count_price_selected_car() {
                 $nonce = sanitize_text_field( wp_unslash( $_POST['_nonce'] ?? '' ) );
@@ -276,6 +360,70 @@
                     'calculated_price' => $calculated_price,
                 ) );
             }
+
+            public static function mpcrbm_get_available_stock_by_date( $car_id, $date ) {
+
+                $total_stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
+
+                if ( $total_stock <= 0 ) {
+                    return 0;
+                }
+
+                $start_datetime = $date . ' 00:00:00';
+                $end_datetime   = $date . ' 23:59:59';
+
+                $args = [
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                    'meta_query'     => [
+                        'relation' => 'AND',
+                        [
+                            'key'     => 'mpcrbm_id',
+                            'value'   => $car_id,
+                            'compare' => '=',
+                            'type'    => 'NUMERIC',
+                        ],
+                        [
+                            'key'     => 'mpcrbm_date',
+                            'value'   => $end_datetime,
+                            'compare' => '<=',
+                            'type'    => 'DATETIME',
+                        ],
+                        [
+                            'key'     => 'return_date_time',
+                            'value'   => $start_datetime,
+                            'compare' => '>=',
+                            'type'    => 'DATETIME',
+                        ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
+                    ]
+                ];
+
+                $query = new WP_Query( $args );
+
+                $total_booked = 0;
+
+                if ( ! empty( $query->posts ) ) {
+
+                    foreach ( $query->posts as $booking_id ) {
+
+                        $qty = (int) get_post_meta( $booking_id, 'mpcrbm_car_quantity', true );
+                        $total_booked += $qty;
+                    }
+                }
+
+                // 🔹 Step 3: Calculate available stock
+                $available_stock = $total_stock - $total_booked;
+
+                return max( 0, $available_stock );
+            }
+
 
         }
 		new MPCRBM_Frontend();

@@ -91,6 +91,11 @@ if( !is_array( $off_dates ) && empty( $off_dates ) ){
 }
 $booking_dates = [];
 $booking_dates = MPCRBM_Frontend::mpcrbm_get_all_booking_dates_between_start_end( $post_id );
+//error_log( print_r( [ '$booking_dates' => $booking_dates ], true ) );
+//$booking_dates_new = MPCRBM_Frontend::mpcrbm_get_unavailable_dates_by_stock( $post_id );
+//error_log( print_r( [ '$booking_dates_new' => $booking_dates_new ], true ) );
+$available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, date('Y-m-d') );
+//error_log( print_r( [ '$available_stock' => $available_stock ], true ) );
 
 $off_dates = array_merge( $off_dates, $booking_dates );
 
