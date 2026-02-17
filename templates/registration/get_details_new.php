@@ -170,6 +170,8 @@ if( $hide_time_input_field === 'yes' ){
     $end_time = 23;
 }
 
+$time_format_display = (int)MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'time_format_display');
+
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
     $interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time', '30');
@@ -316,7 +318,11 @@ if (sizeof($all_dates) > 0) {
                                         <i class="mi mi-clock-three"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_time );?>" readonly />
+                                    <?php if( $time_format_display == 12 ){?>
+                                        <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_time );?>" readonly />
+                                    <?php }else{?>
+                                        <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $start_time );?>" readonly />
+                                    <?php }?>
                                 </label>
 
                                 <ul class="input_select_list start_time_list">
@@ -329,9 +335,13 @@ if (sizeof($all_dates) > 0) {
                                         }
                                         $data_value = $hours + ($minutes / 100);
                                         $time_formatted = sprintf('%02d:%02d', $hours, $minutes);
-                                        ?>
-                                        <li data-value="<?php echo esc_attr($data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($time_formatted, 'time')); ?></li>
-                                    <?php } ?>
+
+                                        if( $time_format_display == 12 ){ ?>
+                                            <li data-value="<?php echo esc_attr($data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($time_formatted, 'time')); ?></li>
+                                        <?php }else{?>
+                                            <li data-value="<?php echo esc_attr($data_value); ?>"><?php echo esc_html( $data_value ); ?></li>
+                                    <?php }
+                                     } ?>
 
                                 </ul>
                                 <ul class="start_time_list-no-dsiplay" style="display:none">
@@ -377,7 +387,12 @@ if (sizeof($all_dates) > 0) {
                                         <i class="mi mi-clock"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_time );?>" readonly name="return_time" />
+                                    <?php if( $time_format_display == 12 ){?>
+                                        <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_time );?>" readonly name="return_time" />
+                                    <?php }else{?>
+                                        <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $end_time );?>" readonly name="return_time" />
+                                    <?php }?>
+
                                     <!--						<span class="far fa-clock mpcrbm_left_icon allCenter"></span>-->
                                 </label>
                                 <ul class="return_time_list-no-dsiplay" style="display:none">
@@ -399,10 +414,12 @@ if (sizeof($all_dates) > 0) {
 
                                         // Format the time for display
                                         $time_formatted = sprintf('%02d:%02d', $hours, $minutes);
-
-                                        ?>
-                                        <li data-value="<?php echo esc_attr($data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($time_formatted, 'time')); ?></li>
-                                    <?php } ?>
+                                        if( $time_format_display == 12 ){ ?>
+                                            <li data-value="<?php echo esc_attr($data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($time_formatted, 'time')); ?></li>
+                                        <?php }else{?>
+                                            <li data-value="<?php echo esc_attr($data_value); ?>"><?php echo esc_html( $data_value ); ?></li>
+                                    <?php }
+                                    } ?>
                                 </ul>
                                 <ul class="input_select_list return_time_list">
                                     <?php

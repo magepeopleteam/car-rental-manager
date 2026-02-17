@@ -173,6 +173,15 @@
 
 	});
 
+	jQuery(document).on('change', '#mpcrbm_enable_driver_information', function () {
+		if ($('input[name="mpcrbm_enable_driver_information"]').is(':checked')) {
+			console.log('Checkbox is checked');
+			$("#mpcrbm_get_driver_info").fadeIn();
+		}else{
+			$("#mpcrbm_get_driver_info").fadeOut();
+		}
+	});
+
 	jQuery(document).on('change', '.mpcrbm_order_list__select', function () {
 		let status = jQuery(this).val();
 		let order_id = $(this).attr('data-order-id').trim();

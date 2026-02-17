@@ -274,6 +274,17 @@
 							'default' => 'Find and Reserve your Perfect vehicle',
 							'placeholder' => 'Find and Reserve your Perfect vehicle'
 						),
+						array(
+							'name' => 'time_format_display',
+                            'label' => esc_html__('Display Time Format', 'car-rental-manager'),
+                            'desc' => esc_html__('Display Time Format In 12 Or 24', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => '12',
+                            'options' => array(
+                                '12' => esc_html__('12', 'car-rental-manager'),
+                                '24' => esc_html__('24', 'car-rental-manager')
+                            )
+						),
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(
