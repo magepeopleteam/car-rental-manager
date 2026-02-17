@@ -54,6 +54,7 @@
 					$start_time       = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
 					$return_date      = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
 					$return_time      = isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : '';
+                    $quantity         = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 					$return_date_time = $return_date ? gmdate( "Y-m-d", strtotime( $return_date ) ) : "";
 					if ( $return_date && $return_time !== "" ) {
 						if ( $return_time !== "" ) {
@@ -84,6 +85,7 @@
 					$raw_price = MPCRBM_Global_Function::price_convert_raw( $wc_price );
 					$cart_item_data['mpcrbm_date'] = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
 					$cart_item_data['mpcrbm_taxi_return']         = $return;
+					$cart_item_data['mpcrbm_car_quantity']         = $quantity;
 //					$cart_item_data['mpcrbm_waiting_time']        = $waiting_time;
 					$cart_item_data['mpcrbm_start_place']         = wp_strip_all_tags( $start_place );
 					$cart_item_data['mpcrbm_end_place']           = wp_strip_all_tags( $end_place );
@@ -183,6 +185,7 @@
 					$fixed_time     = $values['mpcrbm_fixed_hours'] ?? 0;
 					$extra_service  = $values['mpcrbm_extra_service_info'] ?? [];
 					$price          = $values['mpcrbm_tp'] ?? '';
+					$car_quantity   = $values['mpcrbm_car_quantity'] ?? '';
 					$item->add_meta_data( esc_html__( 'Pickup Location ', 'car-rental-manager' ), $start_location );
 					$item->add_meta_data( esc_html__( 'Return Location ', 'car-rental-manager' ), $end_location );
 					$price_type = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_price_based' );
@@ -231,6 +234,7 @@
 					$item->add_meta_data( '_mpcrbm_return_date', $return_date );
 					$item->add_meta_data( '_mpcrbm_return_time', $return_time );
 					$item->add_meta_data( '_return_date_time', $return_date_time );
+					$item->add_meta_data( '_mpcrbm_car_quantity', $car_quantity );
 					$item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ) ) );
 					if ( sizeof( $extra_service ) > 0 ) {
 						$item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
@@ -364,6 +368,8 @@
 								$service_info = $service ? MPCRBM_Global_Function::data_sanitize( $service ) : [];
 								$price        = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_tp' );
 								$price        = $price ? MPCRBM_Global_Function::data_sanitize( $price ) : [];
+								$car_quantity = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_car_quantity' );
+                                $car_quantity = $car_quantity ? MPCRBM_Global_Function::data_sanitize( $car_quantity ) : 1;
 								// Add meta array data to the $data array
 								$data = array_merge( $meta_array, [
 									'mpcrbm_id'                          => $post_id,
@@ -388,6 +394,7 @@
 									'mpcrbm_billing_name'                => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
 									'mpcrbm_billing_email'               => $order->get_billing_email(),
 									'mpcrbm_billing_phone'               => $order->get_billing_phone(),
+									'mpcrbm_car_quantity'                => $car_quantity,
 									'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
 								] );
 								$booking_data = apply_filters( 'mpcrbm_add_booking_data', $data, $post_id );
@@ -811,7 +818,7 @@
                     return 0;
                 }else {
                     $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
-                    $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field(wp_unslash($_POST['mpcrbm_car_quantity'])) : 1;
+                    $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 
                     $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
                     $product_status = get_post_status($product_id);

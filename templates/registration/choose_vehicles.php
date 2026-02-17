@@ -429,7 +429,11 @@ if( count( $post_ids ) > 0 ){
 
 // Given datetime
 $final_start_datetime = $start_date . ' ' . $start_time . ':00';
-$mpcrbm_all_booked_car_ids = MPCRBM_Global_Function::get_mpcrbm_ids_by_datetime( $final_start_datetime );
+//$mpcrbm_all_booked_car_ids = MPCRBM_Global_Function::get_mpcrbm_ids_by_datetime( $final_start_datetime );
+
+$all_cal_with_stock = MPCRBM_Global_Function::get_available_cars_by_datetime( $final_start_datetime );
+$mpcrbm_all_booked_car_ids = $all_cal_with_stock['unavailable_cars'];
+$available_cars_car_ids    = $all_cal_with_stock['available_cars'];
 
 if( is_array( $post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
     $post_ids = array_diff( $post_ids, $mpcrbm_all_booked_car_ids);

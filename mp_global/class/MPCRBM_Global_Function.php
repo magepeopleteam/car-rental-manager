@@ -845,7 +845,205 @@
                 ];
             }
 
-		}
+            public static function get_all_cars_with_stock() {
+
+                $args = array(
+                    'post_type'      => 'mpcrbm_rent',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                );
+
+                $query = new WP_Query( $args );
+                $cars = [];
+                if ( ! empty( $query->posts ) ) {
+                    foreach ( $query->posts as $car_id ) {
+//                        $stock = (int) get_post_meta( $car_id, 'mpcrbm_car_stock', true );
+                        $stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );;
+                        if ( $stock > 0 ) {
+                            $cars[$car_id] = $stock;
+                        }
+                    }
+                }
+                return $cars;
+            }
+
+            public static function get_available_cars_by_datetime( $given_datetime ) {
+                $cars = self::get_all_cars_with_stock();
+                if ( empty( $cars ) ) {
+                    return [];
+                }
+
+                $args = array(
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                    'meta_query'     => array(
+                        'relation' => 'AND',
+                        array(
+                            'key'     => 'mpcrbm_date',
+                            'value'   => $given_datetime,
+                            'compare' => '<=',
+                            'type'    => 'DATETIME',
+                        ),
+                        array(
+                            'key'     => 'return_date_time',
+                            'value'   => $given_datetime,
+                            'compare' => '>=',
+                            'type'    => 'DATETIME',
+                        ),
+                        array(
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => array( 'cancelled', 'refunded', 'failed' ),
+                            'compare' => 'NOT IN',
+                        ),
+                    ),
+                );
+
+                $query = new WP_Query( $args );
+
+                $booked_counts = [];
+
+                if ( ! empty( $query->posts ) ) {
+
+                    foreach ( $query->posts as $post_id ) {
+
+                        $car_id = get_post_meta( $post_id, 'mpcrbm_id', true );
+                        $qty    = (int) get_post_meta( $post_id, 'mpcrbm_car_quantity', true );
+
+                        if ( empty( $car_id ) ) {
+                            continue;
+                        }
+
+                        if ( ! isset( $booked_counts[$car_id] ) ) {
+                            $booked_counts[$car_id] = 0;
+                        }
+
+                        $booked_counts[$car_id] += $qty;
+                    }
+                }
+
+                $available_cars = [];
+                $unavailable_cars = [];
+
+                foreach ( $cars as $car_id => $stock ) {
+
+                    $booked    = isset( $booked_counts[$car_id] ) ? $booked_counts[$car_id] : 0;
+                    $available = $stock - $booked;
+
+                    if ( $available > 0 ) {
+                        $available_cars[$car_id] = [
+                            'total_stock' => $stock,
+                            'booked'      => $booked,
+                            'available'   => $available,
+                        ];
+                    }else{
+                        $unavailable_cars[] = $car_id;
+                    }
+                }
+
+                $data = array(
+                    'available_cars'    =>$available_cars,
+                    'unavailable_cars'  =>$unavailable_cars,
+                );
+                return $data;
+            }
+
+            public static function get_unavailable_car_ids_by_datetime( $given_datetime ) {
+
+                // 🔹 Step 1: Get all cars with stock
+                $car_args = array(
+                    'post_type'      => 'mpcrbm_car',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                );
+
+                $car_query = new WP_Query( $car_args );
+
+                if ( empty( $car_query->posts ) ) {
+                    return [];
+                }
+
+                $cars = [];
+
+                foreach ( $car_query->posts as $car_id ) {
+//                    $stock = (int) get_post_meta( $car_id, 'mpcrbm_car_stock', true );
+                    $stock = 5;
+                    $cars[$car_id] = $stock;
+                }
+
+                // 🔹 Step 2: Get active bookings for that datetime
+                $booking_args = array(
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+                    'meta_query'     => array(
+                        'relation' => 'AND',
+                        array(
+                            'key'     => 'mpcrbm_date',
+                            'value'   => $given_datetime,
+                            'compare' => '<=',
+                            'type'    => 'DATETIME',
+                        ),
+                        array(
+                            'key'     => 'return_date_time',
+                            'value'   => $given_datetime,
+                            'compare' => '>=',
+                            'type'    => 'DATETIME',
+                        ),
+                        array(
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => array( 'cancelled', 'refunded', 'failed' ),
+                            'compare' => 'NOT IN',
+                        ),
+                    ),
+                );
+
+                $booking_query = new WP_Query( $booking_args );
+
+                $booked_counts = [];
+
+                if ( ! empty( $booking_query->posts ) ) {
+
+                    foreach ( $booking_query->posts as $post_id ) {
+
+                        $car_id = get_post_meta( $post_id, 'mpcrbm_id', true );
+                        $qty    = (int) get_post_meta( $post_id, 'mpcrbm_car_quantity', true );
+                        error_log( print_r( [ '$car_id'  =>$car_id, '$qty' =>$qty ], true ) );
+
+                        if ( empty( $car_id ) ) {
+                            continue;
+                        }
+
+                        if ( ! isset( $booked_counts[$car_id] ) ) {
+                            $booked_counts[$car_id] = 0;
+                        }
+
+                        $booked_counts[$car_id] += $qty;
+                    }
+                }
+
+                // 🔹 Step 3: Compare stock vs booked
+                $unavailable_ids = [];
+
+                foreach ( $cars as $car_id => $stock ) {
+
+                    $booked = isset( $booked_counts[$car_id] ) ? $booked_counts[$car_id] : 0;
+
+                    if ( $booked >= $stock && $stock > 0 ) {
+                        $unavailable_ids[] = $car_id;
+                    }
+                }
+
+                return $unavailable_ids;
+            }
+
+
+
+        }
 
 		new MPCRBM_Global_Function();
 	}

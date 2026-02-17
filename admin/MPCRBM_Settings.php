@@ -127,6 +127,7 @@
 					'mpcrbm_increase_price_direction'         => esc_html__( "Select the direction of travel: 'Origin to Destination' or 'Both ways' for round trips", "car-rental-manager" ),
 					'mpcrbm_return_discount'                  => esc_html__( 'This is to way return discount fixed or percentage', 'car-rental-manager' ),
 					'mpcrbm_driver_details'                   => esc_html__( 'Car Driver Details ', 'car-rental-manager' ),
+					'mpcrbm_car_stock'                        => esc_html__( 'Add the total number of available units for this car here ', 'car-rental-manager' ),
 				);
 				$des = apply_filters( 'mpcrbm_filter_description_array', $des );
 

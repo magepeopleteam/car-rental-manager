@@ -68,6 +68,9 @@ if ($post_id) {
     // Get vehicle data
     $thumbnail = MPCRBM_Global_Function::get_image_url($post_id);
 
+    $get_stock_data = $available_cars_car_ids[$post_id];
+    $car_qty = isset( $get_stock_data['available'] ) ? $get_stock_data['available'] : 1;
+
     $days = MPCRBM_Function::get_days_from_start_end_date( $start_date_time, $return_date_time );
     // Use multi-location pricing if enabled, otherwise use default pricing
     $price = MPCRBM_Function::calculate_multi_location_price($post_id, $start_place, $end_place, $start_date_time, $return_date_time);
@@ -297,7 +300,7 @@ if ($post_id) {
                     </div>
                     <div class="mpcrbm_add_multiple_qty">
                         <div class=" mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
-                            <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, 100, 1, 0); ?>
+                            <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $raw_price, $car_qty, 1, 0); ?>
                         </div>
                         <button type="button"
                                 class="_mpBtn_xs mpcrbm_transport_select"
