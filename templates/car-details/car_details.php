@@ -138,9 +138,16 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
 
 $start_day = get_option('start_of_week', 0);
 
+
+$start_date = date("Y-m-d H:i");
+if( $post_id && $price > 0 ){
+    $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
+}else{
+    $day_price = $price;
+}
 ?>
 <div class="mpcrbm_car_details">
-    <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="" />
+    <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="<?php echo esc_attr( $day_price )?>" />
     <input type="hidden" name="mpcrbm_car_title" id="mpcrbm_car_title" value="<?php echo esc_attr( $car_name );?>" />
     <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($start_place); ?>" />
     <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($end_place); ?>" />
@@ -357,14 +364,6 @@ $start_day = get_option('start_of_week', 0);
                     <div class="mpcrbm_car_details_right">
                         <?php
                         $mpcrbm_booking_form = new MPCRBM_Shortcodes();
-
-                        $start_date = date("Y-m-d H:i");
-
-                        if( $post_id && $price > 0 ){
-                            $day_price = MPCRBM_Function::mpcrbm_calculate_price( $post_id, $start_date, 1, $price );
-                        }else{
-                            $day_price = $price;
-                        }
 
 
                         $pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );

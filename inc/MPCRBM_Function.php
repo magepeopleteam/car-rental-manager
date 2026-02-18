@@ -410,7 +410,7 @@
              * @param int $days Number of rental days
              * @return float Final daily price
              */
-            public static function mpcrbm_calculate_price( $post_id, $start_date, $days, $price ) {
+            public static function  mpcrbm_calculate_price( $post_id, $start_date, $days, $price ) {
 
                 $base_price = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
                 $daywise    = (array) get_post_meta($post_id, 'mpcrbm_daywise_pricing', true);

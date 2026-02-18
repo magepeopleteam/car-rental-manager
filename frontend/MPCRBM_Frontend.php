@@ -428,7 +428,6 @@
                 $nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
                 $qty_html = '';
                 if ( wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
-                    error_log( print_r( [ 'POST' => $_POST ], true ) );
                     $car_id     = isset( $_POST['car_id'] ) ? sanitize_text_field( wp_unslash( $_POST['car_id'] ) ) : '';
                     $date       = isset( $_POST['startDate'] ) ? sanitize_text_field( wp_unslash( $_POST['startDate'] ) ) : '';
                     $day_price  = isset( $_POST['day_wise_price'] ) ? sanitize_text_field( wp_unslash( $_POST['day_wise_price'] ) ) : '';
