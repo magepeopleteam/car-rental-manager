@@ -14,11 +14,11 @@
 
                 add_filter('the_content', array($this, 'mpcrbm_display_search_result'));
 
-
                 add_action( 'wp_ajax_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
                 add_action( 'wp_ajax_nopriv_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
 
-
+                add_action( 'wp_ajax_mpcrbm_get_car_qty_by_date', [ $this, 'mpcrbm_get_car_qty_by_date' ] );
+                add_action( 'wp_ajax_nopriv_mpcrbm_get_car_qty_by_date', [ $this, 'mpcrbm_get_car_qty_by_date' ] );
 
 			}
 			private function load_file(): void {
@@ -422,6 +422,27 @@
                 $available_stock = $total_stock - $total_booked;
 
                 return max( 0, $available_stock );
+            }
+
+            public function mpcrbm_get_car_qty_by_date() {
+                $nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+                $qty_html = '';
+                if ( wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
+                    error_log( print_r( [ 'POST' => $_POST ], true ) );
+                    $car_id     = isset( $_POST['car_id'] ) ? sanitize_text_field( wp_unslash( $_POST['car_id'] ) ) : '';
+                    $date       = isset( $_POST['startDate'] ) ? sanitize_text_field( wp_unslash( $_POST['startDate'] ) ) : '';
+                    $day_price  = isset( $_POST['day_wise_price'] ) ? sanitize_text_field( wp_unslash( $_POST['day_wise_price'] ) ) : '';
+                    if( $car_id && $date ){
+                        ob_start();
+                        $available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $car_id, $date );
+                        MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
+                        $qty_html = ob_get_clean();
+                    }
+
+                }
+
+               wp_send_json_success( $qty_html );
+
             }
 
 

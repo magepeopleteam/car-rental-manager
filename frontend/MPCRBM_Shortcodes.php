@@ -375,12 +375,12 @@
                 $search_result_show    = $params['search_result'] ?: 'no';
                 $search_result_same_page    = $params['search_result_same_page'] ?: 'no';
 
-                ob_start();
+//                ob_start();
                 do_shortcode( '[shop_messages]' );
                 echo wp_kses_post( ob_get_clean() );
                 //echo '<pre>';print_r($params);echo '</pre>';
                 include( MPCRBM_Function::template_path( 'registration/registration_layout.php' ) );
-				return ob_get_clean();
+//				return ob_get_clean();
 			}
 			public static function default_attribute() {
 				return array(

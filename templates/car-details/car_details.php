@@ -90,12 +90,15 @@ if( !is_array( $off_dates ) && empty( $off_dates ) ){
     $off_dates = [];
 }
 $booking_dates = [];
-$booking_dates = MPCRBM_Frontend::mpcrbm_get_all_booking_dates_between_start_end( $post_id );
-//error_log( print_r( [ '$booking_dates' => $booking_dates ], true ) );
-//$booking_dates_new = MPCRBM_Frontend::mpcrbm_get_unavailable_dates_by_stock( $post_id );
-//error_log( print_r( [ '$booking_dates_new' => $booking_dates_new ], true ) );
+//$booking_dates = MPCRBM_Frontend::mpcrbm_get_all_booking_dates_between_start_end( $post_id );
+$booking_dates = MPCRBM_Frontend::mpcrbm_get_unavailable_dates_by_stock( $post_id );
+$booking_btn_show = 'none';
+$is_already_booked = 'block';
 $available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, date('Y-m-d') );
-//error_log( print_r( [ '$available_stock' => $available_stock ], true ) );
+if( $available_stock > 0 ){
+    $booking_btn_show = 'block';
+    $is_already_booked = 'none';
+}
 
 $off_dates = array_merge( $off_dates, $booking_dates );
 
@@ -398,9 +401,15 @@ $start_day = get_option('start_of_week', 0);
                                 'single_page'       => 'yes',
                                 'pickup_location'   => $start_place,
                             ];
-                            echo $mpcrbm_booking_form->mpcrbm_single_page_car_booking( $attribute, $post_id );
+                            $mpcrbm_booking_form->mpcrbm_single_page_car_booking( $attribute, $post_id );
 
                             $extra_service_class = 'mpcrbm_extra_service_layout_details'; ?>
+
+                            <div class=" mpcrbm_car_quantity" id="mpcrbm_car_quantity_holder" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: flex; justify-content: end">
+                                <?php
+                                    MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
+                                ?>
+                            </div>
 
                             <div class="mpcrbm_transport_summary" id="mpcrbm_car_summary" style="display: block">
                                 <h3 ><?php esc_html_e(' Details', 'car-rental-manager') ?></h3>
@@ -426,10 +435,8 @@ $start_day = get_option('start_of_week', 0);
                             // Get service data
                             include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
 
-
-
-                            <button data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
-
+                            <button style="display: <?php echo esc_attr( $booking_btn_show );?>" data-car-id="<?php echo esc_attr( $post_id );?>" data-wc_link_id="<?php echo esc_attr( $link_wc_product );?>" class="mpcrbm_car_details_continue_btn" id="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
+                            <div class="mpcrbm_already_booked" id="mpcrbm_car_already_booked" style="display: <?php echo esc_attr( $is_already_booked );?>"><span class="">On this day the car is already booked, please select another day.</span></div>
                         </div>
 
 

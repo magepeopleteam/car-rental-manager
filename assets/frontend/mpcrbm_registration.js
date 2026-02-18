@@ -1018,7 +1018,8 @@ jQuery(document).ready(function($) {
             end_place = start_place;
         }
 
-        let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
+        let car_quantity = parent.find('[name="mpcrbm_get_car_qty"]').val();
+        // alert( car_quantity );
 
         if (start_place !== '' && end_place !== '' && link_id && post_id) {
             let extra_service_name = {};

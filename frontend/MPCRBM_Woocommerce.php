@@ -812,9 +812,10 @@
 				$link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
 				$post_id           = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
-                $already_booked = self::mpcrbm_find_bookings_by_date( $_POST['mpcrbm_date'], $post_id );
+//                $already_booked = self::mpcrbm_find_bookings_by_date( $_POST['mpcrbm_date'], $post_id );
+                $already_booked = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, $_POST['mpcrbm_date'] );
 
-                if( $already_booked === 'booked' ){
+                if( $already_booked === 0 ){
                     return 0;
                 }else {
                     $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);

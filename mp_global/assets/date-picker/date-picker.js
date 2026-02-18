@@ -162,11 +162,49 @@ jQuery(document).ready(function ($) {
                     $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
                     $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
 
+                    if( parent.length > 0 ){
+                        parent.find( "#mpcrbm_car_details_continue_btn").fadeIn();
+                        parent.find( "#mpcrbm_car_already_booked").fadeOut();
+
+                        let car_id = parent.find('[name="mpcrbm_post_id"]').val();
+                        let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
+                        if( endDate ){
+                            mpcrbm_get_car_qty( startDate, car_id, day_wise_price );
+                        }
+
+                    }
+
                     mpcrbm_get_selected_days();
                 }
             }
         });
     });
+
+    function mpcrbm_get_car_qty( startDate, car_id, day_wise_price ){
+        $.ajax({
+            type: 'POST',
+            url: mpcrbm_ajax.ajax_url,
+            data: {
+                action: "mpcrbm_get_car_qty_by_date",
+                startDate : startDate,
+                car_id : car_id,
+                day_wise_price : day_wise_price,
+                nonce: mpcrbm_ajax.nonce
+            },
+            beforeSend: function() {
+                console.log( 'Request' );
+            },
+            success: function(response) {
+                // console.log( response );
+                if( response.success ){
+                    parent.find('#mpcrbm_car_quantity_holder').html( response.data );
+                }
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    }
 
 });
 
