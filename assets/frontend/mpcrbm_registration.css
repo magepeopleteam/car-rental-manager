@@ -608,7 +608,16 @@ h2#mpcrbm_title_change{color:white;}
  }
 
  .mpcrbm_car_quantity{
-	 margin-right: 5px;
+	 display: flex;
+	 justify-content: space-between;
+	 background-color: #ecf1f5;
+	 padding: 5px;
+	 border-radius: 5px;
+ }
+
+ .mpcrbm_car_quantity_title{
+	 padding: 5px;
+	 margin-top: 2px;
  }
 
  .mpcrbm_price_holder{

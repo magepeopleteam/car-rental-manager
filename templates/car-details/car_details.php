@@ -65,6 +65,11 @@ $day_wise_pricing = get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
 $tiered_discounts = get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
 $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
 
+$location_price_info = get_post_meta( $post_id, 'mpcrbm_terms_price_info', true );
+$map_location = '';
+if( is_array( $location_price_info ) && !empty( $location_price_info ) ){
+    $map_location = isset( $location_price_info[0]['start_location'] ) ? $location_price_info[0]['start_location'] : '';
+}
 
 $make_year = get_post_meta( $post_id, 'mpcrbm_make_year', true );
 $make_year = !empty($make_year) ? $make_year[0] : '';
@@ -314,7 +319,7 @@ if( $post_id && $price > 0 ){
                                 <h3><?php esc_attr_e('Pickup Location','car-rental-manager') ?></h3>
                                 <div class="divider"></div>
                                 <div class="mpcrbm_car_details_map_box">
-                                    <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $start_place );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                                    <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $map_location );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
                                 </div>
                             </div>
 
@@ -404,7 +409,8 @@ if( $post_id && $price > 0 ){
 
                             $extra_service_class = 'mpcrbm_extra_service_layout_details'; ?>
 
-                            <div class=" mpcrbm_car_quantity" id="mpcrbm_car_quantity_holder" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: flex; justify-content: end">
+                            <div class="mpcrbm_car_quantity" id="mpcrbm_car_quantity_holder" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: flex; justify-content: space-between">
+                                <div class="mpcrbm_car_quantity_title"><?php esc_html_e('Car Quantity', 'car-rental-manager') ?></div>
                                 <?php
                                     MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
                                 ?>
@@ -479,7 +485,7 @@ if( $post_id && $price > 0 ){
                         <?php }?>
 
                         <!-- RENTER INFO -->
-                        <div class="mpcrbm_car_details_driver_box">
+                        <div class="mpcrbm_car_details_driver_box" style="display: none">
                             <h3><?php esc_attr_e( 'Renter details', 'car-rental-manager' );?></h3>
                             <div class="divider"></div>
                             <div class="driver-data">

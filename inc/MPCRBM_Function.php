@@ -597,7 +597,7 @@
                                     <?php esc_attr_e( 'For', 'car-rental-manager' );?> <strong><?php echo esc_html( $rule['min'] ); ?> –
                                         <?php echo esc_html( $rule['max'] ); ?></strong> <?php esc_attr_e( 'days', 'car-rental-manager' );?>:
                                     <?php echo ( $rule['percent'] >= 0 )
-                                        ? '+' . abs( $rule['percent'] ) . '% increase'
+                                        ? '+' . abs( $rule['percent'] ) . '% decrease'
                                         : '-' . abs( $rule['percent'] ) . '% discount';
                                     ?>
                                 </li>

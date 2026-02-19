@@ -1048,15 +1048,19 @@ jQuery(document).ready(function($) {
         minute = minute ? minute.padEnd(2, "0") : "00";
         hour = hour.padStart(2, "0");
         let date = `${mpcrbm_start_date} ${hour}:${minute}`;
-
+        if( start_place === null ){
+            start_place = '';
+        }
         // console.log( date );
-        if( end_place === '' ){
+        if( end_place === '' || end_place === null ){
             end_place = start_place;
         }
+        // console.log( date );
+
 
         let car_quantity = parent.find('[name="mpcrbm_get_car_qty"]').val();
 
-        if (start_place !== '' && end_place !== '' && link_id && post_id) {
+        if ( link_id && post_id) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
