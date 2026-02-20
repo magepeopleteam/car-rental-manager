@@ -285,6 +285,17 @@
                                 '24' => esc_html__('24', 'car-rental-manager')
                             )
 						),
+						array(
+							'name' => 'booking_with_out_location',
+                            'label' => esc_html__('Booking Car Without Location', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for booking car without location', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(

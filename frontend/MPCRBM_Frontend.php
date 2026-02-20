@@ -433,8 +433,13 @@
                     $day_price  = isset( $_POST['day_wise_price'] ) ? sanitize_text_field( wp_unslash( $_POST['day_wise_price'] ) ) : '';
                     if( $car_id && $date ){
                         ob_start();
-                        $available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $car_id, $date );
-                        MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
+                        $available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $car_id, $date ); ?>
+                            <div class="mpcrbm_car_quantity_title"><?php esc_html_e('Car Quantity', 'car-rental-manager') ?></div>
+                            <?php
+                            MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
+                            ?>
+                        <?php
+//                        MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
                         $qty_html = ob_get_clean();
                     }
 

@@ -160,6 +160,7 @@ if( $hide_time_input_field === 'yes' ){
 }
 
 $time_format_display = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'time_format_display');
+$with_out_location = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'booking_with_out_location');
 
 if (sizeof($all_dates) > 0) {
     $taxi_return = MPCRBM_Function::get_general_settings('taxi_return', 'enable');
@@ -208,6 +209,8 @@ if (sizeof($all_dates) > 0) {
 
 
                     <div class="<?php echo esc_attr( $form_class );?>">
+
+                        <?php if( $with_out_location !== 'yes' ){?>
                         <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $width_class );?>">
                             <div class="mpcrbm_location_checkbox input_select">
                                 <label class="mpcrbm_manual_end_place ">
@@ -215,7 +218,7 @@ if (sizeof($all_dates) > 0) {
                                         <i class="mi mi-marker"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Pick-up', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <?php if ($price_based == 'manual') {
+                                    <?php if (  $price_based == 'manual') {
                                         ?>
                                         <?php
                                         // Get all available pickup locations (supporting multi-location)
@@ -276,6 +279,7 @@ if (sizeof($all_dates) > 0) {
                                 </label>
                             </div>
                         </div>
+                        <?php }?>
 
                         <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $width_class );?>">
                             <div class="input_select">
@@ -445,22 +449,23 @@ if (sizeof($all_dates) > 0) {
                     ?>
                 </div>
 
-                <div class="mprcbm_checkbox_search_btn_holder">
-                    <div class="mprcbm_checkbox_group_new">
-                        <input type="checkbox" name="mpcrbm_is_drop_off" id="mpcrbm_is_drop_off" class="mpcrbm_my-checkbox mpcrbm_is_drop_off" checked="">
-                        <span for="is-drop-off" class="mpcrbm-my-checkbox-label drop-off"><?php esc_html_e( 'Return car in same location', 'car-rental-manager'); ?></span>
-                    </div>
-
-                    <?php if( $single_page !== 'yes' ){?>
-                        <div class="mprcbm_search_button_holder ">
-                            <button type="button" class="mpcrbm_search-button" id="mpcrbm_get_vehicle">
-                                <i class="mi mi-search"></i>
-                                <?php esc_html_e('Search', 'car-rental-manager'); ?>
-                            </button>
+                <?php if( $with_out_location !== 'yes' ){?>
+                    <div class="mprcbm_checkbox_search_btn_holder">
+                        <div class="mprcbm_checkbox_group_new">
+                            <input type="checkbox" name="mpcrbm_is_drop_off" id="mpcrbm_is_drop_off" class="mpcrbm_my-checkbox mpcrbm_is_drop_off" checked="">
+                            <span for="is-drop-off" class="mpcrbm-my-checkbox-label drop-off"><?php esc_html_e( 'Return car in same location', 'car-rental-manager'); ?></span>
                         </div>
-                    <?php }?>
-                </div>
 
+                        <?php if( $single_page !== 'yes' ){?>
+                            <div class="mprcbm_search_button_holder ">
+                                <button type="button" class="mpcrbm_search-button" id="mpcrbm_get_vehicle">
+                                    <i class="mi mi-search"></i>
+                                    <?php esc_html_e('Search', 'car-rental-manager'); ?>
+                                </button>
+                            </div>
+                        <?php }?>
+                    </div>
+                <?php }?>
 
             </div>
 
