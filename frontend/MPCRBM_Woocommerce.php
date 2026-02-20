@@ -235,7 +235,8 @@
 					$item->add_meta_data( '_mpcrbm_return_time', $return_time );
 					$item->add_meta_data( '_return_date_time', $return_date_time );
 					$item->add_meta_data( '_mpcrbm_car_quantity', $car_quantity );
-					$item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ) ) );
+                    $item->add_meta_data( esc_html__( 'Car Quantity ', 'car-rental-manager' ), wp_kses_post( $car_quantity ) );
+					$item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ) );
 					if ( sizeof( $extra_service ) > 0 ) {
 						$item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
 						foreach ( $extra_service as $service ) {
@@ -452,8 +453,9 @@
 				$return         = array_key_exists( 'mpcrbm_taxi_return', $cart_item ) ? $cart_item['mpcrbm_taxi_return'] : '';
 				$waiting_time   = array_key_exists( 'mpcrbm_waiting_time', $cart_item ) ? $cart_item['mpcrbm_waiting_time'] : '';
 				$fixed_time     = array_key_exists( 'mpcrbm_fixed_hours', $cart_item ) ? $cart_item['mpcrbm_fixed_hours'] : '';
+				$car_quantity     = array_key_exists( 'mpcrbm_car_quantity', $cart_item ) ? $cart_item['mpcrbm_car_quantity'] : '';
 				$extra_service  = array_key_exists( 'mpcrbm_extra_service_info', $cart_item ) ? $cart_item['mpcrbm_extra_service_info'] : [];
-				?>
+                ?>
                 <div class="mpcrbm">
 					<?php do_action( 'mpcrbm_before_cart_item_display', $cart_item, $post_id ); ?>
                     <div class="dLayout_xs">
@@ -549,10 +551,16 @@
                                     <span><?php echo esc_html( $fixed_time ); ?><?php esc_html_e( 'Hours', 'car-rental-manager' ); ?></span>
                                 </li>
 							<?php } ?>
+							<?php if ( $car_quantity > 0 ) { ?>
+                                <li>
+                                    <h6 class="_mR_xs"><?php esc_html_e( 'Car Quantity ', 'car-rental-manager' ); ?> :</h6>
+                                    <span><?php echo esc_html( $car_quantity ); ?></span>
+                                </li>
+							<?php } ?>
                             <li>
                                 <span class="fa fa-tag"></span>
                                 <h6 class="_mR_xs"><?php esc_html_e( 'Base Price : ', 'car-rental-manager' ); ?></h6>
-                                <span><?php echo wp_kses_post( wc_price( $base_price ) ); ?></span>
+                                <span>(<?php echo wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ); ?>) = <?php echo wp_kses_post( wc_price( $base_price * $car_quantity ) )?></span>
                             </li>
 							<?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
                         </ul>
