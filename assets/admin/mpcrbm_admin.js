@@ -93,7 +93,33 @@
 			}
 		}
 
-		$('#mpcrbm-add-tier').on('click', function(){
+		$(document).ready(function($){
+			$('.mpcrbm-discount-type').trigger('change');
+		});
+
+		$(document).on('change', '.mpcrbm-discount-type', function(){
+
+			var container = $(this).closest('.mpcrbm-price-discount-tier');
+			var type = $(this).val();
+
+			container.find('.mpcrbm-field').hide();
+
+			if(type === 'percent'){
+				container.find('.mpcrbm-percent').show();
+			}
+			else if(type === 'fixed_discount'){
+				container.find('.mpcrbm-fixed-discount').show();
+			}
+			else if(type === 'fixed_price'){
+				container.find('.mpcrbm-fixed-price').show();
+			}
+			else if(type === 'day_price'){
+				container.find('.mpcrbm-day-price').show();
+			}
+
+		});
+
+		$(document).on( 'click','#mpcrbm-add-tier_old', function(){
 			$('#mpcrbm-tiered-rows').append(
 				'<div class="mpcrbm-item mpcrbm-price-discount-tier">\
 					<input type="number" name="mpcrbm_tiered_discounts[min][]" class="mpcrbm-input" placeholder="Min Days">\
@@ -105,6 +131,41 @@
 					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
 				</div>'
 			);
+		});
+		$(document).on('click', '#mpcrbm-add-tier', function(){
+
+			$('#mpcrbm-tiered-rows').append(
+				'<div class="mpcrbm-item mpcrbm-price-discount-tier">\
+                    <input type="number" name="mpcrbm_tiered_discounts[min][]" class="mpcrbm-input" placeholder="Min Days">\
+                    <span class="separator">–</span>\
+                    <input type="number" name="mpcrbm_tiered_discounts[max][]" class="mpcrbm-input" placeholder="Max Days">\
+                    <span>days</span>\
+					<select name="mpcrbm_tiered_discounts[type][]" class="mpcrbm-input mpcrbm-discount-type">\
+						<option value="percent">Percentage (%)</option>\
+						<option value="fixed_discount">Fixed Discount</option>\
+						<option value="fixed_price">Fixed Total Price</option>\
+						<option value="day_price">Day-wise Price</option>\
+					</select>\
+					<input type="number" step="0.01" \
+						name="mpcrbm_tiered_discounts[percent][]" \
+						class="mpcrbm-input mpcrbm-field mpcrbm-percent" \
+						placeholder="% Discount">\
+					<input type="number" step="0.01" \
+						name="mpcrbm_tiered_discounts[fixed_discount][]" \
+						class="mpcrbm-input mpcrbm-field mpcrbm-fixed-discount" \
+						placeholder="Discount Amount" style="display:none;">\
+					<input type="number" step="0.01" \
+						name="mpcrbm_tiered_discounts[fixed_price][]" \
+						class="mpcrbm-input mpcrbm-field mpcrbm-fixed-price" \
+						placeholder="Fixed Total Price" style="display:none;">\
+					<input type="number" step="0.01" \
+						name="mpcrbm_tiered_discounts[day_price][]" \
+						class="mpcrbm-input mpcrbm-field mpcrbm-day-price" \
+						placeholder="Price Per Day" style="display:none;">\
+					<button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn">Remove</button>\
+				</div>'
+		);
+
 		});
 
 		$('#mpcrbm-add-season').on('click', function(){

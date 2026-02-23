@@ -98,11 +98,13 @@ jQuery(document).ready(function ($) {
             },
             success: function (data) {
 
+                console.log( data );
                 if (data.success && data.data && data.data.calculated_price !== undefined) {
-                    let day_wise = data.data.calculated_price/total_days;
-                    alert( day_wise );
+                    let day_wise = data.data.calculated_price/totalDays;
                     let calculated_price = mpcrbm_price_format( data.data.calculated_price );
+                    let day_wise_price = mpcrbm_price_format( day_wise );
                     parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
+                    parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
                 }
             },

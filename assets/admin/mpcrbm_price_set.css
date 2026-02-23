@@ -87,6 +87,7 @@
 
 .mpcrbm-price-discount-tier {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     gap: 15px;
     padding: 15px;
@@ -104,6 +105,9 @@
     border-radius: 8px;
     margin-bottom: 12px;
     border: 1px solid #fbbf24;
+}
+.mpcrbm-discount-type{
+    width: 135px !important;
 }
 
 .mpcrbm-grid {

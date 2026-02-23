@@ -476,13 +476,53 @@
                 }
                 // 3. Tiered discount based on rental duration
 
-                if ( $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
+                if ( 1===3 && $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
                     foreach ($tiered as $t) {
                         $min = isset($t['min']) ? (int)$t['min'] : 0;
                         $max = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
                         if ( $days >= $min && $days <= $max ) {
                             $discount = isset($t['percent']) ? (float)$t['percent'] : 0;
-                            $price -= $price * ($discount / 100);
+                            if( $t['type'] === 'percent' ){
+                                $price = $price * ($discount / 100);
+                            }else{
+                                $price = $t['fixed'];
+                            }
+
+                            break;
+                        }
+                    }
+                }
+
+                if (
+                    $enable_tired === 1 &&
+                    is_array($tiered) &&
+                    !empty($tiered) &&
+                    isset($tiered[0]) &&
+                    is_array($tiered[0]) &&
+                    (int)$days > 0
+                ) {
+                    foreach ( $tiered as $t ) {
+                        $min  = isset($t['min']) ? (int)$t['min'] : 0;
+                        $max  = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
+                        $type = isset($t['type']) ? $t['type'] : 'percent';
+                        if ( $days >= $min && $days <= $max ) {
+
+                            if ( $type === 'percent' && isset($t['percent']) ) {
+                                $discount = (float)$t['percent'];
+                                $price = $price - ( $price * ($discount / 100) );
+                            }
+                            elseif ( $type === 'fixed_discount' && isset($t['fixed_discount']) ) {
+                                $price = $price - (float)$t['fixed_discount'];
+                            }
+                            elseif ( $type === 'fixed_price' && isset($t['fixed_price']) ) {
+                                $price = (float)$t['fixed_price'];
+                            }
+                            elseif ( $type === 'day_price' && isset($t['day_price']) ) {
+                                $price = (float)$t['day_price'] * $days;
+                            }
+                            if ( $price < 0 ) {
+                                $price = 0;
+                            }
 
                             break;
                         }
@@ -592,13 +632,41 @@
                         ?>
                         <h4><?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
                         <ul>
-                            <?php foreach ( $tiered as $rule ) : ?>
+                            <?php foreach ( $tiered as $rule ) :
+                                ?>
                                 <li>
-                                    <?php esc_attr_e( 'For', 'car-rental-manager' );?> <strong><?php echo esc_html( $rule['min'] ); ?> –
-                                        <?php echo esc_html( $rule['max'] ); ?></strong> <?php esc_attr_e( 'days', 'car-rental-manager' );?>:
-                                    <?php echo ( $rule['percent'] >= 0 )
-                                        ? '+' . abs( $rule['percent'] ) . '% decrease'
-                                        : '-' . abs( $rule['percent'] ) . '% discount';
+                                    <?php esc_html_e( 'For', 'car-rental-manager' ); ?>
+
+                                    <strong>
+                                        <?php echo esc_html( $rule['min'] ); ?> –
+                                        <?php echo esc_html( $rule['max'] ); ?>
+                                    </strong>
+
+                                    <?php esc_html_e( 'days:', 'car-rental-manager' ); ?>
+
+                                    <?php
+
+                                    if( !isset( $rule['type'] ) ){
+                                        $rule['type'] ='percent';
+                                    }
+                                    if ( $rule['type'] === 'percent' && isset($rule['percent']) ) {
+
+                                        echo abs($rule['percent']) . '% ' . esc_html__('discount', 'car-rental-manager');
+
+                                    } elseif ( $rule['type'] === 'fixed_discount' && isset($rule['fixed_discount']) ) {
+
+                                        echo esc_html__('Fixed Discount:', 'car-rental-manager') . ' ' . wc_price( abs($rule['fixed_discount']) );
+
+                                    } elseif ( $rule['type'] === 'fixed_price' && isset($rule['fixed_price']) ) {
+
+                                        echo esc_html__('Fixed Total Price:', 'car-rental-manager') . ' ' . wc_price( abs($rule['fixed_price']) );
+
+                                    } elseif ( $rule['type'] === 'day_price' && isset($rule['day_price']) ) {
+
+                                        echo esc_html__('Price Per Day:', 'car-rental-manager') . ' ' . wc_price( abs($rule['day_price']) );
+
+                                    }
+
                                     ?>
                                 </li>
                             <?php endforeach; ?>
