@@ -474,24 +474,6 @@
                         }
                     }
                 }
-                // 3. Tiered discount based on rental duration
-
-                if ( 1===3 && $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
-                    foreach ($tiered as $t) {
-                        $min = isset($t['min']) ? (int)$t['min'] : 0;
-                        $max = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
-                        if ( $days >= $min && $days <= $max ) {
-                            $discount = isset($t['percent']) ? (float)$t['percent'] : 0;
-                            if( $t['type'] === 'percent' ){
-                                $price = $price * ($discount / 100);
-                            }else{
-                                $price = $t['fixed'];
-                            }
-
-                            break;
-                        }
-                    }
-                }
 
                 if (
                     $enable_tired === 1 &&
