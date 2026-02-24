@@ -1264,6 +1264,17 @@ jQuery(document).ready(function($) {
         $popup.fadeOut(300);
     });
 
+    $(document).on("click", ".mpcrbm_car_details_faq_question", function(){
+
+        let currentItem = $(this).closest(".mpcrbm_car_details_faq_item");
+        let currentAnswer = currentItem.find(".mpcrbm_car_details_faq_answer");
+        $(".mpcrbm_car_details_faq_item").not(currentItem).removeClass("active")
+            .find(".mpcrbm_car_details_faq_answer").slideUp(300);
+        currentItem.toggleClass("active");
+        currentAnswer.stop(true, true).slideToggle(300);
+
+    });
+
     //Load moore car with search form handle
     function mpcrbmLoadMore(options) {
 

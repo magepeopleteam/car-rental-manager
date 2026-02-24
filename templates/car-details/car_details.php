@@ -329,38 +329,52 @@ if( $post_id && $price > 0 ){
                                 <p><?php esc_attr_e( 'No reviews yet. Be the first to share your experience!', 'car-rental-manager' );?></p>
                             </div>
 
-                            <div id="faq" class="mpcrbm_car_details_tab_content">
+                            <div id="faq" class="mpcrbm_car_details_tab_content mpcrbm_car_details_faq_section">
                                 <h3><?php esc_attr_e( 'Frequently Asked Questions', 'car-rental-manager' );?></h3>
-                                <div class="divider"></div>
-                                <?php
-                                if( !empty( $selected_faqs_data ) ){
-                                    foreach ( $selected_faqs_data as $faq_data  ){
-                                        ?>
-                                        <p><strong>Q:</strong> <?php echo wp_strip_all_tags( $faq_data['title'] )?></p>
-                                        <p><strong>A:</strong> <?php echo wp_strip_all_tags(  $faq_data['answer'] )?></p>
-                                    <?php }
-                                }
-                                ?>
+                                <div class="mpcrbm_car_details_divider"></div>
+                                <div class="mpcrbm_car_details_faq_wrapper">
+                                    <?php
+                                    if( !empty( $selected_faqs_data ) ){
+                                        foreach ( $selected_faqs_data as $faq_data ){
+                                            ?>
+                                            <div class="mpcrbm_car_details_faq_item">
+                                                <button class="mpcrbm_car_details_faq_question">
+                                                    <span><?php echo wp_strip_all_tags( $faq_data['title'] )?></span>
+                                                    <span class="mpcrbm_car_details_faq_icon">+</span>
+                                                </button>
+                                                <div class="mpcrbm_car_details_faq_answer">
+                                                    <p><?php echo wp_strip_all_tags( $faq_data['answer'] )?></p>
+                                                </div>
+                                            </div>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </div>
                             </div>
 
                             <div id="terms" class="mpcrbm_car_details_tab_content">
-                                <?php if ( ! empty( $selected_term_condition ) ) : ?>
-                                    <div class="tf-car-conditions-section" id="tf-tc">
+                                <?php if ( ! empty( $selected_term_condition ) ) :
+                                    ?>
+                                    <div class="mpcrbm_car_details_conditions_section" id="tf-tc">
                                         <h3><?php _e('Terms and Condition','car-rental-manager') ?></h3>
                                         <div class="divider"></div>
-                                        <table class="mpcrbm_car_details_table">
-                                            <tbody>
+
+                                        <div class="mpcrbm_car_details_tc_wrapper">
                                             <?php
                                             foreach ( $selected_term_condition as $term_condition ){
-                                                $description = isset( $term_condition['description']  ) ? wp_strip_all_tags( $term_condition['description'] ) : '' ;
+                                                $description = isset( $term_condition['answer'] ) ? wp_strip_all_tags( $term_condition['answer'] ) : '';
                                                 ?>
-                                                <tr>
-                                                    <th><?php echo wp_strip_all_tags( $term_condition['title'] )?></th>
-                                                    <td><?php echo esc_attr( $description );?></td>
-                                                </tr>
-                                            <?php }?>
-                                            </tbody>
-                                        </table>
+                                                <div class="mpcrbm_car_details_tc_item">
+                                                    <div class="mpcrbm_car_details_tc_title">
+                                                        <?php echo wp_strip_all_tags( $term_condition['title'] )?>
+                                                    </div>
+                                                    <div class="mpcrbm_car_details_tc_description">
+                                                        <?php echo esc_html( $description );?>
+                                                    </div>
+                                                </div>
+                                            <?php } ?>
+                                        </div>
                                     </div>
                                 <?php endif; ?>
                             </div>

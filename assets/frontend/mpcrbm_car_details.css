@@ -86,6 +86,7 @@
 div.mpcrbm .mpcrbm_car_details_container h3{
     font-weight: normal;
     font-size: 18px;
+    text-align: left;
  }
 .mpcrbm_car_details_tabs button.active {
     background-color: var(--color_theme);
@@ -377,6 +378,191 @@ div.mpcrbm_car_details_right h4{
     border-top: 1px solid #c0ccd8;
     margin: 0px;
     border-radius: 16px;
+}
+
+
+/* ===== Modern FAQ Section ===== */
+.mpcrbm_car_details_faq_section {
+    background: linear-gradient(135deg, #f9fbff, #eef2ff);
+    border-radius: 5px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+}
+
+.mpcrbm_car_details_faq_section h3 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.mpcrbm_car_details_divider {
+    width: 90px;
+    height: 4px;
+    margin: 0 auto 40px auto;
+    background: linear-gradient(90deg, #6a5af9, #00c6ff);
+    border-radius: 50px;
+}
+
+.mpcrbm_car_details_faq_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mpcrbm_car_details_faq_item {
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: 0.3s ease;
+}
+
+.mpcrbm_car_details_faq_question {
+    width: 100%;
+    padding: 22px 25px;
+    border: none;
+    background: none;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mpcrbm_car_details_faq_icon {
+    font-size: 22px;
+    font-weight: bold;
+    color: #6a5af9;
+    transition: 0.3s ease;
+}
+
+.mpcrbm_car_details_faq_answer {
+    display: none;
+    padding: 15px 25px 20px;
+}
+
+.mpcrbm_car_details_faq_answer p {
+    padding-bottom: 20px;
+    font-size: 15px;
+    color: #555;
+    line-height: 1.7;
+}
+
+.mpcrbm_car_details_faq_item.active .mpcrbm_car_details_faq_answer {
+    max-height: 300px;
+}
+
+.mpcrbm_car_details_faq_item.active .mpcrbm_car_details_faq_icon {
+    transform: rotate(45deg);
+}
+
+.mpcrbm_car_details_faq_item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .mpcrbm_car_details_faq_section {
+        /*padding: 30px 20px;*/
+    }
+
+    .mpcrbm_car_details_faq_question {
+        font-size: 15px;
+        padding: 18px;
+    }
+
+    .mpcrbm_car_details_faq_answer p {
+        font-size: 14px;
+    }
+}
+
+
+/* ===== Terms & Conditions Modern Layout ===== */
+.mpcrbm_car_details_conditions_section {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+}
+
+.mpcrbm_car_details_conditions_section h3 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 15px;
+}
+
+.mpcrbm_car_details_conditions_section .divider {
+    height: 1px;
+    background: linear-gradient(90deg, #6a5af9, #00c6ff);
+    border-radius: 50px;
+}
+
+.mpcrbm_car_details_tc_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.mpcrbm_car_details_tc_item {
+    background: #ffffff;
+    padding: 15px 10px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.mpcrbm_car_details_tc_item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+.mpcrbm_car_details_tc_item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to bottom, #6a5af9, #00c6ff);
+    border-radius: 12px 0 0 12px;
+}
+
+.mpcrbm_car_details_tc_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #6a5af9;
+    margin-bottom: 8px;
+}
+
+.mpcrbm_car_details_tc_description {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .mpcrbm_car_details_conditions_section {
+        /*padding: 30px 20px;*/
+    }
+
+    .mpcrbm_car_details_tc_item {
+        padding: 20px;
+    }
+
+    .tc-title {
+        font-size: 16px;
+    }
+
+    .tc-description {
+        font-size: 14px;
+    }
 }
 
 /* ===== RESPONSIVE ===== */
