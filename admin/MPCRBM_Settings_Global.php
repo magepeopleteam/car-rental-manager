@@ -296,6 +296,61 @@
                                 'yes' => esc_html__('Yes', 'car-rental-manager')
                             )
 						),
+						array(
+							'name' => 'car_details_review_section',
+                            'label' => esc_html__('Show Review Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display review section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_car_feature_section',
+                            'label' => esc_html__('Show Car Feature Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display car feature section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_pickup_location_section',
+                            'label' => esc_html__('Show Pickup Location Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display car pickup location section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_faq_section',
+                            'label' => esc_html__('Show FAQ Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display faq section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_term_condition',
+                            'label' => esc_html__('Show Term & Condition Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display term & condition section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(

@@ -150,6 +150,13 @@ if( $post_id && $price > 0 ){
 }else{
     $day_price = $price;
 }
+
+
+$show_feature_section           = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_car_feature_section');
+$show_pickup_location_section   = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_pickup_location_section');
+$show_review_section            = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_review_section');
+$show_faq_section               = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_faq_section');
+$show_term_condition            = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_term_condition');
 ?>
 <div class="mpcrbm_car_details">
     <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $post_id );?>" data-price="<?php echo esc_attr( $day_price )?>" />
@@ -239,11 +246,17 @@ if( $post_id && $price > 0 ){
                                 <button class="active" data-tab="description"><?php esc_attr_e( 'Description', 'car-rental-manager' );?></button>
                                 <button data-tab="carinfo"><?php esc_attr_e( 'Car Info', 'car-rental-manager' );?></button>
                                 <button data-tab="benefits" style="display: none"><?php esc_attr_e( 'Benefits', 'car-rental-manager' );?></button>
+                                <?php if( $show_feature_section === 'yes' ){?>
                                 <button data-tab="include"><?php esc_attr_e( 'Include/Exclude', 'car-rental-manager' );?></button>
+                                <?php } if( $show_pickup_location_section === 'yes' ){ ?>
                                 <button data-tab="location"><?php esc_attr_e( 'Location', 'car-rental-manager' );?></button>
+                                <?php } if( $show_review_section === 'yes' ){?>
                                 <button data-tab="reviews"><?php esc_attr_e( 'Reviews', 'car-rental-manager' );?></button>
+                                <?php } if( $show_faq_section === 'yes' ){?>
                                 <button data-tab="faq"><?php esc_attr_e( 'FAQ’s', 'car-rental-manager' );?></button>
+                                <?php } if( $show_term_condition === 'yes' ){?>
                                 <button data-tab="terms"><?php esc_attr_e( 'Terms & Conditions', 'car-rental-manager' );?></button>
+                                <?php }?>
                             </div>
 
                             <!-- TAB CONTENT -->
@@ -279,7 +292,7 @@ if( $post_id && $price > 0 ){
                                     <li>✅ <?php esc_attr_e( 'Pay at pickup option', 'car-rental-manager' );?></li>
                                 </ul>
                             </div>
-
+                            <?php if( $show_feature_section === 'yes' ){?>
                             <div id="include" class="mpcrbm_car_details_tab_content">
                                 <h3><?php _e('Car Features','car-rental-manager'); ?></h3>
                                 <div class="divider"></div>
@@ -314,7 +327,7 @@ if( $post_id && $price > 0 ){
                                     </div>
                                 </div>
                             </div>
-
+                            <?php } if( $show_pickup_location_section === 'yes' ){ ?>
                             <div id="location" class="mpcrbm_car_details_tab_content">
                                 <h3><?php esc_attr_e('Pickup Location','car-rental-manager') ?></h3>
                                 <div class="divider"></div>
@@ -322,13 +335,13 @@ if( $post_id && $price > 0 ){
                                     <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $map_location );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
                                 </div>
                             </div>
-
+                            <?php } if( $show_review_section === 'yes' ){?>
                             <div id="reviews" class="mpcrbm_car_details_tab_content">
                                 <h3><?php esc_attr_e('Reviews','car-rental-manager') ?></h3>
                                 <div class="divider"></div>
                                 <p><?php esc_attr_e( 'No reviews yet. Be the first to share your experience!', 'car-rental-manager' );?></p>
                             </div>
-
+                            <?php } if( $show_faq_section === 'yes' ){?>
                             <div id="faq" class="mpcrbm_car_details_tab_content mpcrbm_car_details_faq_section">
                                 <h3><?php esc_attr_e( 'Frequently Asked Questions', 'car-rental-manager' );?></h3>
                                 <div class="mpcrbm_car_details_divider"></div>
@@ -352,7 +365,7 @@ if( $post_id && $price > 0 ){
                                     ?>
                                 </div>
                             </div>
-
+                            <?php } if( $show_term_condition === 'yes' ){?>
                             <div id="terms" class="mpcrbm_car_details_tab_content">
                                 <?php if ( ! empty( $selected_term_condition ) ) :
                                     ?>
@@ -378,6 +391,7 @@ if( $post_id && $price > 0 ){
                                     </div>
                                 <?php endif; ?>
                             </div>
+                            <?php }?>
                         </div>                    
                     </div>
                     <div class="mpcrbm_car_details_right">
