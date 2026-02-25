@@ -29,8 +29,8 @@ if( $progress_bar === 'no' ){
 }
 
 // Redirect to homepage if empty
-if (empty($content)) {
-    wp_redirect(home_url());
+if ( empty( $content ) ) {
+    wp_safe_redirect( home_url() ); 
     exit;
 }
 
@@ -55,7 +55,8 @@ if ( wp_is_block_theme() ) {
             wp_body_open();
             echo '<div class="wp-site-blocks">';
             echo '<header class="wp-block-template-part site-header">';
-            echo $header_html;
+            // Use wp_kses_post to allow standard post-level HTML tags
+            echo wp_kses_post( $header_html );
             echo '</header>';
             echo '</div>';
         } else {
@@ -105,7 +106,7 @@ if ( wp_is_block_theme() ) {
                 </div>
                 <div class="tabsContentNext">
                     <div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
-                        <?php echo $content; ?>
+                      <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </div>
                 </div>
             </div>

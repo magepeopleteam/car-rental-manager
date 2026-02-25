@@ -86,7 +86,7 @@
                 ?>
 
                 <!--<div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php /*esc_html_e('Base Daily Price', 'mpcrbm'); */?></div>
+                    <div class="mpcrbm-heading"><?php /*esc_html_e('Base Daily Price', 'car-rental-manager'); */?></div>
                     <div class="mpcrbm-price-content-container">
                         <input type="number" name="mpcrbm_base_daily_price" step="0.01" value="<?php /*echo esc_attr($base_price); */?>" />
                     </div>
@@ -238,8 +238,8 @@
                                 }
                                 ?>
                                 <div class="mpcrbm-grid-item mpcrbm-price-day-card <?php echo esc_attr( $weekend_class );?>">
-                                    <span class="mpcrbm-price-day-label"><?php echo $label; ?></span>
-                                    <input type="number" name="mpcrbm_daywise_pricing[<?php echo $k; ?>]" step="0.01" value="<?php echo esc_attr($val); ?>" class="mpcrbm-input">
+                                    <span class="mpcrbm-price-day-label"><?php echo esc_html( $label ); ?></span>
+                                    <input type="number" name="mpcrbm_daywise_pricing[<?php echo esc_attr($k); ?>]" step="0.01" value="<?php echo esc_attr($val); ?>" class="mpcrbm-input">
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -323,7 +323,7 @@
                         <span><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></span>
                     </section>
 
-                    <?php echo $this->set_price_meta_box( $post_id )?>
+                    <?php echo $this->set_price_meta_box( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
 				<?php
 			}

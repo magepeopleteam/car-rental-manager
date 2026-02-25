@@ -330,7 +330,7 @@
                 $nonce = sanitize_text_field( wp_unslash( $_POST['_nonce'] ?? '' ) );
                 if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                     wp_send_json_error( array(
-                        'message' => __( 'Security check failed', 'mpcrbm' ),
+                        'message' => __( 'Security check failed', 'car-rental-manager' ),
                     ) );
                 }
 

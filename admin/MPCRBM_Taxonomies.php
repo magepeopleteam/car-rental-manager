@@ -106,7 +106,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     update_post_meta( $new_post_id, $key, maybe_unserialize( $value ) );
                 }
             }
-            wp_redirect( get_edit_post_link( $new_post_id, 'url' ) );
+            wp_safe_redirect( get_edit_post_link( $new_post_id, 'url' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.DangerousRedirect
             exit;
         }
 
@@ -504,42 +504,42 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_type_holder" style="display: none">
                             <?php
-                                echo self::load_taxonomies( 'mpcrbm_car_type' );
+                                echo self::load_taxonomies( 'mpcrbm_car_type' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_fuel_type_holder" style="display: none">
                             <?php
-                                echo self::load_taxonomies( 'mpcrbm_fuel_type' );
+                                echo self::load_taxonomies( 'mpcrbm_fuel_type' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_seating_capacity_holder" style="display: none">
                             <?php
-                                echo self::load_taxonomies( 'mpcrbm_seating_capacity' );
+                                echo self::load_taxonomies( 'mpcrbm_seating_capacity' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_brand_holder" style="display: none">
                             <?php
-                                echo self::load_taxonomies( 'mpcrbm_car_brand' );
+                                echo self::load_taxonomies( 'mpcrbm_car_brand' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_make_year_holder" style="display: none">
                             <?php
-                                echo self::load_taxonomies( 'mpcrbm_make_year' );
+                                echo self::load_taxonomies( 'mpcrbm_make_year' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_feature_holder" style="display: none">
                             <?php
-                                echo self::load_taxonomies( 'mpcrbm_car_feature' );
+                                echo self::load_taxonomies( 'mpcrbm_car_feature' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_faq_holder" style="display: none">
                             <?php
-                                MPCRBM_Manage_Faq::faq_display();
+                                MPCRBM_Manage_Faq::faq_display();    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_term_condition_holder" style="display: none">
                             <?php
-                                MPCRBM_Manage_Faq::term_and_condition_display();
+                                MPCRBM_Manage_Faq::term_and_condition_display(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
                     </div>

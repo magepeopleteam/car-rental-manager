@@ -65,34 +65,33 @@
 				return self::template_path( $file_name );
 			}
 
-			public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
-				global $wpdb;
-				// Prepare the query
-				$query = $wpdb->prepare(
-					"SELECT t.name 
-                 FROM {$wpdb->terms} t
-                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                 WHERE t.slug = %s AND tt.taxonomy = %s",
-					$slug,
-					$taxonomy
-				);
-				// Execute the query
-				$term_name = $wpdb->get_var( $query );
+            public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
+                global $wpdb;
 
-				return $term_name;
-			}
+                // Inlining the prepare call satisfies the linter's visibility
+                $term_name = $wpdb->get_var( $wpdb->prepare(
+                    "SELECT t.name 
+                    FROM {$wpdb->terms} t
+                    INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+                    WHERE t.slug = %s AND tt.taxonomy = %s",
+                    $slug,
+                    $taxonomy
+                ) );
+
+                return $term_name;
+            }
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
                 global $wpdb;
 
-                $query = $wpdb->prepare(
+                // By inlining, the linter sees the preparation happening at the point of execution
+                $term_name = $wpdb->get_var( $wpdb->prepare(
                     "SELECT t.name 
-                     FROM {$wpdb->terms} AS t
-                     INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
-                     WHERE t.term_id = %d AND tt.taxonomy = %s",
+                    FROM {$wpdb->terms} AS t
+                    INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
+                    WHERE t.term_id = %d AND tt.taxonomy = %s",
                     $term_id,
                     $taxonomy
-                );
-                $term_name = $wpdb->get_var( $query );
+                ) );
 
                 return $term_name ? $term_name : null;
             }
@@ -428,7 +427,7 @@
                     $current_timestamp = $start_timestamp;
 
                     for ( $i = 0; $i < (int)$days; $i++ ) {
-                        $day_of_week = strtolower(date('D', $current_timestamp));
+                        $day_of_week = strtolower(gmdate('D', $current_timestamp));
                         if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] > 0) {
                             $day_price = (float) $daywise[$day_of_week];
                         } else {
@@ -553,8 +552,7 @@
                 <div class="mpcrbm_display_pricing_rules">
 
                     <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
-                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wc_price( $base_price ); ?></strong></p>
-
+                    <p><?php esc_html_e( 'Base price starts from', 'car-rental-manager' ); ?> <strong><?php echo wp_kses_post( wc_price( $base_price ) ); ?></strong></p>
                     <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
                         $is_discount = true;
                         ?>
@@ -565,14 +563,19 @@
                                     <strong><?php echo esc_html( ucfirst( $rule['name'] ) ); ?></strong>
                                     (<?php echo esc_html( $rule['start'] ); ?> to <?php echo esc_html( $rule['end'] ); ?>):
                                     <?php
+                                    $value = abs( $rule['value'] );
                                     if ( $rule['type'] === 'percentage_increase' ) {
-                                        echo '+' . abs( $rule['value'] ) . '% increase';
+                                        /* translators: %s: Percentage value */
+                                        printf( esc_html__( '+%s%% increase', 'car-rental-manager' ), esc_html( $value ) );
                                     } elseif ( $rule['type'] === 'percentage_decrease' ) {
-                                        echo '-' . abs( $rule['value'] ) . '% discount';
+                                        /* translators: %s: Percentage value */
+                                        printf( esc_html__( '-%s%% discount', 'car-rental-manager' ), esc_html( $value ) );
                                     } elseif ( $rule['type'] === 'fixed_increase' ) {
-                                        echo '+' . wc_price( abs( $rule['value'] ) ) . ' increase';
+                                        /* translators: %s: Formatted price */
+                                        printf( esc_html__( '+%s increase', 'car-rental-manager' ), wp_kses_post( wc_price( $value ) ) );
                                     } elseif ( $rule['type'] === 'fixed_decrease' ) {
-                                        echo '-' . wc_price( abs( $rule['value'] ) ) . ' discount';
+                                        /* translators: %s: Formatted price */
+                                        printf( esc_html__( '-%s discount', 'car-rental-manager' ), wp_kses_post( wc_price( $value ) ) );
                                     }
                                     ?>
                                 </li>
@@ -599,9 +602,9 @@
                                 }
                                 ?>
                                 <li>
-                                    <span><?php echo ucfirst( $day ); ?></span>
+                                    <span><?php echo esc_html( ucfirst( $day ) ); ?></span>
                                     <span class="<?php echo esc_attr( $class ); ?>">
-                                        <?php echo $label; ?>
+                                        <?php echo esc_html( $label ); ?>
                                     </span>
                                 </li>
                             <?php endforeach; ?>
@@ -623,32 +626,24 @@
                                         <?php echo esc_html( $rule['min'] ); ?> –
                                         <?php echo esc_html( $rule['max'] ); ?>
                                     </strong>
-
-                                    <?php esc_html_e( 'days:', 'car-rental-manager' ); ?>
-
-                                    <?php
-
-                                    if( !isset( $rule['type'] ) ){
-                                        $rule['type'] ='percent';
-                                    }
-                                    if ( $rule['type'] === 'percent' && isset($rule['percent']) ) {
-
-                                        echo abs($rule['percent']) . '% ' . esc_html__('discount', 'car-rental-manager');
-
-                                    } elseif ( $rule['type'] === 'fixed_discount' && isset($rule['fixed_discount']) ) {
-
-                                        echo esc_html__('Fixed Discount:', 'car-rental-manager') . ' ' . wc_price( abs($rule['fixed_discount']) );
-
-                                    } elseif ( $rule['type'] === 'fixed_price' && isset($rule['fixed_price']) ) {
-
-                                        echo esc_html__('Fixed Total Price:', 'car-rental-manager') . ' ' . wc_price( abs($rule['fixed_price']) );
-
-                                    } elseif ( $rule['type'] === 'day_price' && isset($rule['day_price']) ) {
-
-                                        echo esc_html__('Price Per Day:', 'car-rental-manager') . ' ' . wc_price( abs($rule['day_price']) );
-
-                                    }
-
+                                    <?php 
+                                    esc_html_e( 'days:', 'car-rental-manager' ); 
+                                        if ( ! isset( $rule['type'] ) ) {
+                                            $rule['type'] = 'percent';
+                                        }
+                                        if ( $rule['type'] === 'percent' && isset( $rule['percent'] ) ) {
+                                            /* translators: %s: Percentage value */
+                                            printf( esc_html__( '%s%% discount', 'car-rental-manager' ), esc_html( abs( $rule['percent'] ) ) );
+                                        } elseif ( $rule['type'] === 'fixed_discount' && isset( $rule['fixed_discount'] ) ) {
+                                            /* translators: %s: Formatted price */
+                                            printf( esc_html__( 'Fixed Discount: %s', 'car-rental-manager' ), wp_kses_post( wc_price( abs( $rule['fixed_discount'] ) ) ) );
+                                        } elseif ( $rule['type'] === 'fixed_price' && isset( $rule['fixed_price'] ) ) {
+                                            /* translators: %s: Formatted price */
+                                            printf( esc_html__( 'Fixed Total Price: %s', 'car-rental-manager' ), wp_kses_post( wc_price( abs( $rule['fixed_price'] ) ) ) );
+                                        } elseif ( $rule['type'] === 'day_price' && isset( $rule['day_price'] ) ) {
+                                            /* translators: %s: Formatted price */
+                                            printf( esc_html__( 'Price Per Day: %s', 'car-rental-manager' ), wp_kses_post( wc_price( abs( $rule['day_price'] ) ) ) );
+                                        }
                                     ?>
                                 </li>
                             <?php endforeach; ?>
@@ -961,7 +956,7 @@
             {
                 // Validate inputs
                 $post_id = absint($post_id);
-                $selected_day = strtolower(date('l', strtotime($selected_date)));
+                $selected_day = strtolower(gmdate('l', strtotime($selected_date)));
                 if (!$post_id || !get_post($post_id)) {
                     return false;
                 }
