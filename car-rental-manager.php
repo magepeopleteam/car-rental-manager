@@ -15,7 +15,7 @@
 	 * Tested up to:      6.7
 	 * Stable tag:        1.0.0
 	 */
-	if ( ! defined( 'ABSPATH' ) ) {
+	if ( ! defined( 'ABSPATH' ) ) {#
 		die;
 	} // Cannot access pages directly.
 	if ( ! class_exists( 'MPCRBM_Plugin' ) ) {
