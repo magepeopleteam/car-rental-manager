@@ -14,7 +14,8 @@
 					global $sitepress;
 					$default_language = function_exists( 'wpml_loaded' ) ? $sitepress->get_default_language() : get_locale();
 
-					return apply_filters( 'wpml_object_id', $post_id, MPCRBM_Function::get_cpt(), true, $default_language );
+                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                    return apply_filters( 'wpml_object_id', $post_id, MPCRBM_Function::get_cpt(), true, $default_language );
 				}
 				if ( function_exists( 'pll_get_post_translations' ) ) {
 					$defaultLanguage = function_exists( 'pll_default_language' ) ? pll_default_language() : get_locale();
@@ -428,7 +429,7 @@
                     $current_timestamp = $start_timestamp;
 
                     for ( $i = 0; $i < (int)$days; $i++ ) {
-                        $day_of_week = strtolower(date('D', $current_timestamp));
+                        $day_of_week = strtolower(gmdate('D', $current_timestamp));
                         if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] > 0) {
                             $day_price = (float) $daywise[$day_of_week];
                         } else {
@@ -553,7 +554,7 @@
                 <div class="mpcrbm_display_pricing_rules">
 
                     <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
-                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wc_price( $base_price ); ?></strong></p>
+                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( wc_price( $base_price ) ); ?></strong></p>
 
                     <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
                         $is_discount = true;
@@ -562,17 +563,32 @@
                         <ul>
                             <?php foreach ( $seasonal as $rule ) : ?>
                                 <li>
-                                    <strong><?php echo esc_html( ucfirst( $rule['name'] ) ); ?></strong>
-                                    (<?php echo esc_html( $rule['start'] ); ?> to <?php echo esc_html( $rule['end'] ); ?>):
+                                    <strong>
+                                        <?php echo esc_html( ucfirst( sanitize_text_field( $rule['name'] ?? '' ) ) ); ?>
+                                    </strong>
+                                    (
                                     <?php
-                                    if ( $rule['type'] === 'percentage_increase' ) {
-                                        echo '+' . abs( $rule['value'] ) . '% increase';
-                                    } elseif ( $rule['type'] === 'percentage_decrease' ) {
-                                        echo '-' . abs( $rule['value'] ) . '% discount';
-                                    } elseif ( $rule['type'] === 'fixed_increase' ) {
-                                        echo '+' . wc_price( abs( $rule['value'] ) ) . ' increase';
-                                    } elseif ( $rule['type'] === 'fixed_decrease' ) {
-                                        echo '-' . wc_price( abs( $rule['value'] ) ) . ' discount';
+                                    $start = sanitize_text_field( $rule['start'] ?? '' );
+                                    $end   = sanitize_text_field( $rule['end'] ?? '' );
+
+                                    echo esc_html( $start ) . ' to ' . esc_html( $end );
+                                    ?>
+                                    ):
+                                    <?php
+                                    $type  = sanitize_text_field( $rule['type'] ?? '' );
+                                    $value = isset( $rule['value'] ) ? floatval( $rule['value'] ) : 0;
+
+                                    if ( 'percentage_increase' === $type ) {
+                                        echo esc_html( '+' . abs( $value ) . '% increase' );
+
+                                    } elseif ( 'percentage_decrease' === $type ) {
+                                        echo esc_html( '-' . abs( $value ) . '% discount' );
+
+                                    } elseif ( 'fixed_increase' === $type ) {
+                                        echo wp_kses_post( '+' . wc_price( abs( $value ) ) . ' increase' );
+
+                                    } elseif ( 'fixed_decrease' === $type ) {
+                                        echo wp_kses_post( '-' . wc_price( abs( $value ) ) . ' discount' );
                                     }
                                     ?>
                                 </li>
@@ -599,9 +615,9 @@
                                 }
                                 ?>
                                 <li>
-                                    <span><?php echo ucfirst( $day ); ?></span>
+                                    <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
                                     <span class="<?php echo esc_attr( $class ); ?>">
-                                        <?php echo $label; ?>
+                                        <?php echo esc_attr( $label ); ?>
                                     </span>
                                 </li>
                             <?php endforeach; ?>
@@ -633,21 +649,27 @@
                                     if( !isset( $rule['type'] ) ){
                                         $rule['type'] ='percent';
                                     }
-                                    if ( $rule['type'] === 'percent' && isset($rule['percent']) ) {
+                                    $type = isset( $rule['type'] ) ? sanitize_text_field( $rule['type'] ) : '';
 
-                                        echo abs($rule['percent']) . '% ' . esc_html__('discount', 'car-rental-manager');
+                                    if ( 'percent' === $type && isset( $rule['percent'] ) ) {
 
-                                    } elseif ( $rule['type'] === 'fixed_discount' && isset($rule['fixed_discount']) ) {
+                                        $percent = floatval( $rule['percent'] );
+                                        echo esc_html( abs( $percent ) . '% ' . __( 'discount', 'car-rental-manager' ) );
 
-                                        echo esc_html__('Fixed Discount:', 'car-rental-manager') . ' ' . wc_price( abs($rule['fixed_discount']) );
+                                    } elseif ( 'fixed_discount' === $type && isset( $rule['fixed_discount'] ) ) {
 
-                                    } elseif ( $rule['type'] === 'fixed_price' && isset($rule['fixed_price']) ) {
+                                        $fixed_discount = floatval( $rule['fixed_discount'] );
+                                        echo esc_html__( 'Fixed Discount:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_discount ) ) );
 
-                                        echo esc_html__('Fixed Total Price:', 'car-rental-manager') . ' ' . wc_price( abs($rule['fixed_price']) );
+                                    } elseif ( 'fixed_price' === $type && isset( $rule['fixed_price'] ) ) {
 
-                                    } elseif ( $rule['type'] === 'day_price' && isset($rule['day_price']) ) {
+                                        $fixed_price = floatval( $rule['fixed_price'] );
+                                        echo esc_html__( 'Fixed Total Price:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_price ) ) );
 
-                                        echo esc_html__('Price Per Day:', 'car-rental-manager') . ' ' . wc_price( abs($rule['day_price']) );
+                                    } elseif ( 'day_price' === $type && isset( $rule['day_price'] ) ) {
+
+                                        $day_price = floatval( $rule['day_price'] );
+                                        echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $day_price ) ) );
 
                                     }
 
@@ -963,7 +985,7 @@
             {
                 // Validate inputs
                 $post_id = absint($post_id);
-                $selected_day = strtolower(date('l', strtotime($selected_date)));
+                $selected_day = strtolower(gmdate('l', strtotime($selected_date)));
                 if (!$post_id || !get_post($post_id)) {
                     return false;
                 }

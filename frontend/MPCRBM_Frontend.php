@@ -62,10 +62,12 @@
                     if ( session_status() === PHP_SESSION_NONE ) {
                         session_start();
                     }
+                    // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
-
                     $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
                     $search_date = isset($_SESSION['search_date']) ? $_SESSION['search_date'] : '';
+                    // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
                     if ( isset($_SESSION['custom_content'] ) ) {
                         unset($_SESSION['custom_content']);
                         unset($_SESSION['progress_bar']);
@@ -330,14 +332,14 @@
                 $nonce = sanitize_text_field( wp_unslash( $_POST['_nonce'] ?? '' ) );
                 if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                     wp_send_json_error( array(
-                        'message' => __( 'Security check failed', 'mpcrbm' ),
+                        'message' => __( 'Security check failed', 'car-rental-manager' ),
                     ) );
                 }
 
-                $start_date = sanitize_text_field( wp_unslash( $_POST['start_date'] ) );
-                $start_time = sanitize_text_field( wp_unslash( $_POST['start_time'] ) );
+                $start_date = isset( $_POST['start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['start_date'] ) ) : '';
+                $start_time = isset( $_POST['start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['start_time'] ) ) : '';
 
-                $start_date_time = date(
+                $start_date_time = gmdate(
                     'Y-m-d H:i',
                     strtotime(
                         $start_date . ' ' .
