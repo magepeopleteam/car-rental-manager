@@ -81,12 +81,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             if ( ! isset( $_GET['post'] ) || ! isset( $_GET['_wpnonce'] ) ) {
                 wp_die( 'Invalid request.' );
             }
-
             $post_id = intval( $_GET['post'] );
-            if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'mpcrbm_duplicate_car_' . $post_id ) ) {
-                wp_die( 'Security check failed.' );
+            $nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+            if ( ! wp_verify_nonce( $nonce, 'mpcrbm_duplicate_car_' . $post_id ) ) {
+                wp_die( esc_html__( 'Security check failed.', 'car-rental-manager' ) );
             }
-
             $post = get_post( $post_id );
             if ( ! $post ) wp_die( 'Post not found.' );
 
@@ -112,13 +111,13 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
 
         public function ajax_load_taxonomies() {
-//            check_ajax_referer('mpcrbm_admin_nonce', 'security');
+            //check_ajax_referer('mpcrbm_admin_nonce', 'security');
 
             if (!current_user_can('manage_options')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
             }
-
-            $type = sanitize_text_field($_POST['taxonomy_type']);
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing
+            $type = isset( $_POST['taxonomy_type'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy_type'] ) ) : '';
 
             $terms = [];
 
@@ -291,10 +290,10 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 ), 403 );
             }
 
-            $type = isset($_POST['taxonomy_type']) ? sanitize_key($_POST['taxonomy_type']) : '';
-            $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
-            $slug = isset($_POST['slug']) ? sanitize_title($_POST['slug']) : '';
-            $desc = isset($_POST['description']) ? sanitize_textarea_field($_POST['description']) : '';
+            $type = isset($_POST['taxonomy_type']) ? sanitize_key(wp_unslash($_POST['taxonomy_type'])) : '';
+            $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+            $slug = isset($_POST['slug']) ? sanitize_title(wp_unslash($_POST['slug'])) : '';
+            $desc = isset($_POST['description']) ? sanitize_textarea_field(wp_unslash($_POST['description'])) : '';
 
             if ( empty( $type ) || empty( $name ) ) {
                 wp_send_json_error( array(
@@ -351,13 +350,13 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         }
 
         public static function count_this_month_cars( $car_result_data ){
-            $currentMonth = date('m'); // e.g., 11
-            $currentYear  = date('Y'); // e.g., 2025
+            $currentMonth = gmdate('m'); // e.g., 11
+            $currentYear  = gmdate('Y'); // e.g., 2025
             $carsThisMonth = 0;
 
             foreach ( $car_result_data as $car ) {
-                $carMonth = date('m', strtotime($car['post_date']));
-                $carYear  = date('Y', strtotime($car['post_date']));
+                $carMonth = gmdate('m', strtotime($car['post_date']));
+                $carYear  = gmdate('Y', strtotime($car['post_date']));
 
                 if ($carMonth == $currentMonth && $carYear == $currentYear) {
                     $carsThisMonth++;
@@ -369,7 +368,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
         public static function mpcrbm_get_current_rented_cars_count() {
             $today = current_time('Y-m-d H:i');
-
             $args = [
                 'post_type'      => 'mpcrbm_booking',
                 'post_status'    => 'publish',
@@ -390,9 +388,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ],
                 ],
             ];
-
-            $query = new WP_Query($args);
-
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+            $query = new WP_Query( $args );
             $count = $query->found_posts;
             $total_price = 0;
 
@@ -575,11 +572,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
             }
 
-            $term_id = intval($_POST['term_id']);
-            $type = sanitize_text_field($_POST['taxonomy_type']);
-            $name = sanitize_text_field($_POST['name']);
-            $slug = sanitize_title($_POST['slug']);
-            $desc = sanitize_textarea_field($_POST['description']);
+            $term_id = isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0;
+            $type = isset( $_POST['taxonomy_type'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy_type'] ) ) : '';
+            $name = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+            $slug = isset( $_POST['slug'] ) ? sanitize_title( wp_unslash( $_POST['slug'] ) ) : '';
+            $desc = isset( $_POST['description'] ) ? sanitize_textarea_field( wp_unslash( $_POST['description'] ) ) : '';
 
             $result = wp_update_term($term_id, $type, [
                 'name' => $name,
@@ -601,9 +598,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 wp_send_json_error(['message' => 'Unauthorized']);
             }
 
-            $term_id = intval($_POST['term_id']);
-            $type = sanitize_text_field($_POST['taxonomy_type']);
-
+            $term_id = isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0;
+            $type = isset( $_POST['taxonomy_type'] ) ? sanitize_key( wp_unslash( $_POST['taxonomy_type'] ) ) : '';
             $result = wp_delete_term($term_id, $type);
 
             if (is_wp_error($result)) {
