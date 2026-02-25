@@ -614,7 +614,9 @@
                         ?>
                         <h4><?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
                         <ul>
-                            <?php foreach ( $tiered as $rule ) :
+                            <?php
+                            if( is_array( $tiered ) && !empty( $tiered ) && isset( $tiered[0] ) && !empty( $tiered[0] ) ){
+                            foreach ( $tiered as $rule ) :
                                 ?>
                                 <li>
                                     <?php esc_html_e( 'For', 'car-rental-manager' ); ?>
@@ -651,7 +653,7 @@
 
                                     ?>
                                 </li>
-                            <?php endforeach; ?>
+                            <?php endforeach; }?>
                         </ul>
                     <?php endif; ?>
 
