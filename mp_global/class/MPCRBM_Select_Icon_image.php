@@ -57,9 +57,9 @@
 
 			public static function disaply_icon_header_in_popup() {
 				?>
-                <h2 class="_mR"><?php esc_html_e('Select Icon', 'tour-booking-manager'); ?></h2>
+                <h2 class="_mR"><?php esc_html_e('Select Icon', 'car-rental-manager'); ?></h2>
                 <label class="min_300">
-                    <input type="text" id="searchInputIcon" class="formControl ttbm_name_validation" name="ttbm_select_icon_name" placeholder="<?php esc_attr_e('Icon/class name....', 'tour-booking-manager'); ?>"/>
+                    <input type="text" id="searchInputIcon" class="formControl ttbm_name_validation" name="ttbm_select_icon_name" placeholder="<?php esc_attr_e('Icon/class name....', 'car-rental-manager'); ?>"/>
                 </label>
                 <span class="fas fa-times popupClose"></span>
 				<?php
@@ -75,14 +75,14 @@
                     <div class="dFlex">
                         <ul class="popupIconMenu">
                             <li class="active" data-icon-menu="all_item" data-icon-title="all_item">
-								<?php esc_html_e('All Icon', 'tour-booking-manager'); ?> <strong><?php echo esc_html($total_icon); ?></strong>
+								<?php esc_html_e('All Icon', 'car-rental-manager'); ?> <strong><?php echo esc_html($total_icon); ?></strong>
                             </li>
 							<?php foreach ($icons as $key => $icon) { ?>
                                 <li data-icon-menu="<?php echo esc_attr($key); ?>">
 									<?php
 										printf(
 										/* translators: %1$s: title, %2$s: number of icons */
-											wp_kses_post(__('%1$s&nbsp; <strong>%2$s</strong>', 'tour-booking-manager')),
+											wp_kses_post(__('%1$s&nbsp; <strong>%2$s</strong>', 'car-rental-manager')),
 											esc_html($icon['title']),
 											esc_html(sizeof($icon['icon']))
 										);
@@ -98,7 +98,7 @@
 											echo wp_kses_post(
 												sprintf(
 												/* translators: %1$s is the title, %2$s is the count */
-													__('%1$s&nbsp;(<strong>%2$s</strong>)', 'tour-booking-manager'),
+													__('%1$s&nbsp;(<strong>%2$s</strong>)', 'car-rental-manager'),
 													esc_html($icon['title']),
 													esc_html(sizeof($icon['icon']))
 												)

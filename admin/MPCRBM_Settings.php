@@ -157,7 +157,7 @@
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e( 'Name:', 'car-rental-manager' );?></h6>
-							<span class="desc"><?php _e( 'Input driver name','car-rental-manager' ); ?></span>
+							<span class="desc"><?php esc_html_e( 'Input driver name','car-rental-manager' ); ?></span>
 						</div>
 						<input type="text" id="mpcrbm_driver_info_name" class="formControl" placeholder="Jon Don" name="mpcrbm_driver_info[name]" value="<?php echo esc_attr( $driver_info['name'] ); ?>" />
 					</label>
@@ -166,7 +166,7 @@
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e( 'Phone:', 'car-rental-manager' );?></h6>
-							<span class="desc"><?php _e( 'Input driver phone','car-rental-manager' ); ?></span>
+							<span class="desc"><?php esc_html_e( 'Input driver phone','car-rental-manager' ); ?></span>
 						</div>
 						<input type="text" id="mpcrbm_driver_info_phone" class="formControl" placeholder="+xxxxxxxxx" name="mpcrbm_driver_info[phone]" value="<?php echo esc_attr( $driver_info['phone'] ); ?>" />
 					</label>
@@ -175,7 +175,7 @@
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e( 'Email:', 'car-rental-manager' );?></h6>
-							<span class="desc"><?php _e( 'Input driver email','car-rental-manager' ); ?></span>
+							<span class="desc"><?php esc_html_e( 'Input driver email','car-rental-manager' ); ?></span>
 						</div>
 						<input type="text" id="mpcrbm_driver_info_email" class="formControl" placeholder="email@domain.com" name="mpcrbm_driver_info[email]" value="<?php echo esc_attr( $driver_info['email'] ); ?>" />
 					</label>
@@ -184,7 +184,7 @@
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e( 'Age:', 'car-rental-manager' );?></h6>
-							<span class="desc"><?php _e( 'Input driver Age','car-rental-manager' ); ?></span>
+							<span class="desc"><?php esc_html_e( 'Input driver Age','car-rental-manager' ); ?></span>
 						</div>
 						<input type="text" id="mpcrbm_driver_info_age" class="formControl" placeholder="33" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" />
 					</label>

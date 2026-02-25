@@ -1,9 +1,9 @@
-===  Car Rental Manager for WordPress – Online Vehicle Booking System ===
+===  Car Rental Manager – Online Vehicle Booking System ===
 Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.3
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 Tested up to: 6.8
 Requires PHP: 7.0
 License: GPLv2 or later
