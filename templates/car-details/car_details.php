@@ -435,7 +435,7 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                             ];
                             $mpcrbm_booking_form->mpcrbm_single_page_car_booking( $mpcrbm_attribute, $mpcrbm_post_id );
 
-//                            $extra_service_class = 'mpcrbm_extra_service_layout_details'; ?>
+                            $mpcrbm_extra_service_class = 'mpcrbm_extra_service_layout_details'; ?>
 
                             <div class="mpcrbm_car_quantity" id="mpcrbm_car_quantity_holder" data-collapse="<?php echo esc_attr($mpcrbm_post_id); ?>" style="display: flex; justify-content: space-between">
                                 <div class="mpcrbm_car_quantity_title"><?php esc_html_e('Car Quantity', 'car-rental-manager') ?></div>

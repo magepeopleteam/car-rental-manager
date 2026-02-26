@@ -7,12 +7,12 @@
 		die;
 	} // Cannot access pages directly
 	$label = $label ?? MPCRBM_Function::get_name();
-	$date = $date ?? '';
-	$start_place = $start_place ?? '';
-	$end_place = $end_place ?? '';
-	$two_way = $two_way ?? 1;
-	$return_date_time = $return_date_time ?? '';
-	$price_based = $price_based ?? '';
+	$date = $mpcrbm_date ?? '';
+	$start_place = $mpcrbm_start_place ?? '';
+	$end_place = $mpcrbm_end_place ?? '';
+	$two_way = $mpcrbm_two_way ?? 1;
+	$return_date_time = $mpcrbm_return_date_time ?? '';
+	$price_based = $mpcrbm_price_based ?? '';
 	
 ?>
 	<div class="leftSidebar">
@@ -58,7 +58,7 @@
 					<?php } ?>
 
                     <div class="mpcrbm_duration-highlight">
-                        <div class="mpcrbm_duration-days"><?php echo esc_attr( $minutes_to_day );?> <?php esc_html_e('Days', 'car-rental-manager'); ?></div>
+                        <div class="mpcrbm_duration-days"><?php echo esc_attr( $mpcrbm_minutes_to_day );?> <?php esc_html_e('Days', 'car-rental-manager'); ?></div>
                         <div class="mpcrbm_duration-label"><?php esc_html_e('Rental Period', 'car-rental-manager'); ?></div>
                     </div>
 
@@ -83,7 +83,7 @@
 <!--				<div class="divider"></div>-->
                 <?php
                 if( $is_redirect === 'no' ){
-                    if( $ajax_search !== 'yes' ){ ?>
+                    if( $mpcrbm_ajax_search !== 'yes' ){ ?>
                     <button type="button" class="mpcrbm_next_button mpcrbm_get_vehicle_prev">
                         <span>&longleftarrow; &nbsp;<?php esc_html_e('Previous', 'car-rental-manager'); ?></span>
                     </button>
