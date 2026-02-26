@@ -63,7 +63,7 @@
                         ],
                     ),
                 );
-
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 $query = new WP_Query( $args );
 
                 if ( empty( $query->posts ) ) {
@@ -603,21 +603,9 @@
 			}
 
 			public static function get_order_item_meta( $item_id, $key ): string {
-				global $wpdb;
-				$table_name = $wpdb->prefix . "woocommerce_order_itemmeta";
-				// 1. Ensure the table name is safe (standard practice for custom tables)
-				$results = $wpdb->get_results( 
-					$wpdb->prepare( 
-						"SELECT meta_value FROM {$table_name} WHERE order_item_id = %d AND meta_key = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-						$item_id, 
-						$key 
-					) 
-				);
-				foreach ( $results as $result ) {
-					$value = $result->meta_value;
-				}
-
-				return $value ?? '';
+				// wc_get_order_item_meta handles caching and the database query for you
+				$value = wc_get_order_item_meta( $item_id, $key, true );
+				return is_string( $value ) ? $value : '';
 			}
 
 			public static function check_product_in_cart( $post_id ) {
@@ -644,21 +632,17 @@
 
 			//***********************************//
 public static function all_tax_list(): array {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'wc_tax_rate_classes';
+    // 1. Get the raw tax classes from WooCommerce settings
+    $tax_classes = WC_Tax::get_tax_classes();
     
-    // 1. Use prepare() even for simple queries to satisfy WPCS
-    // 2. Add the ignore comment for the interpolated table name
-    $result = $wpdb->get_results( 
-        $wpdb->prepare( "SELECT * FROM {$table_name}" ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-    );
-
+    // 2. Format them into the [slug => name] array you need
     $tax_list = [];
-    if ( ! empty( $result ) ) {
-        foreach ( $result as $tax ) {
-            // It is safer to check if the properties exist or cast to array
-            $tax_list[ $tax->slug ] = $tax->name;
-        }
+    
+    // Standard tax rate is always available but not in the tax_classes list
+    $tax_list['standard'] = __( 'Standard rate', 'car-rental-manager' );
+
+    foreach ( $tax_classes as $class ) {
+        $tax_list[ sanitize_title( $class ) ] = $class;
     }
 
     return $tax_list;
@@ -916,7 +900,7 @@ public static function all_tax_list(): array {
                         ),
                     ),
                 );
-
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 $query = new WP_Query( $args );
 
                 $booked_counts = [];
@@ -1017,7 +1001,7 @@ public static function all_tax_list(): array {
                         ),
                     ),
                 );
-
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                 $booking_query = new WP_Query( $booking_args );
 
                 $booked_counts = [];

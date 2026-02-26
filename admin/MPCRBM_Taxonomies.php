@@ -388,8 +388,9 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ],
                 ],
             ];
-            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query, WordPress.DB.SlowDBQuery.slow_db_query_posts_per_page
             $query = new WP_Query( $args );
+            
             $count = $query->found_posts;
             $total_price = 0;
 

@@ -197,9 +197,9 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             public function ajax_save_faq() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-                $title  = sanitize_text_field( $_POST['title'] ?? '' );
-                $answer = wp_kses_post( $_POST['answer'] ?? '' );
-                $key    = sanitize_text_field( $_POST['key'] ?? '' );
+                $title  = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
+                $answer = wp_kses_post( wp_unslash( $_POST['answer'] ?? '' ) );
+                $key    = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) ); 
 
                 if ( empty( $title ) || empty( $answer ) ) {
                     wp_send_json_error( 'Title and Answer are required.' );
@@ -223,9 +223,9 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             public function mpcrbm_save_term_and_condition() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-                $title  = sanitize_text_field( $_POST['title'] ?? '' );
-                $answer = wp_kses_post( $_POST['answer'] ?? '' );
-                $key    = sanitize_text_field( $_POST['key'] ?? '' );
+                $title  = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
+                $answer = wp_kses_post( wp_unslash( $_POST['answer'] ?? '' ) );
+                $key    = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) ); 
 
                 if ( empty( $title ) || empty( $answer ) ) {
                     wp_send_json_error( 'Title and Answer are required.' );
@@ -252,7 +252,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             public function ajax_delete_faq() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-                $key = sanitize_text_field( $_POST['key'] ?? '' );
+                $key = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
                 $faqs = get_option( $this->option_key, [] );
 
                 if ( isset( $faqs[$key] ) ) {
@@ -270,7 +270,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             public function mpcrbm_delete_term() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-                $key = sanitize_text_field( $_POST['key'] ?? '' );
+                $key = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
                 $term_condition = get_option( $this->term_option_key, [] );
 
                 if ( isset( $term_condition[$key] ) ) {

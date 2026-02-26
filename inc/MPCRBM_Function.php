@@ -67,34 +67,13 @@
 			}
 
             public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
-                global $wpdb;
-
-                // Inlining the prepare call satisfies the linter's visibility
-                $term_name = $wpdb->get_var( $wpdb->prepare(
-                    "SELECT t.name 
-                    FROM {$wpdb->terms} t
-                    INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                    WHERE t.slug = %s AND tt.taxonomy = %s",
-                    $slug,
-                    $taxonomy
-                ) );
-
-                return $term_name;
+                $term = get_term_by( 'slug', $slug, $taxonomy );
+                return ( $term && ! is_wp_error( $term ) ) ? $term->name : null;
             }
+
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
-                global $wpdb;
-
-                // By inlining, the linter sees the preparation happening at the point of execution
-                $term_name = $wpdb->get_var( $wpdb->prepare(
-                    "SELECT t.name 
-                    FROM {$wpdb->terms} AS t
-                    INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
-                    WHERE t.term_id = %d AND tt.taxonomy = %s",
-                    $term_id,
-                    $taxonomy
-                ) );
-
-                return $term_name ? $term_name : null;
+                $term = get_term( $term_id, $taxonomy );
+                return ( $term && ! is_wp_error( $term ) ) ? $term->name : null;
             }
 
 			public static function template_path( $file_name ): string {
