@@ -35,7 +35,7 @@
 						$price_based_4,
 					)
 				);
-				// Run the main query
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				$main_query = new WP_Query( $args );
 
 				// Return a new WP_Query object with merged posts
@@ -104,7 +104,7 @@
 						)
 					)
 				);
-
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 				return new WP_Query( $args );
 			}
 		}
