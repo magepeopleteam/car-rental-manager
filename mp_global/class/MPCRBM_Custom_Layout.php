@@ -18,7 +18,10 @@
                 <div class="hidden_content">
                     <table>
                         <tbody class="hidden_item">
-						<?php do_action( $hook_name, $data ); ?>
+						<?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+                        do_action( $hook_name, $data );
+                        ?>
                         </tbody>
                     </table>
                 </div>
