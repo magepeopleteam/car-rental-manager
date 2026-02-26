@@ -19,8 +19,16 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
         function mpcrbm_save_added_faq() {
             check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-            $post_id =  isset( $_POST['mpcrbm_added_faq']) ?  intval( $_POST['post_id']) : '';
-            $data = isset( $_POST['mpcrbm_added_faq']) ? json_decode(stripslashes($_POST['mpcrbm_added_faq']), true) : [];
+            $post_id = isset( $_POST['post_id'] ) ? absint( sanitize_text_field( wp_unslash( $_POST['post_id'] ) ) ) : '';
+
+            // 3. Process the JSON data using wp_unslash()
+            $faq_json = isset( $_POST['mpcrbm_added_faq'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_added_faq'] ) ) : '';
+            $data     = ! empty( $faq_json ) ? json_decode( $faq_json, true ) : [];
+
+            // 4. Sanitize the resulting array (Crucial for security)
+            if ( ! empty( $data ) && is_array( $data ) ) {
+                $data = map_deep( $data, 'sanitize_text_field' );
+            }
 
             if (!current_user_can('edit_post', $post_id ) ) {
                 wp_send_json_error(['message' => 'You do not have permission to edit this post.']);

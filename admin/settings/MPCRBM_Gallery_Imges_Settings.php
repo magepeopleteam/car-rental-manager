@@ -101,8 +101,8 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
             if ( ! isset( $_POST['mpcrbm_gallery_image_nonce'] ) ) {
                 return;
             }
-            if ( ! wp_verify_nonce( $_POST['mpcrbm_gallery_image_nonce'], 'mpcrbm_save_gallery_image_nonce' ) ) {
-                return;
+            if ( ! isset( $_POST['mpcrbm_gallery_image_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_image_nonce'] ) ), 'mpcrbm_save_gallery_image_nonce' ) ) {
+                return; // or wp_die( esc_html__( 'Security check failed.', 'text-domain' ) );
             }
 
             if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
@@ -114,7 +114,7 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
 
             if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 
-                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? MPCRBM_Function::mpcrbm_array_strip( $_POST['mpcrbm_gallery_images'] ) : [];
+                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? map_deep( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_images'] ) ), 'absint' ) : [];
                 update_post_meta($post_id, 'mpcrbm_gallery_images', $gallery_images);
 
             }

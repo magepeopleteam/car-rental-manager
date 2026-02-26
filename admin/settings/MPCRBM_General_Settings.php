@@ -239,7 +239,7 @@
 					update_post_meta( $post_id, 'mpcrbm_enable_driver_information', $mpcrbm_enable_driver_information );
 
                     if ( isset( $_POST['mpcrbm_driver_info'] ) && is_array( $_POST['mpcrbm_driver_info'] ) ) {
-                        $driver_info = array_map( 'sanitize_text_field', $_POST['mpcrbm_driver_info'] );
+                       $driver_info = array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_driver_info'] ) );
                         update_post_meta( $post_id, 'mpcrbm_driver_info', $driver_info );
                     }
 					
