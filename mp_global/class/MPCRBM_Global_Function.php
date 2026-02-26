@@ -1028,7 +1028,7 @@ public static function all_tax_list(): array {
 
                         $car_id = get_post_meta( $post_id, 'mpcrbm_id', true );
                         $qty    = (int) get_post_meta( $post_id, 'mpcrbm_car_quantity', true );
-                        error_log( print_r( [ '$car_id'  =>$car_id, '$qty' =>$qty ], true ) );
+                        // error_log( print_r( [ '$car_id'  =>$car_id, '$qty' =>$qty ], true ) );
 
                         if ( empty( $car_id ) ) {
                             continue;
