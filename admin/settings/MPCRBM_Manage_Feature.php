@@ -17,10 +17,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
         function mpcrbm_update_feature_meta() {
             check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-            $post_id = intval( $_POST['post_id'] );
-            $term_id = intval( $_POST['term_id'] );
-            $feature_type = sanitize_text_field( $_POST['feature_type'] );
-            $action_type = sanitize_text_field( $_POST['action_type'] );
+            $post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
+            $term_id = isset( $_POST['term_id'] ) ? absint( wp_unslash( $_POST['term_id'] ) ) : 0;
+            $feature_type = isset( $_POST['feature_type'] ) ? sanitize_text_field( wp_unslash( $_POST['feature_type'] ) ) : '';
+            $action_type = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
             $meta_key = ($feature_type === 'include') ? 'mpcrbm_include_features' : 'mpcrbm_exclude_features';
             $current = get_post_meta( $post_id, $meta_key, true );
             if ( !is_array( $current ) ) $current = [];

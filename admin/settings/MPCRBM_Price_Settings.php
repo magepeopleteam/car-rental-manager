@@ -18,7 +18,7 @@
 			}
 
             public function mpcrbm_add_price_discount_rules(){
-                if ( ! isset($_POST['nonce']) || ! wp_verify_nonce( $_POST['nonce'], 'mpcrbm_extra_service' ) ) {
+                if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'mpcrbm_extra_service' ) ) {
                     wp_send_json_error([ 'message' => 'Security check failed' ]);
                 }
                 $success =false;
@@ -343,7 +343,7 @@
 					// Security fix: Validate mpcrbm_day_price to prevent PHP Object Injection
 					// Only accept numeric values, reject serialized data
 					if ( isset( $_POST['mpcrbm_day_price'] ) ) {
-						$raw_price = wp_unslash( $_POST['mpcrbm_day_price'] );
+						$raw_price = sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) );
 						// Check if the value is serialized (potential security risk)
 						if ( is_serialized( $raw_price ) ) {
 							$hour_price = 0;
@@ -360,7 +360,7 @@
 
 
 
-                    if ( ! isset( $_POST['mpcrbm_set_price_nonce'] ) || ! wp_verify_nonce( $_POST['mpcrbm_set_price_nonce'], 'mpcrbm_set_price_save' ) ) return;
+                    if ( ! isset( $_POST['mpcrbm_set_price_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) return;
                     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
                     if ( get_post_type( $post_id ) !== MPCRBM_Function::get_cpt() ) return;
 
@@ -372,7 +372,7 @@
                     // Day-wise pricing
                     if ( isset( $_POST['mpcrbm_daywise_pricing'] ) && is_array($_POST['mpcrbm_daywise_pricing']) ) {
                         $clean = [];
-                        foreach ($_POST['mpcrbm_daywise_pricing'] as $day=>$val){
+                        foreach (sanitize_text_field( wp_unslash( $_POST['mpcrbm_daywise_pricing'] ) ) as $day=>$val){
                             $clean[$day] = floatval($val);
                         }
                         update_post_meta( $post_id, 'mpcrbm_daywise_pricing', $clean );
@@ -399,14 +399,21 @@
                     if ( isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts']) ) {
                         $tiers = [];
 
-                        $mins   = $_POST['mpcrbm_tiered_discounts']['min'] ?? [];
-                        $maxs   = $_POST['mpcrbm_tiered_discounts']['max'] ?? [];
-                        $types  = $_POST['mpcrbm_tiered_discounts']['type'] ?? [];
+// 1. Get the parent array safely first
+$tiered_data = ( isset( $_POST['mpcrbm_tiered_discounts'] ) && is_array( $_POST['mpcrbm_tiered_discounts'] ) ) 
+    ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_tiered_discounts'] ) ) 
+    : [];
 
-                        $perc   = $_POST['mpcrbm_tiered_discounts']['percent'] ?? [];
-                        $fixed_discount = $_POST['mpcrbm_tiered_discounts']['fixed_discount'] ?? [];
-                        $fixed_price    = $_POST['mpcrbm_tiered_discounts']['fixed_price'] ?? [];
-                        $day_price      = $_POST['mpcrbm_tiered_discounts']['day_price'] ?? [];
+// 2. Extract and sanitize sub-arrays (using map_deep because these are arrays of values)
+// phpcs:disable WordPress.Security.NonceVerification.Missing
+$mins           = isset( $tiered_data['min'] )            ? map_deep( $tiered_data['min'], 'absint' ) : [];
+$maxs           = isset( $tiered_data['max'] )            ? map_deep( $tiered_data['max'], 'absint' ) : [];
+$types          = isset( $tiered_data['type'] )           ? map_deep( $tiered_data['type'], 'sanitize_key' ) : [];
+$perc           = isset( $tiered_data['percent'] )        ? map_deep( $tiered_data['percent'], 'floatval' ) : [];
+$fixed_discount = isset( $tiered_data['fixed_discount'] ) ? map_deep( $tiered_data['fixed_discount'], 'floatval' ) : [];
+$fixed_price    = isset( $tiered_data['fixed_price'] )    ? map_deep( $tiered_data['fixed_price'], 'floatval' ) : [];
+$day_price      = isset( $tiered_data['day_price'] )      ? map_deep( $tiered_data['day_price'], 'floatval' ) : [];
+// phpcs:enable
 
                         for ( $i = 0; $i < count($mins); $i++ ) {
 
@@ -473,11 +480,19 @@
                     // Seasonal Pricing
                     if ( isset($_POST['mpcrbm_seasonal_pricing']) && is_array($_POST['mpcrbm_seasonal_pricing']) ) {
                         $seasons = [];
-                        $names = $_POST['mpcrbm_seasonal_pricing']['name'];
-                        $starts = $_POST['mpcrbm_seasonal_pricing']['start'];
-                        $ends   = $_POST['mpcrbm_seasonal_pricing']['end'];
-                        $types  = $_POST['mpcrbm_seasonal_pricing']['type'];
-                        $values = $_POST['mpcrbm_seasonal_pricing']['value'];
+                    // 1. Safely pull the parent array once
+                    $seasonal_data = ( isset( $_POST['mpcrbm_seasonal_pricing'] ) && is_array( $_POST['mpcrbm_seasonal_pricing'] ) ) 
+                        ?  sanitize_text_field( wp_unslash( $_POST['mpcrbm_seasonal_pricing'] ) ) 
+                        : [];
+
+                    // 2. Extract and sanitize (using map_deep because these are likely arrays)
+                    // phpcs:disable WordPress.Security.NonceVerification.Missing
+                    $names  = isset( $seasonal_data['name'] )  ? map_deep( $seasonal_data['name'], 'sanitize_text_field' ) : [];
+                    $starts = isset( $seasonal_data['start'] ) ? map_deep( $seasonal_data['start'], 'sanitize_text_field' ) : [];
+                    $ends   = isset( $seasonal_data['end'] )   ? map_deep( $seasonal_data['end'], 'sanitize_text_field' )   : [];
+                    $types  = isset( $seasonal_data['type'] )  ? map_deep( $seasonal_data['type'], 'sanitize_key' )        : [];
+                    $values = isset( $seasonal_data['value'] ) ? map_deep( $seasonal_data['value'], 'floatval' )          : [];
+                    // phpcs:enable
 
                         for ($i=0; $i < count($names); $i++){
                             if ($names[$i] && $starts[$i] && $ends[$i]){
