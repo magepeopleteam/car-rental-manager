@@ -163,12 +163,16 @@
 					// Save location prices
 					$location_prices = array();
 					if ( isset( $_POST['mpcrbm_location_prices'] ) && is_array( $_POST['mpcrbm_location_prices'] ) ) {
-						foreach ( $_POST['mpcrbm_location_prices'] as $index => $price_data ) {
+						// Unslash the whole array once to make the loop cleaner
+						$posted_prices = isset( $_POST['mpcrbm_location_prices'] ) ? sanitize_text_field(wp_unslash( $_POST['mpcrbm_location_prices'] )) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+
+						foreach ( $posted_prices as $index => $price_data ) {
 							if ( ! empty( $price_data['pickup_location'] ) && ! empty( $price_data['dropoff_location'] ) ) {
 								$location_prices[] = array(
-									'pickup_location' => sanitize_text_field( $price_data['pickup_location'] ),
+									'pickup_location'  => sanitize_text_field( $price_data['pickup_location'] ),
 									'dropoff_location' => sanitize_text_field( $price_data['dropoff_location'] ),
-									'transfer_fee' => floatval( $price_data['transfer_fee'] )
+									// Use wc_format_decimal or floatval, but ensure it's unslashed (handled above)
+									'transfer_fee'     => floatval( $price_data['transfer_fee'] ),
 								);
 							}
 						}

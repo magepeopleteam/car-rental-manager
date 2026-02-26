@@ -94,8 +94,13 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
         function mpcrbm_save_added_term_condition() {
             check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
 
-            $post_id =  isset( $_POST['mpcrbm_added_term']) ?  intval( $_POST['post_id']) : '';
-            $data = isset( $_POST['mpcrbm_added_term']) ? json_decode(stripslashes( $_POST[ 'mpcrbm_added_term' ] ), true) : [];
+            $post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : '';
+            $added_term = isset( $_POST['mpcrbm_added_term'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_added_term'] ) ) : '';
+            $data       = ! empty( $added_term ) ? json_decode( $added_term, true ) : [];
+            // 4. Sanitize the decoded data (Crucial for security)
+            if ( ! empty( $data ) && is_array( $data ) ) {
+                $data = map_deep( $data, 'sanitize_text_field' );
+            }
 
             if (!current_user_can('edit_post', $post_id ) ) {
                 wp_send_json_error(['message' => 'You do not have permission to edit this post.']);
