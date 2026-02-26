@@ -18,11 +18,11 @@ if (
 }
 
 // Initialize variables with defaults
-$date = $date ?? '';
-$start_date_time = $date;
-$return_date_time = $return_date_time ?? '';
-$post_id = $post_id ?? '';
-$original_price_based = $price_based ?? '';
+$date = $mpcrbm_date ?? '';
+$start_date_time = $mpcrbm_date;
+$return_date_time = $mpcrbm_return_date_time ?? '';
+$post_id = $mpcrbm_post_id ?? '';
+$original_price_based = $mpcrbm_price_based ?? '';
 
 
 $pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
@@ -75,7 +75,7 @@ if ($post_id) {
     // Get vehicle data
     $thumbnail = MPCRBM_Global_Function::get_image_url($post_id);
 
-    $get_stock_data = $available_cars_car_ids[$post_id];
+    $get_stock_data = $mpcrbm_available_cars_car_ids[$post_id];
     $car_qty = isset( $get_stock_data['available'] ) ? $get_stock_data['available'] : 1;
 //    error_log( print_r( [ '$post_id' =>$post_id ,'$get_stock_data' =>$get_stock_data], true ) );
 
@@ -127,7 +127,7 @@ if ($post_id) {
 
     $price_per_day = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
 
-    $total_base_price = $minutes_to_day * $price_per_day;
+    $total_base_price = $mpcrbm_minutes_to_day * $price_per_day;
     $total_save = $total_base_price - $raw_price ;
 
     $day_price = $raw_price/$days;
@@ -170,7 +170,7 @@ if ($post_id) {
         <div class="mpcrbm-image-box">
             <div class="bg_image_area" data-placeholder>
                 <img src="<?php echo esc_attr($thumbnail); ?>">
-                <!-- <?php if( $ajax_search === 'yes' ){
+                <!-- <?php if( $mpcrbm_ajax_search === 'yes' ){
                     ?>
                     <img src="<?php echo esc_attr($thumbnail); ?>">
                 <?php }else{?>
@@ -293,7 +293,7 @@ if ($post_id) {
                                 <?php endif; ?>
 
                                 <div class="mpcrbm_price-total">
-                                    <?php echo esc_attr($minutes_to_day); ?>-day total
+                                    <?php echo esc_attr($mpcrbm_minutes_to_day); ?>-day total
                                     <?php if ($early_bird_discount > 0): ?>
                                         <span>
                                     (<?php echo wp_kses_post(wc_price($early_bird_discount)); ?> saved)

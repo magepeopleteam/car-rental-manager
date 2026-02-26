@@ -6,15 +6,19 @@
 	if (!defined('ABSPATH')) {
 		die;
 	}
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$progressbar = $progressbar ?? 'yes';
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$progressbar_class = $progressbar == 'yes' ? '' : 'dNone';
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $search_page_slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page');
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $redirect = 'yes';
     if( $search_page_slug === '' ){
         $redirect = 'no';
     }
-
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $post_id = isset( $post_id )  ? $post_id  : '';
 ?>
 	<div class="mpcrbm mpcrbm_transport_search_area">

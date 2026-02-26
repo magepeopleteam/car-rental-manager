@@ -14,14 +14,14 @@ if ( wp_is_block_theme() ) {
     if ( function_exists( 'block_header_area' ) ) {
         ob_start();
         block_header_area();
-        $header_html = trim( ob_get_clean() );
+        $mpcrbm_header_html = trim( ob_get_clean() );
 
-        if ( $header_html ) {
+        if ( $mpcrbm_header_html ) {
             wp_head();
             wp_body_open();
             echo '<div class="wp-site-blocks">';
             echo '<header class="wp-block-template-part site-header">';
-            echo $header_html;
+            echo wp_kses_post( $mpcrbm_header_html );
             echo '</header>';
             echo '</div>';
         } else {
@@ -45,8 +45,11 @@ if ( wp_is_block_theme() ) {
 		echo wp_kses_post(get_the_password_form()); // WPCS: XSS ok.
 	} else {
 		do_action( 'mpcrbm_woocommerce_before_single_product' );
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$post_id                   = get_the_id();
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$template_name = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_theme_file', 'default.php' );
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$price_based    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_price_based' );
 		include_once( MPCRBM_Function::details_template_path() );
 	}
