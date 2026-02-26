@@ -9,7 +9,7 @@
 	if ( ! class_exists( 'MPCRBM_Dependencies' ) ) {
 		class MPCRBM_Dependencies {
 			public function __construct() {
-				add_action( 'init', array( $this, 'language_load' ) );
+				// add_action( 'init', array( $this, 'language_load' ) );
 				$this->load_file();
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ), 80 );
 				add_action( 'wp_enqueue_scripts', array( $this, 'frontend_enqueue' ), 80 );
@@ -22,10 +22,10 @@
 				});
 			}
 
-			public function language_load(): void {
-				$plugin_dir = basename( dirname( __DIR__ ) ) . "/languages/";
-				load_plugin_textdomain( 'car-rental-manager', false, $plugin_dir );
-			}
+			// public function language_load(): void {
+			// 	$plugin_dir = basename( dirname( __DIR__ ) ) . "/languages/";
+			// 	load_plugin_textdomain( 'car-rental-manager', false, $plugin_dir );
+			// }
 
 			private function load_file(): void {
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Function.php';

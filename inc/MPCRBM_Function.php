@@ -66,34 +66,33 @@
 				return self::template_path( $file_name );
 			}
 
-			public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
-				global $wpdb;
-				// Prepare the query
-				$query = $wpdb->prepare(
-					"SELECT t.name 
-                 FROM {$wpdb->terms} t
-                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                 WHERE t.slug = %s AND tt.taxonomy = %s",
-					$slug,
-					$taxonomy
-				);
-				// Execute the query
-				$term_name = $wpdb->get_var( $query );
+            public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
+                global $wpdb;
 
-				return $term_name;
-			}
+                // Inlining the prepare call satisfies the linter's visibility
+                $term_name = $wpdb->get_var( $wpdb->prepare(
+                    "SELECT t.name 
+                    FROM {$wpdb->terms} t
+                    INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+                    WHERE t.slug = %s AND tt.taxonomy = %s",
+                    $slug,
+                    $taxonomy
+                ) );
+
+                return $term_name;
+            }
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
                 global $wpdb;
 
-                $query = $wpdb->prepare(
+                // By inlining, the linter sees the preparation happening at the point of execution
+                $term_name = $wpdb->get_var( $wpdb->prepare(
                     "SELECT t.name 
-                     FROM {$wpdb->terms} AS t
-                     INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
-                     WHERE t.term_id = %d AND tt.taxonomy = %s",
+                    FROM {$wpdb->terms} AS t
+                    INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
+                    WHERE t.term_id = %d AND tt.taxonomy = %s",
                     $term_id,
                     $taxonomy
-                );
-                $term_name = $wpdb->get_var( $query );
+                ) );
 
                 return $term_name ? $term_name : null;
             }
@@ -641,7 +640,6 @@
                                         <?php echo esc_html( $rule['min'] ); ?> –
                                         <?php echo esc_html( $rule['max'] ); ?>
                                     </strong>
-
                                     <?php esc_html_e( 'days:', 'car-rental-manager' ); ?>
 
                                     <?php
@@ -672,7 +670,6 @@
                                         echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $day_price ) ) );
 
                                     }
-
                                     ?>
                                 </li>
                             <?php endforeach; }?>

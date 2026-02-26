@@ -28,8 +28,8 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
         public function register_menu() {
             add_submenu_page(
                 'edit.php?post_type='.MPCRBM_Function::get_cpt(),
-                __('Manage FAQ, Term & Condition', 'car-rental'),
-                __('anage FAQ, Term & Condition'),
+                __('Manage FAQ, Term & Condition', 'car-rental-manager'),
+                __('anage FAQ, Term & Condition', 'car-rental-manager'),
                 'manage_options',
                 $this->menu_slug,
                 [ $this, 'render_page' ]

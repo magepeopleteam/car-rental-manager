@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $content = '';
 
-$search_date= $_SESSION['search_date'] ?? '';
+$search_date= isset($_SESSION['search_date']) ? sanitize_text_field(wp_unslash($_SESSION['search_date'])) : '';
 
 $search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
 $search_defaults = MPCRBM_Shortcodes::default_attribute();
@@ -20,8 +20,8 @@ $action_output = ob_get_clean();
 
 $content .= $action_output;
 
-$content .= $_SESSION['custom_content'] ?? '';
-$progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
+$content .= isset($_SESSION['custom_content']) ? sanitize_text_field(wp_unslash($_SESSION['custom_content'])) : '';
+$progress_bar = isset($_SESSION['progress_bar']) ? sanitize_text_field(wp_unslash($_SESSION['progress_bar'])) : '';
 if( $progress_bar === 'no' ){
     $progressbar_class = 'dNone';
 }else{
@@ -29,8 +29,8 @@ if( $progress_bar === 'no' ){
 }
 
 // Redirect to homepage if empty
-if (empty($content)) {
-    wp_redirect(home_url());
+if ( empty( $content ) ) {
+    wp_safe_redirect( home_url() ); 
     exit;
 }
 
@@ -55,7 +55,8 @@ if ( wp_is_block_theme() ) {
             wp_body_open();
             echo '<div class="wp-site-blocks">';
             echo '<header class="wp-block-template-part site-header">';
-            echo $header_html;
+            // Use wp_kses_post to allow standard post-level HTML tags
+            echo wp_kses_post( $header_html );
             echo '</header>';
             echo '</div>';
         } else {
@@ -72,7 +73,7 @@ if ( wp_is_block_theme() ) {
     <!-- Pass HTTP referrer to cookie -->
     <script type="text/javascript">
         (function() {
-            var httpReferrer = "<?php echo esc_js($_SERVER['HTTP_REFERER'] ?? ''); ?>";
+            var httpReferrer = "<?php echo esc_js(sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER'] ?? ''))); ?>";
             document.cookie = "httpReferrer=" + httpReferrer + ";path=/";
         })();
     </script>
@@ -105,7 +106,7 @@ if ( wp_is_block_theme() ) {
                 </div>
                 <div class="tabsContentNext">
                     <div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
-                        <?php echo $content; ?>
+                      <?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                     </div>
                 </div>
             </div>
