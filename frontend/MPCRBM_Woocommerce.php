@@ -821,14 +821,17 @@
 				$post_id           = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
 //                $already_booked = self::mpcrbm_find_bookings_by_date( $_POST['mpcrbm_date'], $post_id );
-                $already_booked = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, $_POST['mpcrbm_date'] );
+                $mpcrbm_date = isset($_POST['mpcrbm_date']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
+                $already_booked = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, $mpcrbm_date );
 
                 if( $already_booked === 0 ){
                     return 0;
                 }else {
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
                     $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
                     $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                     $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
                     $product_status = get_post_status($product_id);
                     WC()->cart->empty_cart();

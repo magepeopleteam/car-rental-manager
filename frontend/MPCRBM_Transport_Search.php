@@ -106,28 +106,6 @@
                 return ( $page !== null );
             }
 
-            public static function get_guest_unique_id() {
-
-                if (is_user_logged_in()) {
-                    return 'user_' . get_current_user_id();
-                }
-
-                if (!isset($_COOKIE['guest_uid'])) {
-                    $guest_id = wp_generate_uuid4();
-
-                    setcookie(
-                        'guest_uid',
-                        $guest_id,
-                        time() + DAY_IN_SECONDS,
-                        COOKIEPATH,
-                        COOKIE_DOMAIN
-                    );
-
-                    $_COOKIE['guest_uid'] = $guest_id;
-                }
-
-                return 'guest_' . $_COOKIE['guest_uid'];
-            }
             public function mpcrbm_get_map_search_result_redirect() {
                 ob_start(); // Output buffering শুরু
 
@@ -150,14 +128,17 @@
                 include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 
                 $content = ob_get_clean(); // Buffer content get & clean
-                session_start();
+                if ( session_status() === PHP_SESSION_NONE ) {
+                    session_start();
+                }
+//                session_start();
                 $_SESSION['custom_content'] = $content;
                 $_SESSION['progress_bar'] = $progress_bar;
                 $_SESSION['search_date'] = $_POST;
                 session_write_close();
 
 
-                /*$uid = self::get_guest_unique_id();
+                /*
                 set_transient('wtbm_custom_content_' . $uid, $content, 5 * MINUTE_IN_SECONDS);
                 set_transient('wtbm_progress_bar_' . $uid, $progress_bar, 5 * MINUTE_IN_SECONDS);
                 set_transient('wtbm_search_date_' . $uid, $_POST, 5 * MINUTE_IN_SECONDS);*/
@@ -223,7 +204,7 @@
 			 */
 			public function mpcrbm_get_dropoff_locations() {
 				// Verify nonce
-				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'mpcrbm_nonce' ) ) {
+				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'mpcrbm_nonce' ) ) {
 					wp_send_json_error( array( 'message' => esc_html__( 'Security check failed', 'car-rental-manager' ) ) );
 				}
 
