@@ -20,7 +20,7 @@ $price_based = $mpcrbm_price_based ?? '';
             <div class="sticky_on_scroll">
                 <div class="mpcrbm_dFlex_fdColumn_btLight">
                     <div class="mpcrbm_summary_title">
-                        <i class="mi mi-summary-check"></i><?php _e('Booking Summary','car-rental-manager'); ?>
+                        <i class="mi mi-summary-check"></i><?php esc_attr_e('Booking Summary','car-rental-manager'); ?>
                     </div>
 
                     <div class="mpcrbm_booking_summary_description">

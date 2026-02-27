@@ -21,7 +21,7 @@
 				<div class="mpcrbm_dFlex_fdColumn_btLight">
 <!--					<h3>--><?php //esc_html_e('SUMMARY', 'car-rental-manager'); ?><!--</h3>-->
                     <div class="mpcrbm_summary_title">
-                        <i class="mi mi-summary-check"></i><?php _e('Booking Summary','car-rental-manager'); ?>
+                        <i class="mi mi-summary-check"></i><?php esc_html_e('Booking Summary','car-rental-manager'); ?>
                     </div>
 					<div class="dividerL"></div>
 

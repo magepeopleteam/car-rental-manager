@@ -137,6 +137,7 @@ if ($mpcrbm_two_way > 1) {
         if ($mpcrbm_return_time !== "0") {
             // Validate return time format
             if (!preg_match('/^\d+(\.\d+)?$/', $mpcrbm_return_time)) {
+                // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
                 wp_send_json_error( array('message' => esc_html__('Invalid return time format: ' ), 'car-rental-manager'));
                 wp_die();
             }
@@ -148,7 +149,12 @@ if ($mpcrbm_two_way > 1) {
 
             // Validate hours
             if ($mpcrbm_hours < 0 || $mpcrbm_hours > 23) {
-                wp_send_json_error(array('message' => esc_html__('Invalid return hours: ' . esc_attr( $mpcrbm_hours ) . ' (must be 0-23)', 'car-rental-manager')));
+                wp_send_json_error( array(
+                    'message' => sprintf(
+                        esc_html__( 'Invalid return hours: %s (must be 0-23)', 'car-rental-manager' ), // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+                        $mpcrbm_hours
+                    )
+                ) );
                 wp_die();
             }
 
@@ -163,7 +169,13 @@ if ($mpcrbm_two_way > 1) {
 
             // Validate minutes
             if ($mpcrbm_minutes < 0 || $mpcrbm_minutes > 59) {
-                wp_send_json_error(array('message' => esc_html__('Invalid return minutes: ' . esc_attr( $mpcrbm_minutes ) . ' (must be 0-59)', 'car-rental-manager')));
+                wp_send_json_error( array(
+                    'message' => sprintf(
+                    /* translators: %s: invalid return minute value (0-59). */
+                        esc_html__( 'Invalid return minutes: %s (must be 0-59)', 'car-rental-manager' ),
+                        esc_html( $mpcrbm_minutes )
+                    )
+                ) );
                 wp_die();
             }
         } else {
@@ -224,8 +236,8 @@ $mpcrbm_all_posts = MPCRBM_Query::query_transport_list($mpcrbm_price_based);
 $mpcrbm_post_ids = $mpcrbm_left_side_filter = [];
 if ( $mpcrbm_all_posts->found_posts > 0 ) {
     $mpcrbm_posts = $mpcrbm_all_posts->posts;
-    $vehicle_item_count = 0;
-    $remove_class_item_post_id = [];
+    $mpcrbm_vehicle_item_count = 0;
+    $mpcrbm_remove_class_item_post_id = [];
     foreach ($mpcrbm_posts as $mpcrbm_post) {
         $mpcrbm_get_post_id = $mpcrbm_post->ID;
        /* $mpcrbm_check_schedule = mpcrbm_get_schedule($post_id, $days_name, $mpcrbm_start_date, $mpcrbm_start_time_schedule, $mpcrbm_return_time_schedule, $mpcrbm_start_place_coordinates, $mpcrbm_end_place_coordinates, $mpcrbm_price_based);
@@ -295,8 +307,8 @@ if( $is_redirect === 'yes' ){
                                 <label>
                                     <select id="mpcrbm_passenger_number" class="formControl" name="mpcrbm_passenger_number">
                                         <?php
-                                        for ($i = 0; $i <= $mpcrbm_passengers; $i++) {
-                                            echo '<option value="' . esc_html($i) . '">' .  esc_html($i) . '</option>';
+                                        for ($mpcrbm_i = 0; $mpcrbm_i <= $mpcrbm_passengers; $$mpcrbm_ii++) {
+                                            echo '<option value="' . esc_html($mpcrbm_i) . '">' .  esc_html($mpcrbm_i) . '</option>';
                                         }
                                         ?>
                                     </select>
@@ -308,8 +320,8 @@ if( $is_redirect === 'yes' ){
                                 <label>
                                     <select id="mpcrbm_shopping_number" class="formControl" name="mpcrbm_shopping_number">
                                         <?php
-                                        for ($i = 0; $i <= $mpcrbm_mpcrbm_bags; $i++) {
-                                            echo wp_kses_post( '<option value="' . esc_html($i) . '">' .  esc_html($i) . '</option>' );
+                                        for ($mpcrbm_i = 0; $i <= $mpcrbm_mpcrbm_bags; $mpcrbm_i++) {
+                                            echo wp_kses_post( '<option value="' . esc_html($mpcrbm_i) . '">' .  esc_html($$mpcrbm_ii) . '</option>' );
                                         }
                                         ?>
                                     </select>

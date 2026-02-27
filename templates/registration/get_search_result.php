@@ -5,8 +5,8 @@ $mpcrbm_days_name = array_keys($mpcrbm_days);
 $mpcrbm_schedule = [];
 $mpcrbm_is_redirect = 'no';
 
-$mpcrbm_start_date = date('Y-m-d');
-$mpcrbm_return_date = date('Y-m-d', strtotime('+1 day'));
+$mpcrbm_start_date = gmdate('Y-m-d');
+$mpcrbm_return_date = gmdate('Y-m-d', strtotime('+1 day'));
 $mpcrbm_price_based = '';
 $mpcrbm_start_time = "10";
 $mpcrbm_return_time = "10";

@@ -86,7 +86,11 @@
 			}
 
             public function mpcrbm_enque_flatpickr() {
-                wp_enqueue_style(
+
+                wp_enqueue_style( 'mpcrbm_flatpickr.min', MPCRBM_PLUGIN_URL . 'mp_global/assets/flatpickr/mpcrbm_flatpickr.min.css', array(), time() );
+                wp_enqueue_script( 'flatpickr.min', MPCRBM_PLUGIN_URL . 'mp_global/assets/flatpickr/flatpickr.min.js', array( 'jquery' ), time(), true );
+
+                /*wp_enqueue_style(
                     'mpcrbm-flatpickr-css',
                     'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
                     array(),
@@ -100,7 +104,7 @@
                     array('jquery'),
                     '4.6.13',
                     true
-                );
+                );*/
 
             }
 

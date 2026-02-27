@@ -291,7 +291,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                     <input type="hidden" id="mpcrbm_map_start_date" value="<?php echo esc_attr( $mpcrbm_start_date );?>" />
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-calendar"></i>
-                                        <span class="mprcbm_text"><?php esc_html($mpcrbm_type_text_pickup.' Date'); ?></span>
+                                        <span class="mprcbm_text"><?php echo esc_html('Pickup Date '); ?></span>
                                     </span>
                                     <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_date );?>" readonly />
                                 </label>
@@ -361,7 +361,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                     <input type="hidden" id="mpcrbm_map_return_date" value="<?php echo esc_attr( $mpcrbm_end_date );?>" />
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-calendar"></i>
-                                        <span class="mprcbm_text"><?php esc_html($mpcrbm_type_text_return.' Date'); ?></span>
+                                        <span class="mprcbm_text"><?php echo esc_html(' Return Date '); ?></span>
                                     </span>
                                     <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_date );?>" readonly name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
@@ -507,7 +507,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
     </div>
     <?php
 }
-if( 1 ){
+if( $search_result_show === 'yes' ){
 ?>
 <div class="mpcrbm_search_result_holder">
     <?php

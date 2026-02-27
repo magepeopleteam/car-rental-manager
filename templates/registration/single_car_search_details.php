@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 } // Cannot access pages directly
 delete_transient('mpcrbm_original_price_based');
 
-$today = strtolower(date("l"));
+$today = strtolower(gmdate("l"));
 $default_start_time = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_default_start_time', 00 );
 $default_end_time = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_default_end_time', 24 );
 
@@ -140,11 +140,11 @@ if( $is_title === 'no' ){
 $pickup_location = '';
 $return_location = '';
 
-$start_date = date('Y-m-d');
-$formatted_start_date = date('D d M, Y', strtotime( $start_date ));
+$start_date = gmdate('Y-m-d');
+$formatted_start_date = gmdate('D d M, Y', strtotime( $start_date ));
 $formatted_start_time = MPCRBM_Global_Function::format_custom_time( $start_time );
-$end_date = date('Y-m-d', strtotime('+1 day'));
-$formatted_end_date = date('D d M, Y', strtotime( $end_date ));
+$end_date = gmdate('Y-m-d', strtotime('+1 day'));
+$formatted_end_date = gmdate('D d M, Y', strtotime( $end_date ));
 $formatted_end_time = MPCRBM_Global_Function::format_custom_time( $end_time );
 
 $single_page = isset( $params['single_page'] ) ? $params['single_page'] : '';
@@ -200,7 +200,7 @@ if (sizeof($all_dates) > 0) {
                         <input type="hidden" id="mpcrbm_enable_ajax_search" name="mpcrbm_enable_ajax_search" value="yes" />
                     <?php }else {?>
                         <input type="hidden" id="mpcrbm_enable_ajax_search" name="mpcrbm_enable_ajax_search" value="no" />
-                        <input type="hidden" id="mpcrbm_enable_view_search_result_page" name="mpcrbm_enable_view_search_result_page" value="<?php echo MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page') ?>" />
+                        <input type="hidden" id="mpcrbm_enable_view_search_result_page" name="mpcrbm_enable_view_search_result_page" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page') ); ?>" />
                     <?php }?>
                     <input type='hidden' id="mpcrbm_enable_return_in_different_date" name="mpcrbm_enable_return_in_different_date" value="yes" />
                     <input type="hidden" id="mpcrbm_enable_filter_via_features" name="mpcrbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
@@ -241,7 +241,7 @@ if (sizeof($all_dates) > 0) {
                                                 <?php foreach ($all_locations as $start_location) {
                                                     $start_selected = ( $pickup_location === $start_location) ? 'selected' : '';
                                                     ?>
-                                                    <option value="<?php echo esc_attr($start_location); ?>" <?php echo $start_selected; ?>>
+                                                    <option value="<?php echo esc_attr($start_location); ?>" <?php echo esc_attr( $start_selected ); ?>>
                                                         <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?>
                                                     </option>
                                                 <?php } ?>
@@ -267,7 +267,7 @@ if (sizeof($all_dates) > 0) {
                                                 <?php foreach ( $all_locations as $start_location ) {
                                                     $end_selected = ( $return_location === $start_location) ? 'selected' : '';
                                                     ?>
-                                                    <option value="<?php echo esc_attr($start_location); ?>" <?php echo $end_selected; ?>>
+                                                    <option value="<?php echo esc_attr($start_location); ?>" <?php echo esc_attr( $end_selected ); ?>>
                                                         <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($start_location, 'mpcrbm_locations')); ?>
                                                     </option>
                                                 <?php } ?>
@@ -287,7 +287,12 @@ if (sizeof($all_dates) > 0) {
                                     <input type="hidden" id="mpcrbm_map_start_date" value="<?php echo esc_attr( $start_date );?>" />
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-calendar"></i>
-                                        <span class="mprcbm_text"><?php esc_html_e($type_text_pickup.' Date', 'car-rental-manager'); ?></span>
+                                        <span class="mprcbm_text">
+                                            <?php
+                                            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+                                            esc_html_e($type_text_pickup.' Date', 'car-rental-manager');
+                                            ?>
+                                        </span>
                                     </span>
                                     <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_start_date );?>" readonly />
                                 </label>
@@ -356,7 +361,12 @@ if (sizeof($all_dates) > 0) {
                                     <input type="hidden" id="mpcrbm_map_return_date" value="<?php echo esc_attr( $end_date );?>" />
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-calendar"></i>
-                                        <span class="mprcbm_text"><?php esc_html_e($type_text_return.' Date', 'car-rental-manager'); ?></span>
+                                        <span class="mprcbm_text">
+                                            <?php
+                                            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
+                                            esc_html_e($type_text_return.' Date', 'car-rental-manager');
+                                            ?>
+                                        </span>
                                     </span>
                                     <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $formatted_end_date );?>" readonly name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->

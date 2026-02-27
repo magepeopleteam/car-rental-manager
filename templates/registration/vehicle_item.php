@@ -186,37 +186,37 @@ if ($post_id) {
                 <div class="mpcrbm_car_specs_lists">
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-car"></i>
-                        <div title="<?php echo __('Car Type: ','car-rental-manager').esc_attr($car_type_name); ?>">
+                        <div title="<?php echo esc_html_e('Car Type: ','car-rental-manager').esc_attr($car_type_name); ?>">
                             <div class="spec-value"><?php echo esc_html($car_type_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-gas-pump-alt"></i>
-                        <div title="<?php echo __('Fuel Type: ','car-rental-manager').esc_attr($fuel_type_name); ?>">
+                        <div title="<?php echo esc_html_e('Fuel Type: ','car-rental-manager').esc_attr($fuel_type_name); ?>">
                             <div class="spec-value"><?php echo esc_html($fuel_type_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-bonus"></i>
-                        <div title="<?php echo __('Brands: ','car-rental-manager').esc_attr($brand_name); ?>">
+                        <div title="<?php echo esc_html_e('Brands: ','car-rental-manager').esc_attr($brand_name); ?>">
                             <div class="spec-value"><?php echo esc_html($brand_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-time-quarter-to"></i>
-                        <div title="<?php echo __('Make Year: ','car-rental-manager').esc_attr($year_name); ?>">
+                        <div title="<?php echo esc_html_e('Make Year: ','car-rental-manager').esc_attr($year_name); ?>">
                             <div class="spec-value"><?php echo esc_html($year_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-person-seat"></i>
-                        <div title="<?php echo __('Seating Capacity: ','car-rental-manager').esc_attr($seating_name); ?>">
+                        <div title="<?php echo esc_html_e('Seating Capacity: ','car-rental-manager').esc_attr($seating_name); ?>">
                             <div class="spec-value"><?php echo esc_html($seating_name); ?></div>
                         </div>
                     </div>
                     <div class="mpcrbm_car_spec">
                         <i class="mi mi-person-luggage"></i>
-                        <div title="<?php echo __('Maximum Bags: ','car-rental-manager').esc_attr($bag_count); ?>">
+                        <div title="<?php echo esc_html_e('Maximum Bags: ','car-rental-manager').esc_attr($bag_count); ?>">
                             <div class="spec-value"><?php echo esc_html($bag_count); ?></div>
                         </div>
                     </div>
@@ -278,6 +278,7 @@ if ($post_id) {
                                         $discount_text = $early_bird_info['discount_type'] === 'percentage'
                                             ? $early_bird_info['discount_value'] . '%'
                                             : wc_price($early_bird_info['discount_value']);
+                                        /* translators: %s: discount text shown for early bird promotion. */
                                         echo esc_html(sprintf(
                                             __('Save %s (Early Bird)', 'car-rental-manager'),
                                             $discount_text
