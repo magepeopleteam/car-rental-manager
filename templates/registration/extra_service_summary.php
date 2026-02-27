@@ -53,8 +53,8 @@
 					continue;
 				}
 
-				$wc_price = MPCRBM_Global_Function::wc_price($post_id, $mpcrbm_service_price);
-                $mpcrbm_service_price = MPCRBM_Global_Function::price_convert_raw($wc_price);
+				$mpcrbm_wc_price = MPCRBM_Global_Function::wc_price($post_id, $mpcrbm_service_price);
+                $mpcrbm_service_price = MPCRBM_Global_Function::price_convert_raw($mpcrbm_wc_price);
 			?>
 				<div class="justifyBetween">
 					<h6><?php echo esc_html($mpcrbm_service_name); ?></h6>

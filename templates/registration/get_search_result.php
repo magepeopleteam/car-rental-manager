@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    die;
+}
 $mpcrbm_label = MPCRBM_Function::get_name();
 $mpcrbm_days = MPCRBM_Global_Function::week_day();
 $mpcrbm_days_name = array_keys($mpcrbm_days);
@@ -202,6 +205,7 @@ if( is_array( $mpcrbm_post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
                     <!-- Filter area end -->
                     <?php
 
+                    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                     $car_class = 'mpcrbm_with_search_form';
 
                     if ( count( $mpcrbm_post_ids ) > 0 ) {

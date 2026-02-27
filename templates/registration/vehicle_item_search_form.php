@@ -211,14 +211,14 @@ if ($post_id) {
                             <div class="" style="display: flex;justify-content: space-between">
                                 <div class="mpcrbm_price-breakdown <?php echo esc_attr( $mpcrbm_line_through );?>"><?php echo wp_kses_post( wc_price($mpcrbm_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                                 <?php if( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ){
-                                    $pricing_rules = isset( $mpcrbm_pricing_rule_data['pricing_rules'] ) ? $mpcrbm_pricing_rule_data['pricing_rules'] : '';
+                                    $mpcrbm_pricing_rules = isset( $mpcrbm_pricing_rule_data['pricing_rules'] ) ? $mpcrbm_pricing_rule_data['pricing_rules'] : '';
                                     ?>
                                     <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
                                         <div class="mpcrbm_price_hover_wrap">
                                         <span class="mpcrbm_price_info">
                                             ℹ
                                         </span>
-                                            <div class=""><?php echo wp_kses_post( $pricing_rules );?></div>
+                                            <div class=""><?php echo wp_kses_post( $mpcrbm_pricing_rules );?></div>
                                         </div>
                                     </div>
                                 <?php }?>

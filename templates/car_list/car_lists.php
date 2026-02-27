@@ -29,8 +29,8 @@ $mpcrbm_all_seating_capacity   = $mpcrbm_car_taxonomy_data['mpcrbm_seating_capac
 $mpcrbm_all_car_brand          = $mpcrbm_car_taxonomy_data['mpcrbm_car_brand'] ?? [];
 $mpcrbm_all_make_year          = $mpcrbm_car_taxonomy_data['mpcrbm_make_year'] ?? [];
 
-$cpt = MPCRBM_Function::get_cpt();
-$add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
+$mpcrbm_cpt = MPCRBM_Function::get_cpt();
+$mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
 ?>
 <div class="mpcrbm_car_list_main-content">
     <!-- Analytics Cards -->
@@ -40,7 +40,7 @@ $add_new_url = admin_url( 'post-new.php?post_type='.$cpt );
             <div class="mpcrbm_car_list_controls">
                 <h2><?php esc_attr_e( 'Car Inventory', 'car-rental-manager' );?></h2>
                 <div class="mpcrbm_car_list_control_buttons">
-                    <a href="<?php echo esc_url( $add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Car', 'car-rental-manager' );?></button></a>
+                    <a href="<?php echo esc_url( $mpcrbm_add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Car', 'car-rental-manager' );?></button></a>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Export', 'car-rental-manager' );?></button>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Bulk Actions', 'car-rental-manager' );?></button>
                 </div>
