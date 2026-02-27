@@ -14,7 +14,7 @@
 					global $sitepress;
 					$default_language = function_exists( 'wpml_loaded' ) ? $sitepress->get_default_language() : get_locale();
 
-                    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                    // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                     return apply_filters( 'wpml_object_id', $post_id, MPCRBM_Function::get_cpt(), true, $default_language );
 				}
 				if ( function_exists( 'pll_get_post_translations' ) ) {

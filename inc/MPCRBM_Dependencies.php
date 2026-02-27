@@ -86,22 +86,8 @@
 			}
 
             public function mpcrbm_enque_flatpickr() {
-                wp_enqueue_style(
-                    'mpcrbm-flatpickr-css',
-                    'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
-                    array(),
-                    '4.6.13'
-                );
-
-                // Flatpickr JS
-                wp_enqueue_script(
-                    'mpcrbm-flatpickr-js',
-                    'https://cdn.jsdelivr.net/npm/flatpickr',
-                    array('jquery'),
-                    '4.6.13',
-                    true
-                );
-
+				wp_enqueue_style( 'mpcrbm-flatpickr-css', MPCRBM_PLUGIN_URL . '/assets/frontend/flatpickr.min.css', array(), time() );
+				wp_enqueue_script( 'mpcrbm-flatpickr-js', MPCRBM_PLUGIN_URL . '/assets/frontend/flatpickr.js', array( 'jquery' ), time(), true );
             }
 
 		}
