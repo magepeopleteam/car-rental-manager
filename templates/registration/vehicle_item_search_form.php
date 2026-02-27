@@ -262,6 +262,7 @@ if ($post_id) {
                                             ? $mpcrbm_early_bird_info['discount_value'] . '%'
                                             : wc_price($mpcrbm_early_bird_info['discount_value']);
                                         echo esc_html(sprintf(
+                                        // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
                                             __('Save %s (Early Bird)', 'car-rental-manager'),
                                             $mpcrbm_discount_text
                                         ));
@@ -286,7 +287,10 @@ if ($post_id) {
 
                                 <?php if ($mpcrbm_total_save > 0): ?>
                                     <div class="mpcrbm_discount-info" style="color: #d26e4b; font-weight: bold; margin-top: 2px;">
-                                        <?php echo sprintf(esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))); ?>
+                                        <?php echo sprintf(
+                                        // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+                                                esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))
+                                        ); ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
