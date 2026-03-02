@@ -67,46 +67,78 @@
 			}
 
             public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
-                $term = get_term_by( 'slug', $slug, $taxonomy );
-                return ( $term && ! is_wp_error( $term ) ) ? $term->name : null;
+                global $wpdb;
+
+                if ( empty( $slug ) || empty( $taxonomy ) ) {
+                    return false;
+                }
+
+                $cache_key = 'mpcrbm_term_name_' . md5( $slug . '_' . $taxonomy );
+                $cached    = wp_cache_get( $cache_key, 'mpcrbm_taxonomy_terms' );
+
+                if ( false !== $cached ) {
+                    return $cached;
+                }
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $term_name = $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT t.name
+                                 FROM {$wpdb->terms} t
+                                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+                                 WHERE t.slug = %s AND tt.taxonomy = %s
+                                 LIMIT 1",
+                        $slug,
+                        $taxonomy
+                    )
+                );
+
+                if ( $term_name ) {
+                    wp_cache_set( $cache_key, $term_name, 'mpcrbm_taxonomy_terms' );
+                    return $term_name;
+                }
+
+                return false;
             }
 
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
-                $term = get_term( $term_id, $taxonomy );
-                return ( $term && ! is_wp_error( $term ) ) ? $term->name : null;
-            }
-
-            /*public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
-                global $wpdb;
-                // Prepare the query
-                $query = $wpdb->prepare(
-                    "SELECT t.name 
-                 FROM {$wpdb->terms} t
-                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                 WHERE t.slug = %s AND tt.taxonomy = %s",
-                    $slug,
-                    $taxonomy
-                );
-                // Execute the query
-                $term_name = $wpdb->get_var( $query );
-
-                return $term_name;
-            }
-            public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
                 global $wpdb;
 
-                $query = $wpdb->prepare(
-                    "SELECT t.name 
-                     FROM {$wpdb->terms} AS t
-                     INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
-                     WHERE t.term_id = %d AND tt.taxonomy = %s",
-                    $term_id,
-                    $taxonomy
-                );
-                $term_name = $wpdb->get_var( $query );
+                // Validate input
+                if ( empty( $term_id ) || empty( $taxonomy ) ) {
+                    return null;
+                }
 
-                return $term_name ? $term_name : null;
-            }*/
+                $term_id = (int) $term_id;
+
+                // Create cache key
+                $cache_key = 'mpcrbm_term_name_id_' . md5( $term_id . '_' . $taxonomy );
+                $cached    = wp_cache_get( $cache_key, 'mpcrbm_taxonomy_name_terms' );
+
+                if ( false !== $cached ) {
+                    return $cached;
+                }
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $term_name = $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT t.name
+                         FROM {$wpdb->terms} AS t
+                         INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
+                         WHERE t.term_id = %d AND tt.taxonomy = %s
+                         LIMIT 1",
+                        $term_id,
+                        $taxonomy
+                    )
+                );
+
+                if ( $term_name ) {
+                    wp_cache_set( $cache_key, $term_name, 'mpcrbm_taxonomy_name_terms' );
+                    return $term_name;
+                }
+
+                return null;
+            }
 
 			public static function template_path( $file_name ): string {
 				$template_path = get_stylesheet_directory() . '/mpcrbm_templates/';
@@ -455,7 +487,7 @@
                 }
 
                 // 1. Seasonal Pricing
-                if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
+                if ( $enable_seasonal === 1 && isset( $seasonal[0] ) && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
 
                     $seasonal_price = 0;
                     foreach ($seasonal as $s) {
