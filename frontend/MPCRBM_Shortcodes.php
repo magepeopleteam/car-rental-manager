@@ -56,6 +56,7 @@
                     'post_type'      => 'mpcrbm_rent',
 //                    'posts_per_page' => intval( $atts['per_page'] ),
                     'posts_per_page' => intval( $atts['show'] ),
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => $meta_query,
                 ];
 
@@ -292,6 +293,7 @@
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
                     'posts_per_page' => intval( $atts['per_page'] ),
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => $meta_query,
                 ];
 

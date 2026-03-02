@@ -372,6 +372,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 'post_type'      => 'mpcrbm_booking',
                 'post_status'    => 'publish',
                 'posts_per_page' => -1,
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                 'meta_query'     => [
                     'relation' => 'AND',
                     [

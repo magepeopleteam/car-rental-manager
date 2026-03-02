@@ -42,6 +42,7 @@
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
                     'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => array(
                         'relation' => 'AND',
                         array(
@@ -325,7 +326,7 @@
 					'date-picker',
 					plugin_dir_url( __FILE__ ) . '../assets/date-picker/date-picker.js', // Corrected path
 					[ 'jquery', 'jquery-ui-datepicker' ],
-					null,
+					'1.0.0',
 					true
 				);
 				wp_enqueue_script( 'date-picker' );
@@ -879,6 +880,7 @@ public static function all_tax_list(): array {
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
                     'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => array(
                         'relation' => 'AND',
                         array(
@@ -980,6 +982,7 @@ public static function all_tax_list(): array {
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
                     'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                     'meta_query'     => array(
                         'relation' => 'AND',
                         array(

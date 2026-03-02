@@ -189,6 +189,7 @@
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
                     'relation' => 'AND',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => [
                         [
                             'key'     => 'mpcrbm_id',
@@ -257,6 +258,7 @@
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
                     'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => [
                         'relation' => 'AND',
                         [
@@ -379,6 +381,7 @@
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
                     'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => [
                         'relation' => 'AND',
                         [
