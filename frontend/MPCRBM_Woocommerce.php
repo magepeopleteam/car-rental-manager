@@ -595,6 +595,7 @@
 				$args = array(
 					'post_type'      => 'mpcrbm_booking',
 					'posts_per_page' => - 1,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
 					'meta_query'     => array(
 						'relation' => 'AND',
 						array(
@@ -619,6 +620,7 @@
 				$args = array(
 					'post_type'      => 'mpcrbm_service_booking',
 					'posts_per_page' => - 1,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
 					'meta_query'     => array(
 						'relation' => 'AND',
 						array(
@@ -764,6 +766,7 @@
                     'post_type'      => 'mpcrbm_booking',
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => [
                         [
                             'key'     => 'mpcrbm_id',

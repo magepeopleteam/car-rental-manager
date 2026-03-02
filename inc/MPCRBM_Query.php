@@ -30,6 +30,7 @@
 					'post_type'      => array( MPCRBM_Function::get_cpt() ),
 					'posts_per_page' => - 1,
 					'post_status'    => 'publish',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
 					'meta_query'     => array(
 						'relation' => 'OR',
 						$price_based_4,
@@ -83,6 +84,7 @@
 				$args                     = array(
 					'post_type'      => 'mpcrbm_service_booking',
 					'posts_per_page' => - 1,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
 					'meta_query'     => array(
 						'relation' => 'AND',
 						array(
