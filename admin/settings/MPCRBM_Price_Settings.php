@@ -328,7 +328,7 @@
 				<?php
 			}
 
-			public function save_price_settings( $post_id ) {
+			public function save_price_settings_new( $post_id ) {
 				if (
 					! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ||
 					! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) ), 'mpcrbm_transportation_type_nonce' ) ||
@@ -510,6 +510,181 @@ $day_price      = isset( $tiered_data['day_price'] )      ? map_deep( $tiered_da
 
 				}
 			}
+
+            public function save_price_settings( $post_id ) {
+                if (
+                    ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ||
+                    ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) ), 'mpcrbm_transportation_type_nonce' ) ||
+                    ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
+                    ! current_user_can( 'edit_post', $post_id )
+                ) {
+                    return;
+                }
+                if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+                    $price_based = "manual";
+                    update_post_meta( $post_id, 'mpcrbm_price_based', $price_based );
+                    if ( isset( $_POST['mpcrbm_day_price'] ) ) {
+                        $raw_price = sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) );
+                        if ( is_serialized( $raw_price ) ) {
+                            $hour_price = 0;
+                        } else {
+                            $hour_price = is_numeric( $raw_price ) ? floatval( $raw_price ) : 0;
+                            $hour_price = max( 0, $hour_price );
+                        }
+                    } else {
+                        $hour_price = 0;
+                    }
+                    update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
+
+
+
+                    if ( isset( $_POST['mpcrbm_set_price_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) {
+
+                        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+                        if (get_post_type($post_id) !== MPCRBM_Function::get_cpt()) return;
+
+                        // Base price
+                        if (isset( $_POST['mpcrbm_base_daily_price'] )) {
+                            update_post_meta($post_id, 'mpcrbm_base_daily_price', floatval($_POST['mpcrbm_base_daily_price']));
+                        }
+
+                        // Day-wise pricing
+                        $mpcrbm_daywise_pricing = array_map(
+                            'floatval',
+                            is_array( $_POST['mpcrbm_daywise_pricing'] ?? null ) ? wp_unslash( $_POST['mpcrbm_daywise_pricing'] ) : []
+                        );
+
+
+                        if ( $mpcrbm_daywise_pricing ) {
+                            $clean = [];
+                            foreach ( $mpcrbm_daywise_pricing as $day => $val) {
+                                $clean[$day] = floatval( $val);
+                            }
+                            update_post_meta($post_id, 'mpcrbm_daywise_pricing', $clean);
+                        }
+
+
+                        if (isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts'])) {
+
+                            $tiers = [];
+                            /*$mins = $_POST['mpcrbm_tiered_discounts']['min'] ?? [];
+                            $maxs = $_POST['mpcrbm_tiered_discounts']['max'] ?? [];
+                            $types = $_POST['mpcrbm_tiered_discounts']['type'] ?? [];
+
+                            $perc = $_POST['mpcrbm_tiered_discounts']['percent'] ?? [];
+                            $fixed_discount = $_POST['mpcrbm_tiered_discounts']['fixed_discount'] ?? [];
+                            $fixed_price = $_POST['mpcrbm_tiered_discounts']['fixed_price'] ?? [];
+                            $day_price = $_POST['mpcrbm_tiered_discounts']['day_price'] ?? [];*/
+
+                            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                            $raw_discounts = wp_unslash( $_POST['mpcrbm_tiered_discounts'] ?? [] );
+
+                            $mins = array_map( 'absint', $raw_discounts['min'] ?? [] );
+                            $maxs = array_map( 'absint', $raw_discounts['max'] ?? [] );
+
+                            $types = array_map( 'sanitize_text_field', $raw_discounts['type'] ?? [] );
+
+                            $perc            = array_map( 'floatval', $raw_discounts['percent'] ?? [] );
+                            $fixed_discount  = array_map( 'floatval', $raw_discounts['fixed_discount'] ?? [] );
+                            $fixed_price     = array_map( 'floatval', $raw_discounts['fixed_price'] ?? [] );
+                            $day_price       = array_map( 'floatval', $raw_discounts['day_price'] ?? [] );
+
+
+
+                            for ($i = 0; $i < count($mins); $i++) {
+
+                                $min = isset($mins[$i]) ? intval($mins[$i]) : 0;
+                                $max = isset($maxs[$i]) ? intval($maxs[$i]) : 0;
+                                $type = isset($types[$i]) ? sanitize_text_field($types[$i]) : 'percent';
+
+                                if ($min && $max) {
+
+                                    $tier = [
+                                        'min' => $min,
+                                        'max' => $max,
+                                        'type' => $type,
+                                    ];
+
+                                    // Percentage
+                                    if ($type === 'percent') {
+
+                                        if (isset($perc[$i]) && $perc[$i] !== '') {
+                                            $tier['percent'] = floatval($perc[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    } // Fixed Discount (subtract amount)
+                                    elseif ($type === 'fixed_discount') {
+
+                                        if (isset($fixed_discount[$i]) && $fixed_discount[$i] !== '') {
+                                            $tier['fixed_discount'] = floatval($fixed_discount[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    } // Fixed Total Price (override total)
+                                    elseif ($type === 'fixed_price') {
+
+                                        if (isset($fixed_price[$i]) && $fixed_price[$i] !== '') {
+                                            $tier['fixed_price'] = floatval($fixed_price[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    } // Day-wise Price (price per day)
+                                    elseif ($type === 'day_price') {
+
+                                        if (isset($day_price[$i]) && $day_price[$i] !== '') {
+                                            $tier['day_price'] = floatval($day_price[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    }
+
+                                    $tiers[] = $tier;
+                                }
+                            }
+
+                            update_post_meta($post_id, 'mpcrbm_tiered_discounts', $tiers);
+                        }
+
+                        // Seasonal Pricing
+                        if (isset($_POST['mpcrbm_seasonal_pricing']) && is_array($_POST['mpcrbm_seasonal_pricing'])) {
+                            $seasons = [];
+
+                            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                            $raw_seasonal = wp_unslash( $_POST['mpcrbm_seasonal_pricing'] ?? [] );
+
+                            $names  = array_map( 'sanitize_text_field', $raw_seasonal['name'] ?? [] );
+                            $starts = array_map( 'sanitize_text_field', $raw_seasonal['start'] ?? [] );
+                            $ends   = array_map( 'sanitize_text_field', $raw_seasonal['end'] ?? [] );
+                            $types  = array_map( 'sanitize_text_field', $raw_seasonal['type'] ?? [] );
+                            $values = array_map( 'floatval', $raw_seasonal['value'] ?? [] );
+
+                            $count = count( $names );
+
+                            for ( $i = 0; $i < $count; $i++ ) {
+
+                                if ( ! empty( $names[$i] ) && ! empty( $starts[$i] ) && ! empty( $ends[$i] ) ) {
+
+                                    $seasons[] = [
+                                        'name'  => $names[$i],
+                                        'start' => $starts[$i],   // sanitized above
+                                        'end'   => $ends[$i],     // sanitized above
+                                        'type'  => $types[$i] ?? '',
+                                        'value' => $values[$i] ?? 0,
+                                    ];
+                                }
+                            }
+                            update_post_meta($post_id, 'mpcrbm_seasonal_pricing', $seasons);
+                        }
+                    }
+
+                }
+            }
+
 		}
 		new MPCRBM_Price_Settings();
 	}
