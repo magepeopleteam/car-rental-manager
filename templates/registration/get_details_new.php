@@ -253,6 +253,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                                 <?php } ?>
                                             <?php } ?>
                                         </select>
+                                        
                                     <?php } else { ?>
                                         <input type="text" id="mpcrbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'car-rental-manager'); ?>" value="" />
                                     <?php } ?>
