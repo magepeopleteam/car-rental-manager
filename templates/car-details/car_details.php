@@ -335,13 +335,9 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                     <iframe src="https://maps.google.com/maps?q=<?php echo esc_attr( $mpcrbm_map_location );?>&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
                                 </div>
                             </div>
-                            <?php } if( $mpcrbm_show_review_section === 'yes' ){?>
-                            <div id="reviews" class="mpcrbm_car_details_tab_content">
-                                <h3><?php esc_attr_e('Reviews','car-rental-manager') ?></h3>
-                                <div class="divider"></div>
-                                <p><?php esc_attr_e( 'No reviews yet. Be the first to share your experience!', 'car-rental-manager' );?></p>
-                            </div>
-                            <?php } if( $mpcrbm_show_faq_section === 'yes' ){?>
+                            <?php }
+
+                            if( $mpcrbm_show_faq_section === 'yes' ){?>
                             <div id="faq" class="mpcrbm_car_details_tab_content mpcrbm_car_details_faq_section">
                                 <h3><?php esc_attr_e( 'Frequently Asked Questions', 'car-rental-manager' );?></h3>
                                 <div class="mpcrbm_car_details_divider"></div>
@@ -365,7 +361,8 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                     ?>
                                 </div>
                             </div>
-                            <?php } if( $mpcrbm_show_term_condition === 'yes' ){?>
+                            <?php }
+                            if( $mpcrbm_show_term_condition === 'yes' ){?>
                             <div id="terms" class="mpcrbm_car_details_tab_content">
                                 <?php if ( ! empty( $mpcrbm_selected_term_condition ) ) :
                                     ?>
@@ -391,7 +388,119 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <?php }?>
+                            <?php }
+                            if( $mpcrbm_show_review_section === 'yes' ){?>
+                                <div id="reviews" class="mpcrbm_car_details_tab_content">
+
+                                    <h3><?php esc_html_e('Reviews','car-rental-manager'); ?></h3>
+                                    <div class="divider"></div>
+
+                                    <?php $mpcrbm_post_id = get_the_ID(); ?>
+
+                                    <div class="mpcrbm_review_average_box">
+                                        <?php
+                                        $mpcrbm_comments = get_comments([
+                                            'post_id' => $mpcrbm_post_id,
+                                            'status'  => 'approve'
+                                        ]);
+
+                                        $mpcrbm_total = 0;
+                                        $mpcrbm_count = 0;
+
+                                        foreach($mpcrbm_comments as $mpcrbm_comment){
+                                            $mpcrbm_rating = get_comment_meta($mpcrbm_comment->comment_ID, 'mpcrbm_review_rating', true);
+                                            if($mpcrbm_rating){
+                                                $mpcrbm_total += $mpcrbm_rating;
+                                                $mpcrbm_count++;
+                                            }
+                                        }
+
+                                        if($mpcrbm_count > 0){
+                                            $mpcrbm_average = round($mpcrbm_total / $mpcrbm_count, 1);
+                                            echo "<strong>".esc_attr_e( 'Average Rating: ', 'car-rental-manager' )." {$mpcrbm_average} / 5</strong>";
+                                        } else {
+                                            echo "<strong>".esc_attr_e( 'No ratings yet.', 'car-rental-manager' )."</strong>";
+                                        }
+                                        ?>
+                                    </div>
+
+                                    <div id="mpcrbm_review_list_wrapper">
+                                        <div id="mpcrbm_review_list">
+                                        <?php
+                                        $current_user_id = get_current_user_id();
+                                        if($mpcrbm_comments){
+                                            foreach($mpcrbm_comments as $mpcrbm_comment){
+                                                $mpcrbm_rating = get_comment_meta($mpcrbm_comment->comment_ID, 'mpcrbm_review_rating', true);
+                                                ?>
+                                                <div class="mpcrbm_review_card" data-comment-id="<?php echo esc_attr($mpcrbm_comment->comment_ID); ?>">
+                                                    <span class="mpcrbm_review_author"><?php echo esc_html($mpcrbm_comment->comment_author); ?></span>
+
+                                                    <?php if($mpcrbm_rating): ?>
+                                                        <div class="mpcrbm_review_stars">
+                                                            <?php
+                                                            for($i=1;$i<=5;$i++){
+                                                                echo ($i <= $mpcrbm_rating) ? '★' : '☆';
+                                                            }
+                                                            ?>
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <p class="mpcrbm_review_content"><?php echo esc_html($mpcrbm_comment->comment_content); ?></p>
+
+                                                    <?php
+                                                    // Show edit/delete for comment author or admin
+                                                    if($current_user_id && ($current_user_id === intval($mpcrbm_comment->user_id) || current_user_can('manage_options'))){ ?>
+                                                        <div class="mpcrbm_review_actions">
+                                                            <button class="mpcrbm_review_edit_btn"><?php esc_attr_e('Edit','car-rental-manager'); ?></button>
+                                                            <button class="mpcrbm_review_delete_btn"><?php esc_attr_e('Delete','car-rental-manager'); ?></button>
+                                                        </div>
+                                                    <?php } ?>
+                                                </div>
+                                                <?php
+                                            }
+                                        } else {
+                                            echo "<p>".esc_attr_e( 'No reviews yet. Be the first to review!', 'car-rental-manager' )."</p>";
+                                        }
+                                        ?>
+                                    </div>
+                                        <button id="mpcrbm_review_load_more" style="display:none;">
+                                            <?php esc_html_e( 'Load More Reviews', 'car-rental-manager' );?>
+                                        </button>
+                                    </div>
+
+                                    <form id="mpcrbm_review_form" class="mpcrbm_review_form">
+                                        <input type="hidden" name="post_id" value="<?php echo esc_attr($mpcrbm_post_id); ?>">
+
+                                        <?php wp_nonce_field('mpcrbm_review_nonce_action', 'mpcrbm_review_nonce'); ?>
+
+                                        <input type="text" name="author" placeholder="<?php esc_html_e( 'Your Name', 'car-rental-manager' );?>" required>
+                                        <input type="email" name="email" placeholder="<?php esc_html_e( 'Your Email', 'car-rental-manager' );?>" required>
+
+                                        <div class="mpcrbm_review_star_rating">
+                                            <input type="radio" id="star5" name="rating" value="5" required>
+                                            <label for="star5">★</label>
+                                            <input type="radio" id="star4" name="rating" value="4">
+                                            <label for="star4">★</label>
+                                            <input type="radio" id="star3" name="rating" value="3">
+                                            <label for="star3">★</label>
+                                            <input type="radio" id="star2" name="rating" value="2">
+                                            <label for="star2">★</label>
+                                            <input type="radio" id="star1" name="rating" value="1">
+                                            <label for="star1">★</label>
+                                        </div>
+
+                                        <textarea name="comment" placeholder="<?php esc_html_e( 'Write your review...', 'car-rental-manager' );?>" required></textarea>
+
+                                        <button type="submit" class="mpcrbm_review_submit_btn">
+                                            <?php esc_html_e( 'Submit Review', 'car-rental-manager' );?>
+                                        </button>
+
+                                        <div id="mpcrbm_review_message" class="mpcrbm_review_message"></div>
+                                    </form>
+
+                                </div>
+                            <?php }
+                            ?>
                         </div>                    
                     </div>
                     <div class="mpcrbm_car_details_right">

@@ -1,0 +1,190 @@
+/* Container */
+#reviews.mpcrbm_car_details_tab_content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+
+/* Average */
+.mpcrbm_review_average_box {
+    padding: 20px;
+    background: linear-gradient(135deg,#f8f9ff,#eef1ff);
+    border-radius: 12px;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* Review Card */
+.mpcrbm_review_card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    transition: 0.3s;
+}
+
+.mpcrbm_review_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.mpcrbm_review_author {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 2px;
+    text-decoration: underline;
+}
+
+.mpcrbm_review_stars {
+    color: #ffb400;
+    margin-bottom: 2px;
+    font-size: 18px;
+}
+
+.mpcrbm_review_content {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* Form */
+.mpcrbm_review_form {
+    margin-top: 30px;
+    background: #fafafa;
+    padding: 25px !important;
+    border-radius: 14px;
+    border: 1px solid #eee;
+}
+
+.mpcrbm_review_form input,
+.mpcrbm_review_form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.mpcrbm_review_form input:focus,
+.mpcrbm_review_form textarea:focus {
+    border-color: #ff7a18;
+    outline: none;
+}
+
+/* Star Rating */
+.mpcrbm_review_star_rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    margin-bottom: 15px;
+}
+
+.mpcrbm_review_star_rating input {
+    display: none;
+}
+
+.mpcrbm_review_star_rating label {
+    font-size: 26px;
+    color: #ddd;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.mpcrbm_review_star_rating label:hover,
+.mpcrbm_review_star_rating label:hover ~ label,
+.mpcrbm_review_star_rating input:checked ~ label {
+    color: #ffb400;
+}
+
+/* Button */
+.mpcrbm_review_submit_btn {
+    background: linear-gradient(90deg,#ff7a18,#ffb347);
+    border: none;
+    padding: 12px 25px;
+    border-radius: 30px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.mpcrbm_review_submit_btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,122,24,0.3);
+}
+
+#mpcrbm_review_load_more {
+    display: block;
+    margin: 5px auto 10px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(90deg, #ff7a18, #ffb347);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+#mpcrbm_review_load_more:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    background: linear-gradient(90deg, #ff8a30, #ffc166);
+}
+
+#mpcrbm_review_load_more:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255,122,24,0.3);
+}
+.mpcrbm_review_actions {
+    margin-top: 10px;
+    display: flex;
+}
+
+.mpcrbm_review_actions button {
+    font-size: 12px;
+    padding: 5px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: 0.3s;
+}
+
+.mpcrbm_review_actions .mpcrbm_review_edit_btn {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.mpcrbm_review_actions .mpcrbm_review_edit_btn:hover {
+    background-color: #45a049;
+}
+
+.mpcrbm_review_actions .mpcrbm_review_delete_btn {
+    background-color: #f44336;
+    color: #fff;
+}
+
+.mpcrbm_review_actions .mpcrbm_review_delete_btn:hover {
+    background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+    #mpcrbm_review_load_more {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+}
+
+/* Responsive */
+@media (max-width:768px){
+    #reviews.mpcrbm_car_details_tab_content {
+        padding: 20px;
+    }
+}

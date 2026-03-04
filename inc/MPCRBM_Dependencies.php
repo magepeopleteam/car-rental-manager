@@ -33,6 +33,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Layout.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';
 			}
 
 			public function global_enqueue() {
@@ -70,6 +71,9 @@
 				wp_enqueue_script( 'car_list_shortcode', MPCRBM_PLUGIN_URL . '/assets/frontend/car_list_shortcode.js', array( 'jquery' ), time(), true );
 				wp_enqueue_style( 'mpcrbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_registration.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_registration.js', array( 'jquery' ), time(), true );
+				// Localize scripts
+				wp_enqueue_style( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.css', array(), time() );
+				wp_enqueue_script( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.js', array( 'jquery' ), time(), true );
 				// Localize scripts
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbm_ajax', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
