@@ -3,7 +3,7 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later

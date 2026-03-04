@@ -234,7 +234,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
 
                                         // Combine with existing locations
                                         $mpcrbm_all_locations = array_unique(array_merge($mpcrbm_all_start_locations, $mpcrbm_multi_location_locations));
-                                        ?>
+                                        ?>                                        
                                         <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
                                             <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
                                             <?php if (sizeof($mpcrbm_all_locations) > 0) { ?>
