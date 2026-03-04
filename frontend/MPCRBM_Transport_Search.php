@@ -80,9 +80,9 @@
 				$map         = $params['map'] ?: 'yes';
 				$map         = $display_map == 'disable' ? 'no' : $map;
 
-                $is_title    = $params['title'] ?: 'no';
-                $ajax_search    = $params['ajax_search'] ?: 'no';
-                $search_result_show    = $params['search_result'] ?: 'no';
+                $is_title    			= $params['title'] ?: 'no';
+                $ajax_search    			= $params['ajax_search'] ?: 'no';
+                $search_result_show    		= $params['search_result'] ?: 'no';
                 $search_result_same_page    = $params['search_result_same_page'] ?: 'no';
 
 				ob_start();

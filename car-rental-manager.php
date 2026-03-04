@@ -3,7 +3,7 @@
 	 * Plugin Name:       Car Rental Manager – Online Vehicle Booking System
 	 * Plugin URI:        https://wordpress.org/plugins/car-rental-manager
 	 * Description:       A complete car rental solution for WordPress by MagePeople. Manage bookings, vehicles, pricing, and availability with ease.
-	 * Version:           1.1.0
+	 * Version:           1.3.1
 	 * Author:            MagePeople Team
 	 * Author URI:        https://www.mage-people.com/
 	 * License:           GPL v2 or later

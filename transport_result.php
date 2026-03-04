@@ -106,7 +106,8 @@ if ( wp_is_block_theme() ) {
                 <div class="tabsContentNext">
                     <div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
                       <?php
-                      echo wp_kses_post( $mpcrbm_content ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                      echo $mpcrbm_content;  ?>
                     </div>
                 </div>
             </div>
