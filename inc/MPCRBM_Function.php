@@ -659,7 +659,7 @@
                                 <li>
                                     <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
                                     <span class="<?php echo esc_attr( $class ); ?>">
-                                        <?php echo esc_attr( $label ); ?>
+                                        <?php echo wp_kses_post( $label ); ?>
                                     </span>
                                 </li>
                             <?php endforeach; ?>
