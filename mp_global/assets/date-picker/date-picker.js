@@ -106,6 +106,7 @@ jQuery(document).ready(function ($) {
                     parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
                     parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
+                    parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
                 }
             },
             error: function(response) {

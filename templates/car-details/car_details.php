@@ -530,7 +530,7 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                         </div>
                                     </div>
                                 <?php }?>
-                                <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
+                                <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span id="mpcrbm_total_day_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
 
                                 <p><?php esc_attr_e( 'Without Taxes', 'car-rental-manager' );?></p>
                             </div>

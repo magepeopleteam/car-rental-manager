@@ -1356,7 +1356,7 @@ jQuery(document).ready(function($) {
         let get_price = dayWisePrice * totalDays;
         dayPrice = mpcrbm_price_format( dayPrice );
         parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
-        parentClass.find("#mpcrbm_selected_car_price").html(dayPrice);
+
 
         $.ajax({
             type: 'POST',
@@ -1374,7 +1374,11 @@ jQuery(document).ready(function($) {
 
                 if (data.success && data.data && data.data.calculated_price !== undefined) {
                     let calculated_price = mpcrbm_price_format( data.data.calculated_price );
+                    let day_wise = data.data.calculated_price/totalDays;
+                    let day_wise_price = mpcrbm_price_format( day_wise );
                     parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
+                    parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
+                    parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
                 }
             },

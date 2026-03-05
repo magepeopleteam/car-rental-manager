@@ -307,9 +307,10 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-clock-three"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <?php if( $mpcrbm_time_format_display == 12 ){?>
+                                    <?php if( $mpcrbm_time_format_display != 24 ){?>
                                         <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_time );?>" readonly />
-                                    <?php }else{?>
+                                    <?php }else{
+                                        ?>
                                         <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_start_time );?>" readonly />
                                     <?php }?>
                                 </label>
@@ -324,7 +325,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         }
                                         $mpcrbm_data_value = $mpcrbm_hours + ($mpcrbm_minutes / 100);
                                         $mpcrbm_time_formatted = sprintf('%02d:%02d', $mpcrbm_hours, $mpcrbm_minutes);
-                                        if( $mpcrbm_time_format_display == 12 ){ ?>
+                                        if( $mpcrbm_time_format_display != 24 ){ ?>
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_time_formatted, 'time')); ?></li>
                                         <?php }else{?>
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html( $mpcrbm_data_value ); ?></li>
@@ -380,7 +381,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-clock"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Time', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <?php if( $mpcrbm_time_format_display == 12 ){?>
+                                    <?php if( $mpcrbm_time_format_display != 24 ){?>
                                         <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_time );?>" readonly name="return_time" />
                                     <?php }else{?>
                                         <input type="text" class="formControl" placeholder="<?php esc_html_e('Select Time', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_end_time );?>" readonly name="return_time" />
@@ -406,7 +407,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
 
                                         // Format the time for display
                                         $mpcrbm_time_formatted = sprintf('%02d:%02d', $mpcrbm_hours, $mpcrbm_minutes);
-                                        if( $mpcrbm_time_format_display == 12 ){ ?>
+                                        if( $mpcrbm_time_format_display != 24 ){ ?>
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_time_formatted, 'time')); ?></li>
                                         <?php }else{?>
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html( $mpcrbm_data_value ); ?></li>
