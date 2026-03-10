@@ -185,7 +185,7 @@
 				}
 				// Store search parameters in session
 				if ( isset( $_POST['mpcrbm_start_place'] ) ) {
-					$_SESSION['mpcrbm_start_place'] = sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) );
+					$_SESSION['mpcrbm_start_place'] =  sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) );
 				}
 				if ( isset( $_POST['mpcrbm_end_place'] ) ) {
 					$_SESSION['mpcrbm_end_place'] = sanitize_text_field( wp_unslash( $_POST['mpcrbm_end_place'] ) );

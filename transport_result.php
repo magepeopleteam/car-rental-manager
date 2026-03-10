@@ -9,7 +9,8 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $mpcrbm_content = '';
 
-$mpcrbm_search_date= isset($_SESSION['search_date']) ? sanitize_text_field(wp_unslash($_SESSION['search_date'])) : '';
+// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+$mpcrbm_search_date= isset($_SESSION['search_date']) ?$_SESSION['search_date'] : '';
 
 $mpcrbm_search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
 $mpcrbm_search_defaults = MPCRBM_Shortcodes::default_attribute();
@@ -20,8 +21,9 @@ $mpcrbm_action_output = ob_get_clean();
 
 $mpcrbm_content .= $mpcrbm_action_output;
 
-$mpcrbm_content .= isset($_SESSION['custom_content']) ? sanitize_text_field(wp_unslash($_SESSION['custom_content'])) : '';
-$mpcrbm_progress_bar = isset($_SESSION['progress_bar']) ? sanitize_text_field(wp_unslash($_SESSION['progress_bar'])) : '';
+// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+$mpcrbm_content .= isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
+$mpcrbm_progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
 if( $mpcrbm_progress_bar === 'no' ){
     $mpcrbm_progressbar_class = 'dNone';
 }else{

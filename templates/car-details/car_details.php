@@ -427,7 +427,7 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                     <div id="mpcrbm_review_list_wrapper">
                                         <div id="mpcrbm_review_list">
                                         <?php
-                                        $current_user_id = get_current_user_id();
+                                        $mpcrbm_current_user_id = get_current_user_id();
                                         if($mpcrbm_comments){
                                             foreach($mpcrbm_comments as $mpcrbm_comment){
                                                 $mpcrbm_rating = get_comment_meta($mpcrbm_comment->comment_ID, 'mpcrbm_review_rating', true);
@@ -438,8 +438,8 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                                     <?php if($mpcrbm_rating): ?>
                                                         <div class="mpcrbm_review_stars">
                                                             <?php
-                                                            for($i=1;$i<=5;$i++){
-                                                                echo ($i <= $mpcrbm_rating) ? '★' : '☆';
+                                                            for( $mpcrbm_i=1;$mpcrbm_i<=5;$mpcrbm_i++ ){
+                                                                echo ( $mpcrbm_i <= $mpcrbm_rating) ? '★' : '☆';
                                                             }
                                                             ?>
                                                         </div>
@@ -449,7 +449,7 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
 
                                                     <?php
                                                     // Show edit/delete for comment author or admin
-                                                    if($current_user_id && ($current_user_id === intval($mpcrbm_comment->user_id) || current_user_can('manage_options'))){ ?>
+                                                    if($mpcrbm_current_user_id && ($mpcrbm_current_user_id === intval($mpcrbm_comment->user_id) || current_user_can('manage_options'))){ ?>
                                                         <div class="mpcrbm_review_actions">
                                                             <button class="mpcrbm_review_edit_btn"><?php esc_attr_e('Edit','car-rental-manager'); ?></button>
                                                             <button class="mpcrbm_review_delete_btn"><?php esc_attr_e('Delete','car-rental-manager'); ?></button>
