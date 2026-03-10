@@ -417,7 +417,7 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
 
                                         if($mpcrbm_count > 0){
                                             $mpcrbm_average = round($mpcrbm_total / $mpcrbm_count, 1);
-                                            echo "<strong>".esc_attr_e( 'Average Rating: ', 'car-rental-manager' )." {$mpcrbm_average} / 5</strong>";
+                                            echo "<strong>" . esc_attr_e( 'Average Rating: ', 'car-rental-manager' ) . esc_html( $mpcrbm_average ) . " / 5</strong>";
                                         } else {
                                             echo "<strong>".esc_attr_e( 'No ratings yet.', 'car-rental-manager' )."</strong>";
                                         }
