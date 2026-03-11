@@ -790,6 +790,10 @@ jQuery(document).ready(function($) {
         checkAndToggleBookNowButton(parent);
     });
 
+    // Handle extra service quantity changes
+    $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service_qty[]"]', function () {
+        $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service[]"]').trigger('change');
+    });
 
 
     // Handle extra service selection
@@ -849,6 +853,15 @@ jQuery(document).ready(function($) {
 
         mpcrbm_price_calculation(parent);
         checkAndToggleBookNowButton(parent);
+    });
+
+    // Handle extra service selection
+    $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service[]"]', function () {
+        let parent = $(this).closest('.mpcrbm_car_details');
+        let $qty_input = parent.find('[name="mpcrbm_get_car_qty"]').val();
+        let qty = parseInt($qty_input) || 1;
+        // mpcrbm_price_calculation( parent );
+        mpcrbm_price_calculation_car_details_page(parent, qty);
     });
 
 
