@@ -114,7 +114,10 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
 
             if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 
-                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? map_deep( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_images'] ) ), 'absint' ) : [];
+                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] )
+                    ? array_map( 'absint', wp_unslash( $_POST['mpcrbm_gallery_images'] ) )
+                    : [];
+//                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? map_deep( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_images'] ) ), 'absint' ) : [];
                 update_post_meta($post_id, 'mpcrbm_gallery_images', $gallery_images);
 
             }

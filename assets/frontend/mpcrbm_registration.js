@@ -953,6 +953,9 @@ jQuery(document).ready(function($) {
         let link_id = $(this).attr('data-wc_link_id');
 
         let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
+        if( car_quantity == 0 ){
+            car_quantity = 1;
+        }
 
         if (start_place !== '' && end_place !== '' && link_id && post_id) {
             let extra_service_name = {};
