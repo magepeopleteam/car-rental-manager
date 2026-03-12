@@ -116,7 +116,7 @@
                     if ( !empty( $result_data) ) {
                         $progressbar_class = '';
 
-                        $content = '<main id="maincontent" class="transport-result-page" style=" max-width: 1200px;">';
+                        $content = '<main id="maincontent" class="transport-result-page" style=" max-width: 1200px; margin:auto">';
                         $content .= '<div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto; width: 100%">';
                         $content .= '<div class="mpcrbm_tab_next _mT">';
 
