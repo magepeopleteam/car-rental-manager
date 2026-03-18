@@ -135,7 +135,7 @@ jQuery(document).ready(function ($) {
 
     let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
     let mpcrbm_start_date = parent.find( "#mpcrbm_start_calendar_day").val();
-    selectors.forEach(function (selector) {
+    /*selectors.forEach(function (selector) {
         flatpickr( selector, {
             mode: "range",
             minDate: "today",
@@ -184,6 +184,73 @@ jQuery(document).ready(function ($) {
                 }
             }
         });
+    });*/
+
+
+    function initFlatpickr() {
+
+        selectors.forEach(function (selector) {
+
+            flatpickr(selector, {
+                mode: "range",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                showMonths: window.innerWidth < 768 ? 1 : 2, // ✅ responsive
+                locale: {
+                    firstDayOfWeek: mpcrbm_start_date
+                },
+                disable: [
+                    function(date) {
+                        return mpcrbm_off_days_ary.includes(date.getDay());
+                    },
+                    ...mpcrbm_offDates.map(d => new Date(d))
+                ],
+
+                onChange: function(selectedDates, dateStr, instance) {
+
+                    if (selectedDates.length > 0) {
+
+                        let startDate = instance.formatDate(selectedDates[0], "Y-m-d");
+                        let endDate = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
+
+                        let startDateDisplay = instance.formatDate(selectedDates[0], "D M d Y");
+                        let endDateDisplay = selectedDates[1] ? instance.formatDate(selectedDates[1], "D M d Y") : '';
+
+                        $("#mpcrbm_start_date").val(startDateDisplay);
+                        $("#mpcrbm_return_date").val(endDateDisplay);
+
+                        $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
+                        $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
+
+                        if (parent.length > 0) {
+                            parent.find("#mpcrbm_car_details_continue_btn").fadeIn();
+                            parent.find("#mpcrbm_car_already_booked").fadeOut();
+
+                            let car_id = parent.find('[name="mpcrbm_post_id"]').val();
+                            let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
+
+                            if (endDate) {
+                                mpcrbm_get_car_qty(startDate, car_id, day_wise_price);
+                            }
+                        }
+
+                        mpcrbm_get_selected_days();
+                    }
+                }
+            });
+
+        });
+    }
+    initFlatpickr();
+    window.addEventListener("resize", () => {
+
+        selectors.forEach(function(selector) {
+            if (selector._flatpickr) {
+                selector._flatpickr.destroy();
+            }
+        });
+
+        initFlatpickr();
     });
 
     function mpcrbm_get_car_qty( startDate, car_id, day_wise_price ){
