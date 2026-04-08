@@ -1944,7 +1944,7 @@
     padding: var(--dmp_xs) 35px var(--dmp_xs) var(--dmp_xs); */
 	}
 	div.mpcrbm select.formControl:focus {
-		background-color: var(--color_theme_aa);
+		/* background-color: var(--color_theme_aa); */
 	}
 	div.mpcrbm .formControl.date_type_without_year,
 	div.mpcrbm .formControl.date_type,
