@@ -164,7 +164,8 @@
 					$location_prices = array();
 					if ( isset( $_POST['mpcrbm_location_prices'] ) && is_array( $_POST['mpcrbm_location_prices'] ) ) {
 						// Unslash the whole array once to make the loop cleaner
-						$posted_prices = isset( $_POST['mpcrbm_location_prices'] ) ? sanitize_text_field(wp_unslash( $_POST['mpcrbm_location_prices'] )) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+                        // phpcs:ignore WordPress.Security.NonceVerification.Missing
+						$posted_prices = isset( $_POST['mpcrbm_location_prices'] ) ?  $_POST['mpcrbm_location_prices'] : array();
 
 						foreach ( $posted_prices as $index => $price_data ) {
 							if ( ! empty( $price_data['pickup_location'] ) && ! empty( $price_data['dropoff_location'] ) ) {

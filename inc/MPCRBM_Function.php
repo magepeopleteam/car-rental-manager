@@ -955,9 +955,11 @@
                 // Check if multi-location is enabled for this vehicle
                 $multi_location_enabled = get_post_meta($post_id, 'mpcrbm_multi_location_enabled', true);
 
-                if ($multi_location_enabled) {
+                $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
+
+                if ($multi_location_enabled && !empty($location_prices) && is_array($location_prices) ) {
                     // Use new multi-location system
-                    $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
+
 
                     if (!empty($location_prices) && is_array($location_prices)) {
                         // First, try to find exact match
@@ -993,32 +995,35 @@
                     // Use old location system - be more flexible
                     $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
 
-                    // If no saved locations, allow the vehicle to be shown (fallback)
+                    error_log( print_r( [ '$post_id' => $post_id, '$start_place' =>$start_place, '$saved_locations' => $saved_locations ], true ) );
+
                     if (!is_array($saved_locations) || empty($saved_locations)) {
-                        return true; // Show vehicle even without specific location data
+                        return true;
                     }
 
-                    // Check if any of the saved locations match our search
-                    foreach ($saved_locations as $location) {
-                        // Check if start_place matches any location
-                        if (isset($location['start_location']) && $location['start_location'] === $start_place) {
-                            return true;
-                        }
-                        if (isset($location['end_location']) && $location['end_location'] === $start_place) {
-                            return true;
-                        }
+                    $start_place = strtolower(trim($start_place));
+                    $end_place   = strtolower(trim($end_place));
 
-                        // Check if end_place matches any location
-                        if (isset($location['start_location']) && $location['start_location'] === $end_place) {
-                            return true;
-                        }
-                        if (isset($location['end_location']) && $location['end_location'] === $end_place) {
-                            return true;
-                        }
+                    $start_locations = array_column($saved_locations, 'start_location');
+                    $start_locations = array_map(function($value) {
+                        return strtolower(trim($value));
+                    }, $start_locations);
+                    $start_locations = array_unique($start_locations);
+                    $start_place = strtolower(trim($start_place));
+                    if ( in_array($start_place, $start_locations) && in_array($end_place, $start_locations) ) {
+                        return true;
                     }
 
-                    // If no specific matches found, still show the vehicle (more flexible approach)
-                    return true;
+
+                    /*foreach ($saved_locations as $location) {
+                        $start_location = strtolower(trim($location['start_location'] ?? ''));
+                        $end_location   = strtolower(trim($location['end_location'] ?? ''));
+                        if ($start_location === $start_place && $end_location === $end_place) {
+                            return true;
+                        }
+                    }*/
+
+                    return false;
                 }
             }
             public static function mpcrbm_get_schedule_search_form($post_id, $days_name, $selected_date, $start_time_schedule, $return_time_schedule, $price_based)
