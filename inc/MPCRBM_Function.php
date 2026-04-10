@@ -995,8 +995,6 @@
                     // Use old location system - be more flexible
                     $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
 
-                    error_log( print_r( [ '$post_id' => $post_id, '$start_place' =>$start_place, '$saved_locations' => $saved_locations ], true ) );
-
                     if (!is_array($saved_locations) || empty($saved_locations)) {
                         return true;
                     }
