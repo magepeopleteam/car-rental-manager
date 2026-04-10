@@ -36,6 +36,9 @@
 				if ( ! defined( 'MPCRBM_PLUGIN_VERSION' ) ) {
 					define( 'MPCRBM_PLUGIN_VERSION', '1.0.4' );
 				}
+                if (!defined('MPCRBM_PRO_PLUGIN_NAME')) {
+                    define('MPCRBM_PRO_PLUGIN_NAME', 'car-rental-manager-pro/MPCRBM_Plugin_Pro.php');
+                }
 				require_once MPCRBM_PLUGIN_DIR . '/mp_global/MPCRBM_Global_File_Load.php';
 				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
 

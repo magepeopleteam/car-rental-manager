@@ -233,6 +233,9 @@ $mpcrbm_minutes_to_day = ceil( $mpcrbm_minutes_all / 1440 );
 $mpcrbm_ajax_search = isset( $_POST['ajax_search'] ) ? sanitize_text_field( wp_unslash( $_POST['ajax_search'] ) ) : '';
 
 $mpcrbm_all_posts = MPCRBM_Query::query_transport_list($mpcrbm_price_based);
+
+$plugin_pro = 'car-rental-manager-pro/MPCRBM_Plugin_Pro.php';
+
 $mpcrbm_post_ids = $mpcrbm_left_side_filter = [];
 if ( $mpcrbm_all_posts->found_posts > 0 ) {
     $mpcrbm_posts = $mpcrbm_all_posts->posts;
@@ -246,8 +249,17 @@ if ( $mpcrbm_all_posts->found_posts > 0 ) {
         $mpcrbm_check_schedule = MPCRBM_Function::mpcrbm_get_schedule_search_form($mpcrbm_get_post_id, $days_name, $mpcrbm_start_date, $mpcrbm_start_time_schedule, $mpcrbm_return_time_schedule, $mpcrbm_price_based);
         $mpcrbm_check_operation_area = MPCRBM_Function::mpcrbm_check_operation_area_seach_form($mpcrbm_get_post_id, $mpcrbm_start_place, $mpcrbm_end_place);
 
+        $booking_period = 1;
 
-        if ($mpcrbm_check_schedule && $mpcrbm_check_operation_area) {
+
+        if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) {
+            $booking_period = (int)MPCRBM_Global_Function::get_post_info($mpcrbm_get_post_id, 'mpcrbm_minimum_booking_period', true);
+            if (!$booking_period) {
+                $booking_period = 1;
+            }
+        }
+
+        if ($mpcrbm_check_schedule && $mpcrbm_check_operation_area && $mpcrbm_minutes_to_day >= $booking_period ) {
             $mpcrbm_post_ids[] = $mpcrbm_get_post_id;
         }
     }

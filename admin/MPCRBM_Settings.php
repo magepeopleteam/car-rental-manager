@@ -128,6 +128,7 @@
 					'mpcrbm_return_discount'                  => esc_html__( 'This is to way return discount fixed or percentage', 'car-rental-manager' ),
 					'mpcrbm_driver_details'                   => esc_html__( 'Car Driver Details ', 'car-rental-manager' ),
 					'mpcrbm_car_stock'                        => esc_html__( 'Add the total number of available units for this car here ', 'car-rental-manager' ),
+					'mpcrbm_minimum_rental_period'            => esc_html__( 'Set the minimum number of days a car must be booked. This ensures customers cannot make bookings shorter than the defined rental period (e.g., minimum 2 days) ', 'car-rental-manager' ),
 				);
 				$des = apply_filters( 'mpcrbm_filter_description_array', $des );
 
