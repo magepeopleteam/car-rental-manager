@@ -157,6 +157,11 @@ $mpcrbm_show_pickup_location_section   = MPCRBM_Global_Function::get_settings('m
 $mpcrbm_show_review_section            = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_review_section');
 $mpcrbm_show_faq_section               = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_faq_section');
 $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_term_condition');
+
+$booking_period = 0;
+if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) {
+    $booking_period = (int)MPCRBM_Global_Function::get_post_info($mpcrbm_post_id, 'mpcrbm_minimum_booking_period');
+}
 ?>
 <div class="mpcrbm_car_details">
     <input type="hidden" name="mpcrbm_post_id" value="<?php echo esc_attr( $mpcrbm_post_id );?>" data-price="<?php echo esc_attr( $mpcrbm_day_price )?>" />
@@ -165,6 +170,7 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
     <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($mpcrbm_end_place); ?>" />
     <input type="hidden" name="mpcrbm_date" value="<?php echo esc_attr($mpcrbm_date); ?>" />
     <input type="hidden" name="mpcrbm_start_time" id="mpcrbm_start_time" value="<?php echo esc_attr($mpcrbm_start_time); ?>" />
+    <input type="hidden" name="mpcrbm_minimum_booking_day" id="mpcrbm_minimum_booking_day" value="<?php echo esc_attr($booking_period); ?>" />
 <!--    <input type="hidden" name="mpcrbm_taxi_return" value="--><?php //echo esc_attr($mpcrbm_two_way); ?><!--" />-->
 
     <input type="hidden" id="mpcrbm_start_calendar_day" name="mpcrbm_start_calendar_day" value="<?php echo esc_attr($mpcrbm_start_day); ?>" />
@@ -530,7 +536,14 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
                                         </div>
                                     </div>
                                 <?php }?>
-                                <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>: <span id="mpcrbm_total_day_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?></h3>
+                                <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>:
+                                    <span id="mpcrbm_total_day_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?>
+                                </h3>
+                                <?php if( $booking_period > 0 ){?>
+                                <p class="mpcrbm_minimum_booking">
+                                    <span ><?php esc_attr_e( 'Minimum booking ', 'car-rental-manager' );?> ( <?php echo esc_attr( $booking_period );?>) <?php esc_attr_e( ' days', 'car-rental-manager' );?></span>
+                                </p>
+                                <?php }?>
 
                                 <p><?php esc_attr_e( 'Without Taxes', 'car-rental-manager' );?></p>
                             </div>

@@ -189,6 +189,8 @@ jQuery(document).ready(function ($) {
 
     function initFlatpickr() {
 
+        let minDay = $('input[name="mpcrbm_minimum_booking_day"]').val();
+
         selectors.forEach(function (selector) {
 
             flatpickr(selector, {
@@ -208,7 +210,17 @@ jQuery(document).ready(function ($) {
 
                 onChange: function(selectedDates, dateStr, instance) {
 
-                    if (selectedDates.length > 0) {
+                    if (selectedDates.length === 2) {
+
+                        let start = selectedDates[0];
+                        let end   = selectedDates[1];
+                        let diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                        if (diffDays < minDay) {
+                            alert(`Minimum booking is ${minDay} days`);
+                            instance.clear(); // reset selection
+                            return;
+                        }
+
 
                         let startDate = instance.formatDate(selectedDates[0], "Y-m-d");
                         let endDate = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
