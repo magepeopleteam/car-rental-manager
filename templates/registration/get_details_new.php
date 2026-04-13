@@ -24,6 +24,8 @@ $mpcrbm_min_schedule_value = 0;
 $mpcrbm_max_schedule_value = 24;
 $mpcrbm_loop = 1;
 
+$mpcrbm_start_day = get_option('start_of_week', 0);
+
 $mpcrbm_general_settings_data  = get_option( 'mpcrbm_general_settings' );
 
 $mpcrbm_title = 'Car Rental Booking';
@@ -210,6 +212,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                     <input type="hidden" id="mpcrbm_enable_filter_via_features" name="mpcrbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
                     <input type="hidden" id="mpcrbm_buffer_end_minutes" name="mpcrbm_buffer_end_minutes" value="<?php echo esc_attr( $mpcrbm_buffer_end_minutes ); ?>" />
                     <input type="hidden" id="mpcrbm_first_calendar_date" name="mpcrbm_first_calendar_date" value="<?php echo esc_attr( $mpcrbm_all_dates[0] ); ?>" />
+                    <input type="hidden" id="mpcrbm_start_calendar_day" name="mpcrbm_start_calendar_day" value="<?php echo esc_attr($mpcrbm_start_day); ?>" />
 
 
                     <div class="<?php echo esc_attr( $mpcrbm_form_class );?>">

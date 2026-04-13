@@ -134,7 +134,7 @@ jQuery(document).ready(function ($) {
     }
 
     let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
-    let mpcrbm_start_date = parent.find( "#mpcrbm_start_calendar_day").val();
+    let mpcrbm_start_date = $( "#mpcrbm_start_calendar_day").val();
     /*selectors.forEach(function (selector) {
         flatpickr( selector, {
             mode: "range",
