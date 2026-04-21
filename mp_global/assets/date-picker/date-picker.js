@@ -140,10 +140,10 @@ jQuery(document).ready(function ($) {
             mode: "range",
             minDate: "today",
             dateFormat: "Y-m-d",
-            showMonths: 2,
+            showMonths: window.innerWidth < 768 ? 1 : 2,
             locale: {
                 firstDayOfWeek: mpcrbm_start_date // 1 = Monday
-            },
+            }
             disable: [
                 function(date) {
                     return mpcrbm_off_days_ary.includes(date.getDay());

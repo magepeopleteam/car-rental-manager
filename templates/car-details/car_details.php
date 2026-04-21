@@ -195,7 +195,7 @@ if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) {
                          alt="Gallery image">
                 <?php endforeach; ?>
             </div>
-            <div class="mpcrbm_gallery_image_popup_prev_holder" style="display: flex; justify-content: space-between">
+            <div class="mpcrbm_gallery_image_popup_prev_holder">
                 <div class="">
                     <button class="mpcrbm_gallery_image_popup_prev">←</button>
                 </div>
