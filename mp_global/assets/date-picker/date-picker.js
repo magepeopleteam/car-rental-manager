@@ -133,7 +133,7 @@ jQuery(document).ready(function ($) {
             mode: "range",
             minDate: "today",
             dateFormat: "Y-m-d",
-            showMonths: 2,
+            showMonths: window.innerWidth < 768 ? 1 : 2,
             disable: [
                 function(date) {
                     return mpcrbm_off_days_ary.includes(date.getDay());

@@ -159,7 +159,7 @@ $driver_info = get_post_meta( $post_id, 'mpcrbm_driver_info', true );
                          alt="Gallery image">
                 <?php endforeach; ?>
             </div>
-            <div class="mpcrbm_gallery_image_popup_prev_holder" style="display: flex; justify-content: space-between">
+            <div class="mpcrbm_gallery_image_popup_prev_holder">
                 <div class="">
                     <button class="mpcrbm_gallery_image_popup_prev">←</button>
                 </div>
