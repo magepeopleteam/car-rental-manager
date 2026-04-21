@@ -25,23 +25,47 @@
 			}
 
 			public function global_enqueue() {
+				// 1. Core WordPress Scripts (Always use handles)
 				wp_enqueue_script( 'jquery' );
 				wp_enqueue_script( 'jquery-ui-core' );
-				wp_enqueue_script( 'jquery-ui-datepicker' );				
-				wp_enqueue_style('mp_jquery_ui', MPCRBM_PLUGIN_URL . '/mp_global/assets/jquery-ui.min.css', array(), '1.13.2');
-				wp_enqueue_style('mp_font_awesome', MPCRBM_PLUGIN_URL . '/mp_global/assets/font_awesome/css/all.min.css', array(), '5.15.4');
-				wp_enqueue_style('mp_select_2', MPCRBM_PLUGIN_URL . '/mp_global/assets/select_2/select2.min.css', array(), '4.0.13');
-				wp_enqueue_script('mp_select_2', MPCRBM_PLUGIN_URL . '/mp_global/assets/select_2/select2.min.js', array(), '4.0.13');
-				wp_enqueue_style('mp_owl_carousel', MPCRBM_PLUGIN_URL . '/mp_global/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4');
-				wp_enqueue_script('mp_owl_carousel', MPCRBM_PLUGIN_URL . '/mp_global/assets/owl_carousel/owl.carousel.min.js', array(), '2.3.4');
-				// Cache busting using file modification time
-				wp_enqueue_style('mpcrbm_global', MPCRBM_PLUGIN_URL . 'mp_global/assets/mp_style/mpcrbm_global.css', array(), filemtime( __DIR__ . '/assets/mp_style/mpcrbm_global.css'));
-				wp_enqueue_script('mpcrbm_global', MPCRBM_PLUGIN_URL . 'mp_global/assets/mp_style/mpcrbm_global.js', array(), filemtime( __DIR__ . '/assets/mp_style/mpcrbm_global.js'));
+				wp_enqueue_script( 'jquery-ui-datepicker' );                
+
+				// 2. Third-party Library Enqueues
+				wp_enqueue_style( 'mp_jquery_ui', MPCRBM_PLUGIN_URL . 'mp_global/assets/jquery-ui.min.css', array(), '1.13.2' );
+				wp_enqueue_style( 'mp_font_awesome', MPCRBM_PLUGIN_URL . 'mp_global/assets/font_awesome/css/all.min.css', array(), '5.15.4' );
+				wp_enqueue_style( 'mp_select_2', MPCRBM_PLUGIN_URL . 'mp_global/assets/select_2/select2.min.css', array(), '4.0.13' );
+				wp_enqueue_script( 'mp_select_2', MPCRBM_PLUGIN_URL . 'mp_global/assets/select_2/select2.min.js', array( 'jquery' ), '4.0.13', true );
+				
+				wp_enqueue_style( 'mp_owl_carousel', MPCRBM_PLUGIN_URL . 'mp_global/assets/owl_carousel/owl.carousel.min.css', array(), '2.3.4' );
+				wp_enqueue_script( 'mp_owl_carousel', MPCRBM_PLUGIN_URL . 'mp_global/assets/owl_carousel/owl.carousel.min.js', array( 'jquery' ), '2.3.4', true );
+
+				// 3. Custom Assets with Cache Busting
+				// Note: Ensure MPCRBM_PLUGIN_DIR is defined for filemtime (filesystem path, not URL)
+				$css_path = MPCRBM_PLUGIN_DIR . 'mp_global/assets/mp_style/mpcrbm_global.css';
+				$js_path  = MPCRBM_PLUGIN_DIR . 'mp_global/assets/mp_style/mpcrbm_global.js';
+
+				wp_enqueue_style(
+					'mpcrbm_global', 
+					MPCRBM_PLUGIN_URL . 'mp_global/assets/mp_style/mpcrbm_global.css', 
+					array(), 
+					file_exists( $css_path ) ? filemtime( $css_path ) : '1.0.0'
+				);
+
+				wp_enqueue_script(
+					'mpcrbm_global', 
+					MPCRBM_PLUGIN_URL . 'mp_global/assets/mp_style/mpcrbm_global.js', 
+					array( 'jquery' ), 
+					file_exists( $js_path ) ? filemtime( $js_path ) : '1.0.0',
+					true 
+				);
+
 				do_action( 'mpcrbm_global_enqueue' );
 			}
 
 			public function admin_enqueue() {
 				$this->global_enqueue();
+				
+				// WordPress Core Admin Assets
 				wp_enqueue_editor();
 				wp_enqueue_media();
 				wp_enqueue_script( 'jquery-ui-sortable' );
@@ -49,18 +73,37 @@
 				wp_enqueue_script( 'wp-color-picker' );
 				wp_enqueue_style( 'wp-codemirror' );
 				wp_enqueue_script( 'wp-codemirror' );
-				// Admin-specific styles and scripts
-				wp_enqueue_style('jquery-timepicker', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.css', array(), filemtime(__DIR__ . '/assets/admin/jquery.timepicker.min.css'));
-				wp_enqueue_style('jquery-timepicker', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/jquery.timepicker.min.js', array(), filemtime(__DIR__ . '/assets/admin/jquery.timepicker.min.js'));
-				//=====================//
-				wp_enqueue_script('form-field-dependency', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/form-field-dependency.js', array('jquery'), null, false);
-				// admin setting global
-				wp_enqueue_script('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.js', array('jquery'), filemtime(__DIR__ . '/assets/admin/mpcrbm_admin_settings.js'), true);
-				wp_enqueue_style('mpcrbm_admin_settings', MPCRBM_PLUGIN_URL . '/mp_global/assets/admin/mpcrbm_admin_settings.css', array(), filemtime(__DIR__ . '/assets/admin/mpcrbm_admin_settings.css'));
+
+				// 1. FIXED: Separated handles and corrected wp_enqueue_script for timepicker
+				wp_enqueue_style( 'jquery-timepicker', MPCRBM_PLUGIN_URL . 'mp_global/assets/admin/jquery.timepicker.min.css', array(), '1.0.0' );
+				wp_enqueue_script( 'jquery-timepicker-js', MPCRBM_PLUGIN_URL . 'mp_global/assets/admin/jquery.timepicker.min.js', array( 'jquery' ), '1.0.0', true );
+
+				// 2. Form Field Dependency
+				wp_enqueue_script( 'form-field-dependency', MPCRBM_PLUGIN_URL . 'mp_global/assets/admin/form-field-dependency.js', array( 'jquery' ), '1.0.0', false );
+
+				// 3. Admin Settings (Global)
+				$settings_js_path  = __DIR__ . '/assets/admin/mpcrbm_admin_settings.js';
+				$settings_css_path = __DIR__ . '/assets/admin/mpcrbm_admin_settings.css';
+
+				wp_enqueue_script( 
+					'mpcrbm_admin_settings', 
+					MPCRBM_PLUGIN_URL . 'mp_global/assets/admin/mpcrbm_admin_settings.js', 
+					array( 'jquery' ), 
+					file_exists( $settings_js_path ) ? filemtime( $settings_js_path ) : MPCRBM_PLUGIN_VERSION, 
+					true 
+				);
 				
-				// Multi-location support assets
-				wp_enqueue_style('mpcrbm_multi_location', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_multi_location.css', array(), MPCRBM_PLUGIN_VERSION);
-				wp_enqueue_script('mpcrbm_multi_location', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_multi_location.js', array('jquery'), MPCRBM_PLUGIN_VERSION, true);
+				wp_enqueue_style( 
+					'mpcrbm_admin_settings', 
+					MPCRBM_PLUGIN_URL . 'mp_global/assets/admin/mpcrbm_admin_settings.css', 
+					array(), 
+					file_exists( $settings_css_path ) ? filemtime( $settings_css_path ) : MPCRBM_PLUGIN_VERSION 
+				);
+
+				// 4. Multi-location support assets
+				wp_enqueue_style( 'mpcrbm_multi_location', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm_multi_location.css', array(), MPCRBM_PLUGIN_VERSION );
+				wp_enqueue_script( 'mpcrbm_multi_location', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm_multi_location.js', array( 'jquery' ), MPCRBM_PLUGIN_VERSION, true );
+
 				do_action( 'mpcrbm_admin_enqueue' );
 			}
 

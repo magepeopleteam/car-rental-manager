@@ -14,7 +14,8 @@
 					global $sitepress;
 					$default_language = function_exists( 'wpml_loaded' ) ? $sitepress->get_default_language() : get_locale();
 
-					return apply_filters( 'wpml_object_id', $post_id, MPCRBM_Function::get_cpt(), true, $default_language );
+                    // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+                    return apply_filters( 'wpml_object_id', $post_id, MPCRBM_Function::get_cpt(), true, $default_language );
 				}
 				if ( function_exists( 'pll_get_post_translations' ) ) {
 					$defaultLanguage = function_exists( 'pll_default_language' ) ? pll_default_language() : get_locale();
@@ -65,36 +66,78 @@
 				return self::template_path( $file_name );
 			}
 
-			public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
-				global $wpdb;
-				// Prepare the query
-				$query = $wpdb->prepare(
-					"SELECT t.name 
-                 FROM {$wpdb->terms} t
-                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-                 WHERE t.slug = %s AND tt.taxonomy = %s",
-					$slug,
-					$taxonomy
-				);
-				// Execute the query
-				$term_name = $wpdb->get_var( $query );
+            public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
+                global $wpdb;
 
-				return $term_name;
-			}
+                if ( empty( $slug ) || empty( $taxonomy ) ) {
+                    return false;
+                }
+
+                $cache_key = 'mpcrbm_term_name_' . md5( $slug . '_' . $taxonomy );
+                $cached    = wp_cache_get( $cache_key, 'mpcrbm_taxonomy_terms' );
+
+                if ( false !== $cached ) {
+                    return $cached;
+                }
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $term_name = $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT t.name
+                                 FROM {$wpdb->terms} t
+                                 INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+                                 WHERE t.slug = %s AND tt.taxonomy = %s
+                                 LIMIT 1",
+                        $slug,
+                        $taxonomy
+                    )
+                );
+
+                if ( $term_name ) {
+                    wp_cache_set( $cache_key, $term_name, 'mpcrbm_taxonomy_terms' );
+                    return $term_name;
+                }
+
+                return false;
+            }
+
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
                 global $wpdb;
 
-                $query = $wpdb->prepare(
-                    "SELECT t.name 
-                     FROM {$wpdb->terms} AS t
-                     INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
-                     WHERE t.term_id = %d AND tt.taxonomy = %s",
-                    $term_id,
-                    $taxonomy
-                );
-                $term_name = $wpdb->get_var( $query );
+                // Validate input
+                if ( empty( $term_id ) || empty( $taxonomy ) ) {
+                    return null;
+                }
 
-                return $term_name ? $term_name : null;
+                $term_id = (int) $term_id;
+
+                // Create cache key
+                $cache_key = 'mpcrbm_term_name_id_' . md5( $term_id . '_' . $taxonomy );
+                $cached    = wp_cache_get( $cache_key, 'mpcrbm_taxonomy_name_terms' );
+
+                if ( false !== $cached ) {
+                    return $cached;
+                }
+
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $term_name = $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT t.name
+                         FROM {$wpdb->terms} AS t
+                         INNER JOIN {$wpdb->term_taxonomy} AS tt ON t.term_id = tt.term_id
+                         WHERE t.term_id = %d AND tt.taxonomy = %s
+                         LIMIT 1",
+                        $term_id,
+                        $taxonomy
+                    )
+                );
+
+                if ( $term_name ) {
+                    wp_cache_set( $cache_key, $term_name, 'mpcrbm_taxonomy_name_terms' );
+                    return $term_name;
+                }
+
+                return null;
             }
 
 			public static function template_path( $file_name ): string {
@@ -410,7 +453,7 @@
              * @param int $days Number of rental days
              * @return float Final daily price
              */
-            public static function mpcrbm_calculate_price( $post_id, $start_date, $days, $price ) {
+            public static function  mpcrbm_calculate_price( $post_id, $start_date, $days, $price ) {
 
                 $base_price = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_day_price', 0 );
                 $daywise    = (array) get_post_meta($post_id, 'mpcrbm_daywise_pricing', true);
@@ -428,7 +471,7 @@
                     $current_timestamp = $start_timestamp;
 
                     for ( $i = 0; $i < (int)$days; $i++ ) {
-                        $day_of_week = strtolower(date('D', $current_timestamp));
+                        $day_of_week = strtolower(gmdate('D', $current_timestamp));
                         if (isset($daywise[$day_of_week]) && $daywise[$day_of_week] > 0) {
                             $day_price = (float) $daywise[$day_of_week];
                         } else {
@@ -444,7 +487,7 @@
                 }
 
                 // 1. Seasonal Pricing
-                if ( $enable_seasonal === 1 && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
+                if ( $enable_seasonal === 1 && isset( $seasonal[0] ) && is_array( $seasonal[0] ) && !empty($seasonal[0])) {
 
                     $seasonal_price = 0;
                     foreach ($seasonal as $s) {
@@ -474,15 +517,37 @@
                         }
                     }
                 }
-                // 3. Tiered discount based on rental duration
 
-                if ( $enable_tired === 1 && is_array($tiered) && !empty($tiered) && isset($tiered[0]) && is_array($tiered[0]) && (int)$days > 1 ) {
-                    foreach ($tiered as $t) {
-                        $min = isset($t['min']) ? (int)$t['min'] : 0;
-                        $max = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
+                if (
+                    $enable_tired === 1 &&
+                    is_array($tiered) &&
+                    !empty($tiered) &&
+                    isset($tiered[0]) &&
+                    is_array($tiered[0]) &&
+                    (int)$days > 0
+                ) {
+                    foreach ( $tiered as $t ) {
+                        $min  = isset($t['min']) ? (int)$t['min'] : 0;
+                        $max  = isset($t['max']) ? (int)$t['max'] : PHP_INT_MAX;
+                        $type = isset($t['type']) ? $t['type'] : 'percent';
                         if ( $days >= $min && $days <= $max ) {
-                            $discount = isset($t['percent']) ? (float)$t['percent'] : 0;
-                            $price -= $price * ($discount / 100);
+
+                            if ( $type === 'percent' && isset($t['percent']) ) {
+                                $discount = (float)$t['percent'];
+                                $price = $price - ( $price * ($discount / 100) );
+                            }
+                            elseif ( $type === 'fixed_discount' && isset($t['fixed_discount']) ) {
+                                $price = $price - (float)$t['fixed_discount'];
+                            }
+                            elseif ( $type === 'fixed_price' && isset($t['fixed_price']) ) {
+                                $price = (float)$t['fixed_price'];
+                            }
+                            elseif ( $type === 'day_price' && isset($t['day_price']) ) {
+                                $price = (float)$t['day_price'] * $days;
+                            }
+                            if ( $price < 0 ) {
+                                $price = 0;
+                            }
 
                             break;
                         }
@@ -531,7 +596,7 @@
                 <div class="mpcrbm_display_pricing_rules">
 
                     <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
-                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wc_price( $base_price ); ?></strong></p>
+                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( wc_price( $base_price ) ); ?></strong></p>
 
                     <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
                         $is_discount = true;
@@ -540,17 +605,32 @@
                         <ul>
                             <?php foreach ( $seasonal as $rule ) : ?>
                                 <li>
-                                    <strong><?php echo esc_html( ucfirst( $rule['name'] ) ); ?></strong>
-                                    (<?php echo esc_html( $rule['start'] ); ?> to <?php echo esc_html( $rule['end'] ); ?>):
+                                    <strong>
+                                        <?php echo esc_html( ucfirst( sanitize_text_field( $rule['name'] ?? '' ) ) ); ?>
+                                    </strong>
+                                    (
                                     <?php
-                                    if ( $rule['type'] === 'percentage_increase' ) {
-                                        echo '+' . abs( $rule['value'] ) . '% increase';
-                                    } elseif ( $rule['type'] === 'percentage_decrease' ) {
-                                        echo '-' . abs( $rule['value'] ) . '% discount';
-                                    } elseif ( $rule['type'] === 'fixed_increase' ) {
-                                        echo '+' . wc_price( abs( $rule['value'] ) ) . ' increase';
-                                    } elseif ( $rule['type'] === 'fixed_decrease' ) {
-                                        echo '-' . wc_price( abs( $rule['value'] ) ) . ' discount';
+                                    $start = sanitize_text_field( $rule['start'] ?? '' );
+                                    $end   = sanitize_text_field( $rule['end'] ?? '' );
+
+                                    echo esc_html( $start ) . ' to ' . esc_html( $end );
+                                    ?>
+                                    ):
+                                    <?php
+                                    $type  = sanitize_text_field( $rule['type'] ?? '' );
+                                    $value = isset( $rule['value'] ) ? floatval( $rule['value'] ) : 0;
+
+                                    if ( 'percentage_increase' === $type ) {
+                                        echo esc_html( '+' . abs( $value ) . '% increase' );
+
+                                    } elseif ( 'percentage_decrease' === $type ) {
+                                        echo esc_html( '-' . abs( $value ) . '% discount' );
+
+                                    } elseif ( 'fixed_increase' === $type ) {
+                                        echo wp_kses_post( '+' . wc_price( abs( $value ) ) . ' increase' );
+
+                                    } elseif ( 'fixed_decrease' === $type ) {
+                                        echo wp_kses_post( '-' . wc_price( abs( $value ) ) . ' discount' );
                                     }
                                     ?>
                                 </li>
@@ -577,9 +657,9 @@
                                 }
                                 ?>
                                 <li>
-                                    <span><?php echo ucfirst( $day ); ?></span>
+                                    <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
                                     <span class="<?php echo esc_attr( $class ); ?>">
-                                        <?php echo $label; ?>
+                                        <?php echo wp_kses_post( $label ); ?>
                                     </span>
                                 </li>
                             <?php endforeach; ?>
@@ -592,16 +672,50 @@
                         ?>
                         <h4><?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
                         <ul>
-                            <?php foreach ( $tiered as $rule ) : ?>
+                            <?php
+                            if( is_array( $tiered ) && !empty( $tiered ) && isset( $tiered[0] ) && !empty( $tiered[0] ) ){
+                            foreach ( $tiered as $rule ) :
+                                ?>
                                 <li>
-                                    <?php esc_attr_e( 'For', 'car-rental-manager' );?> <strong><?php echo esc_html( $rule['min'] ); ?> –
-                                        <?php echo esc_html( $rule['max'] ); ?></strong> <?php esc_attr_e( 'days', 'car-rental-manager' );?>:
-                                    <?php echo ( $rule['percent'] >= 0 )
-                                        ? '+' . abs( $rule['percent'] ) . '% increase'
-                                        : '-' . abs( $rule['percent'] ) . '% discount';
+                                    <?php esc_html_e( 'For', 'car-rental-manager' ); ?>
+
+                                    <strong>
+                                        <?php echo esc_html( $rule['min'] ); ?> –
+                                        <?php echo esc_html( $rule['max'] ); ?>
+                                    </strong>
+                                    <?php esc_html_e( 'days:', 'car-rental-manager' ); ?>
+
+                                    <?php
+
+                                    if( !isset( $rule['type'] ) ){
+                                        $rule['type'] ='percent';
+                                    }
+                                    $type = isset( $rule['type'] ) ? sanitize_text_field( $rule['type'] ) : '';
+
+                                    if ( 'percent' === $type && isset( $rule['percent'] ) ) {
+
+                                        $percent = floatval( $rule['percent'] );
+                                        echo esc_html( abs( $percent ) . '% ' . __( 'discount', 'car-rental-manager' ) );
+
+                                    } elseif ( 'fixed_discount' === $type && isset( $rule['fixed_discount'] ) ) {
+
+                                        $fixed_discount = floatval( $rule['fixed_discount'] );
+                                        echo esc_html__( 'Fixed Discount:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_discount ) ) );
+
+                                    } elseif ( 'fixed_price' === $type && isset( $rule['fixed_price'] ) ) {
+
+                                        $fixed_price = floatval( $rule['fixed_price'] );
+                                        echo esc_html__( 'Fixed Total Price:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_price ) ) );
+
+                                    } elseif ( 'day_price' === $type && isset( $rule['day_price'] ) ) {
+
+                                        $day_price = floatval( $rule['day_price'] );
+                                        echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $day_price ) ) );
+
+                                    }
                                     ?>
                                 </li>
-                            <?php endforeach; ?>
+                            <?php endforeach; }?>
                         </ul>
                     <?php endif; ?>
 
@@ -841,9 +955,11 @@
                 // Check if multi-location is enabled for this vehicle
                 $multi_location_enabled = get_post_meta($post_id, 'mpcrbm_multi_location_enabled', true);
 
-                if ($multi_location_enabled) {
+                $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
+
+                if ($multi_location_enabled && !empty($location_prices) && is_array($location_prices) ) {
                     // Use new multi-location system
-                    $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
+
 
                     if (!empty($location_prices) && is_array($location_prices)) {
                         // First, try to find exact match
@@ -879,39 +995,40 @@
                     // Use old location system - be more flexible
                     $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
 
-                    // If no saved locations, allow the vehicle to be shown (fallback)
                     if (!is_array($saved_locations) || empty($saved_locations)) {
-                        return true; // Show vehicle even without specific location data
+                        return true;
                     }
 
-                    // Check if any of the saved locations match our search
-                    foreach ($saved_locations as $location) {
-                        // Check if start_place matches any location
-                        if (isset($location['start_location']) && $location['start_location'] === $start_place) {
-                            return true;
-                        }
-                        if (isset($location['end_location']) && $location['end_location'] === $start_place) {
-                            return true;
-                        }
+                    $start_place = strtolower(trim($start_place));
+                    $end_place   = strtolower(trim($end_place));
 
-                        // Check if end_place matches any location
-                        if (isset($location['start_location']) && $location['start_location'] === $end_place) {
-                            return true;
-                        }
-                        if (isset($location['end_location']) && $location['end_location'] === $end_place) {
-                            return true;
-                        }
+                    $start_locations = array_column($saved_locations, 'start_location');
+                    $start_locations = array_map(function($value) {
+                        return strtolower(trim($value));
+                    }, $start_locations);
+                    $start_locations = array_unique($start_locations);
+                    $start_place = strtolower(trim($start_place));
+                    if ( in_array($start_place, $start_locations) && in_array($end_place, $start_locations) ) {
+                        return true;
                     }
 
-                    // If no specific matches found, still show the vehicle (more flexible approach)
-                    return true;
+
+                    /*foreach ($saved_locations as $location) {
+                        $start_location = strtolower(trim($location['start_location'] ?? ''));
+                        $end_location   = strtolower(trim($location['end_location'] ?? ''));
+                        if ($start_location === $start_place && $end_location === $end_place) {
+                            return true;
+                        }
+                    }*/
+
+                    return false;
                 }
             }
             public static function mpcrbm_get_schedule_search_form($post_id, $days_name, $selected_date, $start_time_schedule, $return_time_schedule, $price_based)
             {
                 // Validate inputs
                 $post_id = absint($post_id);
-                $selected_day = strtolower(date('l', strtotime($selected_date)));
+                $selected_day = strtolower(gmdate('l', strtotime($selected_date)));
                 if (!$post_id || !get_post($post_id)) {
                     return false;
                 }

@@ -56,6 +56,7 @@
                     'post_type'      => 'mpcrbm_rent',
 //                    'posts_per_page' => intval( $atts['per_page'] ),
                     'posts_per_page' => intval( $atts['show'] ),
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => $meta_query,
                 ];
 
@@ -190,38 +191,38 @@
                                                     <div class="mpcrbm_car_specs_lists">
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-car"></i>
-                                                            <div title="<?php echo __('Car Type: ','car-rental-manager').esc_attr($car['type']); ?>">
+                                                            <div title="<?php echo esc_html_e('Car Type: ','car-rental-manager').esc_attr($car['type']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['type']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-gas-pump-alt"></i>
-                                                            <div title="<?php echo __('Fuel Type: ','car-rental-manager').esc_attr($car['fuel']); ?>">
+                                                            <div title="<?php echo esc_html_e('Fuel Type: ','car-rental-manager').esc_attr($car['fuel']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html( $car['fuel']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-bonus"></i>
-                                                            <div title="<?php echo __('Brands: ','car-rental-manager').esc_attr($car['brand']); ?>">
+                                                            <div title="<?php echo esc_html_e('Brands: ','car-rental-manager').esc_attr($car['brand']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['brand']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-time-quarter-to"></i>
-                                                            <div title="<?php echo __('Making Year: ','car-rental-manager').esc_attr($car['car_year']); ?>">
+                                                            <div title="<?php echo esc_html_e('Making Year: ','car-rental-manager').esc_attr($car['car_year']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['car_year']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-person-seat"></i>
-                                                            <div title="<?php echo __('Seating Capacity: ','car-rental-manager').esc_attr($car['seating_capacity']); ?>">
+                                                            <div title="<?php echo esc_html_e('Seating Capacity: ','car-rental-manager').esc_attr($car['seating_capacity']); ?>">
                                                                 <div class="spec-value"><?php echo esc_html($car['seating_capacity']); ?></div>
                                                             </div>
                                                         </div>
                                                         <div class="mpcrbm_car_spec">
                                                             <i class="mi mi-person-luggage"></i>
-                                                            <div title="<?php echo __('Maximum Bags: ','car-rental-manager').esc_attr($car['bag']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html($car['bag']).__(' Bags','car-rental-manager'); ?></div>
+                                                            <div title="<?php echo esc_html_e('Maximum Bags: ','car-rental-manager').esc_attr($car['bag']); ?>">
+                                                                <div class="spec-value"><?php echo esc_html($car['bag']).esc_html_e(' Bags','car-rental-manager'); ?></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -229,7 +230,7 @@
                                                         <div class="mpcrbm_car_list_price">
                                                             <h3>
                                                                 <span class="woocommerce-Price-amount amount">
-                                                                    <?php echo wc_price( $car['day_price'] );?>
+                                                                    <?php echo wp_kses_post( wc_price( $car['day_price'] ) );?>
                                                                 </span>
                                                                 <small>/ day</small>
                                                             </h3>
@@ -292,6 +293,7 @@
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
                     'posts_per_page' => intval( $atts['per_page'] ),
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => $meta_query,
                 ];
 
@@ -375,12 +377,12 @@
                 $search_result_show    = $params['search_result'] ?: 'no';
                 $search_result_same_page    = $params['search_result_same_page'] ?: 'no';
 
-                ob_start();
+//                ob_start();
                 do_shortcode( '[shop_messages]' );
                 echo wp_kses_post( ob_get_clean() );
                 //echo '<pre>';print_r($params);echo '</pre>';
                 include( MPCRBM_Function::template_path( 'registration/registration_layout.php' ) );
-				return ob_get_clean();
+//				return ob_get_clean();
 			}
 			public static function default_attribute() {
 				return array(

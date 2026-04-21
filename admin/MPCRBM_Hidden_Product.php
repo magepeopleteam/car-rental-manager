@@ -124,20 +124,25 @@ if (!defined('ABSPATH')) {
 				wp_set_object_terms($pid, $terms, 'product_visibility');
 				update_post_meta($post_id, 'check_if_run_once', true);
 			}
-			public function count_hidden_wc_product($post_id): int {
+			public function count_hidden_wc_product( $post_id ): int {
 				$args = array(
-					'post_type' => 'product',
+					'post_type'      => 'product',
 					'posts_per_page' => -1,
-					'meta_query' => array(
+					'fields'         => 'ids', // Performance: Only fetch IDs, not full objects
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
+					'meta_query'     => array(
 						array(
-							'key' => 'link_mpcrbm_id',
-							'value' => $post_id,
-							'compare' => '='
-						)
-					)
+							'key'     => 'link_mpcrbm_id',
+							'value'   => $post_id,
+							'compare' => '=',
+						),
+					),
 				);
-				$loop = new WP_Query($args);
-				return $loop->post_count;
+				
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				$product_ids = get_posts( $args );
+				
+				return count( $product_ids );
 			}
 		}
 		new MPCRBM_Hidden_Product();

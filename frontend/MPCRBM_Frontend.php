@@ -14,11 +14,11 @@
 
                 add_filter('the_content', array($this, 'mpcrbm_display_search_result'));
 
-
                 add_action( 'wp_ajax_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
                 add_action( 'wp_ajax_nopriv_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
 
-
+                add_action( 'wp_ajax_mpcrbm_get_car_qty_by_date', [ $this, 'mpcrbm_get_car_qty_by_date' ] );
+                add_action( 'wp_ajax_nopriv_mpcrbm_get_car_qty_by_date', [ $this, 'mpcrbm_get_car_qty_by_date' ] );
 
 			}
 			private function load_file(): void {
@@ -62,16 +62,27 @@
                     if ( session_status() === PHP_SESSION_NONE ) {
                         session_start();
                     }
+                    // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
-
                     $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
                     $search_date = isset($_SESSION['search_date']) ? $_SESSION['search_date'] : '';
+                    // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
                     if ( isset($_SESSION['custom_content'] ) ) {
                         unset($_SESSION['custom_content']);
                         unset($_SESSION['progress_bar']);
                         unset($_SESSION['search_date']);
                     }
                     session_write_close();
+
+                    /*$user_id = MPCRBM_Transport_Search::get_guest_unique_id();
+                    $result_data = get_transient('wtbm_custom_content_' . $user_id);
+                    $progress_bar = get_transient('wtbm_progress_bar_' . $user_id);
+                    $search_date = get_transient('wtbm_search_date_' . $user_id);
+
+                    delete_transient('wtbm_custom_content_' . $user_id);
+                    delete_transient('wtbm_progress_bar_' . $user_id);
+                    delete_transient('wtbm_search_date_' . $user_id);*/
 
                     $content = '';
                     if( $result_data ){
@@ -105,7 +116,7 @@
                     if ( !empty( $result_data) ) {
                         $progressbar_class = '';
 
-                        $content = '<main id="maincontent" class="transport-result-page" style=" max-width: 1200px;">';
+                        $content = '<main id="maincontent" class="transport-result-page" style=" max-width: 1200px; margin:auto">';
                         $content .= '<div class="mpcrbm mpcrbm_transport_search_area" style="margin: auto; width: 100%">';
                         $content .= '<div class="mpcrbm_tab_next _mT">';
 
@@ -177,13 +188,20 @@
                     'post_type'      => 'mpcrbm_booking',
                     'post_status'    => 'publish',
                     'posts_per_page' => -1,
+                    'relation' => 'AND',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
                     'meta_query'     => [
                         [
                             'key'     => 'mpcrbm_id',
                             'value'   => $post_id,
                             'compare' => '=',
                             'type'    => 'NUMERIC',
-                        ]
+                        ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
                     ]
                 ];
 
@@ -226,19 +244,104 @@
 
                 return $all_dates;
             }
+            public static function mpcrbm_get_unavailable_dates_by_stock( $post_id ) {
+
+                $stock = (int) MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
+
+                if ( $stock <= 0 ) {
+                    return [];
+                }
+
+                // 🔹 Step 2: Get all active bookings for this car
+                $args = [
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
+                    'meta_query'     => [
+                        'relation' => 'AND',
+                        [
+                            'key'     => 'mpcrbm_id',
+                            'value'   => $post_id,
+                            'compare' => '=',
+                            'type'    => 'NUMERIC',
+                        ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
+                    ]
+                ];
+
+                $query = new WP_Query( $args );
+
+                $daily_bookings = [];
+
+                if ( ! empty( $query->posts ) ) {
+
+                    foreach ( $query->posts as $booking_id ) {
+
+                        $start_datetime = get_post_meta( $booking_id, 'mpcrbm_date', true );
+                        $end_datetime   = get_post_meta( $booking_id, 'return_date_time', true );
+                        $qty            = (int) get_post_meta( $booking_id, 'mpcrbm_car_quantity', true );
+
+                        if ( empty( $start_datetime ) || empty( $end_datetime ) ) {
+                            continue;
+                        }
+
+                        $start = new DateTime( $start_datetime );
+                        $end   = new DateTime( $end_datetime );
+
+                        $start->setTime( 0, 0, 0 );
+                        $end->setTime( 0, 0, 0 );
+                        $end->modify( '+1 day' );
+
+                        $interval = new DateInterval( 'P1D' );
+                        $period   = new DatePeriod( $start, $interval, $end );
+
+                        foreach ( $period as $date ) {
+
+                            $formatted = $date->format( 'Y-m-d' );
+
+                            if ( ! isset( $daily_bookings[$formatted] ) ) {
+                                $daily_bookings[$formatted] = 0;
+                            }
+
+                            $daily_bookings[$formatted] += $qty;
+                        }
+                    }
+                }
+
+                // 🔹 Step 3: Find fully booked dates
+                $unavailable_dates = [];
+
+                foreach ( $daily_bookings as $date => $booked_qty ) {
+
+                    if ( $booked_qty >= $stock ) {
+                        $unavailable_dates[] = $date;
+                    }
+                }
+
+                sort( $unavailable_dates );
+
+                return $unavailable_dates;
+            }
+
 
             public function mpcrbm_get_total_count_price_selected_car() {
                 $nonce = sanitize_text_field( wp_unslash( $_POST['_nonce'] ?? '' ) );
                 if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                     wp_send_json_error( array(
-                        'message' => __( 'Security check failed', 'mpcrbm' ),
+                        'message' => __( 'Security check failed', 'car-rental-manager' ),
                     ) );
                 }
 
-                $start_date = sanitize_text_field( wp_unslash( $_POST['start_date'] ) );
-                $start_time = sanitize_text_field( wp_unslash( $_POST['start_time'] ) );
+                $start_date = isset( $_POST['start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['start_date'] ) ) : '';
+                $start_time = isset( $_POST['start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['start_time'] ) ) : '';
 
-                $start_date_time = date(
+                $start_date_time = gmdate(
                     'Y-m-d H:i',
                     strtotime(
                         $start_date . ' ' .
@@ -261,6 +364,99 @@
                     'calculated_price' => $calculated_price,
                 ) );
             }
+
+            public static function mpcrbm_get_available_stock_by_date( $car_id, $date ) {
+
+                $total_stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
+
+                if ( $total_stock <= 0 ) {
+                    return 0;
+                }
+
+                $start_datetime = $date . ' 00:00:00';
+                $end_datetime   = $date . ' 23:59:59';
+
+                $args = [
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'publish',
+                    'posts_per_page' => -1,
+                    'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
+                    'meta_query'     => [
+                        'relation' => 'AND',
+                        [
+                            'key'     => 'mpcrbm_id',
+                            'value'   => $car_id,
+                            'compare' => '=',
+                            'type'    => 'NUMERIC',
+                        ],
+                        [
+                            'key'     => 'mpcrbm_date',
+                            'value'   => $end_datetime,
+                            'compare' => '<=',
+                            'type'    => 'DATETIME',
+                        ],
+                        [
+                            'key'     => 'return_date_time',
+                            'value'   => $start_datetime,
+                            'compare' => '>=',
+                            'type'    => 'DATETIME',
+                        ],
+                        [
+                            'key'     => 'mpcrbm_order_status',
+                            'value'   => ['cancelled', 'refunded', 'failed'],
+                            'compare' => 'NOT IN',
+                        ],
+                    ]
+                ];
+
+                $query = new WP_Query( $args );
+
+                $total_booked = 0;
+
+                if ( ! empty( $query->posts ) ) {
+
+                    foreach ( $query->posts as $booking_id ) {
+
+                        $qty = (int) get_post_meta( $booking_id, 'mpcrbm_car_quantity', true );
+                        $total_booked += $qty;
+                    }
+                }
+
+                // 🔹 Step 3: Calculate available stock
+                $available_stock = $total_stock - $total_booked;
+
+                return max( 0, $available_stock );
+            }
+
+            public function mpcrbm_get_car_qty_by_date() {
+                $nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+                $qty_html = '';
+                if ( wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
+                    $car_id     = isset( $_POST['car_id'] ) ? sanitize_text_field( wp_unslash( $_POST['car_id'] ) ) : '';
+                    $date       = isset( $_POST['startDate'] ) ? sanitize_text_field( wp_unslash( $_POST['startDate'] ) ) : '';
+                    $day_price  = isset( $_POST['day_wise_price'] ) ? sanitize_text_field( wp_unslash( $_POST['day_wise_price'] ) ) : '';
+                    if( $car_id && $date ){
+                        ob_start();
+                        $available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $car_id, $date );
+                        if( $available_stock > 1 ){
+                        ?>
+                            <div class="mpcrbm_car_quantity_title"><?php esc_html_e('Car Quantity', 'car-rental-manager') ?></div>
+                            <?php
+                            MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
+                            ?>
+                        <?php
+                        }
+//                        MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $day_price, $available_stock, 1, 0);
+                        $qty_html = ob_get_clean();
+                    }
+
+                }
+
+               wp_send_json_success( $qty_html );
+
+            }
+
 
         }
 		new MPCRBM_Frontend();

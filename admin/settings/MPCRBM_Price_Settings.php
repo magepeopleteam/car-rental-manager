@@ -18,7 +18,7 @@
 			}
 
             public function mpcrbm_add_price_discount_rules(){
-                if ( ! isset($_POST['nonce']) || ! wp_verify_nonce( $_POST['nonce'], 'mpcrbm_extra_service' ) ) {
+                if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'mpcrbm_extra_service' ) ) {
                     wp_send_json_error([ 'message' => 'Security check failed' ]);
                 }
                 $success =false;
@@ -86,7 +86,7 @@
                 ?>
 
                 <!--<div class="mpcrbm-section">
-                    <div class="mpcrbm-heading"><?php /*esc_html_e('Base Daily Price', 'mpcrbm'); */?></div>
+                    <div class="mpcrbm-heading"><?php /*esc_html_e('Base Daily Price', 'car-rental-manager'); */?></div>
                     <div class="mpcrbm-price-content-container">
                         <input type="number" name="mpcrbm_base_daily_price" step="0.01" value="<?php /*echo esc_attr($base_price); */?>" />
                     </div>
@@ -114,15 +114,82 @@
                         </div>
                         <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
                             <?php if ( isset( $tiered[0] ) && is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
-                                foreach ( $tiered as $t ) : ?>
-                                    <div class="mpcrbm-item mpcrbm-price-discount-tier">
-                                        <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php echo esc_attr($t['min']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( 'Min Days', 'car-rental-manager' ); ?>">
+                                foreach ( $tiered as $t ) :
+
+                                    ?>
+                                    <!--<div class="mpcrbm-item mpcrbm-price-discount-tier">
+                                        <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php /*echo esc_attr($t['min']); */?>" class="mpcrbm-input" placeholder="<?php /*esc_html_e( 'Min Days', 'car-rental-manager' ); */?>">
                                         <span class="separator">–</span>
-                                        <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php echo esc_attr($t['max']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( 'Max Days', 'car-rental-manager' ); ?>">
+                                        <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php /*echo esc_attr($t['max']); */?>" class="mpcrbm-input" placeholder="<?php /*esc_html_e( 'Max Days', 'car-rental-manager' ); */?>">
                                         <span>days</span>
-                                        <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php echo esc_attr($t['percent']); ?>" class="mpcrbm-input" placeholder="<?php esc_html_e( '% Discount', 'car-rental-manager' ); ?>">
+                                        <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php /*echo esc_attr($t['percent']); */?>" class="mpcrbm-input" placeholder="<?php /*esc_html_e( '% Discount', 'car-rental-manager' ); */?>">
                                         <span>% discount</span>
-                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
+                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php /*esc_html_e( 'Remove', 'car-rental-manager' ); */?></button>
+                                    </div>-->
+
+
+                                    <div class="mpcrbm-item mpcrbm-price-discount-tier">
+                                        <input type="number"
+                                               name="mpcrbm_tiered_discounts[min][]"
+                                               value="<?php echo esc_attr($t['min']); ?>"
+                                               class="mpcrbm-input"
+                                               placeholder="<?php esc_html_e( 'Min Days', 'car-rental-manager' ); ?>">
+
+                                        <span class="separator">–</span>
+                                        <input type="number"
+                                               name="mpcrbm_tiered_discounts[max][]"
+                                               value="<?php echo esc_attr($t['max']); ?>"
+                                               class="mpcrbm-input"
+                                               placeholder="<?php esc_html_e( 'Max Days', 'car-rental-manager' ); ?>">
+
+                                        <span><?php esc_html_e( 'days', 'car-rental-manager' ); ?></span>
+                                        <select name="mpcrbm_tiered_discounts[type][]" class="mpcrbm-discount-type mpcrbm-input">
+                                            <option value="percent" <?php selected($t['type'] ?? '', 'percent'); ?>>
+                                                <?php esc_html_e( 'Percentage (%)', 'car-rental-manager' ); ?>
+                                            </option>
+                                            <option value="fixed_discount" <?php selected($t['type'] ?? '', 'fixed_discount'); ?>>
+                                                <?php esc_html_e( 'Fixed Discount', 'car-rental-manager' ); ?>
+                                            </option>
+                                            <option value="fixed_price" <?php selected($t['type'] ?? '', 'fixed_price'); ?>>
+                                                <?php esc_html_e( 'Fixed Total Price', 'car-rental-manager' ); ?>
+                                            </option>
+                                            <option value="day_price" <?php selected($t['type'] ?? '', 'day_price'); ?>>
+                                                <?php esc_html_e( 'Day-wise Price', 'car-rental-manager' ); ?>
+                                            </option>
+                                        </select>
+
+                                        <input type="number" step="0.01"
+                                               name="mpcrbm_tiered_discounts[percent][]"
+                                               value="<?php echo esc_attr($t['percent'] ?? ''); ?>"
+                                               class="mpcrbm-input mpcrbm-field mpcrbm-percent"
+                                               placeholder="<?php esc_html_e( '% Discount', 'car-rental-manager' ); ?>">
+
+                                        <input type="number" step="0.01"
+                                               name="mpcrbm_tiered_discounts[fixed_discount][]"
+                                               value="<?php echo esc_attr($t['fixed_discount'] ?? ''); ?>"
+                                               class="mpcrbm-input mpcrbm-field mpcrbm-fixed-discount"
+                                               placeholder="<?php esc_html_e( 'Discount Amount', 'car-rental-manager' ); ?>"
+                                               style="display:none;">
+
+                                        <input type="number" step="0.01"
+                                               name="mpcrbm_tiered_discounts[fixed_price][]"
+                                               value="<?php echo esc_attr($t['fixed_price'] ?? ''); ?>"
+                                               class="mpcrbm-input mpcrbm-field mpcrbm-fixed-price"
+                                               placeholder="<?php esc_html_e( 'Fixed Total Price', 'car-rental-manager' ); ?>"
+                                               style="display:none;">
+
+                                        <input type="number" step="0.01"
+                                               name="mpcrbm_tiered_discounts[day_price][]"
+                                               value="<?php echo esc_attr($t['day_price'] ?? ''); ?>"
+                                               class="mpcrbm-input mpcrbm-field mpcrbm-day-price"
+                                               placeholder="<?php esc_html_e( 'Price Per Day', 'car-rental-manager' ); ?>"
+                                               style="display:none;">
+
+                                        <button type="button"
+                                                class="button mpcrbm-remove-row mpcrbm-remove-btn">
+                                            <?php esc_html_e( 'Remove', 'car-rental-manager' ); ?>
+                                        </button>
+
                                     </div>
                                 <?php endforeach;
                             endif; ?>
@@ -171,8 +238,8 @@
                                 }
                                 ?>
                                 <div class="mpcrbm-grid-item mpcrbm-price-day-card <?php echo esc_attr( $weekend_class );?>">
-                                    <span class="mpcrbm-price-day-label"><?php echo $label; ?></span>
-                                    <input type="number" name="mpcrbm_daywise_pricing[<?php echo $k; ?>]" step="0.01" value="<?php echo esc_attr($val); ?>" class="mpcrbm-input">
+                                    <span class="mpcrbm-price-day-label"><?php echo esc_html( $label ); ?></span>
+                                    <input type="number" name="mpcrbm_daywise_pricing[<?php echo esc_attr($k); ?>]" step="0.01" value="<?php echo esc_attr($val); ?>" class="mpcrbm-input">
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -256,12 +323,12 @@
                         <span><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></span>
                     </section>
 
-                    <?php echo $this->set_price_meta_box( $post_id )?>
+                    <?php echo $this->set_price_meta_box( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
 				<?php
 			}
 
-			public function save_price_settings( $post_id ) {
+			public function save_price_settings_new( $post_id ) {
 				if (
 					! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ||
 					! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) ), 'mpcrbm_transportation_type_nonce' ) ||
@@ -276,7 +343,7 @@
 					// Security fix: Validate mpcrbm_day_price to prevent PHP Object Injection
 					// Only accept numeric values, reject serialized data
 					if ( isset( $_POST['mpcrbm_day_price'] ) ) {
-						$raw_price = wp_unslash( $_POST['mpcrbm_day_price'] );
+						$raw_price = sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) );
 						// Check if the value is serialized (potential security risk)
 						if ( is_serialized( $raw_price ) ) {
 							$hour_price = 0;
@@ -293,7 +360,7 @@
 
 
 
-                    if ( ! isset( $_POST['mpcrbm_set_price_nonce'] ) || ! wp_verify_nonce( $_POST['mpcrbm_set_price_nonce'], 'mpcrbm_set_price_save' ) ) return;
+                    if ( ! isset( $_POST['mpcrbm_set_price_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) return;
                     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
                     if ( get_post_type( $post_id ) !== MPCRBM_Function::get_cpt() ) return;
 
@@ -305,14 +372,14 @@
                     // Day-wise pricing
                     if ( isset( $_POST['mpcrbm_daywise_pricing'] ) && is_array($_POST['mpcrbm_daywise_pricing']) ) {
                         $clean = [];
-                        foreach ($_POST['mpcrbm_daywise_pricing'] as $day=>$val){
+                        foreach (sanitize_text_field( wp_unslash( $_POST['mpcrbm_daywise_pricing'] ) ) as $day=>$val){
                             $clean[$day] = floatval($val);
                         }
                         update_post_meta( $post_id, 'mpcrbm_daywise_pricing', $clean );
                     }
 
                     // Tiered Discounts
-                    if ( isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts']) ) {
+                    /*if ( isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts']) ) {
                         $tiers = [];
                         $mins = $_POST['mpcrbm_tiered_discounts']['min'];
                         $maxs = $_POST['mpcrbm_tiered_discounts']['max'];
@@ -327,16 +394,105 @@
                             }
                         }
                         update_post_meta( $post_id, 'mpcrbm_tiered_discounts', $tiers );
+                    }*/
+
+                    if ( isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts']) ) {
+                        $tiers = [];
+
+// 1. Get the parent array safely first
+$tiered_data = ( isset( $_POST['mpcrbm_tiered_discounts'] ) && is_array( $_POST['mpcrbm_tiered_discounts'] ) ) 
+    ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_tiered_discounts'] ) ) 
+    : [];
+
+// 2. Extract and sanitize sub-arrays (using map_deep because these are arrays of values)
+// phpcs:disable WordPress.Security.NonceVerification.Missing
+$mins           = isset( $tiered_data['min'] )            ? map_deep( $tiered_data['min'], 'absint' ) : [];
+$maxs           = isset( $tiered_data['max'] )            ? map_deep( $tiered_data['max'], 'absint' ) : [];
+$types          = isset( $tiered_data['type'] )           ? map_deep( $tiered_data['type'], 'sanitize_key' ) : [];
+$perc           = isset( $tiered_data['percent'] )        ? map_deep( $tiered_data['percent'], 'floatval' ) : [];
+$fixed_discount = isset( $tiered_data['fixed_discount'] ) ? map_deep( $tiered_data['fixed_discount'], 'floatval' ) : [];
+$fixed_price    = isset( $tiered_data['fixed_price'] )    ? map_deep( $tiered_data['fixed_price'], 'floatval' ) : [];
+$day_price      = isset( $tiered_data['day_price'] )      ? map_deep( $tiered_data['day_price'], 'floatval' ) : [];
+// phpcs:enable
+
+                        for ( $i = 0; $i < count($mins); $i++ ) {
+
+                            $min  = isset($mins[$i]) ? intval($mins[$i]) : 0;
+                            $max  = isset($maxs[$i]) ? intval($maxs[$i]) : 0;
+                            $type = isset($types[$i]) ? sanitize_text_field($types[$i]) : 'percent';
+
+                            if ( $min && $max ) {
+
+                                $tier = [
+                                    'min'  => $min,
+                                    'max'  => $max,
+                                    'type' => $type,
+                                ];
+
+                                // Percentage
+                                if ( $type === 'percent' ) {
+
+                                    if ( isset($perc[$i]) && $perc[$i] !== '' ) {
+                                        $tier['percent'] = floatval($perc[$i]);
+                                    } else {
+                                        continue;
+                                    }
+
+                                }
+                                // Fixed Discount (subtract amount)
+                                elseif ( $type === 'fixed_discount' ) {
+
+                                    if ( isset($fixed_discount[$i]) && $fixed_discount[$i] !== '' ) {
+                                        $tier['fixed_discount'] = floatval($fixed_discount[$i]);
+                                    } else {
+                                        continue;
+                                    }
+
+                                }
+                                // Fixed Total Price (override total)
+                                elseif ( $type === 'fixed_price' ) {
+
+                                    if ( isset($fixed_price[$i]) && $fixed_price[$i] !== '' ) {
+                                        $tier['fixed_price'] = floatval($fixed_price[$i]);
+                                    } else {
+                                        continue;
+                                    }
+
+                                }
+                                // Day-wise Price (price per day)
+                                elseif ( $type === 'day_price' ) {
+
+                                    if ( isset($day_price[$i]) && $day_price[$i] !== '' ) {
+                                        $tier['day_price'] = floatval($day_price[$i]);
+                                    } else {
+                                        continue;
+                                    }
+
+                                }
+
+                                $tiers[] = $tier;
+                            }
+                        }
+
+                        update_post_meta( $post_id, 'mpcrbm_tiered_discounts', $tiers );
                     }
 
                     // Seasonal Pricing
                     if ( isset($_POST['mpcrbm_seasonal_pricing']) && is_array($_POST['mpcrbm_seasonal_pricing']) ) {
                         $seasons = [];
-                        $names = $_POST['mpcrbm_seasonal_pricing']['name'];
-                        $starts = $_POST['mpcrbm_seasonal_pricing']['start'];
-                        $ends   = $_POST['mpcrbm_seasonal_pricing']['end'];
-                        $types  = $_POST['mpcrbm_seasonal_pricing']['type'];
-                        $values = $_POST['mpcrbm_seasonal_pricing']['value'];
+                    // 1. Safely pull the parent array once
+                    $seasonal_data = ( isset( $_POST['mpcrbm_seasonal_pricing'] ) && is_array( $_POST['mpcrbm_seasonal_pricing'] ) ) 
+                        ?  sanitize_text_field( wp_unslash( $_POST['mpcrbm_seasonal_pricing'] ) ) 
+                        : [];
+
+                    // 2. Extract and sanitize (using map_deep because these are likely arrays)
+                    // phpcs:disable WordPress.Security.NonceVerification.Missing
+                    $names  = isset( $seasonal_data['name'] )  ? map_deep( $seasonal_data['name'], 'sanitize_text_field' ) : [];
+                    $starts = isset( $seasonal_data['start'] ) ? map_deep( $seasonal_data['start'], 'sanitize_text_field' ) : [];
+                    $ends   = isset( $seasonal_data['end'] )   ? map_deep( $seasonal_data['end'], 'sanitize_text_field' )   : [];
+                    $types  = isset( $seasonal_data['type'] )  ? map_deep( $seasonal_data['type'], 'sanitize_key' )        : [];
+                    $values = isset( $seasonal_data['value'] ) ? map_deep( $seasonal_data['value'], 'floatval' )          : [];
+                    // phpcs:enable
 
                         for ($i=0; $i < count($names); $i++){
                             if ($names[$i] && $starts[$i] && $ends[$i]){
@@ -354,6 +510,181 @@
 
 				}
 			}
+
+            public function save_price_settings( $post_id ) {
+                if (
+                    ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ||
+                    ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) ), 'mpcrbm_transportation_type_nonce' ) ||
+                    ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
+                    ! current_user_can( 'edit_post', $post_id )
+                ) {
+                    return;
+                }
+                if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+                    $price_based = "manual";
+                    update_post_meta( $post_id, 'mpcrbm_price_based', $price_based );
+                    if ( isset( $_POST['mpcrbm_day_price'] ) ) {
+                        $raw_price = sanitize_text_field( wp_unslash( $_POST['mpcrbm_day_price'] ) );
+                        if ( is_serialized( $raw_price ) ) {
+                            $hour_price = 0;
+                        } else {
+                            $hour_price = is_numeric( $raw_price ) ? floatval( $raw_price ) : 0;
+                            $hour_price = max( 0, $hour_price );
+                        }
+                    } else {
+                        $hour_price = 0;
+                    }
+                    update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
+
+
+
+                    if ( isset( $_POST['mpcrbm_set_price_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) {
+
+                        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+                        if (get_post_type($post_id) !== MPCRBM_Function::get_cpt()) return;
+
+                        // Base price
+                        if (isset( $_POST['mpcrbm_base_daily_price'] )) {
+                            update_post_meta($post_id, 'mpcrbm_base_daily_price', floatval($_POST['mpcrbm_base_daily_price']));
+                        }
+
+                        // Day-wise pricing
+                        $mpcrbm_daywise_pricing = array_map(
+                            'floatval',
+                            is_array( $_POST['mpcrbm_daywise_pricing'] ?? null ) ? wp_unslash( $_POST['mpcrbm_daywise_pricing'] ) : []
+                        );
+
+
+                        if ( $mpcrbm_daywise_pricing ) {
+                            $clean = [];
+                            foreach ( $mpcrbm_daywise_pricing as $day => $val) {
+                                $clean[$day] = floatval( $val);
+                            }
+                            update_post_meta($post_id, 'mpcrbm_daywise_pricing', $clean);
+                        }
+
+
+                        if (isset($_POST['mpcrbm_tiered_discounts']) && is_array($_POST['mpcrbm_tiered_discounts'])) {
+
+                            $tiers = [];
+                            /*$mins = $_POST['mpcrbm_tiered_discounts']['min'] ?? [];
+                            $maxs = $_POST['mpcrbm_tiered_discounts']['max'] ?? [];
+                            $types = $_POST['mpcrbm_tiered_discounts']['type'] ?? [];
+
+                            $perc = $_POST['mpcrbm_tiered_discounts']['percent'] ?? [];
+                            $fixed_discount = $_POST['mpcrbm_tiered_discounts']['fixed_discount'] ?? [];
+                            $fixed_price = $_POST['mpcrbm_tiered_discounts']['fixed_price'] ?? [];
+                            $day_price = $_POST['mpcrbm_tiered_discounts']['day_price'] ?? [];*/
+
+                            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                            $raw_discounts = wp_unslash( $_POST['mpcrbm_tiered_discounts'] ?? [] );
+
+                            $mins = array_map( 'absint', $raw_discounts['min'] ?? [] );
+                            $maxs = array_map( 'absint', $raw_discounts['max'] ?? [] );
+
+                            $types = array_map( 'sanitize_text_field', $raw_discounts['type'] ?? [] );
+
+                            $perc            = array_map( 'floatval', $raw_discounts['percent'] ?? [] );
+                            $fixed_discount  = array_map( 'floatval', $raw_discounts['fixed_discount'] ?? [] );
+                            $fixed_price     = array_map( 'floatval', $raw_discounts['fixed_price'] ?? [] );
+                            $day_price       = array_map( 'floatval', $raw_discounts['day_price'] ?? [] );
+
+
+
+                            for ($i = 0; $i < count($mins); $i++) {
+
+                                $min = isset($mins[$i]) ? intval($mins[$i]) : 0;
+                                $max = isset($maxs[$i]) ? intval($maxs[$i]) : 0;
+                                $type = isset($types[$i]) ? sanitize_text_field($types[$i]) : 'percent';
+
+                                if ($min && $max) {
+
+                                    $tier = [
+                                        'min' => $min,
+                                        'max' => $max,
+                                        'type' => $type,
+                                    ];
+
+                                    // Percentage
+                                    if ($type === 'percent') {
+
+                                        if (isset($perc[$i]) && $perc[$i] !== '') {
+                                            $tier['percent'] = floatval($perc[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    } // Fixed Discount (subtract amount)
+                                    elseif ($type === 'fixed_discount') {
+
+                                        if (isset($fixed_discount[$i]) && $fixed_discount[$i] !== '') {
+                                            $tier['fixed_discount'] = floatval($fixed_discount[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    } // Fixed Total Price (override total)
+                                    elseif ($type === 'fixed_price') {
+
+                                        if (isset($fixed_price[$i]) && $fixed_price[$i] !== '') {
+                                            $tier['fixed_price'] = floatval($fixed_price[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    } // Day-wise Price (price per day)
+                                    elseif ($type === 'day_price') {
+
+                                        if (isset($day_price[$i]) && $day_price[$i] !== '') {
+                                            $tier['day_price'] = floatval($day_price[$i]);
+                                        } else {
+                                            continue;
+                                        }
+
+                                    }
+
+                                    $tiers[] = $tier;
+                                }
+                            }
+
+                            update_post_meta($post_id, 'mpcrbm_tiered_discounts', $tiers);
+                        }
+
+                        // Seasonal Pricing
+                        if (isset($_POST['mpcrbm_seasonal_pricing']) && is_array($_POST['mpcrbm_seasonal_pricing'])) {
+                            $seasons = [];
+
+                            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                            $raw_seasonal = wp_unslash( $_POST['mpcrbm_seasonal_pricing'] ?? [] );
+
+                            $names  = array_map( 'sanitize_text_field', $raw_seasonal['name'] ?? [] );
+                            $starts = array_map( 'sanitize_text_field', $raw_seasonal['start'] ?? [] );
+                            $ends   = array_map( 'sanitize_text_field', $raw_seasonal['end'] ?? [] );
+                            $types  = array_map( 'sanitize_text_field', $raw_seasonal['type'] ?? [] );
+                            $values = array_map( 'floatval', $raw_seasonal['value'] ?? [] );
+
+                            $count = count( $names );
+
+                            for ( $i = 0; $i < $count; $i++ ) {
+
+                                if ( ! empty( $names[$i] ) && ! empty( $starts[$i] ) && ! empty( $ends[$i] ) ) {
+
+                                    $seasons[] = [
+                                        'name'  => $names[$i],
+                                        'start' => $starts[$i],   // sanitized above
+                                        'end'   => $ends[$i],     // sanitized above
+                                        'type'  => $types[$i] ?? '',
+                                        'value' => $values[$i] ?? 0,
+                                    ];
+                                }
+                            }
+                            update_post_meta($post_id, 'mpcrbm_seasonal_pricing', $seasons);
+                        }
+                    }
+
+                }
+            }
+
 		}
 		new MPCRBM_Price_Settings();
 	}

@@ -80,9 +80,9 @@
 				$map         = $params['map'] ?: 'yes';
 				$map         = $display_map == 'disable' ? 'no' : $map;
 
-                $is_title    = $params['title'] ?: 'no';
-                $ajax_search    = $params['ajax_search'] ?: 'no';
-                $search_result_show    = $params['search_result'] ?: 'no';
+                $is_title    			= $params['title'] ?: 'no';
+                $ajax_search    			= $params['ajax_search'] ?: 'no';
+                $search_result_show    		= $params['search_result'] ?: 'no';
                 $search_result_same_page    = $params['search_result_same_page'] ?: 'no';
 
 				ob_start();
@@ -128,12 +128,21 @@
                 include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 
                 $content = ob_get_clean(); // Buffer content get & clean
-
-                session_start();
+                if ( session_status() === PHP_SESSION_NONE ) {
+                    session_start();
+                }
+//                session_start();
                 $_SESSION['custom_content'] = $content;
                 $_SESSION['progress_bar'] = $progress_bar;
                 $_SESSION['search_date'] = $_POST;
                 session_write_close();
+
+
+                /*
+                set_transient('wtbm_custom_content_' . $uid, $content, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_progress_bar_' . $uid, $progress_bar, 5 * MINUTE_IN_SECONDS);
+                set_transient('wtbm_search_date_' . $uid, $_POST, 5 * MINUTE_IN_SECONDS);*/
+
 
                 // Plugin settings থেকে search result page slug আনো
                 $search_page_slug = isset( $_POST['mpcrbm_enable_view_search_result_page'] )
@@ -176,7 +185,7 @@
 				}
 				// Store search parameters in session
 				if ( isset( $_POST['mpcrbm_start_place'] ) ) {
-					$_SESSION['mpcrbm_start_place'] = sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) );
+					$_SESSION['mpcrbm_start_place'] =  sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) );
 				}
 				if ( isset( $_POST['mpcrbm_end_place'] ) ) {
 					$_SESSION['mpcrbm_end_place'] = sanitize_text_field( wp_unslash( $_POST['mpcrbm_end_place'] ) );
@@ -195,7 +204,7 @@
 			 */
 			public function mpcrbm_get_dropoff_locations() {
 				// Verify nonce
-				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'mpcrbm_nonce' ) ) {
+				if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'mpcrbm_nonce' ) ) {
 					wp_send_json_error( array( 'message' => esc_html__( 'Security check failed', 'car-rental-manager' ) ) );
 				}
 

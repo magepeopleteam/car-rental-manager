@@ -18,7 +18,10 @@
                 <div class="hidden_content">
                     <table>
                         <tbody class="hidden_item">
-						<?php do_action( $hook_name, $data ); ?>
+						<?php
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
+                        do_action( $hook_name, $data );
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -220,7 +223,7 @@
                                 <span class="fas fa-minus"></span>
                             </div>
                             <label>
-                                <input type="text"
+                                <input type="text" readonly
                                        class="formControl inputIncDec number_validation"
                                        data-price="<?php echo esc_attr( $price ); ?>"
                                        name="<?php echo esc_attr( $input_name ); ?>"

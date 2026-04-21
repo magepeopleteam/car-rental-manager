@@ -9,7 +9,7 @@
 	if ( ! class_exists( 'MPCRBM_Dependencies' ) ) {
 		class MPCRBM_Dependencies {
 			public function __construct() {
-				add_action( 'init', array( $this, 'language_load' ) );
+				// add_action( 'init', array( $this, 'language_load' ) );
 				$this->load_file();
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ), 80 );
 				add_action( 'wp_enqueue_scripts', array( $this, 'frontend_enqueue' ), 80 );
@@ -22,10 +22,10 @@
 				});
 			}
 
-			public function language_load(): void {
-				$plugin_dir = basename( dirname( __DIR__ ) ) . "/languages/";
-				load_plugin_textdomain( 'car-rental-manager', false, $plugin_dir );
-			}
+			// public function language_load(): void {
+			// 	$plugin_dir = basename( dirname( __DIR__ ) ) . "/languages/";
+			// 	load_plugin_textdomain( 'car-rental-manager', false, $plugin_dir );
+			// }
 
 			private function load_file(): void {
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Function.php';
@@ -33,6 +33,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Layout.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';
 			}
 
 			public function global_enqueue() {
@@ -71,6 +72,9 @@
 				wp_enqueue_style( 'mpcrbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_registration.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_registration', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_registration.js', array( 'jquery' ), time(), true );
 				// Localize scripts
+				wp_enqueue_style( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.css', array(), time() );
+				wp_enqueue_script( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.js', array( 'jquery' ), time(), true );
+				// Localize scripts
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbm_ajax', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'nonce'    => wp_create_nonce( 'mpcrbm_transportation_type_nonce' ),
@@ -86,7 +90,11 @@
 			}
 
             public function mpcrbm_enque_flatpickr() {
-                wp_enqueue_style(
+
+                wp_enqueue_style( 'mpcrbm_flatpickr.min', MPCRBM_PLUGIN_URL . 'mp_global/assets/flatpickr/mpcrbm_flatpickr.min.css', array(), time() );
+                wp_enqueue_script( 'flatpickr.min', MPCRBM_PLUGIN_URL . 'mp_global/assets/flatpickr/flatpickr.min.js', array( 'jquery' ), time(), true );
+
+                /*wp_enqueue_style(
                     'mpcrbm-flatpickr-css',
                     'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
                     array(),
@@ -100,7 +108,7 @@
                     array('jquery'),
                     '4.6.13',
                     true
-                );
+                );*/
 
             }
 

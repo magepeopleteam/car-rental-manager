@@ -107,15 +107,19 @@
 
                 foreach ( $taxonomies as $slug => $props ) {
 
-                    $labels = array(
-                        'name'          => _x( $props['label'] . 's', 'taxonomy general name', 'pa-car' ),
-                        'singular_name' => _x( $props['label'], 'taxonomy singular name', 'pa-car' ),
-                        'search_items'  => __( 'Search ' . $props['label'] . 's', 'pa-car' ),
-                        'all_items'     => __( 'All ' . $props['label'] . 's', 'pa-car' ),
-                        'edit_item'     => __( 'Edit ' . $props['label'], 'pa-car' ),
-                        'add_new_item'  => __( 'Add New ' . $props['label'], 'pa-car' ),
-                        'menu_name'     => __( $props['label'] . 's', 'pa-car' ),
-                    );
+					$labels = array(
+						'name'          => $props['label'], // Usually labels don't need translation if they come from user input
+						'singular_name' => $props['label'],
+						/* translators: %s: The name of the taxonomy label */
+						'search_items'  => sprintf( __( 'Search %s', 'car-rental-manager' ), $props['label'] ),
+						/* translators: %s: The name of the taxonomy label */
+						'all_items'     => sprintf( __( 'All %s', 'car-rental-manager' ), $props['label'] ),
+						/* translators: %s: The name of the taxonomy label */
+						'edit_item'     => sprintf( __( 'Edit %s', 'car-rental-manager' ), $props['label'] ),
+						/* translators: %s: The name of the taxonomy label */
+						'add_new_item'  => sprintf( __( 'Add New %s', 'car-rental-manager' ), $props['label'] ),
+						'menu_name'     => $props['label'],
+					);
 
                     $args = array(
                         'hierarchical'      => $props['hierarchical'],

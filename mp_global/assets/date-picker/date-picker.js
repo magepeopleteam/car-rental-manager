@@ -98,9 +98,15 @@ jQuery(document).ready(function ($) {
             },
             success: function (data) {
 
+                console.log( data );
                 if (data.success && data.data && data.data.calculated_price !== undefined) {
+                    let day_wise = data.data.calculated_price/totalDays;
                     let calculated_price = mpcrbm_price_format( data.data.calculated_price );
+                    let day_wise_price = mpcrbm_price_format( day_wise );
                     parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
+                    parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
+                    $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
+                    parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
                 }
             },
             error: function(response) {
@@ -128,12 +134,16 @@ jQuery(document).ready(function ($) {
     }
 
     let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
-    selectors.forEach(function (selector) {
+    let mpcrbm_start_date = $( "#mpcrbm_start_calendar_day").val();
+    /*selectors.forEach(function (selector) {
         flatpickr( selector, {
             mode: "range",
             minDate: "today",
             dateFormat: "Y-m-d",
             showMonths: window.innerWidth < 768 ? 1 : 2,
+            locale: {
+                firstDayOfWeek: mpcrbm_start_date // 1 = Monday
+            }
             disable: [
                 function(date) {
                     return mpcrbm_off_days_ary.includes(date.getDay());
@@ -158,11 +168,128 @@ jQuery(document).ready(function ($) {
                     $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
                     $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
 
+                    if( parent.length > 0 ){
+                        parent.find( "#mpcrbm_car_details_continue_btn").fadeIn();
+                        parent.find( "#mpcrbm_car_already_booked").fadeOut();
+
+                        let car_id = parent.find('[name="mpcrbm_post_id"]').val();
+                        let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
+                        if( endDate ){
+                            mpcrbm_get_car_qty( startDate, car_id, day_wise_price );
+                        }
+
+                    }
+
                     mpcrbm_get_selected_days();
                 }
             }
         });
+    });*/
+
+
+    function initFlatpickr() {
+
+        let minDay = $('input[name="mpcrbm_minimum_booking_day"]').val();
+
+        selectors.forEach(function (selector) {
+
+            flatpickr(selector, {
+                mode: "range",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                showMonths: window.innerWidth < 768 ? 1 : 2, // ✅ responsive
+                locale: {
+                    firstDayOfWeek: mpcrbm_start_date
+                },
+                disable: [
+                    function(date) {
+                        return mpcrbm_off_days_ary.includes(date.getDay());
+                    },
+                    ...mpcrbm_offDates.map(d => new Date(d))
+                ],
+
+                onChange: function(selectedDates, dateStr, instance) {
+
+                    if (selectedDates.length === 2) {
+
+                        let start = selectedDates[0];
+                        let end   = selectedDates[1];
+                        let diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                        if (diffDays < minDay) {
+                            alert(`Minimum booking is ${minDay} days`);
+                            instance.clear(); // reset selection
+                            return;
+                        }
+
+
+                        let startDate = instance.formatDate(selectedDates[0], "Y-m-d");
+                        let endDate = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
+
+                        let startDateDisplay = instance.formatDate(selectedDates[0], "D M d Y");
+                        let endDateDisplay = selectedDates[1] ? instance.formatDate(selectedDates[1], "D M d Y") : '';
+
+                        $("#mpcrbm_start_date").val(startDateDisplay);
+                        $("#mpcrbm_return_date").val(endDateDisplay);
+
+                        $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
+                        $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
+
+                        if (parent.length > 0) {
+                            parent.find("#mpcrbm_car_details_continue_btn").fadeIn();
+                            parent.find("#mpcrbm_car_already_booked").fadeOut();
+
+                            let car_id = parent.find('[name="mpcrbm_post_id"]').val();
+                            let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
+
+                            if (endDate) {
+                                mpcrbm_get_car_qty(startDate, car_id, day_wise_price);
+                            }
+                        }
+
+                        mpcrbm_get_selected_days();
+                    }
+                }
+            });
+
+        });
+    }
+    initFlatpickr();
+    window.addEventListener("resize", () => {
+
+        selectors.forEach(function(selector) {
+            if (selector._flatpickr) {
+                selector._flatpickr.destroy();
+            }
+        });
+
+        initFlatpickr();
     });
+
+    function mpcrbm_get_car_qty( startDate, car_id, day_wise_price ){
+        $.ajax({
+            type: 'POST',
+            url: mpcrbm_ajax.ajax_url,
+            data: {
+                action: "mpcrbm_get_car_qty_by_date",
+                startDate : startDate,
+                car_id : car_id,
+                day_wise_price : day_wise_price,
+                nonce: mpcrbm_ajax.nonce
+            },
+            beforeSend: function() {
+                console.log( 'Request' );
+            },
+            success: function(response) {
+                // console.log( response );
+                if( response.success ){
+                    parent.find('#mpcrbm_car_quantity_holder').html( response.data );
+                }
+            },
+            error: function(response) {
+                console.log(response);
+            }
+        });
+    }
 
 });
 

@@ -773,6 +773,15 @@ jQuery(document).ready(function($) {
         let qty = parseInt($qty_input.val()) || 1;
         mpcrbm_price_calculation( parent );
     });
+    // Handle car quantity changes
+    $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_get_car_qty"]', function () {
+        let parent = $(this).closest('.mpcrbm_car_details');
+        let $qty_input = parent.find('[name="mpcrbm_get_car_qty"]').val();
+        let qty = parseInt($qty_input) || 1;
+        // mpcrbm_price_calculation( parent );
+        mpcrbm_price_calculation_car_details_page(parent, qty);
+        parent.find( '.mpcrbm_car_qty_display' ).text( 'X'+qty );
+    });
 
     // Handle extra service quantity changes
     $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service_qty[]"]', function () {
@@ -781,6 +790,10 @@ jQuery(document).ready(function($) {
         checkAndToggleBookNowButton(parent);
     });
 
+    // Handle extra service quantity changes
+    $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service_qty[]"]', function () {
+        $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service[]"]').trigger('change');
+    });
 
 
     // Handle extra service selection
@@ -842,6 +855,15 @@ jQuery(document).ready(function($) {
         checkAndToggleBookNowButton(parent);
     });
 
+    // Handle extra service selection
+    $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service[]"]', function () {
+        let parent = $(this).closest('.mpcrbm_car_details');
+        let $qty_input = parent.find('[name="mpcrbm_get_car_qty"]').val();
+        let qty = parseInt($qty_input) || 1;
+        // mpcrbm_price_calculation( parent );
+        mpcrbm_price_calculation_car_details_page(parent, qty);
+    });
+
 
     function mpcrbm_number_of_car_booked(parent) {
         let total_car_qty = 0;
@@ -859,18 +881,45 @@ jQuery(document).ready(function($) {
 
         parent.find('#mpcrbm_selected_car_quantity').val( total_car_qty );
         parent.find('.mpcrbm_car_qty_display').text( 'x'+total_car_qty );
-
+        console.log( total_car_qty );
         if( total_car_qty === 0 ){
             return  1;
         }else{
             return total_car_qty;
         }
 
+
+
     }
 
     // Price calculation function
     function mpcrbm_price_calculation(parent) {
         let number_of_car = mpcrbm_number_of_car_booked( parent );
+
+        let target_summary = parent.find(".mpcrbm_transport_summary");
+        let total = 0;
+        let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
+        if (post_id > 0) {
+            total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+
+            total = total * number_of_car;
+
+            parent.find(".mpcrbm_extra_service_item").each(function () {
+                let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
+                if (service_name) {
+                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]');
+                    let ex_qty = parseInt(ex_target.val());
+                    let ex_price = ex_target.data("price");
+                    ex_price = ex_price && ex_price > 0 ? ex_price : 0;
+                    total = total + parseFloat(ex_price) * ex_qty;
+                }
+            });
+
+        }
+        target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
+    }
+    function mpcrbm_price_calculation_car_details_page(parent, number_of_car) {
+        // let number_of_car = mpcrbm_number_of_car_booked( parent );
 
         let target_summary = parent.find(".mpcrbm_transport_summary");
         let total = 0;
@@ -917,6 +966,9 @@ jQuery(document).ready(function($) {
         let link_id = $(this).attr('data-wc_link_id');
 
         let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
+        if( car_quantity == 0 ){
+            car_quantity = 1;
+        }
 
         if (start_place !== '' && end_place !== '' && link_id && post_id) {
             let extra_service_name = {};
@@ -1012,15 +1064,19 @@ jQuery(document).ready(function($) {
         minute = minute ? minute.padEnd(2, "0") : "00";
         hour = hour.padStart(2, "0");
         let date = `${mpcrbm_start_date} ${hour}:${minute}`;
-
+        if( start_place === null ){
+            start_place = '';
+        }
         // console.log( date );
-        if( end_place === '' ){
+        if( end_place === '' || end_place === null ){
             end_place = start_place;
         }
+        // console.log( date );
 
-        let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
 
-        if (start_place !== '' && end_place !== '' && link_id && post_id) {
+        let car_quantity = parent.find('[name="mpcrbm_get_car_qty"]').val();
+
+        if ( link_id && post_id) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
@@ -1224,6 +1280,17 @@ jQuery(document).ready(function($) {
         $popup.fadeOut(300);
     });
 
+    $(document).on("click", ".mpcrbm_car_details_faq_question", function(){
+
+        let currentItem = $(this).closest(".mpcrbm_car_details_faq_item");
+        let currentAnswer = currentItem.find(".mpcrbm_car_details_faq_answer");
+        $(".mpcrbm_car_details_faq_item").not(currentItem).removeClass("active")
+            .find(".mpcrbm_car_details_faq_answer").slideUp(300);
+        currentItem.toggleClass("active");
+        currentAnswer.stop(true, true).slideToggle(300);
+
+    });
+
     //Load moore car with search form handle
     function mpcrbmLoadMore(options) {
 
@@ -1305,7 +1372,7 @@ jQuery(document).ready(function($) {
         let get_price = dayWisePrice * totalDays;
         dayPrice = mpcrbm_price_format( dayPrice );
         parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
-        parentClass.find("#mpcrbm_selected_car_price").html(dayPrice);
+
 
         $.ajax({
             type: 'POST',
@@ -1323,7 +1390,12 @@ jQuery(document).ready(function($) {
 
                 if (data.success && data.data && data.data.calculated_price !== undefined) {
                     let calculated_price = mpcrbm_price_format( data.data.calculated_price );
+                    let day_wise = data.data.calculated_price/totalDays;
+                    let day_wise_price = mpcrbm_price_format( day_wise );
                     parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
+                    parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
+                    parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
+                    $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
                 }
             },
             error: function(response) {

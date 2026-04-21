@@ -11,11 +11,11 @@
 			public function __construct() {
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'general_settings' ] );
 				add_action( 'save_post', [ $this, 'save_general_settings' ] );
-				add_action('save_post', function() {
+				/*add_action('save_post', function() {
 					add_action('admin_notices', function() {
 						echo '<div class="notice notice-success"><p>Saved!</p></div>';
 					});
-				});
+				});*/
 			}
 
 			public function general_settings( $post_id ) {
@@ -36,6 +36,16 @@
 				
 				$max_passenger    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_passenger' );
 				$max_bag          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_bag' );
+				$stock_car          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
+				$booking_period          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_minimum_booking_period');
+                $enable_driver_information    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
+
+                $is_driver_checked = '';
+                $is_info_show = 'none';
+                if( $enable_driver_information === 'on' ){
+                    $is_driver_checked = 'checked';
+                    $is_info_show = 'block';
+                }
 
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_general_info">
@@ -150,18 +160,54 @@
                                 <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                             </label>
                         </section>
-
-                        <section class="bg-light" style="margin-top: 20px;">
-							<label class="label">
+                        <section>
+                            <label class="label">
                                 <div>
-                                    <h6><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h6>
-                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); ?></span>
+                                    <h6><?php esc_html_e( 'Car Stock', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_car_stock' ); ?></span>
                                 </div>
-							</label>	
+                                <input class="formControl price_validation" name="mpcrbm_car_stock" value="<?php echo esc_attr( $stock_car ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
+                            </label>
                         </section>
-						<div class="mpcrbm_driver_info">
-							<?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
+
+                        <?php
+                        if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) { ?>
+                            <section>
+                                <label class="label">
+                                    <div>
+                                        <h6><?php esc_html_e( 'Set Minimum Booking Date', 'car-rental-manager' ); ?></h6>
+                                        <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_minimum_rental_period' ); ?></span>
+                                    </div>
+                                    <input class="formControl price_validation" name="mpcrbm_minimum_booking_period" value="<?php echo esc_attr( $booking_period ); ?>" type="number" placeholder="<?php esc_html_e( 'EX:2', 'car-rental-manager' ); ?>"/>
+                                </label>
+                            </section>
+                        <?php }?>
+
+                        <div class="mpcrbm_driver_info_holder" id="mpcrbm_driver_info_holder">
+                            <section class="bg-light" style="margin-top: 20px;">
+                                <!--<label class="label">
+                                    <div>
+                                        <h6><?php /*esc_html_e( 'Driver Information', 'car-rental-manager' ); */?></h6>
+                                        <span class="desc"><?php /*MPCRBM_Settings::info_text( 'mpcrbm_driver_details' ); */?></span>
+                                    </div>
+                                </label>-->
+
+                                <div class="label">
+                                    <div>
+                                        <h6>Enable Driver Information</h6>
+                                        <span class="desc">By default show driver information in car OFF but you can keep it on by switching this option</span>
+                                    </div>
+                                    <label class="roundSwitchLabel">
+                                        <input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked );?> >
+                                        <span class="roundSwitch" data-collapse-target="#mpcrbm_enable_driver_information"></span>
+                                    </label>
+                                </div>
+                            </section>
+                            <div class="mpcrbm_driver_info" id="mpcrbm_get_driver_info" style="display: <?php echo esc_attr($is_info_show);?>">
+                                <?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
+                            </div>
 						</div>
+
                     </div>
                 </div>
 				<?php
@@ -180,6 +226,9 @@
 				if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 					$max_passenger = isset( $_POST['mpcrbm_maximum_passenger'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_maximum_passenger'] ) ) : '';
 					$max_bag       = isset( $_POST['mpcrbm_maximum_bag'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_maximum_bag'] ) ) : '';
+					$car_stock       = isset( $_POST['mpcrbm_car_stock'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_stock'] ) ) : 1;
+					$minimum_booking_period  = isset( $_POST['mpcrbm_minimum_booking_period'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_minimum_booking_period'] ) ) : '';
+
 					$taxonomies = [
 						'mpcrbm_car_type',
 						'mpcrbm_fuel_type',
@@ -197,11 +246,17 @@
 						}
 					}
 
+                    $mpcrbm_enable_driver_information = isset( $_POST['mpcrbm_enable_driver_information'] ) && sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_driver_information'] ) ) ? 'on' : 'off';
+//                    error_log( print_r( [ '$mpcrbm_enable_driver_information' => $mpcrbm_enable_driver_information ], true ) );
+
 					update_post_meta( $post_id, 'mpcrbm_maximum_passenger', $max_passenger );
 					update_post_meta( $post_id, 'mpcrbm_maximum_bag', $max_bag );
+					update_post_meta( $post_id, 'mpcrbm_car_stock', $car_stock );
+					update_post_meta( $post_id, 'mpcrbm_enable_driver_information', $mpcrbm_enable_driver_information );
+					update_post_meta( $post_id, 'mpcrbm_minimum_booking_period', $minimum_booking_period );
 
                     if ( isset( $_POST['mpcrbm_driver_info'] ) && is_array( $_POST['mpcrbm_driver_info'] ) ) {
-                        $driver_info = array_map( 'sanitize_text_field', $_POST['mpcrbm_driver_info'] );
+                       $driver_info = array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_driver_info'] ) );
                         update_post_meta( $post_id, 'mpcrbm_driver_info', $driver_info );
                     }
 					

@@ -7,30 +7,32 @@ defined( 'ABSPATH' ) || exit;
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-$content = '';
+$mpcrbm_content = '';
 
-$search_date= $_SESSION['search_date'] ?? '';
+// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+$mpcrbm_search_date= isset($_SESSION['search_date']) ?$_SESSION['search_date'] : '';
 
-$search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
-$search_defaults = MPCRBM_Shortcodes::default_attribute();
-$params = shortcode_atts( $search_defaults, $search_attribute );
+$mpcrbm_search_attribute = [ 'form'=>'inline', 'title'=>'no', 'ajax_search' => 'yes', 'progressbar' => 'no' ];
+$mpcrbm_search_defaults = MPCRBM_Shortcodes::default_attribute();
+$mpcrbm_params = shortcode_atts( $mpcrbm_search_defaults, $mpcrbm_search_attribute );
 ob_start();
-do_action( 'mpcrbm_transport_search', $params, $search_date );
-$action_output = ob_get_clean();
+do_action( 'mpcrbm_transport_search', $mpcrbm_params, $mpcrbm_search_date );
+$mpcrbm_action_output = ob_get_clean();
 
-$content .= $action_output;
+$mpcrbm_content .= $mpcrbm_action_output;
 
-$content .= $_SESSION['custom_content'] ?? '';
-$progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
-if( $progress_bar === 'no' ){
-    $progressbar_class = 'dNone';
+// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+$mpcrbm_content .= isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
+$mpcrbm_progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
+if( $mpcrbm_progress_bar === 'no' ){
+    $mpcrbm_progressbar_class = 'dNone';
 }else{
-    $progressbar_class = '';
+    $mpcrbm_progressbar_class = '';
 }
 
 // Redirect to homepage if empty
-if (empty($content)) {
-    wp_redirect(home_url());
+if ( empty( $mpcrbm_content ) ) {
+    wp_safe_redirect( home_url() ); 
     exit;
 }
 
@@ -48,14 +50,14 @@ if ( wp_is_block_theme() ) {
     if ( function_exists( 'block_header_area' ) ) {
         ob_start();
         block_header_area();
-        $header_html = trim( ob_get_clean() );
-
-        if ( $header_html ) {
+        $mpcrbm_header_html = trim( ob_get_clean() );
+        if ( $mpcrbm_header_html ) {
             wp_head();
             wp_body_open();
             echo '<div class="wp-site-blocks">';
             echo '<header class="wp-block-template-part site-header">';
-            echo $header_html;
+            // Use wp_kses_post to allow standard post-level HTML tags
+            echo wp_kses_post( $mpcrbm_header_html );
             echo '</header>';
             echo '</div>';
         } else {
@@ -72,15 +74,15 @@ if ( wp_is_block_theme() ) {
     <!-- Pass HTTP referrer to cookie -->
     <script type="text/javascript">
         (function() {
-            var httpReferrer = "<?php echo esc_js($_SERVER['HTTP_REFERER'] ?? ''); ?>";
+            var httpReferrer = "<?php echo esc_js(sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER'] ?? ''))); ?>";
             document.cookie = "httpReferrer=" + httpReferrer + ";path=/";
         })();
     </script>
 
-    <div id="maincontent" class="transport-result-page">
+    <div id="maincontent" class="transport-result-page" style="margin: auto">
         <div class="mpcrbm mpcrbm_transport_search_area">
             <div class="mpcrbm_tab_next _mT">
-                <div class="tabListsNext <?php echo esc_attr($progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
+                <div class="tabListsNext <?php echo esc_attr($mpcrbm_progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
                     <div data-tabs-target-next="#mpcrbm_pick_up_details" class="tabItemNext active" data-open-text="1" data-close-text=" " data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                         <h4 class="circleIcon" data-class>
                             <span class="mp_zero" data-icon></span>
@@ -105,7 +107,9 @@ if ( wp_is_block_theme() ) {
                 </div>
                 <div class="tabsContentNext">
                     <div data-tabs-next="#mpcrbm_pick_up_details" class="active mpcrbm_pick_up_details">
-                        <?php echo $content; ?>
+                      <?php
+                      // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                      echo $mpcrbm_content;  ?>
                     </div>
                 </div>
             </div>

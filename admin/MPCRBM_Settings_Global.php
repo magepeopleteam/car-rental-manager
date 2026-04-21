@@ -274,6 +274,83 @@
 							'default' => 'Find and Reserve your Perfect vehicle',
 							'placeholder' => 'Find and Reserve your Perfect vehicle'
 						),
+						array(
+							'name' => 'time_format_display',
+                            'label' => esc_html__('Display Time Format', 'car-rental-manager'),
+                            'desc' => esc_html__('Display Time Format In 12 Or 24', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => '12',
+                            'options' => array(
+                                '12' => esc_html__('12', 'car-rental-manager'),
+                                '24' => esc_html__('24', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'booking_with_out_location',
+                            'label' => esc_html__('Booking Car Without Location', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for booking car without location', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_review_section',
+                            'label' => esc_html__('Show Review Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display review section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_car_feature_section',
+                            'label' => esc_html__('Show Car Feature Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display car feature section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_pickup_location_section',
+                            'label' => esc_html__('Show Pickup Location Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display car pickup location section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_faq_section',
+                            'label' => esc_html__('Show FAQ Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display faq section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
+							'name' => 'car_details_term_condition',
+                            'label' => esc_html__('Show Term & Condition Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes for display term & condition section in car details page', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'yes',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(
@@ -358,6 +435,17 @@
                             'options' => array(
                                 'no' => esc_html__('Off', 'car-rental-manager'),
                                 'yes' => esc_html__('On', 'car-rental-manager')
+                            )
+                        ),
+                        array(
+                            'name' => 'hide_time_input_field_search_form',
+                            'label' => esc_html__('Hide Time Input Field From Search Form', 'car-rental-manager'),
+                            'desc' => esc_html__('Turn this yes if you do not want time input field in search form', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
                             )
                         ),
 					)),

@@ -41,10 +41,10 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
                 <section>
                     <div  id="field-wrapper-<?php echo esc_attr($post_id); ?>" class="<?php if(!empty($depends)) echo 'dependency-field'; ?> field-wrapper field-media-multi-wrapper field-media-multi-wrapper-<?php echo esc_attr($post_id); ?>">
                         <div class='button upload' id='media_upload_<?php echo esc_attr($post_id); ?>'>
-                            <?php echo __('Upload','pickplugins-options-framework');?>
+                            <?php echo esc_html__('Upload','car-rental-manager');?>
                         </div>
-                        <div class='button clear' id='media_clear_<?php echo $post_id; ?>'>
-                            <?php echo __('Clear','pickplugins-options-framework');?>
+                        <div class='button clear' id='media_clear_<?php echo esc_attr($post_id); ?>'>
+                            <?php echo esc_html__('Clear','car-rental-manager');?>
                         </div>
                         <div class="mpcrbm_gallery-images-lists media-list-<?php echo esc_attr($post_id); ?> ">
                             <?php
@@ -101,8 +101,8 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
             if ( ! isset( $_POST['mpcrbm_gallery_image_nonce'] ) ) {
                 return;
             }
-            if ( ! wp_verify_nonce( $_POST['mpcrbm_gallery_image_nonce'], 'mpcrbm_save_gallery_image_nonce' ) ) {
-                return;
+            if ( ! isset( $_POST['mpcrbm_gallery_image_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_image_nonce'] ) ), 'mpcrbm_save_gallery_image_nonce' ) ) {
+                return; // or wp_die( esc_html__( 'Security check failed.', 'text-domain' ) );
             }
 
             if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
@@ -114,7 +114,10 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
 
             if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
 
-                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? MPCRBM_Function::mpcrbm_array_strip( $_POST['mpcrbm_gallery_images'] ) : [];
+                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] )
+                    ? array_map( 'absint', wp_unslash( $_POST['mpcrbm_gallery_images'] ) )
+                    : [];
+//                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? map_deep( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_images'] ) ), 'absint' ) : [];
                 update_post_meta($post_id, 'mpcrbm_gallery_images', $gallery_images);
 
             }
