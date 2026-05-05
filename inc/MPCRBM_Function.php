@@ -70,7 +70,7 @@
                 global $wpdb;
 
                 if ( empty( $slug ) || empty( $taxonomy ) ) {
-                    return false;
+                    return '';
                 }
 
                 $cache_key = 'mpcrbm_term_name_' . md5( $slug . '_' . $taxonomy );
@@ -98,7 +98,27 @@
                     return $term_name;
                 }
 
-                return false;
+                if ( is_numeric( $slug ) ) {
+                    $term_name = self::get_taxonomy_name_by_id( (int) $slug, $taxonomy );
+                }
+
+                if ( ! $term_name ) {
+                    $term = get_term_by( 'slug', $slug, $taxonomy );
+                    if ( $term && ! is_wp_error( $term ) ) {
+                        $term_name = $term->name;
+                    }
+                }
+
+                // Fixed by Shahnur — blank pickup/dropoff location labels fallback and 2026-05-05 08:00 AM (Asia/Dhaka)
+                if ( ! $term_name ) {
+                    $fallback_name = sanitize_text_field( urldecode( (string) $slug ) );
+                    $fallback_name = str_replace( array( '-', '_' ), ' ', $fallback_name );
+                    $term_name     = ucwords( trim( preg_replace( '/\s+/', ' ', $fallback_name ) ) );
+                }
+
+                wp_cache_set( $cache_key, $term_name, 'mpcrbm_taxonomy_terms' );
+
+                return $term_name;
             }
 
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
