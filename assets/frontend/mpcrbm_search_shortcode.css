@@ -90,6 +90,9 @@ div.header-text h2 {
 .mpcrbm_width_33{
     width: 33.33%;
 }
+.mpcrbm_width_50{
+    width: 50%;
+}
 .mprcbm_checkbox_group {
     display: flex;
     align-items: center;
@@ -167,7 +170,7 @@ div.header-text h2 {
 	 background: #fff;
 	 border-radius: 12px;
 	 padding:8px;
-	 width: 33.33%;
+	 /*width: 33.33%;*/
 	 display: flex;
 	 gap: 1px;
  }
