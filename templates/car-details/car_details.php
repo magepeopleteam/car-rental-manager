@@ -66,10 +66,15 @@ $mpcrbm_tiered_discounts = get_post_meta( $mpcrbm_post_id, 'mpcrbm_tiered_discou
 $mpcrbm_location_prices = get_post_meta( $mpcrbm_post_id, 'mpcrbm_location_prices', true );
 
 $mpcrbm_location_price_info = get_post_meta( $mpcrbm_post_id, 'mpcrbm_terms_price_info', true );
-$mpcrbm_map_location = '';
-if( is_array( $mpcrbm_location_price_info ) && !empty( $mpcrbm_location_price_info ) ){
-    $mpcrbm_map_location = isset( $mpcrbm_location_price_info[0]['start_location'] ) ? $mpcrbm_location_price_info[0]['start_location'] : '';
+$mpcrbm_map_location = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_set_pickup_location', '' );
+if( !$mpcrbm_map_location ){
+    if( is_array( $mpcrbm_location_price_info ) && !empty( $mpcrbm_location_price_info ) ){
+        $mpcrbm_map_location = isset( $mpcrbm_location_price_info[0]['start_location'] ) ? $mpcrbm_location_price_info[0]['start_location'] : '';
+    }
 }
+error_log( print_r( [ '$mpcrbm_map_location' => $mpcrbm_map_location ], true ) );
+
+
 
 $mpcrbm_make_year = get_post_meta( $mpcrbm_post_id, 'mpcrbm_make_year', true );
 $mpcrbm_make_year = !empty($mpcrbm_make_year) ? $mpcrbm_make_year[0] : '';

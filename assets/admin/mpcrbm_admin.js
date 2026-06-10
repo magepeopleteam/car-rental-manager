@@ -273,4 +273,61 @@
 
 	});
 
+	/*let timer;
+	$("#mpcrbm_set_pickup_location").on("input", function () {
+		clearTimeout(timer);
+		let query = $(this).val().trim();
+		if (query.length < 3) {
+			$("#mpcrbm_text_suggestions").hide();
+			return;
+		}
+		timer = setTimeout(function () {
+
+			$.ajax({
+				url: "https://nominatim.openstreetmap.org/search",
+				data: {
+					format: "jsonv2",
+					q: query,
+					limit: 5
+				},
+				success: function (data) {
+
+					let box = $("#mpcrbm_text_suggestions");
+					box.empty();
+
+					if (data.length === 0) {
+						box.hide();
+						return;
+					}
+
+					$.each(data, function (i, place) {
+						let item = $("<div class='mpcrbm_text_item'></div>");
+						console.log( place.display_name );
+
+						item.text(place.display_name);
+
+						item.on("click", function () {
+							$("#mpcrbm_set_pickup_location").val(place.display_name);
+							box.hide();
+						});
+
+						box.append(item);
+					});
+
+					box.show();
+				},
+				error: function () {
+					console.log("Error fetching locations");
+				}
+			});
+
+		}, 300);
+
+	});
+	$(document).on("click", function (e) {
+		if (!$(e.target).closest(".container").length) {
+			$("#mpcrbm_text_suggestions").hide();
+		}
+	});*/
+
 })(jQuery);
