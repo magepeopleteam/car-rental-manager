@@ -8,7 +8,256 @@
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 		class MPCRBM_Dummy_Import {
 			public function __construct() {
-				add_action('admin_init', array($this, 'dummy_import'), 99);
+				// This class can be instantiated more than once (file-level + admin loader).
+				// Register hooks only once so the modal/scripts are not output twice.
+				static $booted = false;
+				if ($booted) {
+					return;
+				}
+				$booted = true;
+				add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
+				add_action('admin_footer', array($this, 'render_popup'));
+				add_action('wp_ajax_mpcrbm_import_dummy_data', array($this, 'ajax_import_dummy_data'));
+				add_action('wp_ajax_mpcrbm_dismiss_dummy_import', array($this, 'ajax_dismiss_dummy_import'));
+			}
+
+			/**
+			 * Whether demo data can be offered: plugin active, no cars yet and
+			 * demo data not already imported.
+			 *
+			 * @return bool
+			 */
+			public function is_eligible() {
+				if (get_option('mpcrbm_dummy_already_inserted', 'no') === 'yes') {
+					return false;
+				}
+				$plugin_active = MPCRBM_Global_Function::check_plugin('car-rental-manager', 'car-rental-manager.php');
+				if ($plugin_active != 1) {
+					return false;
+				}
+				$count = wp_count_posts('mpcrbm_rent');
+				$published = isset($count->publish) ? (int) $count->publish : 0;
+				return $published === 0;
+			}
+
+			/**
+			 * Restrict the modal to the Car Rental Manager admin screens so it
+			 * never appears on the Plugins page or other unrelated admin pages
+			 * (e.g. right after activating the PRO plugin).
+			 *
+			 * @return bool
+			 */
+			private function is_plugin_screen() {
+				if (!function_exists('get_current_screen')) {
+					return false;
+				}
+				$screen = get_current_screen();
+				if (!$screen) {
+					return false;
+				}
+				if (isset($screen->post_type) && $screen->post_type === 'mpcrbm_rent') {
+					return true;
+				}
+				return strpos($screen->id, 'mpcrbm') !== false;
+			}
+
+			/**
+			 * Whether the popup should auto-open (eligible and not dismissed).
+			 *
+			 * @return bool
+			 */
+			private function should_auto_show_popup() {
+				if (!$this->is_eligible()) {
+					return false;
+				}
+				return get_option('mpcrbm_dummy_import_dismissed') !== 'yes';
+			}
+
+			/**
+			 * Enqueue the shared installer styling (reused for the import modal).
+			 */
+			public function enqueue_assets() {
+				if (!$this->is_eligible() || !$this->is_plugin_screen()) {
+					return;
+				}
+				wp_enqueue_style(
+					'mpcrbm-woo-installer',
+					MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm_woo_installer.css',
+					array(),
+					MPCRBM_PLUGIN_VERSION
+				);
+				wp_enqueue_script('jquery');
+			}
+
+			/**
+			 * Render the "Import demo data?" modal in the admin footer.
+			 */
+			public function render_popup() {
+				if (!$this->is_eligible() || !$this->is_plugin_screen()) {
+					return;
+				}
+				$display_style = $this->should_auto_show_popup() ? '' : 'display: none;';
+				$ajax_url     = admin_url('admin-ajax.php');
+				$nonce        = wp_create_nonce('mpcrbm_dummy_import');
+				$redirect_url = admin_url('edit.php?post_type=mpcrbm_rent&page=mpcrbm_car_rental');
+				?>
+				<div id="mpcrbm-dummy-overlay" class="mpcrbm-woo-overlay" style="<?php echo esc_attr($display_style); ?>">
+					<div class="mpcrbm-woo-popup">
+						<div class="mpcrbm-woo-header">
+							<div class="mpcrbm-woo-header-icon">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+									<path d="M5 11l1.5-5h11L19 11M5 11h14M5 11l-1 6h16l-1-6M8 17v2M16 17v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</div>
+							<span class="mpcrbm-woo-header-text"><?php esc_html_e('Car Rental Manager', 'car-rental-manager'); ?></span>
+						</div>
+
+						<div class="mpcrbm-woo-icon-wrapper">
+							<div class="mpcrbm-woo-icon">
+								<svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+									<path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+								</svg>
+							</div>
+						</div>
+
+						<div class="mpcrbm-woo-content">
+							<h2 class="mpcrbm-woo-title"><?php esc_html_e('Import Demo Data?', 'car-rental-manager'); ?></h2>
+							<p class="mpcrbm-woo-desc">
+								<?php esc_html_e('Would you like to import demo cars, categories, and settings to see how Car Rental Manager works? You can edit or delete them anytime.', 'car-rental-manager'); ?>
+							</p>
+						</div>
+
+						<div id="mpcrbm-dummy-progress" class="mpcrbm-woo-progress" style="display:none;">
+							<div class="mpcrbm-woo-progress-bar">
+								<div id="mpcrbm-dummy-progress-fill" class="mpcrbm-woo-progress-fill"></div>
+							</div>
+							<p id="mpcrbm-dummy-status-text" class="mpcrbm-woo-status-text"></p>
+						</div>
+
+						<div class="mpcrbm-woo-actions">
+							<button type="button" id="mpcrbm-dummy-import-btn" class="mpcrbm-woo-btn mpcrbm-woo-btn-primary">
+								<span class="mpcrbm-woo-btn-icon">
+									<svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+										<path d="M10 3v10m0 0l-4-4m4 4l4-4M3 17h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+									</svg>
+								</span>
+								<span class="mpcrbm-woo-btn-text"><?php esc_html_e('Yes, Import Data', 'car-rental-manager'); ?></span>
+							</button>
+							<button type="button" id="mpcrbm-dummy-dismiss-btn" class="mpcrbm-woo-btn mpcrbm-woo-btn-secondary">
+								<?php esc_html_e('No, Skip', 'car-rental-manager'); ?>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<script>
+				(function ($) {
+					'use strict';
+					var cfg = {
+						ajax_url: '<?php echo esc_js($ajax_url); ?>',
+						nonce: '<?php echo esc_js($nonce); ?>',
+						importing: '<?php echo esc_js(__('Importing demo data, please wait...', 'car-rental-manager')); ?>',
+						success: '<?php echo esc_js(__('Demo data imported successfully!', 'car-rental-manager')); ?>',
+						redirecting: '<?php echo esc_js(__('Redirecting...', 'car-rental-manager')); ?>',
+						redirect: '<?php echo esc_url_raw($redirect_url); ?>',
+						error: '<?php echo esc_js(__('Import failed. Please try again.', 'car-rental-manager')); ?>'
+					};
+					$(function () {
+						var $overlay  = $('#mpcrbm-dummy-overlay');
+						if (!$overlay.length) { return; }
+						var $popup    = $overlay.find('.mpcrbm-woo-popup');
+						var $btn      = $('#mpcrbm-dummy-import-btn');
+						var $dismiss  = $('#mpcrbm-dummy-dismiss-btn');
+						var $progress = $('#mpcrbm-dummy-progress');
+						var $fill     = $('#mpcrbm-dummy-progress-fill');
+						var $status   = $('#mpcrbm-dummy-status-text');
+						var $actions  = $overlay.find('.mpcrbm-woo-actions');
+						var working   = false;
+
+						$btn.on('click', function (e) {
+							e.preventDefault();
+							if (working) { return; }
+							working = true;
+							$btn.prop('disabled', true);
+							$actions.slideUp(250);
+							$progress.slideDown(300);
+							$fill.css('width', '40%');
+							$status.text(cfg.importing).removeClass('mpcrbm-success mpcrbm-error');
+
+							$.ajax({
+								url: cfg.ajax_url,
+								type: 'POST',
+								dataType: 'json',
+								data: { action: 'mpcrbm_import_dummy_data', nonce: cfg.nonce },
+								success: function (res) {
+									if (res && res.success) {
+										$fill.css('width', '100%');
+										$popup.addClass('mpcrbm-state-success');
+										$status.text(cfg.success).addClass('mpcrbm-success');
+										setTimeout(function () {
+											$status.text(cfg.redirecting);
+											window.location.href = cfg.redirect;
+										}, 1400);
+									} else {
+										showError(res && res.data && res.data.message ? res.data.message : cfg.error);
+									}
+								},
+								error: function () { showError(cfg.error); }
+							});
+						});
+
+						$dismiss.on('click', function (e) {
+							e.preventDefault();
+							$.ajax({
+								url: cfg.ajax_url,
+								type: 'POST',
+								dataType: 'json',
+								data: { action: 'mpcrbm_dismiss_dummy_import', nonce: cfg.nonce }
+							});
+							$overlay.fadeOut(200);
+						});
+
+						function showError(message) {
+							working = false;
+							$popup.addClass('mpcrbm-state-error');
+							$status.text(message).addClass('mpcrbm-error');
+							$btn.prop('disabled', false);
+							$actions.slideDown(250);
+							setTimeout(function () {
+								$popup.removeClass('mpcrbm-state-error');
+								$progress.slideUp(250);
+								$fill.css('width', '0%');
+							}, 3500);
+						}
+					});
+				})(jQuery);
+				</script>
+				<?php
+			}
+
+			/**
+			 * AJAX: import the demo data on user confirmation.
+			 */
+			public function ajax_import_dummy_data() {
+				check_ajax_referer('mpcrbm_dummy_import', 'nonce');
+				if (!current_user_can('manage_options')) {
+					wp_send_json_error(array('message' => __('You do not have permission to import data.', 'car-rental-manager')));
+				}
+				$this->dummy_import();
+				update_option('mpcrbm_dummy_already_inserted', 'yes');
+				wp_send_json_success(array('message' => __('Demo data imported successfully!', 'car-rental-manager')));
+			}
+
+			/**
+			 * AJAX: remember that the user skipped the demo import.
+			 */
+			public function ajax_dismiss_dummy_import() {
+				check_ajax_referer('mpcrbm_dummy_import', 'nonce');
+				if (!current_user_can('manage_options')) {
+					wp_send_json_error(array('message' => __('You do not have permission.', 'car-rental-manager')));
+				}
+				update_option('mpcrbm_dummy_import_dismissed', 'yes');
+				wp_send_json_success();
 			}
 
 			public function dummy_import() {

@@ -3,7 +3,7 @@
 	 * Plugin Name:       Car Rental Manager – Online Vehicle Booking System
 	 * Plugin URI:        https://wordpress.org/plugins/car-rental-manager
 	 * Description:       A complete car rental solution for WordPress by MagePeople. Manage bookings, vehicles, pricing, and availability with ease.
-	 * Version:           1.3.1
+	 * Version:           1.3.5
 	 * Author:            MagePeople Team
 	 * Author URI:        https://www.mage-people.com/
 	 * License:           GPL v2 or later
@@ -40,34 +40,27 @@
                     define('MPCRBM_PRO_PLUGIN_NAME', 'car-rental-manager-pro/MPCRBM_Plugin_Pro.php');
                 }
 				require_once MPCRBM_PLUGIN_DIR . '/mp_global/MPCRBM_Global_File_Load.php';
-				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
 
-					add_action( 'activated_plugin', array( $this, 'activation_redirect' ), 90, 1 );
+				// Dependency installer popup: shows a blocking popup on every admin page
+				// while WooCommerce is missing and installs/activates it (chunked) via AJAX.
+				// It also handles the post-activation redirect to the car list.
+				if ( is_admin() ) {
+					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Woo_Installer.php';
+				}
+
+				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
 					self::on_activation_page_create();
 					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Dependencies.php';
                 	add_action('init', array($this, 'mpcrbm_register_cpt'));
-
-				} else {
-					require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Quick_Setup.php';
-					//add_action('admin_notices', [$this, 'woocommerce_not_active']);
-					add_action( 'activated_plugin', array( $this, 'activation_redirect_setup' ), 90, 1 );
 				}
 			}
 
-			public function activation_redirect( $plugin ) {
-				$quick_setup_done = get_option( 'mpcrbm_quick_setup_done' );
-				if ( $plugin == plugin_basename( __FILE__ ) && $quick_setup_done != 'yes' ) {
-					wp_safe_redirect( admin_url( 'edit.php?post_type=mpcrbm_rent&page=mpcrbm_quick_setup' ) );
-					exit();
-				}
-			}
-
-			public function activation_redirect_setup( $plugin ) {
-				$quick_setup_done = get_option( 'mpcrbm_quick_setup_done' );
-				if ( $plugin == plugin_basename( __FILE__ ) && $quick_setup_done != 'yes' ) {
-					wp_safe_redirect( admin_url( 'admin.php?post_type=mpcrbm_rent&page=mpcrbm_quick_setup' ) );
-					exit();
-				}
+			/**
+			 * Runs on plugin activation. Flags the activation so the WooCommerce
+			 * installer popup can redirect to the car list once WooCommerce is active.
+			 */
+			public static function on_activation(): void {
+				set_transient( 'mpcrbm_plugin_activated', true, 60 );
 			}
 
 			public static function on_activation_page_create(): void {
@@ -210,5 +203,6 @@
 			}
 
 		}
+		register_activation_hook( __FILE__, array( 'MPCRBM_Plugin', 'on_activation' ) );
 		new MPCRBM_Plugin();
 	}

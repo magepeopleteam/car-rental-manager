@@ -11,7 +11,6 @@
 			public function __construct() {
 				if ( is_admin() ) {
 					$this->load_file();
-					add_action( 'init', [ $this, 'add_dummy_data' ] );
 					add_filter( 'use_block_editor_for_post_type', [ $this, 'disable_gutenberg' ], 10, 2 );
 					add_filter( 'wp_mail_content_type', array( $this, 'email_content_type' ) );
 					add_action( 'upgrader_process_complete', [ $this, 'flush_rewrite' ], 0 );
@@ -26,7 +25,6 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Dummy_Import.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Hidden_Product.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_CPT.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Quick_Setup.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Status.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Guideline.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_License.php';
@@ -48,10 +46,6 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Faq_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Feature.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Term_Condition_Setting.php';
-			}
-
-			public function add_dummy_data() {
-				new MPCRBM_Dummy_Import();
 			}
 
 			//************Disable Gutenberg************************//
