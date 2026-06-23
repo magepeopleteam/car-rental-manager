@@ -87,6 +87,20 @@ if ($post_id) {
     if (!$mpcrbm_price || $mpcrbm_price <= 0) {
         return;
     }
+
+    $deposit_amount = 0;
+    $deposit_enable =  MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_security_deposit_enable', 'off' );
+    if ( $deposit_enable === 'on' ) {
+        $security_deposit_type = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_security_deposit_type', 'fixed' ) ;
+        $deposit_amount = floatval( MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_security_deposit', 0 ) ) ;
+        if( $security_deposit_type === 'fixed' ){
+            $deposit_price = $deposit_amount;
+        }else{
+            $deposit_price = $mpcrbm_price * ( $deposit_amount / 100 );
+        }
+
+        $mpcrbm_price = $mpcrbm_price + $deposit_price;
+    }
     
     $mpcrbm_wc_price = MPCRBM_Global_Function::wc_price( $post_id, $mpcrbm_price );
     $mpcrbm_raw_price = MPCRBM_Global_Function::price_convert_raw( $mpcrbm_wc_price );
