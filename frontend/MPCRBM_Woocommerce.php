@@ -11,6 +11,23 @@
 			private $custom_order_data = array(); // Property to store the data
 			private $ordered_item_name;
 
+			private static function calculate_security_deposit( $post_id, $base_price = 0 ) {
+				$enable = get_post_meta( $post_id, 'mpcrbm_security_deposit_enable', true );
+				if ( $enable !== 'on' ) {
+					return 0;
+				}
+				$amount = get_post_meta( $post_id, 'mpcrbm_security_deposit', true );
+				$amount = ( $amount !== '' && $amount !== false ) ? floatval( $amount ) : 0;
+				if ( $amount <= 0 ) {
+					return 0;
+				}
+				$type = get_post_meta( $post_id, 'mpcrbm_security_deposit_type', true );
+				if ( $type === 'percentage' ) {
+					return $base_price > 0 ? round( $base_price * $amount / 100, 2 ) : 0;
+				}
+				return $amount;
+			}
+
 			public function __construct() {
 				add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'product_custom_field_to_custom_order_notes' ), 100, 2 );
 				add_filter( 'woocommerce_add_cart_item_data', array( $this, 'cart_item_data' ), 90, 3 );
@@ -96,9 +113,11 @@
 					$cart_item_data['mpcrbm_duration_text']       = isset( $_COOKIE['mpcrbm_duration_text'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['mpcrbm_duration_text'] ) ) : '';
 					$cart_item_data['mpcrbm_base_price']          = $raw_price;
 					$cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id );
-					$cart_item_data['mpcrbm_tp']                  = $total_price;
-					$cart_item_data['line_total']                = $total_price;
-					$cart_item_data['line_subtotal']             = $total_price;
+					$security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
+					$cart_item_data['mpcrbm_security_deposit']   = $security_deposit;
+					$cart_item_data['mpcrbm_tp']                  = $total_price + $security_deposit;
+					$cart_item_data['line_total']                = $total_price + $security_deposit;
+					$cart_item_data['line_subtotal']             = $total_price + $security_deposit;
 					$return_target_date                         = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
 					$return_target_time                         = isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : '';
 					$cart_item_data['mpcrbm_return_target_date'] = $return_target_date;
@@ -183,9 +202,10 @@
 					$return         = $values['mpcrbm_taxi_return'] ?? '';
 					$waiting_time   = $values['mpcrbm_waiting_time'] ?? '';
 					$fixed_time     = $values['mpcrbm_fixed_hours'] ?? 0;
-					$extra_service  = $values['mpcrbm_extra_service_info'] ?? [];
-					$price          = $values['mpcrbm_tp'] ?? '';
-					$car_quantity   = $values['mpcrbm_car_quantity'] ?? '';
+					$extra_service    = $values['mpcrbm_extra_service_info'] ?? [];
+					$price            = $values['mpcrbm_tp'] ?? '';
+					$car_quantity     = $values['mpcrbm_car_quantity'] ?? '';
+					$security_deposit = isset( $values['mpcrbm_security_deposit'] ) ? floatval( $values['mpcrbm_security_deposit'] ) : 0;
 					$item->add_meta_data( esc_html__( 'Pickup Location ', 'car-rental-manager' ), $start_location );
 					$item->add_meta_data( esc_html__( 'Return Location ', 'car-rental-manager' ), $end_location );
 					$price_type = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_price_based' );
@@ -237,6 +257,10 @@
 					$item->add_meta_data( '_mpcrbm_car_quantity', $car_quantity );
                     $item->add_meta_data( esc_html__( 'Car Quantity ', 'car-rental-manager' ), wp_kses_post( $car_quantity ) );
 					$item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ) );
+					if ( $security_deposit > 0 ) {
+						$item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( wc_price( $security_deposit ) ) );
+					}
+					$item->add_meta_data( 'mpcrbm_security_depost', $security_deposit );
 					if ( sizeof( $extra_service ) > 0 ) {
 						$item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
 						foreach ( $extra_service as $service ) {
@@ -371,6 +395,8 @@
 								$price        = $price ? MPCRBM_Global_Function::data_sanitize( $price ) : [];
 								$car_quantity = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_car_quantity' );
                                 $car_quantity = $car_quantity ? MPCRBM_Global_Function::data_sanitize( $car_quantity ) : 1;
+								$security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, 'mpcrbm_security_depost' );
+								$security_deposit_order = $security_deposit_order ? floatval( MPCRBM_Global_Function::data_sanitize( $security_deposit_order ) ) : 0;
 								// Add meta array data to the $data array
 								$data = array_merge( $meta_array, [
 									'mpcrbm_id'                          => $post_id,
@@ -396,6 +422,7 @@
 									'mpcrbm_billing_email'               => $order->get_billing_email(),
 									'mpcrbm_billing_phone'               => $order->get_billing_phone(),
 									'mpcrbm_car_quantity'                => $car_quantity,
+									'mpcrbm_security_depost'             => $security_deposit_order,
 									'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
 								] );
 								$booking_data = apply_filters( 'mpcrbm_add_booking_data', $data, $post_id );
@@ -562,6 +589,16 @@
                                 <h6 class="_mR_xs"><?php esc_html_e( 'Base Price : ', 'car-rental-manager' ); ?></h6>
                                 <span>(<?php echo wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ); ?>) = <?php echo wp_kses_post( wc_price( $base_price * $car_quantity ) )?></span>
                             </li>
+							<?php
+							$security_deposit = array_key_exists( 'mpcrbm_security_deposit', $cart_item ) ? floatval( $cart_item['mpcrbm_security_deposit'] ) : 0;
+							if ( $security_deposit > 0 ) {
+								?>
+                            <li>
+                                <span class="fa fa-shield-alt"></span>
+                                <h6 class="_mR_xs"><?php esc_html_e( 'Security Deposit : ', 'car-rental-manager' ); ?></h6>
+                                <span><?php echo wp_kses_post( wc_price( $security_deposit ) ); ?></span>
+                            </li>
+							<?php } ?>
 							<?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
                         </ul>
                     </div>

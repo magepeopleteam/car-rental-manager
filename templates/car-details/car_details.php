@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 $mpcrbm_post_id = $post_id ?? get_the_id();
-$mpcrbm_thumbnail_url = get_the_post_thumbnail_url($mpcrbm_post_id, 'full');
+$mpcrbm_thumbnail_url = get_the_post_thumbnail_url($mpcrbm_post_id, 'full');+
 
 $mpcrbm_include_features = get_post_meta( $mpcrbm_post_id, 'mpcrbm_include_features', true );
 $mpcrbm_include_feature_names = [];
@@ -584,7 +584,8 @@ if ( $deposit_enable === 'on' ) {
                             <div class="mpcrbm_car_quantity" id="mpcrbm_car_quantity_holder" data-collapse="<?php echo esc_attr($mpcrbm_post_id); ?>" style="display: flex; justify-content: space-between">
                                 <div class="mpcrbm_car_quantity_title"><?php esc_html_e('Car Quantity', 'car-rental-manager') ?></div>
                                 <?php
-                                MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $mpcrbm_day_price, $mpcrbm_available_stock, 1, 0);
+                                $total = $mpcrbm_day_price + $deposit_price;
+                                MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $total, $mpcrbm_available_stock, 1, 0);
                                 ?>
                             </div>
                             <?php }?>
