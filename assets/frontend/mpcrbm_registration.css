@@ -136,6 +136,24 @@
 		border: 1px solid var(--color_success);
 		color: var(--color_theme_alter);
 	}
+	div.mpcrbm_transport_search_area a.mpcrbm_in_cart_btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		background-color: #f0a500;
+		border: 1px solid #f0a500;
+		color: #fff;
+		padding: 10px;
+		border-radius: 50px;
+		text-decoration: none;
+		font-size: inherit;
+		cursor: pointer;
+	}
+	div.mpcrbm_transport_search_area a.mpcrbm_in_cart_btn:hover {
+		background-color: #d4900a;
+		border-color: #d4900a;
+		color: #fff;
+	}
 	button.mpcrbm_price_calculation span:nth-child(2){
 		margin-right: 5px;
 	}

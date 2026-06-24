@@ -320,10 +320,28 @@ if ($post_id) {
 
                         </div>
                     </div>
+                    <?php
+                    $mpcrbm_in_cart = false;
+                    if ( function_exists( 'WC' ) && WC()->cart ) {
+                        foreach ( WC()->cart->get_cart() as $mpcrbm_cart_item ) {
+                            if ( isset( $mpcrbm_cart_item['mpcrbm_id'] ) && (int) $mpcrbm_cart_item['mpcrbm_id'] === (int) $post_id ) {
+                                $mpcrbm_in_cart = true;
+                                break;
+                            }
+                        }
+                    }
+                    ?>
                     <div class="mpcrbm_add_multiple_qty">
                         <div class=" mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
                             <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $mpcrbm_raw_price, $mpcrbm_car_qty, 1, 0); ?>
                         </div>
+                        <?php if ( $mpcrbm_in_cart ) : ?>
+                        <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>"
+                           class="_mpBtn_xs mpcrbm_in_cart_btn">
+                            <span class="fas fa-shopping-cart mR_xs"></span>
+                            <span><?php esc_html_e( 'In Cart – Go to Checkout', 'car-rental-manager' ); ?></span>
+                        </a>
+                        <?php else : ?>
                         <button type="button"
                                 class="_mpBtn_xs mpcrbm_transport_select"
                                 data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
@@ -336,6 +354,7 @@ if ($post_id) {
                             <span class="" data-icon></span>
                             <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
                         </button>
+                        <?php endif; ?>
                     </div>
 
                 </div>

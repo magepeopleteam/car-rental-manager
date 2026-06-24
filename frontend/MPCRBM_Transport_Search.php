@@ -93,6 +93,9 @@
 			}
 
 			public function mpcrbm_get_map_search_result() {
+                if ( function_exists( 'WC' ) && WC()->cart ) {
+                    WC()->cart->empty_cart();
+                }
                 $is_redirect = 'no';
 				include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 				die(); // Ensure further execution stops after outputting the JavaScript
@@ -118,6 +121,10 @@
 
                 if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                     wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
+                }
+
+                if ( function_exists( 'WC' ) && WC()->cart ) {
+                    WC()->cart->empty_cart();
                 }
 
                 // Cookie থেকে distance/duration
