@@ -289,13 +289,32 @@ if ($post_id) {
                                     <div class="mpcrbm_discount-info" style="color: #d26e4b; font-weight: bold; margin-top: 2px;">
                                         <?php echo sprintf(
                                         // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-                                                esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))
+                                            esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))
                                         ); ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
 
                         </div>
+                        <?php
+                        $mpcrbm_security_deposit_result = 0;
+                        $mpcrbm_sd_enable = get_post_meta( $post_id, 'mpcrbm_security_deposit_enable', true );
+                        if ( $mpcrbm_sd_enable === 'on' ) {
+                            $mpcrbm_sd_amount = floatval( get_post_meta( $post_id, 'mpcrbm_security_deposit', true ) );
+                            $mpcrbm_sd_type   = get_post_meta( $post_id, 'mpcrbm_security_deposit_type', true );
+                            if ( $mpcrbm_sd_type === 'percentage' ) {
+                                $mpcrbm_security_deposit_result = $mpcrbm_raw_price > 0 ? round( $mpcrbm_raw_price * $mpcrbm_sd_amount / 100, 2 ) : 0;
+                            } else {
+                                $mpcrbm_security_deposit_result = $mpcrbm_sd_amount;
+                            }
+                        }
+                        if ( $mpcrbm_security_deposit_result > 0 ) { ?>
+                            <div class="mpcrbm_security_deposit_info" style="margin-top: 6px; font-size: 0.9em; color: #555;">
+                                <span class="fa fa-shield-alt" style="margin-right: 4px;"></span>
+                                <?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?>
+                                <strong><?php echo wp_kses_post( wc_price( $mpcrbm_security_deposit_result ) ); ?></strong>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div class="mpcrbm_add_multiple_qty">
                         <div class=" mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
@@ -305,6 +324,7 @@ if ($post_id) {
                                 class="_mpBtn_xs mpcrbm_transport_select"
                                 data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
                                 data-transport-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
+                                data-security-deposit="<?php echo esc_attr($mpcrbm_security_deposit_result); ?>"
                                 data-post-id="<?php echo esc_attr($post_id); ?>"
                                 data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
                                 data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"

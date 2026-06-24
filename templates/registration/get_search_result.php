@@ -162,6 +162,7 @@ if( is_array( $mpcrbm_post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
     <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($mpcrbm_return_time); ?>" />
 
     <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
+    <input type="hidden" id="mpcrbm_security_deposit_value" name="mpcrbm_security_deposit_value" value="0" />
 
     <div class="sticky_section mpcrbm_search_result_holder" >
         <div class="mpcrbm_left_filter">
@@ -216,7 +217,7 @@ if( is_array( $mpcrbm_post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
                             <div class="mpcrbm_search_result_load_more_holder">
                                 <div class="mpcrbm_load_more_btn">Load More Car</div>
                             </div>
-                       <?php }
+                        <?php }
                     } else {
                         ?>
                         <div class="_dLayout_mT_bgWarning">
@@ -260,7 +261,7 @@ if( is_array( $mpcrbm_post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
     <div class="sticky_section">
         <div class="flexWrap">
             <?php
-//            include MPCRBM_Function::template_path("registration/summary.php"); ?>
+            //            include MPCRBM_Function::template_path("registration/summary.php"); ?>
             <div class="mpcrbm_mainSection ">
                 <div class="sticky_depend_area fdColumn mpcrbm_checkout_area">
                 </div>
