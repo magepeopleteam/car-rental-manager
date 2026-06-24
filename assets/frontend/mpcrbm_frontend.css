@@ -11,30 +11,76 @@
 }
 
 .mpcrbm-filter-feature-input select:focus {
-  /* Add your styling here */
-  border-color: #007bff; /* Example border color */
-  outline: none; /* Remove default focus outline */
-  background-color: #fff !important;
-  /* Add any other styles you want for the focus state */
+    /* Add your styling here */
+    border-color: #007bff; /* Example border color */
+    outline: none; /* Remove default focus outline */
+    background-color: #fff !important;
+    /* Add any other styles you want for the focus state */
 }
 
 .geo-fence-no-transport{
-  display: none;
+    display: none;
 }
 .mpcrbm_manual_start_place , .mpcrbm_map_end_place{
-  text-transform: capitalize;
+    text-transform: capitalize;
 }
 .wp-block-post-title{
-  text-align: center;
+    text-align: center;
 }
 
 .mpcrbm_list{
-  gap: 10px;
-  justify-content: space-between;
-  display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    display: flex;
 }
 
 
+
+/* Security Deposit Badge */
+.mpcrbm_deposit_wrap {
+    display: block;
+    margin-top: 8px;
+}
+.mpcrbm_security_deposit_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f0f7ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #1d4ed8;
+    font-weight: 600;
+    transition: background 0.2s, border-color 0.2s;
+}
+.mpcrbm_security_deposit_badge:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+}
+.mpcrbm_security_deposit_badge .fa-shield-alt {
+    color: #2563eb;
+}
+.mpcrbm_deposit_info_icon {
+    color: #93c5fd;
+    font-size: 11px;
+}
+.mpcrbm_deposit_tooltip {
+    width: 260px;
+    right: auto;
+    left: 0;
+}
+.mpcrbm_deposit_tooltip h4 {
+    color: #7dd3fc !important;
+    font-size: 12px;
+}
+.mpcrbm_deposit_tooltip p {
+    font-size: 11px;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
 
 /*Pricing Rules*/
 .mpcrbm_price_hover_wrap {
@@ -169,16 +215,16 @@
 
 
 @media (max-width: 768px) {
-  .mpcrbm_list{
-    flex-direction: column;
-    align-items: center;
-  }
-  .mpcrbm_list .mpcrbm_booking_items{
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    gap: 20px;
-    align-items: center;
-  }
-  
+    .mpcrbm_list{
+        flex-direction: column;
+        align-items: center;
+    }
+    .mpcrbm_list .mpcrbm_booking_items{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        gap: 20px;
+        align-items: center;
+    }
+
 }
