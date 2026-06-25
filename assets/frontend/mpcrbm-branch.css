@@ -1,0 +1,180 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Branch Manager — Frontend Styles
+   Branch info card shown after a customer selects a pickup location.
+   One-way fee notice shown when pickup and dropoff are different branches.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Branch Info Card ────────────────────────────────────────────────── */
+.mpcrbm-branch-info-card {
+    background: #f0f6fc;
+    border: 1px solid #bee3f8;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 10px;
+    font-size: 13px;
+    animation: mpcrbm-branch-fadein 0.3s ease;
+}
+
+.mpcrbm-branch-info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.mpcrbm-branch-info-card-header i {
+    color: #2271b1;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.mpcrbm-branch-info-card-header strong {
+    font-size: 15px;
+    color: #1a4971;
+    font-weight: 600;
+}
+
+.mpcrbm-branch-info-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mpcrbm-branch-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #555;
+}
+
+.mpcrbm-branch-info-row i {
+    color: #2271b1;
+    font-size: 13px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
+}
+
+/* Hours section */
+.mpcrbm-branch-hours-toggle {
+    background: none;
+    border: none;
+    color: #2271b1;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 0;
+    text-decoration: underline;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.mpcrbm-branch-hours-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 12px;
+}
+
+.mpcrbm-branch-hours-table th,
+.mpcrbm-branch-hours-table td {
+    padding: 4px 8px;
+    text-align: left;
+    border-bottom: 1px solid #d0e8f8;
+}
+
+.mpcrbm-branch-hours-table th {
+    font-weight: 600;
+    color: #1a4971;
+    background: #e6f2fc;
+}
+
+.mpcrbm-branch-hours-table .is-closed {
+    color: #cc0000;
+    font-style: italic;
+}
+
+.mpcrbm-branch-hours-table .is-open {
+    color: #2e7d32;
+}
+
+/* ── One-Way Fee Notice ──────────────────────────────────────────────── */
+.mpcrbm-oneway-fee-notice {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 10px;
+    font-size: 13px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: mpcrbm-branch-fadein 0.3s ease;
+}
+
+.mpcrbm-oneway-fee-notice i {
+    color: #f59e0b;
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.mpcrbm-oneway-fee-notice-body strong {
+    display: block;
+    color: #78350f;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.mpcrbm-oneway-fee-notice-body span {
+    color: #92400e;
+    font-size: 12px;
+}
+
+/* ── Branch Multiplier Notice ────────────────────────────────────────── */
+.mpcrbm-branch-surcharge-notice {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #78350f;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mpcrbm-branch-surcharge-notice i {
+    color: #d97706;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────── */
+.mpcrbm-branch-info-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    color: #888;
+    font-size: 13px;
+}
+
+.mpcrbm-branch-info-loading::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ddd;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: mpcrbm-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes mpcrbm-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes mpcrbm-branch-fadein {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

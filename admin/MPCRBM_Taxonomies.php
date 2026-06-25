@@ -444,6 +444,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature"><i class="mi mi-list-timeline"></i> <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq"><i class="mi mi-messages-question"></i> <?php esc_attr_e( 'Manage Faq', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition"><i class="mi mi-blog-text"></i> <?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></button>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_branch_manager"><i class="mi mi-map-location-track"></i> <?php esc_attr_e( 'Branch Manager', 'car-rental-manager' );?></button>
 
                     </div>
                 </div>
@@ -539,6 +540,13 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_term_condition_holder" style="display: none">
                             <?php
                                 MPCRBM_Manage_Faq::term_and_condition_display(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                            ?>
+                        </div>
+                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_branch_manager_holder" style="display: none">
+                            <?php
+                                if ( class_exists( 'MPCRBM_Branch_Manager' ) ) {
+                                    MPCRBM_Branch_Manager::render_branch_dashboard(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                                }
                             ?>
                         </div>
                     </div>

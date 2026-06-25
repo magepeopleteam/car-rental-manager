@@ -34,6 +34,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Branch_Manager.php';
 			}
 
 			public function global_enqueue() {
@@ -49,13 +50,23 @@
 				wp_enqueue_style( 'mpcrbm_price_set', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_price_set.css', array(), time() );
 				wp_enqueue_style( 'mpcrbm_order_list', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_order_list.css', array(), time() );
 				wp_enqueue_style( 'mpcrbm_manage_taxonomy', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_manage_taxonomy.css', array(), time() );
+				wp_enqueue_style( 'mpcrbm_branch_manager', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm-branch-manager.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_admin', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_admin.js', array( 'jquery' ), time(), true );
 				wp_enqueue_script( 'mpcrbm_order_lists', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_order_lists.js', array( 'jquery' ), time(), true );
 				wp_enqueue_script( 'mpcrbm_manage_taxonomy', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_manage_taxonomy.js', array( 'jquery' ), time(), true );
+				wp_enqueue_script( 'mpcrbm_branch_manager', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm-branch-manager.js', array( 'jquery' ), time(), true );
 				$nonce = wp_create_nonce( 'mpcrbm_extra_service' );
 				wp_localize_script( 'mpcrbm_admin', 'mpcrbm_admin_nonce', array(
 					'nonce' => $nonce,
                     'site_url' => get_site_url(),
+				) );
+				wp_localize_script( 'mpcrbm_branch_manager', 'mpcrbmBranchAdmin', array(
+					'loadingText'       => __( 'Loading…', 'car-rental-manager' ),
+					'carsText'          => __( 'cars', 'car-rental-manager' ),
+					'transferText'      => __( 'Transfer', 'car-rental-manager' ),
+					'transferringText'  => __( 'Transferring…', 'car-rental-manager' ),
+					'selectBranchText'  => __( 'Please select a target branch.', 'car-rental-manager' ),
+					'confirmTransferText' => __( 'Transfer this car to the selected branch?', 'car-rental-manager' ),
 				) );
 				// Trigger the action hook to add additional scripts if needed
 				do_action( 'mpcrbm_admin_script' );
@@ -74,6 +85,9 @@
 				// Localize scripts
 				wp_enqueue_style( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.js', array( 'jquery' ), time(), true );
+				wp_enqueue_style( 'mpcrbm_branch', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch.css', array(), time() );
+				wp_enqueue_script( 'mpcrbm_branch', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch.js', array( 'jquery' ), time(), true );
+				wp_localize_script( 'mpcrbm_branch', 'mpcrbmBranchL10n', $this->get_branch_l10n() );
 				// Localize scripts
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbm_ajax', array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -87,6 +101,39 @@
 				) );
 
 				do_action( 'mpcrbm_frontend_script' );
+			}
+
+			/** Build branch localization data for the frontend JS. */
+			private function get_branch_l10n(): array {
+				$one_way_fees  = [];
+				$multipliers   = [];
+				$terms = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
+				if ( ! is_wp_error( $terms ) ) {
+					foreach ( $terms as $term ) {
+						$tid = $term->term_id;
+						$fee  = get_term_meta( $tid, 'mpcrbm_branch_one_way_fee', true );
+						$mult = get_term_meta( $tid, 'mpcrbm_branch_multiplier', true );
+						if ( $fee  !== '' ) { $one_way_fees[ $term->slug ]  = floatval( $fee ); }
+						if ( $mult !== '' ) { $multipliers[ $term->slug ]   = floatval( $mult ?: 1.0 ); }
+					}
+				}
+				return [
+					'ajax_url'     => admin_url( 'admin-ajax.php' ),
+					'one_way_fees' => $one_way_fees,
+					'multipliers'  => $multipliers,
+					'currency'     => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
+					'strings'      => [
+						'loading'         => __( 'Loading branch info…', 'car-rental-manager' ),
+						'viewHours'       => __( 'View opening hours', 'car-rental-manager' ),
+						'hideHours'       => __( 'Hide opening hours', 'car-rental-manager' ),
+						'closed'          => __( 'Closed', 'car-rental-manager' ),
+						'day'             => __( 'Day', 'car-rental-manager' ),
+						'hours'           => __( 'Hours', 'car-rental-manager' ),
+						'oneWayFeeLabel'  => __( 'One-way return fee', 'car-rental-manager' ),
+						'oneWayFeeDesc'   => __( 'Applied because the return location is a different branch.', 'car-rental-manager' ),
+						'branchSurcharge' => __( 'branch price adjustment', 'car-rental-manager' ),
+					],
+				];
 			}
 
             public function mpcrbm_enque_flatpickr() {

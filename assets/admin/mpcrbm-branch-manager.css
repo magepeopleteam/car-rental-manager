@@ -1,0 +1,405 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Branch Manager — Admin Styles
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Branch Dashboard Layout ─────────────────────────────────────────── */
+.mpcrbm-branch-dashboard {
+    display: flex;
+    gap: 16px;
+    min-height: 60vh;
+    background: #f5f5f5;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.mpcrbm-branch-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mpcrbm-branch-sidebar h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+    margin: 0 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #2271b1;
+}
+
+.mpcrbm-branch-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mpcrbm-no-branches {
+    color: #666;
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* ── Branch Card (sidebar) ─────────────────────────────────────────────── */
+.mpcrbm-branch-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mpcrbm-branch-card:hover,
+.mpcrbm-branch-card.is-active {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.15);
+}
+
+.mpcrbm-branch-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.mpcrbm-branch-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+.mpcrbm-car-count-badge {
+    background: #2271b1;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.mpcrbm-branch-meta-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: #666;
+    margin: 3px 0;
+}
+
+.mpcrbm-branch-meta-row i {
+    margin-top: 1px;
+    color: #2271b1;
+    flex-shrink: 0;
+}
+
+.mpcrbm-branch-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 6px 0;
+}
+
+.mpcrbm-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.mpcrbm-badge-multiplier {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+
+.mpcrbm-badge-fee {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+.mpcrbm-branch-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.mpcrbm-branch-card-actions .button {
+    font-size: 11px;
+    padding: 2px 8px;
+    height: auto;
+    line-height: 1.8;
+}
+
+/* ── Cars Panel (main area) ───────────────────────────────────────────── */
+.mpcrbm-branch-cars-panel {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.mpcrbm-branch-cars-panel-header {
+    background: #2271b1;
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mpcrbm-branch-cars-panel-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 16px;
+}
+
+.mpcrbm-panel-car-count {
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 10px;
+}
+
+.mpcrbm-branch-cars-panel-body {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.mpcrbm-select-prompt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #999;
+    font-size: 14px;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.mpcrbm-select-prompt i {
+    font-size: 24px;
+    color: #ccc;
+}
+
+.mpcrbm-no-cars {
+    color: #666;
+    font-style: italic;
+    padding: 20px 0;
+    text-align: center;
+}
+
+/* ── Car Cards Grid ───────────────────────────────────────────────────── */
+.mpcrbm-branch-cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.mpcrbm-branch-car-card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+}
+
+.mpcrbm-branch-car-card:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+}
+
+.mpcrbm-car-thumb {
+    height: 130px;
+    overflow: hidden;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mpcrbm-car-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mpcrbm-car-thumb-placeholder {
+    color: #ccc;
+    font-size: 48px;
+}
+
+.mpcrbm-car-info {
+    padding: 10px 12px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mpcrbm-car-info strong {
+    font-size: 14px;
+    color: #1d2327;
+    display: block;
+}
+
+.mpcrbm-home-badge {
+    font-size: 11px;
+    color: #666;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.mpcrbm-price-badge {
+    font-size: 12px;
+    color: #2271b1;
+    font-weight: 600;
+}
+
+/* ── Transfer Form ───────────────────────────────────────────────────── */
+.mpcrbm-car-transfer-form {
+    padding: 10px 12px 12px;
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mpcrbm-transfer-target {
+    width: 100%;
+    font-size: 12px;
+}
+
+.mpcrbm-transfer-reason {
+    width: 100%;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.mpcrbm-car-transfer-form .button {
+    font-size: 11px;
+    padding: 3px 10px;
+    height: auto;
+    line-height: 1.8;
+    text-align: center;
+}
+
+/* ── Transfer Log Table (car edit page) ─────────────────────────────── */
+.mpcrbm-transfer-log-table {
+    font-size: 13px;
+    margin-top: 0;
+}
+
+.mpcrbm-transfer-log-table th {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* ── Hours Table (term edit page) ───────────────────────────────────── */
+.mpcrbm-hours-table {
+    border-collapse: collapse;
+    font-size: 13px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.mpcrbm-hours-table th,
+.mpcrbm-hours-table td {
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+.mpcrbm-hours-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+}
+
+.mpcrbm-hours-table input[type="time"] {
+    padding: 3px 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 110px;
+}
+
+.mpcrbm-hours-table input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* ── Branch section title (term add/edit pages) ─────────────────────── */
+.mpcrbm-branch-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2271b1;
+    margin: 16px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #ddd;
+}
+
+.mpcrbm-branch-section-row td {
+    padding-bottom: 0 !important;
+}
+
+/* ── Loading spinner ─────────────────────────────────────────────────── */
+.mpcrbm-branch-loading {
+    text-align: center;
+    padding: 30px 0;
+    color: #666;
+    font-size: 13px;
+}
+
+.mpcrbm-branch-loading::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid #ddd;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: mpcrbm-spin 0.8s linear infinite;
+    margin: 0 auto 10px;
+}
+
+@keyframes mpcrbm-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Toast notification ──────────────────────────────────────────────── */
+.mpcrbm-branch-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+    z-index: 99999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    animation: mpcrbm-toast-in 0.3s ease;
+    max-width: 350px;
+}
+
+.mpcrbm-branch-toast.is-success { background: #00a32a; }
+.mpcrbm-branch-toast.is-error   { background: #d63638; }
+
+@keyframes mpcrbm-toast-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
