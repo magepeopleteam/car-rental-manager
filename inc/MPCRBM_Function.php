@@ -972,77 +972,48 @@
 
             public static function mpcrbm_check_operation_area_seach_form($post_id, $start_place, $end_place)
             {
-                // Check if multi-location is enabled for this vehicle
+                // 1. Branch check: car's physical location must match the pickup place
+                $home_branch    = get_post_meta($post_id, 'mpcrbm_home_branch', true);
+                $current_branch = get_post_meta($post_id, 'mpcrbm_current_branch', true);
+
+                if (!empty($home_branch)) {
+                    $effective_branch = !empty($current_branch) ? $current_branch : $home_branch;
+                    if ($start_place === $effective_branch) {
+                        return true;
+                    }
+                }
+
+                // 2. Multi-location check
                 $multi_location_enabled = get_post_meta($post_id, 'mpcrbm_multi_location_enabled', true);
+                $location_prices        = get_post_meta($post_id, 'mpcrbm_location_prices', true);
 
-                $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
-
-                if ($multi_location_enabled && !empty($location_prices) && is_array($location_prices) ) {
-                    // Use new multi-location system
-
-
-                    if (!empty($location_prices) && is_array($location_prices)) {
-                        // First, try to find exact match
-                        foreach ($location_prices as $price_data) {
-                            if ($price_data['pickup_location'] === $start_place &&
-                                $price_data['dropoff_location'] === $end_place) {
-                                return true; // Found exact matching location combination
-                            }
-                        }
-
-                        // If no exact match, check if both locations exist in any combination
-                        $start_found = false;
-                        $end_found = false;
-
-                        foreach ($location_prices as $price_data) {
-                            if ($price_data['pickup_location'] === $start_place ||
-                                $price_data['dropoff_location'] === $start_place) {
-                                $start_found = true;
-                            }
-                            if ($price_data['pickup_location'] === $end_place ||
-                                $price_data['dropoff_location'] === $end_place) {
-                                $end_found = true;
-                            }
-
-                            if ($start_found && $end_found) {
-                                return true;
-                            }
-                        }
-                    }
-
-                    return false;
-                } else {
-                    // Use old location system - be more flexible
-                    $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
-
-                    if (!is_array($saved_locations) || empty($saved_locations)) {
-                        return true;
-                    }
-
-                    $start_place = strtolower(trim($start_place));
-                    $end_place   = strtolower(trim($end_place));
-
-                    $start_locations = array_column($saved_locations, 'start_location');
-                    $start_locations = array_map(function($value) {
-                        return strtolower(trim($value));
-                    }, $start_locations);
-                    $start_locations = array_unique($start_locations);
-                    $start_place = strtolower(trim($start_place));
-                    if ( in_array($start_place, $start_locations) && in_array($end_place, $start_locations) ) {
-                        return true;
-                    }
-
-
-                    /*foreach ($saved_locations as $location) {
-                        $start_location = strtolower(trim($location['start_location'] ?? ''));
-                        $end_location   = strtolower(trim($location['end_location'] ?? ''));
-                        if ($start_location === $start_place && $end_location === $end_place) {
+                if ($multi_location_enabled && !empty($location_prices) && is_array($location_prices)) {
+                    foreach ($location_prices as $price_data) {
+                        if ($price_data['pickup_location'] === $start_place &&
+                            $price_data['dropoff_location'] === $end_place) {
                             return true;
                         }
-                    }*/
-
-                    return false;
+                    }
                 }
+
+                // 3. Old operation area check
+                $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
+
+                if (!is_array($saved_locations) || empty($saved_locations)) {
+                    return true;
+                }
+
+                $start_place     = strtolower(trim($start_place));
+                $end_place       = strtolower(trim($end_place));
+                $start_locations = array_unique(array_map(function($value) {
+                    return strtolower(trim($value));
+                }, array_column($saved_locations, 'start_location')));
+
+                if (in_array($start_place, $start_locations) && in_array($end_place, $start_locations)) {
+                    return true;
+                }
+
+                return false;
             }
             public static function mpcrbm_get_schedule_search_form($post_id, $days_name, $selected_date, $start_time_schedule, $return_time_schedule, $price_based)
             {
