@@ -84,6 +84,12 @@ if ($post_id) {
     // Use multi-location pricing if enabled, otherwise use default pricing
     $mpcrbm_price = MPCRBM_Function::calculate_multi_location_price($post_id, $mpcrbm_start_place, $mpcrbm_end_place, $mpcrbm_start_date_time, $mpcrbm_return_date_time);
 
+    $mpcrbm_branch_one_way_fee = ( $mpcrbm_start_place !== $mpcrbm_end_place )
+        ? MPCRBM_Branch_Manager::get_one_way_fee( $mpcrbm_start_place )
+        : 0;
+
+    $mpcrbm_price = $mpcrbm_price + $mpcrbm_branch_one_way_fee;
+
     if (!$mpcrbm_price || $mpcrbm_price <= 0) {
         return;
     }
@@ -226,19 +232,31 @@ if ($post_id) {
                         </div>
                     </div>
 
-                    <?php if ( $deposit_price > 0 ) : ?>
-                        <div class="mpcrbm_price_hover_wrap mpcrbm_deposit_wrap">
+                    <div class="" style="display: flex; gap: 15px;">
+                        <?php if ( $deposit_price > 0 ) : ?>
+                            <div class="mpcrbm_price_hover_wrap mpcrbm_deposit_wrap">
                             <span class="mpcrbm_security_deposit_badge">
                                 <span class="fa fa-shield-alt"></span>
                                 <span><?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?> <?php echo wp_kses_post( wc_price( $deposit_price ) ); ?></span>
                                 <span class="fa fa-info-circle mpcrbm_deposit_info_icon"></span>
                             </span>
-                            <div class="mpcrbm_display_pricing_rules mpcrbm_deposit_tooltip">
-                                <h4><span class="fa fa-shield-alt"></span> <?php esc_html_e( 'Security Deposit (Refundable)', 'car-rental-manager' ); ?></h4>
-                                <p><?php esc_html_e( 'This security deposit is refundable. After your order and trip are completed, the owner can refund this amount fully or partially based on the vehicle condition.', 'car-rental-manager' ); ?></p>
+                                <div class="mpcrbm_display_pricing_rules mpcrbm_deposit_tooltip">
+                                    <h4><span class="fa fa-shield-alt"></span> <?php esc_html_e( 'Security Deposit (Refundable)', 'car-rental-manager' ); ?></h4>
+                                    <p><?php esc_html_e( 'This security deposit is refundable. After your order and trip are completed, the owner can refund this amount fully or partially based on the vehicle condition.', 'car-rental-manager' ); ?></p>
+                                </div>
                             </div>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+
+                        <?php if ( $mpcrbm_branch_one_way_fee > 0 ) : ?>
+                            <div class="mpcrbm_price_hover_wrap mpcrbm_deposit_wrap">
+                            <span class="mpcrbm_one_way_price_badge">
+                                <span class="fa fa-shield-alt"></span>
+                                <span><?php esc_html_e( 'One Way Fee:', 'car-rental-manager' ); ?> <?php echo wp_kses_post( wc_price( $mpcrbm_branch_one_way_fee ) ); ?></span>
+                            </span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
                 </div>
                 <div class="mpcrbm_discount_booking">
                     <div class="mpcrbm_price_holder">
