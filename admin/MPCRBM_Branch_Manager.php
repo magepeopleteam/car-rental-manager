@@ -255,6 +255,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				return;
 			}
 
+			$branch_enabled = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
 			$home_branch    = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
 			$current_branch = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
 			$branches       = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
@@ -262,15 +263,22 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			$transfer_log   = is_array( $transfer_log ) ? $transfer_log : [];
 
 			wp_nonce_field( 'mpcrbm_branch_nonce', 'mpcrbm_branch_nonce_field' );
+			$enabled_checked = $branch_enabled === '1' ? 'checked' : '';
+			$enabled_display = $branch_enabled === '1' ? 'block' : 'none';
 			?>
 			<div class="tabsItem" data-tabs="#mpcrbm_branch_assignment">
 				<h2><?php esc_html_e( 'Branch Assignment', 'car-rental-manager' ); ?></h2>
 				<p><?php esc_html_e( 'Assign this car to a branch and track its current physical location.', 'car-rental-manager' ); ?></p>
 
-				<section class="bg-light">
-					<h6><?php esc_html_e( 'Branch Settings', 'car-rental-manager' ); ?></h6>
-					<span><?php esc_html_e( 'Changing "Current Branch" here creates an audit log entry.', 'car-rental-manager' ); ?></span>
+				<section class="bg-light" style="display: flex; justify-content: space-between">
+					<div>
+						<h6><?php esc_html_e( 'Branch Settings', 'car-rental-manager' ); ?></h6>
+						<span><?php esc_html_e( 'Changing "Current Branch" here creates an audit log entry.', 'car-rental-manager' ); ?></span>
+					</div>
+					<?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_branch_enabled', $enabled_checked ); ?>
 				</section>
+
+				<div class="mpcrbm-section" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_branch_enabled">
 
 				<section>
 					<div class="label">
@@ -311,6 +319,8 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 						</div>
 					</div>
 				</section>
+
+				</div><!-- data-collapse="#mpcrbm_branch_enabled" -->
 
 				<?php if ( ! empty( $transfer_log ) ) : ?>
 
@@ -367,10 +377,12 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				return;
 			}
 
+			$enabled     = isset( $_POST['mpcrbm_branch_enabled'] ) ? '1' : '0';
 			$old_current = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
 			$home        = sanitize_text_field( wp_unslash( $_POST['mpcrbm_home_branch'] ?? '' ) );
 			$current     = sanitize_text_field( wp_unslash( $_POST['mpcrbm_current_branch'] ?? '' ) );
 
+			update_post_meta( $post_id, 'mpcrbm_branch_enabled', $enabled );
 			update_post_meta( $post_id, 'mpcrbm_home_branch', $home );
 			update_post_meta( $post_id, 'mpcrbm_current_branch', $current );
 

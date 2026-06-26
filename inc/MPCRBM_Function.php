@@ -972,13 +972,13 @@
 
             public static function mpcrbm_check_operation_area_seach_form($post_id, $start_place, $end_place)
             {
-                // 1. Branch check: car's physical location must match the pickup place
-                $home_branch    = get_post_meta($post_id, 'mpcrbm_home_branch', true);
-                $current_branch = get_post_meta($post_id, 'mpcrbm_current_branch', true);
-
-                if (!empty($home_branch)) {
+                // 1. Branch check: only when branch assignment is enabled for this car
+                $branch_enabled = get_post_meta($post_id, 'mpcrbm_branch_enabled', true);
+                if ($branch_enabled === '1') {
+                    $home_branch    = get_post_meta($post_id, 'mpcrbm_home_branch', true);
+                    $current_branch = get_post_meta($post_id, 'mpcrbm_current_branch', true);
                     $effective_branch = !empty($current_branch) ? $current_branch : $home_branch;
-                    if ($start_place === $effective_branch) {
+                    if (!empty($effective_branch) && $start_place === $effective_branch) {
                         return true;
                     }
                 }
