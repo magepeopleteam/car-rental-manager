@@ -837,16 +837,27 @@
              * @return array
              */
             public static function get_vehicle_pickup_locations( $post_id ) {
-                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
-                
-                if ( ! $multi_location_enabled ) {
-                    // Return default locations from existing system
-                    return self::get_all_start_location( $post_id );
-                }
-                
-                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
                 $pickup_locations = array();
-                
+
+                // Branch assignment: effective branch is always a valid pickup location
+                $branch_enabled = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
+                if ( $branch_enabled === '1' ) {
+                    $current_branch   = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
+                    $home_branch      = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
+                    $effective_branch = ! empty( $current_branch ) ? $current_branch : $home_branch;
+                    if ( ! empty( $effective_branch ) ) {
+                        $pickup_locations[] = $effective_branch;
+                    }
+                }
+
+                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
+
+                if ( ! $multi_location_enabled ) {
+                    return array_unique( array_merge( $pickup_locations, self::get_all_start_location( $post_id ) ) );
+                }
+
+                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
+
                 if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
                     foreach ( $location_prices as $price_data ) {
                         if ( ! empty( $price_data['pickup_location'] ) ) {
@@ -854,7 +865,7 @@
                         }
                     }
                 }
-                
+
                 return array_unique( $pickup_locations );
             }
 
