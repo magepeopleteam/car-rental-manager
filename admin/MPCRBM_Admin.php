@@ -47,6 +47,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Manage_Feature.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Term_Condition_Setting.php';
                 require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Security_Deposit_Setting.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_User_Branch_Manager.php';
 			}
 
 			//************Disable Gutenberg************************//
