@@ -12,6 +12,24 @@
             let content_holder_id = currentType+'_holder';
             $("#"+content_holder_id).fadeIn();
 
+            // Pro gate: show upgrade popup if tab requires pro and pro is not active
+            var isProRequired = $(this).data('pro-required') == 1;
+            var isPro = (typeof mpcrbmBranchAdmin !== 'undefined') && !!mpcrbmBranchAdmin.isPro;
+            if ( isProRequired && !isPro ) {
+                $('#mpcrbm-pro-upgrade-overlay').fadeIn(200);
+            }
+        });
+
+        // Pro popup close — button
+        $(document).on('click', '#mpcrbm-pro-upgrade-close', function () {
+            $('#mpcrbm-pro-upgrade-overlay').fadeOut(200);
+        });
+
+        // Pro popup close — click backdrop
+        $(document).on('click', '.mpcrbm-pro-upgrade-overlay', function (e) {
+            if ( $(e.target).hasClass('mpcrbm-pro-upgrade-overlay') ) {
+                $(this).fadeOut(200);
+            }
         });
 
         $(document).on('click', '.mpcrbm_taxonomies_add_btn', function () {

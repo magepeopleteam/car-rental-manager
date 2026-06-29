@@ -444,7 +444,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature"><i class="mi mi-list-timeline"></i> <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq"><i class="mi mi-messages-question"></i> <?php esc_attr_e( 'Manage Faq', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition"><i class="mi mi-blog-text"></i> <?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></button>
+                        <?php if ( is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ) ) : ?>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_branch_manager"><i class="mi mi-map-location-track"></i> <?php esc_attr_e( 'Branch Manager', 'car-rental-manager' );?></button>
+                        <?php else : ?>
+                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_branch_manager" data-pro-required="1"><i class="mi mi-map-location-track"></i> <?php esc_attr_e( 'Branch Manager', 'car-rental-manager' );?><span class="mpcrbm-pro-badge">PRO</span></button>
+                        <?php endif; ?>
 
                     </div>
                 </div>
@@ -543,11 +547,13 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_branch_manager_holder" style="display: none">
-                            <?php
-                                if ( class_exists( 'MPCRBM_Branch_Manager' ) ) {
+                            <?php if ( is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ) ) : ?>
+                                <?php if ( class_exists( 'MPCRBM_Branch_Manager' ) ) {
                                     MPCRBM_Branch_Manager::render_branch_dashboard(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                }
-                            ?>
+                                } ?>
+                            <?php else : ?>
+                                <?php self::render_branch_manager_dummy(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -569,6 +575,38 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         </div>
                     </div>
                 </div>
+
+                <!-- Pro Upgrade Popup -->
+                <div id="mpcrbm-pro-upgrade-overlay" class="mpcrbm-pro-upgrade-overlay" style="display:none">
+                    <div class="mpcrbm-pro-upgrade-popup">
+                        <button type="button" class="mpcrbm-pro-upgrade-close" id="mpcrbm-pro-upgrade-close">&times;</button>
+                        <div class="mpcrbm-pro-popup-top">
+                            <span class="mpcrbm-pro-popup-crown">&#x1F451;</span>
+                            <span class="mpcrbm-pro-popup-badge"><?php esc_html_e( 'PRO FEATURE', 'car-rental-manager' ); ?></span>
+                        </div>
+                        <h2 class="mpcrbm-pro-popup-title"><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
+                        <p class="mpcrbm-pro-popup-desc">
+                            <?php esc_html_e( 'Assign cars to branches, track one-way rentals, manage transfer logs, and set per-branch pricing and operating hours.', 'car-rental-manager' ); ?>
+                        </p>
+                        <ul class="mpcrbm-pro-popup-features">
+                            <li><i class="mi mi-check-circle"></i> <?php esc_html_e( 'Multi-branch car assignment', 'car-rental-manager' ); ?></li>
+                            <li><i class="mi mi-check-circle"></i> <?php esc_html_e( 'Car transfer logs & audit trail', 'car-rental-manager' ); ?></li>
+                            <li><i class="mi mi-check-circle"></i> <?php esc_html_e( 'One-way rental fee management', 'car-rental-manager' ); ?></li>
+                            <li><i class="mi mi-check-circle"></i> <?php esc_html_e( 'Branch operating hours', 'car-rental-manager' ); ?></li>
+                            <li><i class="mi mi-check-circle"></i> <?php esc_html_e( 'Per-branch price multiplier', 'car-rental-manager' ); ?></li>
+                        </ul>
+                        <div class="mpcrbm-pro-popup-actions">
+                            <a href="https://mage-people.com/product/wordpress-car-rental-plugin/" target="_blank" class="mpcrbm-pro-buy-btn">
+                                <i class="mi mi-shopping-cart"></i>
+                                <?php esc_html_e( 'Purchase Pro Plugin', 'car-rental-manager' ); ?>
+                            </a>
+                            <a href="https://mage-people.com/product/wordpress-car-rental-plugin/" target="_blank" class="mpcrbm-pro-learn-link">
+                                <?php esc_html_e( 'Learn More', 'car-rental-manager' ); ?> &rarr;
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <?php
@@ -617,6 +655,94 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             }
 
             wp_send_json_success(['message' => 'Taxonomy deleted successfully!']);
+        }
+
+        private static function render_branch_manager_dummy() {
+            $purchase_url   = 'https://mage-people.com/product/car-rental-manager-pro/';
+            $dummy_branches = [
+                [ 'name' => 'Downtown Branch',  'cars' => 4, 'address' => '123 Main St, Downtown',     'phone' => '+1 (555) 000-1111' ],
+                [ 'name' => 'Airport Terminal', 'cars' => 7, 'address' => "Terminal B, Int'l Airport",  'phone' => '+1 (555) 000-2222' ],
+                [ 'name' => 'City Center Hub',  'cars' => 2, 'address' => '45 Central Ave, City',       'phone' => '+1 (555) 000-3333' ],
+            ];
+            $dummy_cars = [
+                [ 'name' => 'Toyota Camry XLE',  'price' => '$85',  'home' => 'Downtown Branch'  ],
+                [ 'name' => 'BMW 5 Series',       'price' => '$150', 'home' => 'Airport Terminal' ],
+                [ 'name' => 'Honda Civic LX',     'price' => '$60',  'home' => 'City Center Hub'  ],
+                [ 'name' => 'Mercedes C-Class',   'price' => '$180', 'home' => 'Downtown Branch'  ],
+            ];
+            ?>
+            <div class="mpcrbm-pro-branch-preview">
+
+                <!-- Dummy blurred dashboard -->
+                <div class="mpcrbm-pro-dummy-dashboard" aria-hidden="true">
+
+                    <div class="mpcrbm-pro-dummy-sidebar">
+                        <div class="mpcrbm-pro-dummy-sidebar-header">
+                            <span class="mpcrbm-pro-dummy-label"><?php esc_html_e( 'BRANCHES', 'car-rental-manager' ); ?></span>
+                            <span class="mpcrbm-pro-dummy-pill"><?php echo count( $dummy_branches ); ?></span>
+                        </div>
+                        <div class="mpcrbm-pro-dummy-branch-list">
+                            <?php foreach ( $dummy_branches as $i => $b ) : ?>
+                            <div class="mpcrbm-pro-dummy-branch-card <?php echo $i === 0 ? 'is-active' : ''; ?>">
+                                <div class="mpcrbm-pro-dummy-branch-header">
+                                    <span><?php echo esc_html( $b['name'] ); ?></span>
+                                    <span class="mpcrbm-pro-dummy-count <?php echo $i === 0 ? 'is-active' : ''; ?>"><?php echo esc_html( $b['cars'] ); ?></span>
+                                </div>
+                                <div class="mpcrbm-pro-dummy-meta"><i class="mi mi-map-marker"></i><?php echo esc_html( $b['address'] ); ?></div>
+                                <div class="mpcrbm-pro-dummy-meta"><i class="mi mi-phone"></i><?php echo esc_html( $b['phone'] ); ?></div>
+                                <div class="mpcrbm-pro-dummy-actions">
+                                    <span class="mpcrbm-pro-dummy-btn-primary"><?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?></span>
+                                    <span class="mpcrbm-pro-dummy-btn"><?php esc_html_e( 'Edit', 'car-rental-manager' ); ?></span>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="mpcrbm-pro-dummy-footer">
+                            <span class="mpcrbm-pro-dummy-add-link">+ <?php esc_html_e( 'Add New Branch', 'car-rental-manager' ); ?></span>
+                        </div>
+                    </div>
+
+                    <div class="mpcrbm-pro-dummy-panel">
+                        <div class="mpcrbm-pro-dummy-panel-header">
+                            <span><?php esc_html_e( 'Downtown Branch', 'car-rental-manager' ); ?></span>
+                            <span class="mpcrbm-pro-dummy-panel-count">4 <?php esc_html_e( 'cars', 'car-rental-manager' ); ?></span>
+                        </div>
+                        <div class="mpcrbm-pro-dummy-cars-grid">
+                            <?php foreach ( $dummy_cars as $car ) : ?>
+                            <div class="mpcrbm-pro-dummy-car-card">
+                                <div class="mpcrbm-pro-dummy-car-thumb"><i class="mi mi-car"></i></div>
+                                <div class="mpcrbm-pro-dummy-car-info">
+                                    <strong><?php echo esc_html( $car['name'] ); ?></strong>
+                                    <span class="mpcrbm-pro-dummy-home-badge"><?php esc_html_e( 'Home:', 'car-rental-manager' ); ?> <?php echo esc_html( $car['home'] ); ?></span>
+                                    <span class="mpcrbm-pro-dummy-price"><?php echo esc_html( $car['price'] ); ?>/<?php esc_html_e( 'day', 'car-rental-manager' ); ?></span>
+                                </div>
+                                <div class="mpcrbm-pro-dummy-transfer">
+                                    <span class="mpcrbm-pro-dummy-select"><?php esc_html_e( 'Transfer to branch…', 'car-rental-manager' ); ?></span>
+                                    <span class="mpcrbm-pro-dummy-input"><?php esc_html_e( 'Reason (optional)', 'car-rental-manager' ); ?></span>
+                                    <span class="mpcrbm-pro-dummy-btn-primary"><?php esc_html_e( 'Transfer', 'car-rental-manager' ); ?></span>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                </div><!-- .mpcrbm-pro-dummy-dashboard -->
+
+                <!-- Lock overlay -->
+                <div class="mpcrbm-pro-content-lock">
+                    <span class="mpcrbm-pro-lock-crown">&#x1F451;</span>
+                    <span class="mpcrbm-pro-lock-badge"><?php esc_html_e( 'PRO FEATURE', 'car-rental-manager' ); ?></span>
+                    <h2 class="mpcrbm-pro-lock-title"><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
+                    <p class="mpcrbm-pro-lock-desc">
+                        <?php esc_html_e( 'Manage multiple branches, assign cars to locations, track car transfers, and unlock one-way rental pricing.', 'car-rental-manager' ); ?>
+                    </p>
+                    <a href="<?php echo esc_url( $purchase_url ); ?>" target="_blank" class="mpcrbm-pro-lock-buy-btn">
+                        <?php esc_html_e( 'Purchase & Activate Pro Plugin', 'car-rental-manager' ); ?> &rarr;
+                    </a>
+                </div>
+
+            </div><!-- .mpcrbm-pro-branch-preview -->
+            <?php
         }
 
 

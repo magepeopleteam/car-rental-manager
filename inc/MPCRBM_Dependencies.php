@@ -61,12 +61,13 @@
                     'site_url' => get_site_url(),
 				) );
 				wp_localize_script( 'mpcrbm_branch_manager', 'mpcrbmBranchAdmin', array(
-					'loadingText'       => __( 'Loading…', 'car-rental-manager' ),
-					'carsText'          => __( 'cars', 'car-rental-manager' ),
-					'transferText'      => __( 'Transfer', 'car-rental-manager' ),
-					'transferringText'  => __( 'Transferring…', 'car-rental-manager' ),
-					'selectBranchText'  => __( 'Please select a target branch.', 'car-rental-manager' ),
+					'loadingText'         => __( 'Loading…', 'car-rental-manager' ),
+					'carsText'            => __( 'cars', 'car-rental-manager' ),
+					'transferText'        => __( 'Transfer', 'car-rental-manager' ),
+					'transferringText'    => __( 'Transferring…', 'car-rental-manager' ),
+					'selectBranchText'    => __( 'Please select a target branch.', 'car-rental-manager' ),
 					'confirmTransferText' => __( 'Transfer this car to the selected branch?', 'car-rental-manager' ),
+					'isPro'               => is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ),
 				) );
 				// Trigger the action hook to add additional scripts if needed
 				do_action( 'mpcrbm_admin_script' );
