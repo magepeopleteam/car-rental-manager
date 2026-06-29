@@ -209,7 +209,14 @@
         if (carId) {
             var carFeeData = carOneWayFees[carId];
             if (carFeeData && carFeeData.enabled && parseFloat(carFeeData.fee) > 0) {
-                setOneWayFee(parseFloat(carFeeData.fee));
+                var fee;
+                if (carFeeData.fee_type === 'percentage') {
+                    var basePrice = parseFloat($('[name="mpcrbm_post_id"]').attr('data-price')) || 0;
+                    fee = basePrice > 0 ? parseFloat((basePrice * parseFloat(carFeeData.fee) / 100).toFixed(2)) : 0;
+                } else {
+                    fee = parseFloat(carFeeData.fee);
+                }
+                setOneWayFee(fee > 0 ? fee : 0);
             } else {
                 setOneWayFee(0);
             }

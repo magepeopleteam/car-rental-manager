@@ -242,6 +242,18 @@ if ($post_id) {
                                     $mpcrbm_discounted_price = $mpcrbm_raw_price - $mpcrbm_early_bird_discount;
                                 }
                             }
+
+                            // One-way fee (per car, type-aware)
+                            $mpcrbm_sf_one_way_fee = 0;
+                            $mpcrbm_sf_ow_enabled  = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
+                            if ( $mpcrbm_sf_ow_enabled && $mpcrbm_start_place !== $mpcrbm_end_place ) {
+                                $mpcrbm_sf_ow_value = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
+                                $mpcrbm_sf_ow_type  = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
+                                $mpcrbm_sf_one_way_fee = ( $mpcrbm_sf_ow_type === 'percentage' )
+                                    ? round( $mpcrbm_discounted_price * $mpcrbm_sf_ow_value / 100, 2 )
+                                    : $mpcrbm_sf_ow_value;
+                            }
+                            $mpcrbm_total_price = $mpcrbm_discounted_price + $mpcrbm_sf_one_way_fee;
                             ?>
 
                             <div class="mpcrbm-price-container">
@@ -323,7 +335,8 @@ if ($post_id) {
                         <button type="button"
                                 class="_mpBtn_xs mpcrbm_transport_select"
                                 data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
-                                data-transport-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
+                                data-transport-price="<?php echo esc_attr($mpcrbm_total_price); ?>"
+                                data-base-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
                                 data-security-deposit="<?php echo esc_attr($mpcrbm_security_deposit_result); ?>"
                                 data-post-id="<?php echo esc_attr($post_id); ?>"
                                 data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"

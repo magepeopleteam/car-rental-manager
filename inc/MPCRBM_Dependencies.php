@@ -115,10 +115,13 @@
 				foreach ( $cars as $car_id ) {
 					$enabled = get_post_meta( $car_id, 'mpcrbm_car_one_way_enabled', true );
 					if ( $enabled ) {
-						$fee = floatval( get_post_meta( $car_id, 'mpcrbm_car_one_way_fee', true ) );
+						$fee      = floatval( get_post_meta( $car_id, 'mpcrbm_car_one_way_fee', true ) );
+						$fee_type = get_post_meta( $car_id, 'mpcrbm_car_one_way_fee_type', true );
+						$fee_type = ( $fee_type === 'percentage' ) ? 'percentage' : 'fixed';
 						$car_one_way_fees[ (string) $car_id ] = [
-							'enabled' => true,
-							'fee'     => $fee,
+							'enabled'  => true,
+							'fee'      => $fee,
+							'fee_type' => $fee_type,
 						];
 					}
 				}

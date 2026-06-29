@@ -113,9 +113,14 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $cart_item_data['mpcrbm_duration_text']       = isset( $_COOKIE['mpcrbm_duration_text'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['mpcrbm_duration_text'] ) ) : '';
                 $cart_item_data['mpcrbm_base_price']          = $raw_price;
                 $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
-                $one_way_fee = ( $one_way_enabled && $start_place !== $end_place )
-                    ? floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) )
-                    : 0;
+                $one_way_fee     = 0;
+                if ( $one_way_enabled && $start_place !== $end_place ) {
+                    $ow_value = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
+                    $ow_type  = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
+                    $one_way_fee = ( $ow_type === 'percentage' )
+                        ? round( $raw_price * $ow_value / 100, 2 )
+                        : $ow_value;
+                }
                 $cart_item_data['mpcrbm_branch_one_way_fee'] = $one_way_fee;
                 $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id );
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
@@ -787,7 +792,12 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
             $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
             if ( $one_way_enabled && $start_place !== $end_place ) {
-                $one_way_fee = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
+                $ow_value    = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
+                $ow_type     = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
+                $base_per_car = $raw_price / max( 1, intval( $car_quantity ) );
+                $one_way_fee  = ( $ow_type === 'percentage' )
+                    ? round( $base_per_car * $ow_value / 100, 2 )
+                    : $ow_value;
                 if ( $one_way_fee > 0 ) {
                     $raw_price += $one_way_fee * intval( $car_quantity );
                 }

@@ -85,9 +85,14 @@ if ($post_id) {
     $mpcrbm_price = MPCRBM_Function::calculate_multi_location_price($post_id, $mpcrbm_start_place, $mpcrbm_end_place, $mpcrbm_start_date_time, $mpcrbm_return_date_time);
 
     $mpcrbm_car_one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
-    $mpcrbm_branch_one_way_fee  = ( $mpcrbm_car_one_way_enabled && $mpcrbm_start_place !== $mpcrbm_end_place )
-        ? floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) )
-        : 0;
+    $mpcrbm_branch_one_way_fee  = 0;
+    if ( $mpcrbm_car_one_way_enabled && $mpcrbm_start_place !== $mpcrbm_end_place ) {
+        $ow_value = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
+        $ow_type  = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
+        $mpcrbm_branch_one_way_fee = ( $ow_type === 'percentage' )
+            ? round( $mpcrbm_price * $ow_value / 100, 2 )
+            : $ow_value;
+    }
 
     $mpcrbm_price = $mpcrbm_price + $mpcrbm_branch_one_way_fee;
 
