@@ -317,6 +317,33 @@
                             <input class="formControl price_validation" name="mpcrbm_day_price" value="<?php echo esc_attr( $time_price ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:10', 'car-rental-manager' ); ?>"/>
                         </label>
                     </section>
+
+                    <!-- One-Way Fee -->
+                    <?php
+					$one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
+					$one_way_fee_val = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true );
+					$one_way_checked = $one_way_enabled ? 'checked' : '';
+					$one_way_display = $one_way_enabled ? 'block' : 'none';
+					?>
+                    <section class="bg-light" style="margin-top: 20px;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <div>
+                                <h6><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h6>
+                                <span class="desc"><?php esc_html_e( 'Charge an extra fee when pickup and drop-off locations differ.', 'car-rental-manager' ); ?></span>
+                            </div>
+                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_car_one_way_enabled', $one_way_checked ); ?>
+                        </div>
+                    </section>
+                    <section style="display:<?php echo esc_attr( $one_way_display ); ?>;" id="mpcrbm_car_one_way_enabled_holder">
+                        <label class="label">
+                            <div>
+                                <h6><?php esc_html_e( 'One-Way Fee Amount', 'car-rental-manager' ); ?></h6>
+                                <span class="desc"><?php esc_html_e( 'Fee added to the booking when pickup ≠ drop-off location.', 'car-rental-manager' ); ?></span>
+                            </div>
+                            <input class="formControl price_validation" name="mpcrbm_car_one_way_fee" value="<?php echo esc_attr( $one_way_fee_val ); ?>" type="text" placeholder="<?php esc_html_e( 'EX: 50', 'car-rental-manager' ); ?>"/>
+                        </label>
+                    </section>
+
                     <!-- Manual price -->
                     <section class="bg-light" style="margin-top: 20px;" data-collapse="#mp_manual">
                         <h6><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></h6>
@@ -357,8 +384,6 @@
 						$hour_price = 0;
 					}
 					update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
-
-
 
                     if ( ! isset( $_POST['mpcrbm_set_price_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) return;
                     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
@@ -536,7 +561,13 @@ $day_price      = isset( $tiered_data['day_price'] )      ? map_deep( $tiered_da
                     }
                     update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
 
-
+                    // One-way fee per car
+                    $one_way_enabled = isset( $_POST['mpcrbm_car_one_way_enabled'] ) ? '1' : '';
+                    update_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', $one_way_enabled );
+                    if ( isset( $_POST['mpcrbm_car_one_way_fee'] ) ) {
+                        $raw_fee = sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_one_way_fee'] ) );
+                        update_post_meta( $post_id, 'mpcrbm_car_one_way_fee', is_numeric( $raw_fee ) ? floatval( $raw_fee ) : 0 );
+                    }
 
                     if ( isset( $_POST['mpcrbm_set_price_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) {
 

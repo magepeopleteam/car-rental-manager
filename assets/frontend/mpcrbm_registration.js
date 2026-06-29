@@ -231,19 +231,16 @@ jQuery(document).ready(function($) {
             let post_id         = $this.attr('data-post-id');
             let security_deposit = parseFloat($this.attr('data-security-deposit')) || 0;
 
-            // Determine one-way fee from current form state
+            // Determine one-way fee: always trust the PHP-baked data attributes (server already
+            // computed the per-car fee for the current pickup/dropoff pair), then zero out only
+            // when the "same location" checkbox is checked.
             let isSameLocChk = $('#mpcrbm_is_drop_off').is(':checked');
             let $feeField    = $('#mpcrbm_branch_one_way_fee');
-            let oneWayFee;
-            if (isSameLocChk) {
-                oneWayFee = 0;
-            } else if ($feeField.length) {
-                // mpcrbm-branch.js has already computed the fee
-                oneWayFee = parseFloat($feeField.val()) || 0;
-            } else {
-                // Hidden field not created yet — derive from PHP-baked data attributes
-                oneWayFee = Math.max(0, transport_price - base_price);
-            }
+            let oneWayFee    = isSameLocChk ? 0 : Math.max(0, transport_price - base_price);
+
+            // Sync the hidden field so subsequent recalculations (quantity change, extra services)
+            // see the correct fee without having to re-derive it.
+            if ($feeField.length) { $feeField.val(oneWayFee); }
 
             // Store deposit in hidden input for later quantity/extra-service recalculations
             parent.find('[name="mpcrbm_security_deposit_value"]').val(security_deposit);

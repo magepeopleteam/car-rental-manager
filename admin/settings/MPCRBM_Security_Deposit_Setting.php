@@ -27,16 +27,60 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             $amount          = ( $amount !== '' && $amount !== false ) ? floatval( $amount ) : '';
 
             wp_nonce_field( 'mpcrbm_save_security_deposit', 'mpcrbm_security_deposit_nonce' );
+            $currency = get_woocommerce_currency_symbol();
+            $unit     = $type === 'percentage' ? '%' : $currency;
             ?>
+            <style>
+            .mpcrbm-sd-card{background:#fff;border:1px solid #e5e9f0;border-radius:12px;overflow:hidden;margin-bottom:14px;}
+            .mpcrbm-sd-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f2f5;}
+            .mpcrbm-sd-card-header-info{display:flex;align-items:center;gap:12px;}
+            .mpcrbm-sd-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
+            .mpcrbm-sd-icon-blue{background:#eff6ff;color:#2563eb;}
+            .mpcrbm-sd-icon-green{background:#f0fdf4;color:#16a34a;}
+            .mpcrbm-sd-icon-orange{background:#fff7ed;color:#ea580c;}
+            .mpcrbm-sd-label{font-size:14px;font-weight:600;color:#111827;margin:0 0 2px;}
+            .mpcrbm-sd-desc{font-size:12px;color:#6b7280;margin:0;}
+            .mpcrbm-sd-body{padding:20px;}
+            .mpcrbm-sd-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+            .mpcrbm-sd-type-option{position:relative;}
+            .mpcrbm-sd-type-option input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
+            .mpcrbm-sd-type-label{display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e5e9f0;border-radius:10px;cursor:pointer;transition:all .2s;background:#fafbfc;}
+            .mpcrbm-sd-type-label:hover{border-color:#93c5fd;background:#eff6ff;}
+            .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label{border-color:#2563eb;background:#eff6ff;}
+            .mpcrbm-sd-type-dot{width:18px;height:18px;border-radius:50%;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+            .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot{border-color:#2563eb;background:#2563eb;}
+            .mpcrbm-sd-type-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;display:none;}
+            .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot::after{display:block;}
+            .mpcrbm-sd-type-text strong{display:block;font-size:13px;font-weight:600;color:#111827;}
+            .mpcrbm-sd-type-text span{font-size:11px;color:#6b7280;}
+            .mpcrbm-sd-amount-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;display:block;}
+            .mpcrbm-sd-amount-wrap{display:flex;align-items:center;border:2px solid #e5e9f0;border-radius:10px;overflow:hidden;transition:border-color .2s;max-width:280px;}
+            .mpcrbm-sd-amount-wrap:focus-within{border-color:#2563eb;}
+            .mpcrbm-sd-amount-prefix{padding:10px 14px 0px 14px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:44px;display:flex;align-items:center;font-weight:700;font-size:15px;color:#374151;min-width:44px;justify-content:center;}
+            #mpcrbm_security_deposit{border:none!important;outline:none!important;box-shadow:none!important;padding:0 14px;height:44px;font-size:15px;font-weight:600;color:#111827;width:100%;background:#fff;}
+            .mpcrbm-sd-hint{font-size:12px;color:#9ca3af;margin-top:6px;}
+            .mpcrbm-sd-hint b{color:#6b7280;}
+            .mpcrbm-sd-type-text{
+                display: flex !important;
+                gap: 10px;
+            }
+            </style>
+
             <div class="tabsItem" data-tabs="#mpcrbm_security_deposit">
                 <h2><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></h2>
                 <p><?php esc_html_e( 'Configure security deposit settings for this vehicle.', 'car-rental-manager' ); ?></p>
 
-                <section>
-                    <div class="label">
-                        <div>
-                            <h6><?php esc_html_e( 'Enable Security Deposit', 'car-rental-manager' ); ?></h6>
-                            <span class="desc"><?php esc_html_e( 'By default security deposit is OFF. Enable to require a deposit at booking.', 'car-rental-manager' ); ?></span>
+                <!-- Enable toggle card -->
+                <div class="mpcrbm-sd-card">
+                    <div class="mpcrbm-sd-card-header">
+                        <div class="mpcrbm-sd-card-header-info">
+                            <div class="mpcrbm-sd-icon mpcrbm-sd-icon-blue">
+                                <span class="dashicons dashicons-shield"></span>
+                            </div>
+                            <div>
+                                <p class="mpcrbm-sd-label"><?php esc_html_e( 'Enable Security Deposit', 'car-rental-manager' ); ?></p>
+                                <p class="mpcrbm-sd-desc"><?php esc_html_e( 'Require a refundable deposit at the time of booking.', 'car-rental-manager' ); ?></p>
+                            </div>
                         </div>
                         <label class="roundSwitchLabel">
                             <input type="checkbox"
@@ -47,79 +91,93 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
                             <span class="roundSwitch" data-collapse-target="#mpcrbm_security_deposit_enable"></span>
                         </label>
                     </div>
-                </section>
+                </div>
 
-                <section id="mpcrbm_security_deposit_enable_holder" style="display: <?php echo esc_attr( $section_display ); ?>">
-                    <div class="label">
-                        <div>
-                            <h6><?php esc_html_e( 'Deposit Type', 'car-rental-manager' ); ?></h6>
-                            <span class="desc"><?php esc_html_e( 'Choose whether the deposit is a fixed amount or a percentage of the booking price.', 'car-rental-manager' ); ?></span>
-                        </div>
-                        <div style="display: flex; gap: 20px; align-items: center;">
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="radio"
-                                       name="mpcrbm_security_deposit_type"
-                                       value="fixed"
-                                       id="mpcrbm_deposit_type_fixed"
-                                    <?php checked( $type, 'fixed' ); ?> />
-                                <?php esc_html_e( 'Fixed Amount', 'car-rental-manager' ); ?>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="radio"
-                                       name="mpcrbm_security_deposit_type"
-                                       value="percentage"
-                                       id="mpcrbm_deposit_type_percentage"
-                                    <?php checked( $type, 'percentage' ); ?> />
-                                <?php esc_html_e( 'Percentage of Booking Price', 'car-rental-manager' ); ?>
-                            </label>
+                <!-- Configuration card (shown when enabled) -->
+                <div class="mpcrbm-sd-card" id="mpcrbm_security_deposit_enable_holder" style="display:<?php echo esc_attr( $section_display ); ?>">
+
+                    <!-- Deposit type -->
+                    <div class="mpcrbm-sd-card-header">
+                        <div class="mpcrbm-sd-card-header-info">
+                            <div class="mpcrbm-sd-icon mpcrbm-sd-icon-green">
+                                <span class="dashicons dashicons-tag"></span>
+                            </div>
+                            <div>
+                                <p class="mpcrbm-sd-label"><?php esc_html_e( 'Deposit Type', 'car-rental-manager' ); ?></p>
+                                <p class="mpcrbm-sd-desc"><?php esc_html_e( 'Choose how the deposit amount is calculated.', 'car-rental-manager' ); ?></p>
+                            </div>
                         </div>
                     </div>
-
-                    <label class="label">
-                        <div>
-                            <h6><?php esc_html_e( 'Security Deposit Value', 'car-rental-manager' ); ?></h6>
-                            <span class="desc" id="mpcrbm_deposit_desc_fixed" style="display: <?php echo $type === 'fixed' ? 'inline' : 'none'; ?>">
-                                <?php esc_html_e( 'Enter the fixed deposit amount required per booking.', 'car-rental-manager' ); ?>
-                            </span>
-                            <span class="desc" id="mpcrbm_deposit_desc_percentage" style="display: <?php echo $type === 'percentage' ? 'inline' : 'none'; ?>">
-                                <?php esc_html_e( 'Enter the deposit as a percentage of the booking price (e.g. 10 for 10%).', 'car-rental-manager' ); ?>
-                            </span>
+                    <div class="mpcrbm-sd-body">
+                        <div class="mpcrbm-sd-type-grid">
+                            <div class="mpcrbm-sd-type-option">
+                                <input type="radio" name="mpcrbm_security_deposit_type" value="fixed"
+                                       id="mpcrbm_deposit_type_fixed" <?php checked( $type, 'fixed' ); ?>>
+                                <label class="mpcrbm-sd-type-label" for="mpcrbm_deposit_type_fixed">
+                                    <span class="mpcrbm-sd-type-dot"></span>
+                                    <span class="mpcrbm-sd-type-text">
+                                        <strong><?php esc_html_e( 'Fixed Amount', 'car-rental-manager' ); ?></strong>
+                                        <span><?php esc_html_e( 'e.g. $200 per booking', 'car-rental-manager' ); ?></span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="mpcrbm-sd-type-option">
+                                <input type="radio" name="mpcrbm_security_deposit_type" value="percentage"
+                                       id="mpcrbm_deposit_type_percentage" <?php checked( $type, 'percentage' ); ?>>
+                                <label class="mpcrbm-sd-type-label" for="mpcrbm_deposit_type_percentage">
+                                    <span class="mpcrbm-sd-type-dot"></span>
+                                    <span class="mpcrbm-sd-type-text">
+                                        <strong><?php esc_html_e( 'Percentage', 'car-rental-manager' ); ?></strong>
+                                        <span><?php esc_html_e( 'e.g. 10% of booking', 'car-rental-manager' ); ?></span>
+                                    </span>
+                                </label>
+                            </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px;">
+
+                        <!-- Amount input -->
+                        <label class="mpcrbm-sd-amount-label" for="mpcrbm_security_deposit">
+                            <span id="mpcrbm_deposit_desc_fixed" style="display:<?php echo $type === 'fixed' ? 'inline' : 'none'; ?>"><?php esc_html_e( 'Deposit Amount', 'car-rental-manager' ); ?></span>
+                            <span id="mpcrbm_deposit_desc_percentage" style="display:<?php echo $type === 'percentage' ? 'inline' : 'none'; ?>"><?php esc_html_e( 'Deposit Percentage', 'car-rental-manager' ); ?></span>
+                        </label>
+                        <div class="mpcrbm-sd-amount-wrap">
+                            <span class="mpcrbm-sd-amount-prefix" id="mpcrbm_deposit_unit"><?php echo esc_html( $unit ); ?></span>
                             <input type="number"
-                                   class="formControl"
                                    id="mpcrbm_security_deposit"
                                    name="mpcrbm_security_deposit"
                                    value="<?php echo esc_attr( $amount ); ?>"
-                                   min="0"
-                                   step="0.01"
-                                   placeholder="<?php esc_attr_e( 'e.g. 200', 'car-rental-manager' ); ?>"
-                                   style="max-width: 160px;" />
-                            <span id="mpcrbm_deposit_unit" style="font-weight: 600; font-size: 1em;">
-                                <?php echo $type === 'percentage' ? '%' : esc_html( get_woocommerce_currency_symbol() ); ?>
-                            </span>
+                                   min="0" step="0.01"
+                                   placeholder="<?php echo $type === 'percentage' ? esc_attr__( 'e.g. 10', 'car-rental-manager' ) : esc_attr__( 'e.g. 200', 'car-rental-manager' ); ?>" />
                         </div>
-                    </label>
-                </section>
+                        <p class="mpcrbm-sd-hint">
+                            <span id="mpcrbm_deposit_hint_fixed" style="display:<?php echo $type === 'fixed' ? 'inline' : 'none'; ?>">
+                                <?php esc_html_e( 'A flat fee collected at booking and refunded after the rental.', 'car-rental-manager' ); ?>
+                            </span>
+                            <span id="mpcrbm_deposit_hint_percentage" style="display:<?php echo $type === 'percentage' ? 'inline' : 'none'; ?>">
+                                <?php esc_html_e( 'Calculated as a % of the total booking price at checkout.', 'car-rental-manager' ); ?>
+                            </span>
+                        </p>
+                    </div>
+                </div>
             </div>
+
             <script>
-                (function($){
-                    var currencySymbol = '<?php echo esc_js( get_woocommerce_currency_symbol() ); ?>';
-                    $('[name="mpcrbm_security_deposit_type"]').on('change', function(){
-                        var val = $(this).val();
-                        if ( val === 'percentage' ) {
-                            $('#mpcrbm_deposit_desc_fixed').hide();
-                            $('#mpcrbm_deposit_desc_percentage').show();
-                            $('#mpcrbm_deposit_unit').text('%');
-                            $('#mpcrbm_security_deposit').attr('placeholder', 'e.g. 10');
-                        } else {
-                            $('#mpcrbm_deposit_desc_fixed').show();
-                            $('#mpcrbm_deposit_desc_percentage').hide();
-                            $('#mpcrbm_deposit_unit').text(currencySymbol);
-                            $('#mpcrbm_security_deposit').attr('placeholder', 'e.g. 200');
-                        }
-                    });
-                })(jQuery);
+            (function($){
+                var currencySymbol = '<?php echo esc_js( $currency ); ?>';
+                $('[name="mpcrbm_security_deposit_type"]').on('change', function(){
+                    var val = $(this).val();
+                    if ( val === 'percentage' ) {
+                        $('#mpcrbm_deposit_desc_fixed, #mpcrbm_deposit_hint_fixed').hide();
+                        $('#mpcrbm_deposit_desc_percentage, #mpcrbm_deposit_hint_percentage').show();
+                        $('#mpcrbm_deposit_unit').text('%');
+                        $('#mpcrbm_security_deposit').attr('placeholder', 'e.g. 10');
+                    } else {
+                        $('#mpcrbm_deposit_desc_fixed, #mpcrbm_deposit_hint_fixed').show();
+                        $('#mpcrbm_deposit_desc_percentage, #mpcrbm_deposit_hint_percentage').hide();
+                        $('#mpcrbm_deposit_unit').text(currencySymbol);
+                        $('#mpcrbm_security_deposit').attr('placeholder', 'e.g. 200');
+                    }
+                });
+            })(jQuery);
             </script>
             <?php
         }

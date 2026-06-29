@@ -2,25 +2,24 @@
  * Branch Manager — Frontend JS
  *
  * Shows branch info card when a customer picks a pickup location.
- * Shows a one-way fee notice when pickup and dropoff branches differ.
+ * Shows a one-way fee notice when pickup and dropoff branches differ,
+ * if the selected car has a one-way fee configured.
  *
  * Depends on wp_localize_script variable: mpcrbmBranchL10n
- *   .ajax_url      string  WordPress AJAX URL
- *   .one_way_fees  object  { slug: fee_amount }   — pre-loaded for instant display
- *   .multipliers   object  { slug: multiplier }   — pre-loaded for instant display
- *   .currency      string  e.g. "$"
- *   .strings.*     i18n strings
+ *   .ajax_url          string  WordPress AJAX URL
+ *   .car_one_way_fees  object  { car_id: { enabled: true, fee: amount } }
+ *   .currency          string  e.g. "$"
+ *   .strings.*         i18n strings
  */
 (function ($) {
     'use strict';
 
     if (typeof mpcrbmBranchL10n === 'undefined') { return; }
 
-    var L10n        = mpcrbmBranchL10n;
-    var ajaxUrl     = L10n.ajax_url || '';
-    var oneWayFees  = L10n.one_way_fees  || {};
-    var multipliers = L10n.multipliers   || {};
-    var currency    = L10n.currency      || '$';
+    var L10n           = mpcrbmBranchL10n;
+    var ajaxUrl        = L10n.ajax_url || '';
+    var carOneWayFees  = L10n.car_one_way_fees || {};
+    var currency       = L10n.currency || '$';
 
     var PICKUP_SEL  = '#mpcrbm_manual_start_place';
     var DROPOFF_SEL = '#mpcrbm_manual_end_place';
@@ -53,6 +52,11 @@
         }).fail(function () {
             callback(null);
         });
+    }
+
+    function getCurrentCarId() {
+        var carId = $('.mpcrbm_car_details_continue_btn').data('car-id');
+        return carId ? String(carId) : null;
     }
 
     // ── Branch Info Card ─────────────────────────────────────────────────
@@ -89,25 +93,12 @@
                     '</div>';
         }
 
-        // Price surcharge notice
-        var mult = parseFloat(meta.multiplier) || 1.0;
-        var surchargeHtml = '';
-        if (mult !== 1.0) {
-            var pct = Math.round(Math.abs(mult - 1) * 100);
-            var sign = mult > 1 ? '+' : '-';
-            surchargeHtml = '<div class="mpcrbm-branch-surcharge-notice">' +
-                '<i class="mi mi-coins"></i>' +
-                '<span>' + sign + pct + '% ' + (L10n.strings && L10n.strings.branchSurcharge ? L10n.strings.branchSurcharge : 'branch price adjustment') + '</span>' +
-                '</div>';
-        }
-
         return '<div class="mpcrbm-branch-info-card">' +
             '<div class="mpcrbm-branch-info-card-header">' +
             '<i class="mi mi-map-location-track"></i>' +
             '<strong>' + escHtml(meta.name) + '</strong>' +
             '</div>' +
             '<div class="mpcrbm-branch-info-rows">' + rows + '</div>' +
-            surchargeHtml +
             '</div>';
     }
 
@@ -122,10 +113,10 @@
         var rows = '';
         dayOrder.forEach(function (key) {
             if (!hours[key]) { return; }
-            var d       = hours[key];
+            var d        = hours[key];
             var isClosed = d.closed;
-            var label   = dayNames[key] || key;
-            var timeStr = isClosed
+            var label    = dayNames[key] || key;
+            var timeStr  = isClosed
                 ? '<span class="is-closed">' + (L10n.strings && L10n.strings.closed ? L10n.strings.closed : 'Closed') + '</span>'
                 : '<span class="is-open">' + escHtml(d.open) + ' – ' + escHtml(d.close) + '</span>';
             rows += '<tr><td>' + escHtml(label) + '</td><td>' + timeStr + '</td></tr>';
@@ -142,7 +133,7 @@
 
     // ── One-Way Fee Notice ────────────────────────────────────────────────
 
-    function buildOneWayNotice(dropoffSlug, fee) {
+    function buildOneWayNotice(fee) {
         if (!(parseFloat(fee) > 0)) { return ''; }
         return '<div class="mpcrbm-oneway-fee-notice">' +
             '<i class="mi mi-car-journey"></i>' +
@@ -171,7 +162,7 @@
     // ── Pickup location change ────────────────────────────────────────────
 
     $(document).on('change', PICKUP_SEL, function () {
-        var slug = $(this).val();
+        /*var slug = $(this).val();
         var $container = getOrCreateContainer(this, 'mpcrbm-pickup-branch-info');
 
         if (!slug) {
@@ -189,64 +180,42 @@
         });
 
         // Re-evaluate one-way fee in case dropoff was already selected
-        refreshOneWayFee();
+        refreshOneWayFee();*/
     });
 
     // ── Dropoff location change ───────────────────────────────────────────
 
-    // The dropoff select is injected dynamically via AJAX, so we use event delegation.
     $(document).on('change', DROPOFF_SEL, function () {
         refreshOneWayFee();
     });
 
     // Also catch the case where the dropoff section is rendered into the DOM after pickup selection.
-    // The existing plugin fires custom events; we also MutationObserver as a safety net.
     observeDropoffAppearance();
 
     function refreshOneWayFee() {
-        var pickupSlug    = $(PICKUP_SEL).val();
-        var $dropoff      = $(DROPOFF_SEL);
-        var dropoffSlug   = $dropoff.val();
-        var isSameLocChk  = $('#mpcrbm_is_drop_off').is(':checked');
+        var pickupSlug   = $(PICKUP_SEL).val();
+        var $dropoff     = $(DROPOFF_SEL);
+        var dropoffSlug  = $dropoff.val();
+        var isSameLocChk = $('#mpcrbm_is_drop_off').is(':checked');
 
-        // Anchor the notice outside the label/select — insert after the nearest
-        // wrapping block element so it never ends up inside a <label>.
-        var $dropoffAnchor = $dropoff.closest('.mpcrbm_location_checkbox, .input_select, label');
-        if (!$dropoffAnchor.length) { $dropoffAnchor = $dropoff; }
-        var $container = $dropoffAnchor.next('.mpcrbm-oneway-fee-container');
-        if (!$container.length) {
-            $container = $('<div class="mpcrbm-oneway-fee-container"></div>').insertAfter($dropoffAnchor);
-        }
-        $container.empty();
-
-        // Same location: either explicit checkbox OR matching slugs OR missing values
+        // Same location or missing values: no fee
         if (!pickupSlug || !dropoffSlug || pickupSlug === dropoffSlug || isSameLocChk) {
             setOneWayFee(0);
-        } else {
-            // Fee is keyed by the pickup branch (customer picks up from there)
-            var fee = oneWayFees[pickupSlug];
-            if (fee !== undefined) {
-                $container.html(buildOneWayNotice(pickupSlug, fee));
-                setOneWayFee(fee);
-            } else {
-                setOneWayFee(0); // clear immediately; update when async resolves
-                getBranchMeta(pickupSlug, function (meta) {
-                    if (meta && parseFloat(meta.one_way_fee) > 0) {
-                        oneWayFees[pickupSlug] = meta.one_way_fee;
-                        $container.html(buildOneWayNotice(pickupSlug, meta.one_way_fee));
-                        setOneWayFee(meta.one_way_fee);
-                    }
-                });
-            }
+            return;
         }
 
-        // Store pickup multiplier in hidden field
-        var mult = multipliers[pickupSlug] || 1.0;
-        var $hiddenMult = $('#mpcrbm_branch_multiplier');
-        if (!$hiddenMult.length) {
-            $hiddenMult = $('<input type="hidden" id="mpcrbm_branch_multiplier" name="mpcrbm_branch_multiplier">').appendTo('form');
+        // Per-car fee lookup (only on car details page where a car ID is present)
+        var carId = getCurrentCarId();
+        if (carId) {
+            var carFeeData = carOneWayFees[carId];
+            if (carFeeData && carFeeData.enabled && parseFloat(carFeeData.fee) > 0) {
+                setOneWayFee(parseFloat(carFeeData.fee));
+            } else {
+                setOneWayFee(0);
+            }
+        } else {
+            setOneWayFee(0);
         }
-        $hiddenMult.val(mult);
     }
 
     /** Persist fee to hidden field and notify all price-calculation contexts. */
@@ -312,14 +281,12 @@
     }
 
     // ── Same-location checkbox ────────────────────────────────────────────
-    // When the "return to same location" checkbox is toggled, re-evaluate the fee.
 
     $(document).on('change', '#mpcrbm_is_drop_off', function () {
         refreshOneWayFee();
     });
 
     // Initialise on page load in case the selects are already populated
-    // (e.g. browser back-fill or URL pre-fill after a search).
     $(function () {
         if ($(PICKUP_SEL).val()) {
             refreshOneWayFee();

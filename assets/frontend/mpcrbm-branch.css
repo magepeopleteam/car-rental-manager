@@ -9,10 +9,22 @@
     background: #f0f6fc;
     border: 1px solid #bee3f8;
     border-radius: 8px;
-    padding: 14px 16px;
+    padding: 5px 5px;
     margin-top: 10px;
     font-size: 13px;
     animation: mpcrbm-branch-fadein 0.3s ease;
+}
+.mpcrbm-branch-hours-toggle{
+    font-size: 12px;
+}
+
+.mpcrbm-pickup-branch-info{
+    display: block;
+    position: absolute;
+    top: 45px;
+    z-index: 12;
+    /*width: 100%;*/
+    margin-left: 55%;
 }
 
 .mpcrbm-branch-info-card-header {
@@ -62,7 +74,7 @@
     border: none;
     color: #2271b1;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 12px !important;
     padding: 4px 0;
     text-decoration: underline;
     display: inline-block;

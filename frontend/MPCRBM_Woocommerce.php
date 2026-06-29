@@ -112,7 +112,10 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 //					$cart_item_data['mpcrbm_fixed_hours']         = $fixed_hour;
                 $cart_item_data['mpcrbm_duration_text']       = isset( $_COOKIE['mpcrbm_duration_text'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['mpcrbm_duration_text'] ) ) : '';
                 $cart_item_data['mpcrbm_base_price']          = $raw_price;
-                $one_way_fee = ( $start_place !== $end_place ) ? MPCRBM_Branch_Manager::get_one_way_fee( $start_place ) : 0;
+                $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
+                $one_way_fee = ( $one_way_enabled && $start_place !== $end_place )
+                    ? floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) )
+                    : 0;
                 $cart_item_data['mpcrbm_branch_one_way_fee'] = $one_way_fee;
                 $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id );
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
@@ -782,8 +785,9 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $price            = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
             $wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
             $raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
-            if ( $start_place !== $end_place ) {
-                $one_way_fee = MPCRBM_Branch_Manager::get_one_way_fee( $start_place );
+            $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
+            if ( $one_way_enabled && $start_place !== $end_place ) {
+                $one_way_fee = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
                 if ( $one_way_fee > 0 ) {
                     $raw_price += $one_way_fee * intval( $car_quantity );
                 }

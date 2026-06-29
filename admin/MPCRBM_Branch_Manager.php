@@ -83,34 +83,18 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 					<input type="text" id="mpcrbm_branch_phone" name="mpcrbm_branch_phone" value="">
 				</div>
 
-				<div class="form-field">
-					<label for="mpcrbm_branch_multiplier"><?php esc_html_e( 'Price Multiplier', 'car-rental-manager' ); ?></label>
-					<input type="number" id="mpcrbm_branch_multiplier" name="mpcrbm_branch_multiplier" value="1.00" step="0.01" min="0">
-					<p class="description"><?php esc_html_e( '1.0 = base price  |  1.2 = 20% surcharge  |  0.9 = 10% discount', 'car-rental-manager' ); ?></p>
-				</div>
-
-				<div class="form-field">
-					<label for="mpcrbm_branch_one_way_fee"><?php esc_html_e( 'One-Way Return Fee', 'car-rental-manager' ); ?></label>
-					<input type="number" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee" value="0" step="0.01" min="0">
-					<p class="description"><?php esc_html_e( 'Extra fee charged when a car is returned to a different branch', 'car-rental-manager' ); ?></p>
-				</div>
-
 				<?php $this->render_hours_fields( [] ); ?>
 			</div>
 			<?php
 		}
 
 		public function edit_branch_fields( $term ) {
-			$tid         = $term->term_id;
-			$address     = get_term_meta( $tid, 'mpcrbm_branch_address', true );
-			$phone       = get_term_meta( $tid, 'mpcrbm_branch_phone', true );
-			$multiplier  = get_term_meta( $tid, 'mpcrbm_branch_multiplier', true );
-			$one_way_fee = get_term_meta( $tid, 'mpcrbm_branch_one_way_fee', true );
-			$hours       = get_term_meta( $tid, 'mpcrbm_branch_hours', true );
+			$tid     = $term->term_id;
+			$address = get_term_meta( $tid, 'mpcrbm_branch_address', true );
+			$phone   = get_term_meta( $tid, 'mpcrbm_branch_phone', true );
+			$hours   = get_term_meta( $tid, 'mpcrbm_branch_hours', true );
 
-			$multiplier  = $multiplier !== '' ? $multiplier : '1.00';
-			$one_way_fee = $one_way_fee !== '' ? $one_way_fee : '0';
-			$hours       = is_array( $hours ) ? $hours : [];
+			$hours = is_array( $hours ) ? $hours : [];
 			?>
 
 			<tr class="form-field mpcrbm-branch-section-row">
@@ -128,22 +112,6 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			<tr class="form-field">
 				<th><label for="mpcrbm_branch_phone"><?php esc_html_e( 'Phone', 'car-rental-manager' ); ?></label></th>
 				<td><input type="text" id="mpcrbm_branch_phone" name="mpcrbm_branch_phone" value="<?php echo esc_attr( $phone ); ?>"></td>
-			</tr>
-
-			<tr class="form-field">
-				<th><label for="mpcrbm_branch_multiplier"><?php esc_html_e( 'Price Multiplier', 'car-rental-manager' ); ?></label></th>
-				<td>
-					<input type="number" id="mpcrbm_branch_multiplier" name="mpcrbm_branch_multiplier" value="<?php echo esc_attr( $multiplier ); ?>" step="0.01" min="0">
-					<p class="description"><?php esc_html_e( '1.0 = base price  |  1.2 = 20% surcharge  |  0.9 = 10% discount', 'car-rental-manager' ); ?></p>
-				</td>
-			</tr>
-
-			<tr class="form-field">
-				<th><label for="mpcrbm_branch_one_way_fee"><?php esc_html_e( 'One-Way Return Fee', 'car-rental-manager' ); ?></label></th>
-				<td>
-					<input type="number" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee" value="<?php echo esc_attr( $one_way_fee ); ?>" step="0.01" min="0">
-					<p class="description"><?php esc_html_e( 'Extra fee when a car is returned to a different branch', 'car-rental-manager' ); ?></p>
-				</td>
 			</tr>
 
 			<tr class="form-field">
@@ -204,13 +172,6 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			if ( isset( $_POST['mpcrbm_branch_phone'] ) ) {
 				update_term_meta( $term_id, 'mpcrbm_branch_phone', sanitize_text_field( wp_unslash( $_POST['mpcrbm_branch_phone'] ) ) );
 			}
-			if ( isset( $_POST['mpcrbm_branch_multiplier'] ) ) {
-				update_term_meta( $term_id, 'mpcrbm_branch_multiplier', floatval( $_POST['mpcrbm_branch_multiplier'] ) );
-			}
-			if ( isset( $_POST['mpcrbm_branch_one_way_fee'] ) ) {
-				update_term_meta( $term_id, 'mpcrbm_branch_one_way_fee', floatval( $_POST['mpcrbm_branch_one_way_fee'] ) );
-			}
-
 			$hours = [];
 			if ( isset( $_POST['mpcrbm_branch_hours'] ) && is_array( $_POST['mpcrbm_branch_hours'] ) ) {
 				$posted = $_POST['mpcrbm_branch_hours']; // phpcs:ignore
@@ -411,11 +372,9 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			return [
 				'name'        => $term->name,
 				'slug'        => $slug,
-				'address'     => (string) ( get_term_meta( $tid, 'mpcrbm_branch_address', true ) ?: '' ),
-				'phone'       => (string) ( get_term_meta( $tid, 'mpcrbm_branch_phone', true ) ?: '' ),
-				'multiplier'  => floatval( get_term_meta( $tid, 'mpcrbm_branch_multiplier', true ) ?: 1.0 ),
-				'one_way_fee' => floatval( get_term_meta( $tid, 'mpcrbm_branch_one_way_fee', true ) ?: 0 ),
-				'hours'       => (array) ( get_term_meta( $tid, 'mpcrbm_branch_hours', true ) ?: [] ),
+				'address' => (string) ( get_term_meta( $tid, 'mpcrbm_branch_address', true ) ?: '' ),
+				'phone'   => (string) ( get_term_meta( $tid, 'mpcrbm_branch_phone', true ) ?: '' ),
+				'hours'   => (array) ( get_term_meta( $tid, 'mpcrbm_branch_hours', true ) ?: [] ),
 			];
 		}
 
@@ -728,16 +687,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 										<span><?php echo esc_html( $meta['phone'] ); ?></span>
 									</div>
 								<?php endif; ?>
-								<div class="mpcrbm-branch-badges">
-									<?php if ( $meta['multiplier'] != 1.0 ) : ?>
-										<span class="mpcrbm-badge mpcrbm-badge-multiplier">×<?php echo esc_html( $meta['multiplier'] ); ?></span>
-									<?php endif; ?>
-									<?php if ( $meta['one_way_fee'] > 0 ) : ?>
-										<span class="mpcrbm-badge mpcrbm-badge-fee">
-											<?php echo wp_kses_post( wc_price( $meta['one_way_fee'] ) ); ?> <?php esc_html_e( 'one-way', 'car-rental-manager' ); ?>
-										</span>
-									<?php endif; ?>
-								</div>
+								<div class="mpcrbm-branch-badges"></div>
 								<div class="mpcrbm-branch-card-actions">
 									<button class="button mpcrbm-view-branch-cars"
 											data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"

@@ -105,33 +105,36 @@
 
 			/** Build branch localization data for the frontend JS. */
 			private function get_branch_l10n(): array {
-				$one_way_fees  = [];
-				$multipliers   = [];
-				$terms = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
-				if ( ! is_wp_error( $terms ) ) {
-					foreach ( $terms as $term ) {
-						$tid = $term->term_id;
-						$fee  = get_term_meta( $tid, 'mpcrbm_branch_one_way_fee', true );
-						$mult = get_term_meta( $tid, 'mpcrbm_branch_multiplier', true );
-						if ( $fee  !== '' ) { $one_way_fees[ $term->slug ]  = floatval( $fee ); }
-						if ( $mult !== '' ) { $multipliers[ $term->slug ]   = floatval( $mult ?: 1.0 ); }
+				$car_one_way_fees = [];
+				$cars = get_posts( [
+					'post_type'      => MPCRBM_Function::get_cpt(),
+					'posts_per_page' => -1,
+					'post_status'    => 'publish',
+					'fields'         => 'ids',
+				] );
+				foreach ( $cars as $car_id ) {
+					$enabled = get_post_meta( $car_id, 'mpcrbm_car_one_way_enabled', true );
+					if ( $enabled ) {
+						$fee = floatval( get_post_meta( $car_id, 'mpcrbm_car_one_way_fee', true ) );
+						$car_one_way_fees[ (string) $car_id ] = [
+							'enabled' => true,
+							'fee'     => $fee,
+						];
 					}
 				}
 				return [
-					'ajax_url'     => admin_url( 'admin-ajax.php' ),
-					'one_way_fees' => $one_way_fees,
-					'multipliers'  => $multipliers,
-					'currency'     => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
-					'strings'      => [
-						'loading'         => __( 'Loading branch info…', 'car-rental-manager' ),
-						'viewHours'       => __( 'View opening hours', 'car-rental-manager' ),
-						'hideHours'       => __( 'Hide opening hours', 'car-rental-manager' ),
-						'closed'          => __( 'Closed', 'car-rental-manager' ),
-						'day'             => __( 'Day', 'car-rental-manager' ),
-						'hours'           => __( 'Hours', 'car-rental-manager' ),
-						'oneWayFeeLabel'  => __( 'One-way return fee', 'car-rental-manager' ),
-						'oneWayFeeDesc'   => __( 'Applied because the return location is a different branch.', 'car-rental-manager' ),
-						'branchSurcharge' => __( 'branch price adjustment', 'car-rental-manager' ),
+					'ajax_url'         => admin_url( 'admin-ajax.php' ),
+					'car_one_way_fees' => $car_one_way_fees,
+					'currency'         => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
+					'strings'          => [
+						'loading'        => __( 'Loading branch info…', 'car-rental-manager' ),
+						'viewHours'      => __( 'View opening hours', 'car-rental-manager' ),
+						'hideHours'      => __( 'Hide opening hours', 'car-rental-manager' ),
+						'closed'         => __( 'Closed', 'car-rental-manager' ),
+						'day'            => __( 'Day', 'car-rental-manager' ),
+						'hours'          => __( 'Hours', 'car-rental-manager' ),
+						'oneWayFeeLabel' => __( 'One-way return fee', 'car-rental-manager' ),
+						'oneWayFeeDesc'  => __( 'Applied because the return location is a different branch.', 'car-rental-manager' ),
 					],
 				];
 			}
