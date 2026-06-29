@@ -613,6 +613,13 @@ if ( $deposit_enable === 'on' ) {
                                         </div>
                                     </div>
                                 <?php endif; ?>
+                                <div class="mpcrbm_one_way_fee_summary" id="mpcrbm_car_one_way_fee_row" style="display: none">
+                                    <div class="divider"></div>
+                                    <div class="justifyBetween">
+                                        <span><?php esc_html_e( 'One-Way Return Fee:', 'car-rental-manager' ); ?></span>
+                                        <span class="mpcrbm_one_way_fee_price _textTheme" id="mpcrbm_car_one_way_fee_display"></span>
+                                    </div>
+                                </div>
                                 <div class="justifyBetween total">
                                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
                                     <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price + $deposit_price ) );?></h3>

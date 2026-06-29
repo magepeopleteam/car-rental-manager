@@ -208,34 +208,35 @@
         var $dropoff    = $(DROPOFF_SEL);
         var dropoffSlug = $dropoff.val();
 
-        // Remove old notice
-        var $container = getOrCreateContainer(DROPOFF_SEL, 'mpcrbm-oneway-fee-container');
+        // Anchor the notice outside the label/select — insert after the nearest
+        // wrapping block element so it never ends up inside a <label>.
+        var $dropoffAnchor = $dropoff.closest('.mpcrbm_location_checkbox, .input_select, label');
+        if (!$dropoffAnchor.length) { $dropoffAnchor = $dropoff; }
+        var $container = $dropoffAnchor.next('.mpcrbm-oneway-fee-container');
+        if (!$container.length) {
+            $container = $('<div class="mpcrbm-oneway-fee-container"></div>').insertAfter($dropoffAnchor);
+        }
         $container.empty();
 
         if (!pickupSlug || !dropoffSlug || pickupSlug === dropoffSlug) {
-            return;
-        }
-
-        // Fee is keyed by the dropoff branch (customer returns car there)
-        var fee = oneWayFees[dropoffSlug];
-        if (fee !== undefined) {
-            $container.html(buildOneWayNotice(dropoffSlug, fee));
+            setOneWayFee(0);
         } else {
-            // Fetch if not pre-loaded
-            getBranchMeta(dropoffSlug, function (meta) {
-                if (meta && parseFloat(meta.one_way_fee) > 0) {
-                    oneWayFees[dropoffSlug] = meta.one_way_fee;
-                    $container.html(buildOneWayNotice(dropoffSlug, meta.one_way_fee));
-                }
-            });
+            // Fee is keyed by the pickup branch (customer picks up from there)
+            var fee = oneWayFees[pickupSlug];
+            if (fee !== undefined) {
+                $container.html(buildOneWayNotice(pickupSlug, fee));
+                setOneWayFee(fee);
+            } else {
+                setOneWayFee(0); // clear immediately; update when async resolves
+                getBranchMeta(pickupSlug, function (meta) {
+                    if (meta && parseFloat(meta.one_way_fee) > 0) {
+                        oneWayFees[pickupSlug] = meta.one_way_fee;
+                        $container.html(buildOneWayNotice(pickupSlug, meta.one_way_fee));
+                        setOneWayFee(meta.one_way_fee);
+                    }
+                });
+            }
         }
-
-        // Store in hidden field so PHP can use it in price calculation
-        var $hiddenFee = $('#mpcrbm_branch_one_way_fee');
-        if (!$hiddenFee.length) {
-            $hiddenFee = $('<input type="hidden" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee">').appendTo('form');
-        }
-        $hiddenFee.val(fee || 0);
 
         // Store pickup multiplier in hidden field
         var mult = multipliers[pickupSlug] || 1.0;
@@ -244,6 +245,46 @@
             $hiddenMult = $('<input type="hidden" id="mpcrbm_branch_multiplier" name="mpcrbm_branch_multiplier">').appendTo('form');
         }
         $hiddenMult.val(mult);
+    }
+
+    /** Persist fee to hidden field and update the car-details-page summary row. */
+    function setOneWayFee(fee) {
+        fee = parseFloat(fee) || 0;
+
+        var $hiddenFee = $('#mpcrbm_branch_one_way_fee');
+        if (!$hiddenFee.length) {
+            $hiddenFee = $('<input type="hidden" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee">').appendTo('form');
+        }
+        $hiddenFee.val(fee);
+
+        updateCarDetailsSummary(fee);
+    }
+
+    /** Show/hide the one-way fee row in the single-car details page summary. */
+    function updateCarDetailsSummary(fee) {
+        var $row     = $('#mpcrbm_car_one_way_fee_row');
+        var $display = $('#mpcrbm_car_one_way_fee_display');
+        if (!$row.length) { return; }
+
+        fee = parseFloat(fee) || 0;
+        var qty = parseInt($('#mpcrbm_selected_car_quantity').val()) || 1;
+        var priceFormatter = (typeof mpcrbm_price_format === 'function') ? mpcrbm_price_format : formatPrice;
+
+        if (fee > 0) {
+            var feeTotal = fee * qty;
+            $display.html(priceFormatter(fee) + ' &times; ' + qty + ' = ' + priceFormatter(feeTotal));
+            $row.show();
+        } else {
+            $row.hide();
+            $display.html('');
+        }
+
+        // Adjust the total shown in the car details summary
+        var basePrice = parseFloat($('[name="mpcrbm_post_id"]').attr('data-price')) || 0;
+        if (basePrice > 0) {
+            var deposit = parseFloat($('#mpcrbm_security_deposit_value').val()) || 0;
+            $('#mpcrbm_car_total_price').html(priceFormatter(basePrice + fee * qty + deposit));
+        }
     }
 
     // ── MutationObserver: catch dynamically injected dropoff select ───────

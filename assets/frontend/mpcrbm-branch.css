@@ -99,6 +99,13 @@
 }
 
 /* ── One-Way Fee Notice ──────────────────────────────────────────────── */
+.mpcrbm-oneway-fee-container {
+    display: block;
+    width: 100%;
+    clear: both;
+    margin-top: 8px;
+}
+
 .mpcrbm-oneway-fee-notice {
     background: #fff8e1;
     border: 1px solid #ffe082;

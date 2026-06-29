@@ -112,6 +112,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 //					$cart_item_data['mpcrbm_fixed_hours']         = $fixed_hour;
                 $cart_item_data['mpcrbm_duration_text']       = isset( $_COOKIE['mpcrbm_duration_text'] ) ? sanitize_text_field( wp_unslash( $_COOKIE['mpcrbm_duration_text'] ) ) : '';
                 $cart_item_data['mpcrbm_base_price']          = $raw_price;
+                $one_way_fee = ( $start_place !== $end_place ) ? MPCRBM_Branch_Manager::get_one_way_fee( $start_place ) : 0;
+                $cart_item_data['mpcrbm_branch_one_way_fee'] = $one_way_fee;
                 $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id );
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
                 $cart_item_data['mpcrbm_security_deposit']   = $security_deposit;
@@ -207,6 +209,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $price            = $values['mpcrbm_tp'] ?? '';
                 $car_quantity     = $values['mpcrbm_car_quantity'] ?? '';
                 $security_deposit = isset( $values['mpcrbm_security_deposit'] ) ? floatval( $values['mpcrbm_security_deposit'] ) : 0;
+                $one_way_fee      = isset( $values['mpcrbm_branch_one_way_fee'] ) ? floatval( $values['mpcrbm_branch_one_way_fee'] ) : 0;
                 $item->add_meta_data( esc_html__( 'Pickup Location ', 'car-rental-manager' ), $start_location );
                 $item->add_meta_data( esc_html__( 'Return Location ', 'car-rental-manager' ), $end_location );
                 $price_type = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_price_based' );
@@ -265,6 +268,11 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 } else {
                     $item->add_meta_data( 'mpcrbm_security_deposit_amount', 0 );
                 }
+                if ( $one_way_fee > 0 ) {
+                    $one_way_fee_total = $one_way_fee * intval( $car_quantity );
+                    $item->add_meta_data( esc_html__( 'One-Way Return Fee', 'car-rental-manager' ), wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $one_way_fee_total ) ) );
+                }
+                $item->add_meta_data( '_mpcrbm_branch_one_way_fee', $one_way_fee );
                 if ( sizeof( $extra_service ) > 0 ) {
                     $item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
                     foreach ( $extra_service as $service ) {
@@ -401,6 +409,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             $car_quantity = $car_quantity ? MPCRBM_Global_Function::data_sanitize( $car_quantity ) : 1;
                             $security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, 'mpcrbm_security_deposit_amount' );
                             $security_deposit_order = $security_deposit_order ? floatval( MPCRBM_Global_Function::data_sanitize( $security_deposit_order ) ) : 0;
+                            $one_way_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_branch_one_way_fee' );
+                            $one_way_fee_order = $one_way_fee_order !== '' && $one_way_fee_order !== false ? floatval( $one_way_fee_order ) : 0;
                             // Add meta array data to the $data array
                             $data = array_merge( $meta_array, [
                                 'mpcrbm_id'                          => $post_id,
@@ -427,6 +437,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 'mpcrbm_billing_phone'               => $order->get_billing_phone(),
                                 'mpcrbm_car_quantity'                => $car_quantity,
                                 'mpcrbm_security_deposit_amount'     => $security_deposit_order,
+                                'mpcrbm_branch_one_way_fee'          => $one_way_fee_order,
                                 'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
                             ] );
                             $booking_data = apply_filters( 'mpcrbm_add_booking_data', $data, $post_id );
@@ -604,6 +615,17 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 <span>(<?php echo wp_kses_post( wc_price( $security_deposit ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $security_deposit_total ) ); ?></span>
                             </li>
                         <?php } ?>
+                        <?php
+                        $one_way_fee = array_key_exists( 'mpcrbm_branch_one_way_fee', $cart_item ) ? floatval( $cart_item['mpcrbm_branch_one_way_fee'] ) : 0;
+                        if ( $one_way_fee > 0 ) {
+                            $one_way_fee_total = $one_way_fee * intval( $car_quantity );
+                            ?>
+                            <li>
+                                <span class="fa fa-exchange-alt"></span>
+                                <h6 class="_mR_xs"><?php esc_html_e( 'One-Way Return Fee : ', 'car-rental-manager' ); ?></h6>
+                                <span>(<?php echo wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $one_way_fee_total ) ); ?></span>
+                            </li>
+                        <?php } ?>
                         <?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
                     </ul>
                 </div>
@@ -760,6 +782,12 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $price            = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
             $wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
             $raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
+            if ( $start_place !== $end_place ) {
+                $one_way_fee = MPCRBM_Branch_Manager::get_one_way_fee( $start_place );
+                if ( $one_way_fee > 0 ) {
+                    $raw_price += $one_way_fee * intval( $car_quantity );
+                }
+            }
             $service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];
             $service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'absint', $_POST['mpcrbm_extra_service_qty'] ) : [];
 

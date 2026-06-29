@@ -973,6 +973,16 @@ jQuery(document).ready(function($) {
                 total = total + total_deposit;
                 target_summary.find('.mpcrbm_security_deposit_price').html(mpcrbm_price_format(total_deposit));
             }
+
+            let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
+            if (oneWayFee > 0) {
+                let oneWayTotal = oneWayFee * number_of_car;
+                total = total + oneWayTotal;
+                let $feeDisplay = parent.find('#mpcrbm_car_one_way_fee_display');
+                if ($feeDisplay.length) {
+                    $feeDisplay.html(mpcrbm_price_format(oneWayFee) + ' &times; ' + number_of_car + ' = ' + mpcrbm_price_format(oneWayTotal));
+                }
+            }
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
@@ -1425,10 +1435,15 @@ jQuery(document).ready(function($) {
                     let calculated_price = mpcrbm_price_format( data.data.calculated_price );
                     let day_wise = data.data.calculated_price/totalDays;
                     let day_wise_price = mpcrbm_price_format( day_wise );
-                    parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
                     parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
                     parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
+                    // Re-apply one-way fee on top of the updated base price
+                    let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
+                    let carQty = parseInt(parentClass.find('#mpcrbm_selected_car_quantity').val()) || 1;
+                    let deposit = parseFloat(parentClass.find('#mpcrbm_security_deposit_value').val()) || 0;
+                    let totalWithFee = data.data.calculated_price + (oneWayFee * carQty) + deposit;
+                    parentClass.find("#mpcrbm_car_total_price").html(mpcrbm_price_format(totalWithFee));
                 }
             },
             error: function(response) {
