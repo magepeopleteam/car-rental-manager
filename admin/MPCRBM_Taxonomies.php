@@ -548,9 +548,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_branch_manager_holder" style="display: none">
                             <?php if ( is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ) ) : ?>
-                                <?php if ( class_exists( 'MPCRBM_Branch_Manager' ) ) {
-                                    MPCRBM_Branch_Manager::render_branch_dashboard(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                } ?>
+                                <div class="mpcrbm-branch-lazy-placeholder"></div>
                             <?php else : ?>
                                 <?php self::render_branch_manager_dummy(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                             <?php endif; ?>

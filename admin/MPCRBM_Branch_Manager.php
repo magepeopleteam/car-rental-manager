@@ -61,6 +61,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			add_action( 'wp_ajax_nopriv_mpcrbm_get_branch_info', [ $this, 'ajax_get_branch_info' ] );
 			add_action( 'wp_ajax_mpcrbm_transfer_car_branch', [ $this, 'ajax_transfer_car' ] );
 			add_action( 'wp_ajax_mpcrbm_get_branch_cars', [ $this, 'ajax_get_branch_cars' ] );
+			add_action( 'wp_ajax_mpcrbm_render_branch_dashboard', [ $this, 'ajax_render_branch_dashboard' ] );
 		}
 
 		// ═══════════════════════════════════════════════════════════════════════
@@ -511,9 +512,59 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			update_post_meta( $car_id, 'mpcrbm_branch_transfer_log', $log );
 		}
 
+		/**
+		 * Returns car counts keyed by effective branch slug using a single SQL query.
+		 * Replaces N separate get_cars_at_branch() calls in the dashboard sidebar.
+		 *
+		 * Effective branch = mpcrbm_current_branch when set & non-empty, else mpcrbm_home_branch.
+		 *
+		 * @param  string $cpt  Post type slug.
+		 * @return array<string,int>  [ 'branch-slug' => count ]
+		 */
+		private static function get_branch_car_counts( string $cpt ): array {
+			global $wpdb;
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT
+						COALESCE( NULLIF( cb.meta_value, '' ), hb.meta_value ) AS effective_branch,
+						COUNT( p.ID ) AS cnt
+					FROM {$wpdb->posts} p
+					LEFT JOIN {$wpdb->postmeta} cb
+						ON cb.post_id = p.ID AND cb.meta_key = 'mpcrbm_current_branch'
+					LEFT JOIN {$wpdb->postmeta} hb
+						ON hb.post_id = p.ID AND hb.meta_key = 'mpcrbm_home_branch'
+					WHERE p.post_type   = %s
+					  AND p.post_status = 'publish'
+					  AND ( cb.meta_value IS NOT NULL OR hb.meta_value IS NOT NULL )
+					GROUP BY effective_branch
+					HAVING effective_branch IS NOT NULL AND effective_branch != ''",
+					$cpt
+				)
+			);
+
+			$counts = [];
+			foreach ( $rows as $row ) {
+				$counts[ $row->effective_branch ] = (int) $row->cnt;
+			}
+			return $counts;
+		}
+
 		// ═══════════════════════════════════════════════════════════════════════
 		// AJAX ENDPOINTS
 		// ═══════════════════════════════════════════════════════════════════════
+
+		/** Lazy-load the branch dashboard HTML so it doesn't run on every page load. */
+		public function ajax_render_branch_dashboard() {
+			check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+			}
+			ob_start();
+			self::render_branch_dashboard();
+			wp_send_json_success( [ 'html' => ob_get_clean() ] );
+		}
 
 		/** Public endpoint — frontend JS calls this to show branch info card. */
 		public function ajax_get_branch_info() {
@@ -655,6 +706,11 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			$nonce       = wp_create_nonce( 'mpcrbm_branch_transfer' );
 			$cpt         = MPCRBM_Function::get_cpt();
 			$add_new_url = admin_url( 'edit-tags.php?taxonomy=mpcrbm_locations&post_type=' . $cpt );
+
+			// One SQL query for all branch car counts instead of N get_posts() calls.
+			$car_counts = ( ! empty( $branches ) && ! is_wp_error( $branches ) )
+				? self::get_branch_car_counts( $cpt )
+				: [];
 			?>
 			<div class="mpcrbm-branch-dashboard" data-nonce="<?php echo esc_attr( $nonce ); ?>"
 				 data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
@@ -678,25 +734,29 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 					<?php else : ?>
 						<div class="mpcrbm-branch-list">
 							<?php foreach ( $branches as $branch ) :
-								$meta      = self::get_branch_meta( $branch->slug );
-								$car_count = count( self::get_cars_at_branch( $branch->slug ) );
-								$edit_url  = get_edit_term_link( $branch->term_id, 'mpcrbm_locations' );
+								// Use term_id directly — get_terms() already primed the meta cache,
+								// so these are object-cache hits, not DB queries.
+								$tid       = $branch->term_id;
+								$address   = (string) ( get_term_meta( $tid, 'mpcrbm_branch_address', true ) ?: '' );
+								$phone     = (string) ( get_term_meta( $tid, 'mpcrbm_branch_phone', true ) ?: '' );
+								$car_count = $car_counts[ $branch->slug ] ?? 0;
+								$edit_url  = get_edit_term_link( $tid, 'mpcrbm_locations' );
 							?>
 							<div class="mpcrbm-branch-card" data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>">
 								<div class="mpcrbm-branch-card-header">
 									<span class="mpcrbm-branch-name"><?php echo esc_html( $branch->name ); ?></span>
 									<span class="mpcrbm-car-count-badge"><?php echo esc_html( $car_count ); ?></span>
 								</div>
-								<?php if ( $meta['address'] ) : ?>
+								<?php if ( $address ) : ?>
 									<div class="mpcrbm-branch-meta-row">
 										<i class="mi mi-map-marker"></i>
-										<span><?php echo esc_html( $meta['address'] ); ?></span>
+										<span><?php echo esc_html( $address ); ?></span>
 									</div>
 								<?php endif; ?>
-								<?php if ( $meta['phone'] ) : ?>
+								<?php if ( $phone ) : ?>
 									<div class="mpcrbm-branch-meta-row">
 										<i class="mi mi-phone"></i>
-										<span><?php echo esc_html( $meta['phone'] ); ?></span>
+										<span><?php echo esc_html( $phone ); ?></span>
 									</div>
 								<?php endif; ?>
 								<div class="mpcrbm-branch-badges"></div>
