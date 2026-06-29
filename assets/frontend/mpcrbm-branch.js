@@ -204,9 +204,10 @@
     observeDropoffAppearance();
 
     function refreshOneWayFee() {
-        var pickupSlug  = $(PICKUP_SEL).val();
-        var $dropoff    = $(DROPOFF_SEL);
-        var dropoffSlug = $dropoff.val();
+        var pickupSlug    = $(PICKUP_SEL).val();
+        var $dropoff      = $(DROPOFF_SEL);
+        var dropoffSlug   = $dropoff.val();
+        var isSameLocChk  = $('#mpcrbm_is_drop_off').is(':checked');
 
         // Anchor the notice outside the label/select — insert after the nearest
         // wrapping block element so it never ends up inside a <label>.
@@ -218,7 +219,8 @@
         }
         $container.empty();
 
-        if (!pickupSlug || !dropoffSlug || pickupSlug === dropoffSlug) {
+        // Same location: either explicit checkbox OR matching slugs OR missing values
+        if (!pickupSlug || !dropoffSlug || pickupSlug === dropoffSlug || isSameLocChk) {
             setOneWayFee(0);
         } else {
             // Fee is keyed by the pickup branch (customer picks up from there)
@@ -247,7 +249,7 @@
         $hiddenMult.val(mult);
     }
 
-    /** Persist fee to hidden field and update the car-details-page summary row. */
+    /** Persist fee to hidden field and notify all price-calculation contexts. */
     function setOneWayFee(fee) {
         fee = parseFloat(fee) || 0;
 
@@ -256,6 +258,9 @@
             $hiddenFee = $('<input type="hidden" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee">').appendTo('form');
         }
         $hiddenFee.val(fee);
+
+        // Let search-results page recalculate the currently selected vehicle total
+        $(document).trigger('mpcrbm_one_way_fee_changed', [fee]);
 
         updateCarDetailsSummary(fee);
     }
@@ -305,6 +310,21 @@
         });
         observer.observe(document.body, { childList: true, subtree: true });
     }
+
+    // ── Same-location checkbox ────────────────────────────────────────────
+    // When the "return to same location" checkbox is toggled, re-evaluate the fee.
+
+    $(document).on('change', '#mpcrbm_is_drop_off', function () {
+        refreshOneWayFee();
+    });
+
+    // Initialise on page load in case the selects are already populated
+    // (e.g. browser back-fill or URL pre-fill after a search).
+    $(function () {
+        if ($(PICKUP_SEL).val()) {
+            refreshOneWayFee();
+        }
+    });
 
     // ── Hours toggle ──────────────────────────────────────────────────────
 

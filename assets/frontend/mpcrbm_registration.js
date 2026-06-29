@@ -224,16 +224,32 @@ jQuery(document).ready(function($) {
             // Select new vehicle
             parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
 
-            let transport_name = $this.attr('data-transport-name');
+            let transport_name  = $this.attr('data-transport-name');
             let transport_price = parseFloat($this.attr('data-transport-price'));
-            let post_id = $this.attr('data-post-id');
+            let base_price      = parseFloat($this.attr('data-base-price'));
+            if (isNaN(base_price)) { base_price = transport_price; }
+            let post_id         = $this.attr('data-post-id');
             let security_deposit = parseFloat($this.attr('data-security-deposit')) || 0;
+
+            // Determine one-way fee from current form state
+            let isSameLocChk = $('#mpcrbm_is_drop_off').is(':checked');
+            let $feeField    = $('#mpcrbm_branch_one_way_fee');
+            let oneWayFee;
+            if (isSameLocChk) {
+                oneWayFee = 0;
+            } else if ($feeField.length) {
+                // mpcrbm-branch.js has already computed the fee
+                oneWayFee = parseFloat($feeField.val()) || 0;
+            } else {
+                // Hidden field not created yet — derive from PHP-baked data attributes
+                oneWayFee = Math.max(0, transport_price - base_price);
+            }
 
             // Store deposit in hidden input for later quantity/extra-service recalculations
             parent.find('[name="mpcrbm_security_deposit_value"]').val(security_deposit);
 
-            // Build initial total including deposit
-            let initial_total = transport_price + security_deposit;
+            // Build initial total: base price + one-way fee + deposit
+            let initial_total = base_price + oneWayFee + security_deposit;
 
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
@@ -250,7 +266,7 @@ jQuery(document).ready(function($) {
             target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(initial_total));
 
             $this.addClass('active_select');
-            parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', transport_price);
+            parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', base_price);
 
             // Show summary sections
             target_summary.slideDown(400);
@@ -293,12 +309,26 @@ jQuery(document).ready(function($) {
     });
 
     $(document).on('change','#mpcrbm_is_drop_off', function() {
+        let $parent = $(this).closest('.mpcrbm_transport_search_area');
         if ($(this).is(':checked')) {
             $('#mpcrbm_drop_off_location').hide();
             $('#mpcrbm-vertical-divide-location').hide();
+            // Mirror start_place into end_place so cart/checkout see same location
+            let startVal = $parent.find('[name="mpcrbm_start_place"]').val()
+                        || $('[name="mpcrbm_start_place"]').first().val();
+            if (startVal) {
+                $parent.find('[name="mpcrbm_end_place"]').val(startVal);
+                $('[name="mpcrbm_end_place"]').val(startVal);
+            }
         } else {
             $('#mpcrbm_drop_off_location').show();
             $('#mpcrbm-vertical-divide-location').show();
+            // Restore end_place from the visible dropoff select
+            let dropoffVal = $('#mpcrbm_manual_end_place').val();
+            if (dropoffVal) {
+                $parent.find('[name="mpcrbm_end_place"]').val(dropoffVal);
+                $('[name="mpcrbm_end_place"]').val(dropoffVal);
+            }
         }
     });
 
@@ -942,9 +972,25 @@ jQuery(document).ready(function($) {
                     deposit_row.find('.mpcrbm_security_deposit_price').html(mpcrbm_price_format(total_deposit));
                 }
             }
+
+            // Add one-way fee when different locations are selected
+            let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
+            if (oneWayFee > 0) {
+                total = total + oneWayFee * number_of_car;
+            }
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
+
+    // When the one-way fee changes (location re-selected), recalculate the active vehicle's total
+    $(document).on('mpcrbm_one_way_fee_changed', function (e, fee) {
+        let $active = $('.mpcrbm_transport_select.active_select');
+        if (!$active.length) { return; }
+        let parent = $active.closest('.mpcrbm_transport_search_area');
+        if (!parent.length) { return; }
+        mpcrbm_price_calculation(parent);
+    });
+
     function mpcrbm_price_calculation_car_details_page(parent, number_of_car) {
         // let number_of_car = mpcrbm_number_of_car_booked( parent );
 
@@ -998,7 +1044,11 @@ jQuery(document).ready(function($) {
         let parent = $(this).closest('.mpcrbm_transport_search_area');
         let target_checkout = parent.find('.mpcrbm_checkout_area');
         let start_place = parent.find('[name="mpcrbm_start_place"]').val();
-        let end_place = parent.find('[name="mpcrbm_end_place"]').val();
+        let end_place   = parent.find('[name="mpcrbm_end_place"]').val();
+        // When "same location" checkbox is checked, treat end_place = start_place
+        if ($('#mpcrbm_is_drop_off').is(':checked')) {
+            end_place = start_place;
+        }
         let mpcrbm_waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let mpcrbm_taxi_return = parent.find('[name="mpcrbm_taxi_return"]').val();
         let return_target_date = parent.find("#mpcrbm_map_return_date").val();
@@ -1091,7 +1141,7 @@ jQuery(document).ready(function($) {
     $(document).on("click", ".mpcrbm_car_details_continue_btn", function() {
         let parent = $(this).closest('.mpcrbm_car_details_wrapper');
         let start_place = parent.find('#mpcrbm_manual_start_place').val();
-        let end_place = parent.find('#mpcrbm_manual_end_place').val();
+        let end_place   = parent.find('#mpcrbm_manual_end_place').val();
         let mpcrbm_waiting_time = '';
         let mpcrbm_taxi_return = '';
         let mpcrbm_start_date = parent.find("#mpcrbm_map_start_date").val();
@@ -1110,8 +1160,8 @@ jQuery(document).ready(function($) {
         if( start_place === null ){
             start_place = '';
         }
-        // console.log( date );
-        if( end_place === '' || end_place === null ){
+        // When "same location" checkbox is checked, treat end = start (no one-way fee)
+        if ( $('#mpcrbm_is_drop_off').is(':checked') || end_place === '' || end_place === null ) {
             end_place = start_place;
         }
         // console.log( date );
