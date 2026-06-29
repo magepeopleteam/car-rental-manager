@@ -651,14 +651,26 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 		// ═══════════════════════════════════════════════════════════════════════
 
 		public static function render_branch_dashboard() {
-			$branches = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
-			$nonce    = wp_create_nonce( 'mpcrbm_branch_transfer' );
+			$branches    = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
+			$nonce       = wp_create_nonce( 'mpcrbm_branch_transfer' );
+			$cpt         = MPCRBM_Function::get_cpt();
+			$add_new_url = admin_url( 'edit-tags.php?taxonomy=mpcrbm_locations&post_type=' . $cpt );
 			?>
 			<div class="mpcrbm-branch-dashboard" data-nonce="<?php echo esc_attr( $nonce ); ?>"
 				 data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
 
 				<div class="mpcrbm-branch-sidebar">
-					<h3><?php esc_html_e( 'Branches', 'car-rental-manager' ); ?></h3>
+
+					<div class="mpcrbm-branch-sidebar-header">
+						<div class="mpcrbm-branch-sidebar-title">
+							<i class="mi mi-map-location-track"></i>
+							<span><?php esc_html_e( 'Branches', 'car-rental-manager' ); ?></span>
+						</div>
+						<?php if ( ! empty( $branches ) && ! is_wp_error( $branches ) ) : ?>
+							<span class="mpcrbm-branch-total-pill"><?php echo esc_html( count( $branches ) ); ?></span>
+						<?php endif; ?>
+					</div>
+
 					<?php if ( empty( $branches ) || is_wp_error( $branches ) ) : ?>
 						<p class="mpcrbm-no-branches">
 							<?php esc_html_e( 'No branches configured yet. Add locations from WP Admin → Car Rental locations taxonomy.', 'car-rental-manager' ); ?>
@@ -689,21 +701,32 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								<?php endif; ?>
 								<div class="mpcrbm-branch-badges"></div>
 								<div class="mpcrbm-branch-card-actions">
-									<button class="button mpcrbm-view-branch-cars"
+									<button class="button button-primary mpcrbm-view-branch-cars"
 											data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"
 											data-branch-name="<?php echo esc_attr( $branch->name ); ?>">
+										<i class="mi mi-car"></i>
 										<?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?>
 									</button>
 									<?php if ( $edit_url ) : ?>
 										<a href="<?php echo esc_url( $edit_url ); ?>" class="button">
-											<?php esc_html_e( 'Edit Branch', 'car-rental-manager' ); ?>
+											<i class="mi mi-edit"></i>
+											<?php esc_html_e( 'Edit', 'car-rental-manager' ); ?>
 										</a>
 									<?php endif; ?>
 								</div>
 							</div>
 							<?php endforeach; ?>
 						</div>
+
+						<div class="mpcrbm-branch-sidebar-footer">
+							<a href="<?php echo esc_url( $add_new_url ); ?>" class="mpcrbm-add-branch-link">
+								<i class="mi mi-plus"></i>
+								<?php esc_html_e( 'Add New Branch', 'car-rental-manager' ); ?>
+							</a>
+						</div>
+
 					<?php endif; ?>
+
 				</div><!-- .mpcrbm-branch-sidebar -->
 
 				<div class="mpcrbm-branch-cars-panel">
@@ -712,10 +735,13 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 						<span class="mpcrbm-panel-car-count"></span>
 					</div>
 					<div class="mpcrbm-branch-cars-panel-body">
-						<p class="mpcrbm-select-prompt">
+						<div class="mpcrbm-select-prompt">
 							<i class="mi mi-map-location-track"></i>
-							<?php esc_html_e( 'Select a branch to view and transfer cars.', 'car-rental-manager' ); ?>
-						</p>
+							<div>
+								<p><?php esc_html_e( 'Select a branch to view and transfer cars.', 'car-rental-manager' ); ?></p>
+								<span><?php esc_html_e( 'Click any branch from the left panel to get started.', 'car-rental-manager' ); ?></span>
+							</div>
+						</div>
 					</div>
 				</div><!-- .mpcrbm-branch-cars-panel -->
 
