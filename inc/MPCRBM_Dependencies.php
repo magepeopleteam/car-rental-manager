@@ -35,6 +35,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Branch_Manager.php';
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Branch_Search.php';
 			}
 
 			public function global_enqueue() {
@@ -88,6 +89,10 @@
 				wp_enqueue_script( 'mpcrbm_manage_review', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_manage_review.js', array( 'jquery' ), time(), true );
 				wp_enqueue_style( 'mpcrbm_branch', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_branch', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch.js', array( 'jquery' ), time(), true );
+				wp_enqueue_style( 'mpcrbm_branch_search', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch-search.css', array(), time() );
+				wp_enqueue_script( 'mpcrbm_branch_search', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch-search.js', array( 'jquery', 'flatpickr.min' ), time(), true );
+				wp_enqueue_style( 'mpcrbm_bs_results', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-bs-results.css', array( 'mpcrbm_branch_search' ), time() );
+				wp_enqueue_script( 'mpcrbm_bs_results', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-bs-results.js', array( 'jquery', 'mpcrbm_branch_search' ), time(), true );
 				wp_localize_script( 'mpcrbm_branch', 'mpcrbmBranchL10n', $this->get_branch_l10n() );
 				// Localize scripts
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbm_ajax', array(

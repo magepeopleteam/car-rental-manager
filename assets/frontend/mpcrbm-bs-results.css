@@ -1,0 +1,750 @@
+/* ═══════════════════════════════════════════════════════════════
+   Branch Search — Results Skin   (mpcrbm-bs-results.css)
+   All rules scoped to .mpcrbm-bs so [mpcrbm_booking] is untouched.
+
+   Layout (> 700 px):
+     ┌─────────────────────────────────────────────────┐
+     │  BOOKING SUMMARY  (topbar – full width)         │  ← .mpcrbm-bsr-topbar
+     ├────────────────────────┬────────────────────────┤
+     │  CAR LIST (left)       │  SELECTED-CAR PANEL    │
+     │  .mpcrbm_mainSection   │  (right)               │
+     │                        │  .mpcrbm-bsr-right     │
+     │                        │   ├ transport_summary   │
+     │                        │   └ extra_service       │
+     └────────────────────────┴────────────────────────┘
+
+   ≤ 700 px: single column, everything stacks.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── Design tokens ────────────────────────────────────────────── */
+.mpcrbm-bs {
+    --r-blue:       #2563eb;
+    --r-blue-dk:    #1d4ed8;
+    --r-blue-lt:    #dbeafe;
+    --r-green:      #16a34a;
+    --r-green-dk:   #15803d;
+    --r-green-lt:   #dcfce7;
+    --r-amber-bg:   #fef3c7;
+    --r-amber-text: #92400e;
+    --r-violet-bg:  #ede9fe;
+    --r-violet-txt: #5b21b6;
+    --r-white:      #ffffff;
+    --r-bg:         #f8fafc;
+    --r-border:     #e2e8f0;
+    --r-text:       #0f172a;
+    --r-text2:      #475569;
+    --r-muted:      #94a3b8;
+    --r-rad:        12px;
+    --r-rad-sm:     8px;
+    --r-rad-xs:     6px;
+    --r-shadow:     0 1px 3px rgba(0,0,0,.07), 0 4px 14px rgba(0,0,0,.06);
+    --r-right-w:    300px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 1 — SHELL RESETS
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm_map_search_result,
+.mpcrbm-bs .mpcrbm_search_result_holder {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Hide plugin's left filter pane — we don't use it */
+.mpcrbm-bs .mpcrbm_left_filter,
+.mpcrbm-bs .geo-fence-no-transport {
+    display: none !important;
+}
+
+/* .mpcrbm_main_content: flex column so topbar stacks above body */
+.mpcrbm-bs .mpcrbm_main_content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 20px 0 0 !important;
+    margin: 0 !important;
+    float: none !important;
+}
+
+/* Order-summary section hidden until checkout AJAX fires */
+.mpcrbm-bs .mpcrbm_order_summary {
+    display: none;
+    margin-top: 28px;
+    padding: 28px;
+    background: var(--r-white);
+    border: 1.5px solid var(--r-border);
+    border-radius: var(--r-rad);
+    box-shadow: var(--r-shadow);
+}
+.mpcrbm-bs .mpcrbm_order_summary.mpcrbm-bsr-on { display: block !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 2 — TOP BAR (Booking Summary)
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm-bsr-topbar {
+    margin-bottom: 20px;
+}
+
+/* Card wrapper — switch to horizontal flex */
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_leftSidebar {
+    display: block !important;
+    float: none !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.mpcrbm-bs .mpcrbm-bsr-topbar .sticky_on_scroll { position: static !important; }
+
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_dFlex_fdColumn_btLight {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    flex-wrap: wrap !important;
+    background: var(--r-white) !important;
+    border: 1.5px solid var(--r-border) !important;
+    border-radius: var(--r-rad) !important;
+    box-shadow: var(--r-shadow) !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+}
+
+/* "Booking Summary" label on the left */
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_title {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 16px 20px !important;
+    margin: 0 !important;
+    background: linear-gradient(160deg, var(--r-blue), var(--r-blue-dk)) !important;
+    color: #fff !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: .5px !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    border: none !important;
+}
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_title i {
+    font-size: 22px !important;
+    color: #fff !important;
+}
+
+/* Summary items row */
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_booking_summary_description {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    flex: 1 !important;
+    flex-wrap: wrap !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Each summary item — vertical divider layout */
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 14px 22px !important;
+    margin: 0 !important;
+    border-bottom: none !important;
+    border-right: 1px solid var(--r-border) !important;
+    min-width: 140px !important;
+    flex: 1 !important;
+}
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show:last-child {
+    border-right: none !important;
+}
+
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show > span {
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    color: var(--r-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: .7px !important;
+    margin-bottom: 4px !important;
+}
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show > span i {
+    color: var(--r-blue) !important;
+    font-size: 11px !important;
+}
+
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show > p {
+    margin: 0 !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: var(--r-text) !important;
+    line-height: 1.4 !important;
+}
+
+/* Duration item — compact inline */
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_duration-highlight {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    gap: 6px !important;
+    background: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_duration-days {
+    font-size: 26px !important;
+    font-weight: 800 !important;
+    color: var(--r-blue) !important;
+    line-height: 1 !important;
+}
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_duration-label {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--r-text2) !important;
+    line-height: 1.3 !important;
+}
+
+/* Hide the "Previous" button in AJAX context */
+.mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_get_vehicle_prev { display: none !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 3 — BODY (car list top, right panel always below)
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm-bsr-body {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+}
+
+.mpcrbm-bs .mpcrbm-bsr-body > .mpcrbm_mainSection {
+    width: 100% !important;
+    min-width: 0 !important;
+}
+
+/* Below panel — always full width, no sticky */
+.mpcrbm-bs .mpcrbm-bsr-right {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    position: static !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 4 — TRANSPORT SUMMARY (right panel card)
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm_transport_summary {
+    /* display toggled by jQuery slideDown — don't add display:none here */
+    background: var(--r-white) !important;
+    border: 1.5px solid var(--r-border) !important;
+    border-radius: var(--r-rad) !important;
+    box-shadow: var(--r-shadow) !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm_transport_summary > h3 {
+    margin: 0 !important;
+    padding: 12px 18px !important;
+    background: linear-gradient(135deg, var(--r-blue), var(--r-blue-dk)) !important;
+    color: #fff !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: .6px !important;
+    border: none !important;
+}
+
+.mpcrbm-bs .mpcrbm_transport_summary .divider { display: none !important; }
+
+.mpcrbm-bs .mpcrbm_transport_summary .book-items {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 12px 18px !important;
+    margin: 0 !important;
+    background: var(--r-bg) !important;
+    border-bottom: 1px solid var(--r-border) !important;
+    gap: 8px !important;
+    color: var(--r-text) !important;
+    border-radius: 0 !important;
+}
+.mpcrbm-bs .mpcrbm_transport_summary .book-items p { margin: 0 !important; font-size: 13px !important; }
+
+.mpcrbm-bs .mpcrbm_product_name     { font-weight: 600 !important; color: var(--r-text) !important; }
+.mpcrbm-bs .mpcrbm_car_qty_display  { color: var(--r-blue) !important; font-weight: 700 !important; }
+.mpcrbm-bs .mpcrbm_product_price    { font-weight: 700 !important; color: var(--r-text) !important; }
+
+.mpcrbm-bs .mpcrbm_extra_service_summary  { padding: 0 18px !important; }
+.mpcrbm-bs .mpcrbm_security_deposit_summary { padding: 0 18px !important; }
+
+/* Total row */
+.mpcrbm-bs .mpcrbm_transport_summary .justifyBetween.total {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 14px 18px !important;
+    margin: 0 !important;
+    background: var(--r-bg) !important;
+    border-top: 1px solid var(--r-border) !important;
+    border-radius: 0 !important;
+}
+.mpcrbm-bs .mpcrbm_transport_summary .justifyBetween.total h6 {
+    margin: 0 !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: var(--r-muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: .6px !important;
+}
+.mpcrbm-bs .mpcrbm_product_total_price {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: var(--r-blue) !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 5 — EXTRA SERVICE + BOOK NOW (right panel)
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm_extra_service { display: block; }
+
+/* Extra service wrapper card */
+.mpcrbm-bs .mpcrbm_extra_service .dLayout {
+    background: var(--r-white) !important;
+    border: 1.5px solid var(--r-border) !important;
+    border-radius: var(--r-rad) !important;
+    box-shadow: var(--r-shadow) !important;
+    padding: 16px !important;
+    margin: 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm_extra_service h3 {
+    margin: 0 0 12px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: var(--r-text2) !important;
+    text-transform: uppercase !important;
+    letter-spacing: .6px !important;
+}
+
+/* Book Now */
+.mpcrbm-bs .mpcrbm_book_now {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 14px 20px !important;
+    margin: 0 !important;
+    background: linear-gradient(135deg, var(--r-green), var(--r-green-dk)) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: var(--r-rad-sm) !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 12px rgba(22,163,74,.30) !important;
+    transition: opacity .2s, transform .15s, box-shadow .2s;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+}
+.mpcrbm-bs .mpcrbm_book_now:hover {
+    opacity: .92;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba(22,163,74,.40) !important;
+}
+.mpcrbm-bs .mpcrbm_book_now i { font-size: 17px !important; color: #fff !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 6 — CAR LIST GRID (left)
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .sticky_depend_area {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    align-items: start !important;
+    position: static !important;
+}
+
+/* No-cars message */
+.mpcrbm-bs ._dLayout_mT_bgWarning {
+    padding: 16px 20px !important;
+    margin: 0 !important;
+    background: var(--r-amber-bg) !important;
+    border: 1px solid #fcd34d !important;
+    border-radius: var(--r-rad-sm) !important;
+}
+.mpcrbm-bs ._dLayout_mT_bgWarning h3 {
+    margin: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--r-amber-text) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 7 — VEHICLE CARD (grid view: image top → title → info)
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm_booking_vehicle {
+    display: flex !important;
+    flex-direction: column !important;
+    background: var(--r-white) !important;
+    border: 1.5px solid var(--r-border) !important;
+    border-radius: var(--r-rad) !important;
+    box-shadow: var(--r-shadow) !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: border-color .2s, box-shadow .2s, transform .15s;
+}
+.mpcrbm-bs .mpcrbm_booking_vehicle:hover {
+    border-color: #93c5fd !important;
+    box-shadow: 0 8px 28px rgba(37,99,235,.13) !important;
+    transform: translateY(-3px);
+}
+.mpcrbm-bs .mpcrbm_booking_vehicle.mpcrbm-bsr-selected {
+    border-color: var(--r-blue) !important;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15), 0 8px 28px rgba(37,99,235,.13) !important;
+}
+
+/* ── Image — full width, fixed height at top ──────────────────── */
+.mpcrbm-bs .mpcrbm-image-box {
+    width: 100% !important;
+    height: 185px !important;
+    min-height: 0 !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+    background: #f1f5f9 !important;
+    display: block !important;
+}
+.mpcrbm-bs .mpcrbm-image-box .bg_image_area {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+.mpcrbm-bs .mpcrbm-image-box img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    transition: transform .45s ease;
+}
+.mpcrbm-bs .mpcrbm_booking_vehicle:hover .mpcrbm-image-box img {
+    transform: scale(1.07);
+}
+
+/* ── Details — grow to fill card height ───────────────────────── */
+.mpcrbm-bs .mpcrbm_list_details {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    padding: 14px 16px 16px !important;
+    margin: 0 !important;
+    gap: 0 !important;
+    min-width: 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm_list_details > h2 {
+    margin: 0 0 10px !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: var(--r-text) !important;
+    line-height: 1.35 !important;
+}
+
+.mpcrbm-bs .mpcrbm_list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    flex: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* ── Spec chips ───────────────────────────────────────────────── */
+.mpcrbm-bs .mpcrbm_car_specs_lists {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.mpcrbm-bs .mpcrbm_car_spec {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    width: auto !important;
+    background: var(--r-bg) !important;
+    border: 1px solid var(--r-border) !important;
+    border-radius: var(--r-rad-xs) !important;
+    padding: 4px 9px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+}
+.mpcrbm-bs .mpcrbm_car_spec i {
+    font-size: 12px !important;
+    color: var(--r-blue) !important;
+    flex-shrink: 0 !important;
+}
+.mpcrbm-bs .mpcrbm_car_spec > div { margin: 0 !important; padding: 0 !important; }
+.mpcrbm-bs .mpcrbm_car_spec .spec-value {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--r-text2) !important;
+}
+
+/* ── Deposit & one-way badges ─────────────────────────────────── */
+.mpcrbm-bs .mpcrbm_security_deposit_badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: var(--r-amber-bg) !important;
+    color: var(--r-amber-text) !important;
+    border-radius: var(--r-rad-xs) !important;
+    padding: 3px 9px !important;
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+}
+.mpcrbm-bs .mpcrbm_one_way_price_badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: var(--r-violet-bg) !important;
+    color: var(--r-violet-txt) !important;
+    border-radius: var(--r-rad-xs) !important;
+    padding: 3px 9px !important;
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+}
+
+/* ── Price + Select row ───────────────────────────────────────── */
+.mpcrbm-bs .mpcrbm_discount_booking {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+    margin-top: auto !important;
+    padding-top: 12px !important;
+    border-top: 1px solid #f1f5f9 !important;
+}
+
+.mpcrbm-bs .mpcrbm_price_holder {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1px !important;
+    min-width: 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm_discount_info { margin: 0 !important; padding: 0 !important; }
+
+.mpcrbm-bs .mpcrbm_price-breakdown {
+    font-size: 11.5px !important;
+    color: var(--r-muted) !important;
+    margin: 0 !important;
+    line-height: 1.4 !important;
+}
+.mpcrbm-bs .mpcrbm_price-breakdown.mpcrbm_line_through {
+    text-decoration: line-through !important;
+    color: #cbd5e1 !important;
+}
+
+.mpcrbm-bs .mpcrbm_price-main {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: var(--r-blue) !important;
+    margin: 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm-price-container { margin: 0 !important; }
+
+.mpcrbm-bs .mpcrbm-price,
+.mpcrbm-bs .mpcrbm-discounted-price {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: var(--r-text) !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    display: block !important;
+}
+
+.mpcrbm-bs .mpcrbm-original-price {
+    font-size: 12px !important;
+    color: var(--r-muted) !important;
+    text-decoration: line-through !important;
+    margin: 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm_price-total {
+    font-size: 11px !important;
+    color: var(--r-muted) !important;
+    margin: 2px 0 0 !important;
+    text-align: left !important;
+}
+
+.mpcrbm-bs .mpcrbm_discount-info {
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    color: var(--r-green) !important;
+    margin: 2px 0 0 !important;
+}
+
+.mpcrbm-bs .mpcrbm_early_bird_promotion_badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    background: #fefce8 !important;
+    border: 1px solid #fef08a !important;
+    border-radius: var(--r-rad-xs) !important;
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+    color: #713f12 !important;
+    margin: 4px 0 0 !important;
+}
+
+/* ── Select Car button ────────────────────────────────────────── */
+.mpcrbm-bs .mpcrbm_add_multiple_qty { flex-shrink: 0 !important; }
+.mpcrbm-bs .mpcrbm_car_quantity { margin-bottom: 8px !important; }
+
+.mpcrbm-bs button.mpcrbm_transport_select,
+.mpcrbm-bs a.mpcrbm_transport_select {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 10px 18px !important;
+    margin: 0 !important;
+    background: linear-gradient(135deg, var(--r-blue), var(--r-blue-dk)) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: var(--r-rad-sm) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-shadow: 0 2px 8px rgba(37,99,235,.28) !important;
+    transition: opacity .2s, transform .15s, box-shadow .2s !important;
+    text-decoration: none !important;
+    line-height: 1 !important;
+}
+.mpcrbm-bs button.mpcrbm_transport_select:hover,
+.mpcrbm-bs a.mpcrbm_transport_select:hover {
+    opacity: .9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(37,99,235,.38) !important;
+}
+.mpcrbm-bs button.mpcrbm_transport_select.active_select,
+.mpcrbm-bs a.mpcrbm_transport_select.active_select {
+    background: linear-gradient(135deg, var(--r-green), var(--r-green-dk)) !important;
+    box-shadow: 0 2px 8px rgba(22,163,74,.28) !important;
+}
+
+.mpcrbm-bs .mpcrbm_in_cart_btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 10px 18px !important;
+    background: var(--r-green-lt) !important;
+    color: var(--r-green-dk) !important;
+    border: 1.5px solid #86efac !important;
+    border-radius: var(--r-rad-sm) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 8 — ORDER SUMMARY
+═══════════════════════════════════════════════════════════════ */
+
+.mpcrbm-bs .mpcrbm_order_summary .sticky_section,
+.mpcrbm-bs .mpcrbm_order_summary .flexWrap {
+    display: block !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 9 — RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+
+/* ≤ 700 px: topbar wraps to vertical */
+@media (max-width: 700px) {
+
+    /* Topbar: wrap items vertically on narrow */
+    .mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_dFlex_fdColumn_btLight {
+        flex-direction: column !important;
+    }
+    .mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_title {
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        padding: 12px 16px !important;
+        gap: 8px !important;
+        font-size: 12px !important;
+    }
+    .mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_title i { font-size: 16px !important; }
+
+    .mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_booking_summary_description {
+        flex-direction: column !important;
+    }
+    .mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show {
+        border-right: none !important;
+        border-bottom: 1px solid var(--r-border) !important;
+        padding: 10px 16px !important;
+        min-width: 0 !important;
+    }
+    .mpcrbm-bs .mpcrbm-bsr-topbar .mpcrbm_summary_show:last-child {
+        border-bottom: none !important;
+    }
+}
+
+/* ≤ 520 px: 1-column grid, button full width */
+@media (max-width: 520px) {
+
+    .mpcrbm-bs .sticky_depend_area {
+        grid-template-columns: 1fr !important;
+    }
+
+    .mpcrbm-bs .mpcrbm-image-box {
+        height: 200px !important;
+    }
+
+    .mpcrbm-bs .mpcrbm_discount_booking {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .mpcrbm-bs button.mpcrbm_transport_select,
+    .mpcrbm-bs a.mpcrbm_transport_select {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}

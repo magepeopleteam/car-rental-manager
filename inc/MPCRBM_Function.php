@@ -839,15 +839,16 @@
             public static function get_vehicle_pickup_locations( $post_id ) {
                 $pickup_locations = array();
 
-                // Branch assignment: effective branch is always a valid pickup location
-                $branch_enabled = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
-                if ( $branch_enabled === '1' ) {
-                    $current_branch   = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
-                    $home_branch      = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
-                    $effective_branch = ! empty( $current_branch ) ? $current_branch : $home_branch;
-                    if ( ! empty( $effective_branch ) ) {
-                        $pickup_locations[] = $effective_branch;
-                    }
+                // Branch assignment: effective branch is always a valid pickup location.
+                // Applies when branch management is enabled OR when branch meta is set
+                // (e.g. car transferred via Branch Manager without explicit enable toggle).
+                $branch_enabled   = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
+                $current_branch   = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
+                $home_branch      = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
+                $effective_branch = ! empty( $current_branch ) ? $current_branch : $home_branch;
+
+                if ( ( $branch_enabled === '1' || ! empty( $effective_branch ) ) && ! empty( $effective_branch ) ) {
+                    $pickup_locations[] = $effective_branch;
                 }
 
                 $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
