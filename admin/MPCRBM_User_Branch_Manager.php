@@ -396,40 +396,56 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 
 		/** Return order IDs for the current BM's branches. Returns [0] when none found. */
 		private function get_branch_order_ids(): array {
-			global $wpdb;
-
 			$branches = self::get_current_user_branches();
 			if ( empty( $branches ) ) {
 				return [ 0 ];
 			}
 
-			$ph = implode( ',', array_fill( 0, count( $branches ), '%s' ) );
+			// Primary: orders tagged with _mpcrbm_order_branch at checkout.
+			// wc_get_orders() is HPOS-compatible and avoids direct DB queries.
+			$tagged = wc_get_orders( [
+				'limit'      => -1,
+				'return'     => 'ids',
+				'meta_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					[
+						'key'     => '_mpcrbm_order_branch',
+						'value'   => $branches,
+						'compare' => 'IN',
+					],
+				],
+			] );
 
-			// Primary: orders tagged via _mpcrbm_order_branch (set at checkout)
-			$tagged = $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT DISTINCT post_id
-					 FROM {$wpdb->postmeta}
-					 WHERE meta_key   = '_mpcrbm_order_branch'
-					   AND meta_value IN ($ph)",
-					...$branches
-				)
-			);
+			// Fallback: older orders placed before the branch-tag hook existed.
+			// WooCommerce has no API for filtering by order item meta, so we fetch
+			// only untagged orders and check items in PHP. This set shrinks over time
+			// as new orders are tagged at checkout via tag_order_with_branch().
+			$untagged = wc_get_orders( [
+				'limit'      => -1,
+				'return'     => 'ids',
+				'meta_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					[
+						'key'     => '_mpcrbm_order_branch',
+						'compare' => 'NOT EXISTS',
+					],
+				],
+			] );
 
-			// Fallback: join order item meta for _mpcrbm_start_place (covers older orders)
-			$via_item = $wpdb->get_col(
-				$wpdb->prepare(
-					"SELECT DISTINCT oi.order_id
-					 FROM {$wpdb->prefix}woocommerce_order_items oi
-					 INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta oim
-					         ON oim.order_item_id = oi.order_item_id
-					 WHERE oim.meta_key   = '_mpcrbm_start_place'
-					   AND oim.meta_value IN ($ph)",
-					...$branches
-				)
-			);
+			$via_item = [];
+			foreach ( $untagged as $order_id ) {
+				$order = wc_get_order( $order_id );
+				if ( ! $order ) {
+					continue;
+				}
+				foreach ( $order->get_items() as $item ) {
+					$start_place = (string) $item->get_meta( '_mpcrbm_start_place' );
+					if ( $start_place && in_array( $start_place, $branches, true ) ) {
+						$via_item[] = (int) $order_id;
+						break;
+					}
+				}
+			}
 
-			$merged = array_unique( array_merge( $tagged, $via_item ) );
+			$merged = array_unique( array_merge( (array) $tagged, $via_item ) );
 			return ! empty( $merged ) ? array_map( 'intval', $merged ) : [ 0 ];
 		}
 
