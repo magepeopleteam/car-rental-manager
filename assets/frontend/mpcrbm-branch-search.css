@@ -62,7 +62,7 @@
     justify-content: center;
     flex-shrink: 0;
 }
-.mpcrbm-bs__header-icon i { font-size: 24px; color: #fff; }
+.mpcrbm-bs__header-icon i { font-size: 24px; color: #fff; padding: 10px }
 
 .mpcrbm-bs__header-title {
     margin: 0 0 4px !important;
@@ -108,6 +108,7 @@
     justify-content: center;
     flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(79,70,229,.35);
+    padding: 6px 8px 6px 10px;
 }
 
 .mpcrbm-bs__step-title {
@@ -125,7 +126,7 @@
     font-size: 12.5px;
     font-weight: 600;
     color: var(--bs-text-sec);
-    margin-bottom: 7px;
+    margin-bottom: 15px;
     letter-spacing: .1px;
 }
 .mpcrbm-bs__req { color: var(--bs-danger); margin-left: 2px; }

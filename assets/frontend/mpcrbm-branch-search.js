@@ -36,7 +36,7 @@
             rows += '<div class="mpcrbm-bs__bc-row"><i class="mi mi-map-marker"></i><span>' + esc(meta.address) + '</span></div>';
         }
         if (meta.phone) {
-            rows += '<div class="mpcrbm-bs__bc-row"><i class="mi mi-phone"></i><span>' + esc(meta.phone) + '</span></div>';
+            rows += '<div class="mpcrbm-bs__bc-row"><i class="mi mi-phone"></i><a href="tel:' + esc(meta.phone) + '">' + esc(meta.phone) + '</a></div>';
         }
         var pills = buildHoursPills(meta.hours || {});
         if (pills) {
@@ -46,6 +46,9 @@
                     '<button type="button" class="mpcrbm-bs__bc-hours-toggle">View opening hours ▾</button>' +
                     '<div class="mpcrbm-bs__bc-hours-grid" hidden>' + pills + '</div>' +
                     '</div></div>';
+        }
+        if (meta.description) {
+            rows += '<div class="mpcrbm-bs__bc-row mpcrbm-bs__bc-row--desc"><i class="mi mi-info-circle"></i><span>' + esc(meta.description) + '</span></div>';
         }
         // Always show card — at minimum the branch name
         return '<div class="mpcrbm-bs__bc-header">' +
@@ -217,7 +220,7 @@
                 dateFormat:  'Y-m-d',
                 altInput:    true,
                 altFormat:   'M j, Y',
-                showMonths:  2,
+                showMonths:  window.innerWidth < 768 ? 1 : 2,
                 disableMobile: true,
                 onChange: function (selectedDates) {
                     if (selectedDates.length === 2) {

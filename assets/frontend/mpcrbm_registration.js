@@ -238,9 +238,11 @@ jQuery(document).ready(function($) {
             let $feeField    = $('#mpcrbm_branch_one_way_fee');
             let oneWayFee    = isSameLocChk ? 0 : Math.max(0, transport_price - base_price);
 
-            // Sync the hidden field so subsequent recalculations (quantity change, extra services)
-            // see the correct fee without having to re-derive it.
-            if ($feeField.length) { $feeField.val(oneWayFee); }
+            // Sync hidden field (create inside parent if missing — branch-search context has no booking form)
+            if (!$feeField.length) {
+                $feeField = $('<input type="hidden" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee">').appendTo(parent);
+            }
+            $feeField.val(oneWayFee);
 
             // Store deposit in hidden input for later quantity/extra-service recalculations
             parent.find('[name="mpcrbm_security_deposit_value"]').val(security_deposit);

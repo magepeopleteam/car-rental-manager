@@ -871,6 +871,26 @@
             }
 
             /**
+             * Get only the effective branch location for a vehicle, or empty string if none.
+             *
+             * @param int $post_id
+             * @return array Branch slug, or '' if no branch is assigned/enabled.
+             */
+            public static function get_vehicle_branch_location( $post_id ) {
+                $pickup_locations = array();
+                $branch_enabled   = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
+                $current_branch   = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
+                $home_branch      = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
+                $effective_branch = ! empty( $current_branch ) ? $current_branch : $home_branch;
+
+                if ( ( $branch_enabled === '1' || ! empty( $effective_branch ) ) && ! empty( $effective_branch ) ) {
+                    $pickup_locations[] = $effective_branch;
+                }
+
+                return $pickup_locations;
+            }
+
+            /**
              * Get available dropoff locations for a specific pickup location
              *
              * @param int $post_id

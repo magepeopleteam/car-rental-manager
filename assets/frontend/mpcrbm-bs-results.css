@@ -632,7 +632,7 @@
 
 /* ── Select Car button ────────────────────────────────────────── */
 .mpcrbm-bs .mpcrbm_add_multiple_qty { flex-shrink: 0 !important; }
-.mpcrbm-bs .mpcrbm_car_quantity { margin-bottom: 8px !important; }
+.mpcrbm-bs .mpcrbm_car_quantity { display: none !important; }
 
 .mpcrbm-bs button.mpcrbm_transport_select,
 .mpcrbm-bs a.mpcrbm_transport_select {

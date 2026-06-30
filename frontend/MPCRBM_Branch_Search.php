@@ -37,13 +37,14 @@ if ( ! class_exists( 'MPCRBM_Branch_Search' ) ) {
 			foreach ( $car_ids as $car_id ) {
 				// get_vehicle_pickup_locations already handles branch meta,
 				// multi-location prices, and standard operation areas.
-				$locs  = MPCRBM_Function::get_vehicle_pickup_locations( $car_id );
+				$locs  = MPCRBM_Function::get_vehicle_branch_location( $car_id );
 				$slugs = array_merge( $slugs, $locs );
 			}
 
 			// Standard (non-branch, non-multi-location) operation-area slugs
 			// get_all_start_location() with no arg scans all cars.
 			$slugs = array_merge( $slugs, MPCRBM_Function::get_all_start_location() );
+            error_log( print_r(  [ '$slugs' => $slugs ], true ) );
 
 			return array_values( array_unique( array_filter( $slugs ) ) );
 		}
