@@ -353,18 +353,18 @@
 
 /* Book Now */
 .mpcrbm-bs .mpcrbm_book_now {
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
-    width: 100% !important;
-    padding: 14px 20px !important;
-    margin: 0 !important;
+    gap: 6px !important;
+    width: auto !important;
+    padding: 8px 16px !important;
+    margin: 0 0 0 auto !important;
     background: linear-gradient(135deg, var(--r-green), var(--r-green-dk)) !important;
     color: #fff !important;
     border: none !important;
     border-radius: var(--r-rad-sm) !important;
-    font-size: 15px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     cursor: pointer !important;
     box-shadow: 0 2px 12px rgba(22,163,74,.30) !important;

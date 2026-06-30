@@ -156,6 +156,46 @@
         var $results     = $wrap.find('#mpcrbm_bs_results_section');
         var $placeholder = $wrap.find('#mpcrbm_bs_placeholder');
 
+        // Per-instance AJAX cache so we never hit the server twice for the same slug.
+        var branchCache = {};
+
+        /**
+         * Fetch branch meta for a slug.
+         * Priority: in-memory cache → embedded PHP data (has address/phone/hours)
+         *           → live AJAX call → callback(null) on failure.
+         */
+        function getBranchMeta(slug, callback) {
+            // 1. Already fetched this session.
+            if (Object.prototype.hasOwnProperty.call(branchCache, slug)) {
+                callback(branchCache[slug]);
+                return;
+            }
+
+            // 2. Embedded data has rich meta (address / phone / hours present).
+            var embedded = branches[slug];
+            if (embedded && (embedded.address || embedded.phone ||
+                             (embedded.hours && Object.keys(embedded.hours).length))) {
+                branchCache[slug] = embedded;
+                callback(embedded);
+                return;
+            }
+
+            // 3. Live AJAX — same action used by mpcrbm-branch.js.
+            $.post(ajaxUrl, {
+                action:      'mpcrbm_get_branch_info',
+                branch_slug: slug,
+            }, function (res) {
+                var meta = (res.success && res.data) ? res.data : null;
+                branchCache[slug] = meta;
+                // Merge into branches map so syncToBookingForm has the name.
+                if (meta) { branches[slug] = meta; }
+                callback(meta);
+            }).fail(function () {
+                branchCache[slug] = null;
+                callback(null);
+            });
+        }
+
         // ── Pickup change ─────────────────────────────────────────────
 
         $pickup.on('change', function () {
@@ -165,12 +205,21 @@
             if (!slug) {
                 $branchCard.prop('hidden', true).empty();
             } else {
-                var html = buildBranchCard(branches[slug]);
-                if (html) {
-                    $branchCard.html(html).prop('hidden', false);
-                } else {
-                    $branchCard.prop('hidden', true).empty();
-                }
+                // Show loading state immediately while we fetch.
+                $branchCard
+                    .prop('hidden', false)
+                    .html('<div class="mpcrbm-bs__bc-loading">' +
+                          '<i class="mi mi-loading"></i> Loading branch info…' +
+                          '</div>');
+
+                getBranchMeta(slug, function (meta) {
+                    var html = buildBranchCard(meta);
+                    if (html) {
+                        $branchCard.html(html).prop('hidden', false);
+                    } else {
+                        $branchCard.prop('hidden', true).empty();
+                    }
+                });
             }
 
             // 2. Keep dropoff in sync when "same location" is on

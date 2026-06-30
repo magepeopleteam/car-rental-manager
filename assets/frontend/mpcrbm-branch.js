@@ -162,25 +162,7 @@
     // ── Pickup location change ────────────────────────────────────────────
 
     $(document).on('change', PICKUP_SEL, function () {
-        /*var slug = $(this).val();
-        var $container = getOrCreateContainer(this, 'mpcrbm-pickup-branch-info');
-
-        if (!slug) {
-            $container.empty();
-            return;
-        }
-
-        $container.html('<div class="mpcrbm-branch-info-loading">' +
-            (L10n.strings && L10n.strings.loading ? L10n.strings.loading : 'Loading branch info…') +
-            '</div>');
-
-        getBranchMeta(slug, function (meta) {
-            var html = buildInfoCard(meta);
-            $container.html(html);
-        });
-
-        // Re-evaluate one-way fee in case dropoff was already selected
-        refreshOneWayFee();*/
+        refreshOneWayFee();
     });
 
     // ── Dropoff location change ───────────────────────────────────────────
