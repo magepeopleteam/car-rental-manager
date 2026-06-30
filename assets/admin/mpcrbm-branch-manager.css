@@ -23,7 +23,7 @@
 /* ── Dashboard Layout ────────────────────────────────────────────────── */
 .mpcrbm-branch-dashboard {
     display: flex;
-    min-height: 72vh;
+    flex-direction: column;
     background: var(--bm-bg);
     border-radius: 12px;
     overflow: hidden;
@@ -33,14 +33,13 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* ── Sidebar ─────────────────────────────────────────────────────────── */
+/* ── Branch Grid Section (top) ───────────────────────────────────────── */
 .mpcrbm-branch-sidebar {
-    width: 300px;
-    flex-shrink: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
     background: var(--bm-surface);
-    border-right: 1px solid var(--bm-border);
+    border-bottom: 1px solid var(--bm-border);
 }
 
 .mpcrbm-branch-sidebar-header {
@@ -83,19 +82,11 @@
 }
 
 .mpcrbm-branch-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 6px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    scrollbar-width: thin;
-    scrollbar-color: var(--bm-border) transparent;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px;
+    padding: 12px 14px;
 }
-
-.mpcrbm-branch-list::-webkit-scrollbar { width: 4px; }
-.mpcrbm-branch-list::-webkit-scrollbar-track { background: transparent; }
-.mpcrbm-branch-list::-webkit-scrollbar-thumb { background: var(--bm-border); border-radius: 2px; }
 
 .mpcrbm-no-branches {
     color: var(--bm-text-muted);
@@ -106,57 +97,64 @@
     margin: 0;
 }
 
-/* ── Branch Card (sidebar item) ─────────────────────────────────────── */
+/* ── Branch Card (compact grid tile) ────────────────────────────────── */
 .mpcrbm-branch-card {
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    border-left: 3px solid transparent;
-    padding: 13px 16px;
+    background: var(--bm-surface);
+    border: 1px solid var(--bm-border);
+    border-radius: 7px;
+    border-left: 3px solid #cbd5e1;
+    padding: 8px 10px 8px 9px;
     cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease;
-    box-shadow: none;
-}
-
-.mpcrbm-branch-card + .mpcrbm-branch-card {
-    border-top: 1px solid #f1f5f9;
+    transition: box-shadow 0.18s ease, transform 0.15s ease, border-color 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .mpcrbm-branch-card:hover {
-    background: var(--bm-bg);
-    border-left-color: #93c5fd;
-    box-shadow: none;
+    border-color: #93c5fd;
+    border-left-color: #60a5fa;
+    box-shadow: 0 3px 10px rgba(37,99,235,0.1);
+    transform: translateY(-1px);
 }
 
 .mpcrbm-branch-card.is-active {
-    background: #eff6ff;
+    background: #f0f6ff;
+    border-color: var(--bm-primary);
     border-left-color: var(--bm-primary);
-    box-shadow: none;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.1), 0 3px 10px rgba(37,99,235,0.12);
+    transform: translateY(-1px);
 }
 
+/* Header row: name + car count pill */
 .mpcrbm-branch-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    gap: 6px;
 }
 
 .mpcrbm-branch-name {
     font-weight: 600;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--bm-text);
     line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mpcrbm-car-count-badge {
     background: var(--bm-primary-light);
     color: var(--bm-primary);
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 9px;
     font-weight: 700;
-    padding: 2px 9px;
-    min-width: 22px;
+    padding: 1px 6px;
+    min-width: 16px;
     text-align: center;
+    flex-shrink: 0;
     transition: background 0.15s, color 0.15s;
 }
 
@@ -165,33 +163,38 @@
     color: #fff;
 }
 
+/* Meta rows: address / phone */
 .mpcrbm-branch-meta-row {
     display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    font-size: 12px;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
     color: var(--bm-text-sec);
-    margin: 3px 0;
-    line-height: 1.4;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.mpcrbm-branch-meta-row span {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .mpcrbm-branch-meta-row i {
     color: #93c5fd;
     flex-shrink: 0;
-    font-size: 12px;
-    margin-top: 1px;
+    font-size: 10px;
 }
 
 .mpcrbm-branch-badges {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin: 5px 0 0;
 }
 
 .mpcrbm-badge {
-    font-size: 10px;
-    padding: 2px 7px;
+    font-size: 9px;
+    padding: 1px 6px;
     border-radius: 20px;
     font-weight: 600;
 }
@@ -208,27 +211,29 @@
     border: 1px solid #7dd3fc;
 }
 
+/* Action buttons row */
 .mpcrbm-branch-card-actions {
     display: flex;
-    gap: 6px;
-    margin-top: 10px;
-    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 3px;
 }
 
 .mpcrbm-branch-card-actions .button {
-    font-size: 11px !important;
-    padding: 4px 10px !important;
-    height: auto !important;
-    line-height: 1.7 !important;
-    border-radius: 6px !important;
+    font-size: 9px !important;
+    padding: 0 7px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+    border-radius: 4px !important;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
+    flex: 1;
+    justify-content: center;
     transition: all 0.15s ease;
 }
 
 .mpcrbm-branch-card-actions .button i {
-    font-size: 12px;
+    font-size: 10px;
 }
 
 .mpcrbm-branch-card-actions .button-primary {
@@ -242,23 +247,20 @@
     border-color: var(--bm-primary-dark) !important;
 }
 
-/* ── Sidebar Footer ──────────────────────────────────────────────────── */
+/* ── Branch Grid Footer ──────────────────────────────────────────────── */
 .mpcrbm-branch-sidebar-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--bm-border);
-    flex-shrink: 0;
+    padding: 0 16px 16px;
 }
 
 .mpcrbm-add-branch-link {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 7px;
     color: var(--bm-primary);
     font-size: 12px;
     font-weight: 600;
     text-decoration: none;
-    padding: 8px 12px;
+    padding: 7px 16px;
     border-radius: 7px;
     border: 1.5px dashed #93c5fd;
     transition: background 0.15s, border-color 0.15s;
@@ -275,14 +277,13 @@
     font-size: 13px;
 }
 
-/* ── Cars Panel (main area) ──────────────────────────────────────────── */
+/* ── Cars Panel (full-width bottom section) ──────────────────────────── */
 .mpcrbm-branch-cars-panel {
-    flex: 1;
+    width: 100%;
     background: var(--bm-bg);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    min-width: 0;
+    border-top: 1px solid var(--bm-border);
 }
 
 .mpcrbm-branch-cars-panel-header {
@@ -327,7 +328,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 45vh;
+    padding: 48px 24px;
     gap: 14px;
     text-align: center;
     color: var(--bm-text-muted);

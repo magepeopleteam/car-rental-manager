@@ -46,6 +46,7 @@ jQuery(document).ready(function ($) {
         $panelHead.find('.mpcrbm-panel-car-count').text('…');
 
         showLoading($panelBody);
+        $panel[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
 
         $.post(ajaxUrl(), {
             action:      'mpcrbm_get_branch_cars',
