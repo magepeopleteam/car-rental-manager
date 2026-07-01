@@ -44,7 +44,6 @@ if ( ! class_exists( 'MPCRBM_Branch_Search' ) ) {
 			// Standard (non-branch, non-multi-location) operation-area slugs
 			// get_all_start_location() with no arg scans all cars.
 			$slugs = array_merge( $slugs, MPCRBM_Function::get_all_start_location() );
-            error_log( print_r(  [ '$slugs' => $slugs ], true ) );
 
 			return array_values( array_unique( array_filter( $slugs ) ) );
 		}
