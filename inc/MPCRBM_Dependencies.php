@@ -92,6 +92,8 @@
 				wp_enqueue_style( 'mpcrbm_branch_search', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch-search.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_branch_search', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-branch-search.js', array( 'jquery', 'flatpickr.min' ), time(), true );
 				wp_enqueue_style( 'mpcrbm_bs_results', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-bs-results.css', array( 'mpcrbm_branch_search' ), time() );
+				wp_enqueue_style( 'mpcrbm_my_bookings', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_my_bookings.css', array(), time() );
+				wp_enqueue_script( 'mpcrbm_my_bookings', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm_my_bookings.js', array( 'jquery' ), time(), true );
 				wp_enqueue_script( 'mpcrbm_bs_results', MPCRBM_PLUGIN_URL . '/assets/frontend/mpcrbm-bs-results.js', array( 'jquery', 'mpcrbm_branch_search' ), time(), true );
 				wp_localize_script( 'mpcrbm_branch', 'mpcrbmBranchL10n', $this->get_branch_l10n() );
 				// Localize scripts

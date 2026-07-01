@@ -14,6 +14,7 @@
 					add_filter( 'use_block_editor_for_post_type', [ $this, 'disable_gutenberg' ], 10, 2 );
 					add_filter( 'wp_mail_content_type', array( $this, 'email_content_type' ) );
 					add_action( 'upgrader_process_complete', [ $this, 'flush_rewrite' ], 0 );
+
 				}
 			}
 
