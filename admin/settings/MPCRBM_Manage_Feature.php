@@ -21,6 +21,16 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
             $term_id = isset( $_POST['term_id'] ) ? absint( wp_unslash( $_POST['term_id'] ) ) : 0;
             $feature_type = isset( $_POST['feature_type'] ) ? sanitize_text_field( wp_unslash( $_POST['feature_type'] ) ) : '';
             $action_type = isset( $_POST['action_type'] ) ? sanitize_text_field( wp_unslash( $_POST['action_type'] ) ) : '';
+
+            // Authorization: only users who can edit this post may change its feature meta.
+            if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+                wp_send_json_error( [ 'message' => 'Permission denied' ] );
+            }
+            // Validate the term actually belongs to the car-feature taxonomy.
+            if ( ! $term_id || ! term_exists( $term_id, 'mpcrbm_car_feature' ) ) {
+                wp_send_json_error( [ 'message' => 'Invalid feature' ] );
+            }
+
             $meta_key = ($feature_type === 'include') ? 'mpcrbm_include_features' : 'mpcrbm_exclude_features';
             $current = get_post_meta( $post_id, $meta_key, true );
             if ( !is_array( $current ) ) $current = [];
