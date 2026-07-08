@@ -24,9 +24,24 @@
                 $success =false;
                 $message = 'Update Failed';
 
-                $post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : '';
-                $enable  =  isset( $_POST['enable'] ) ? intval( wp_unslash( $_POST['enable'] ) ) : '';
+                $post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
+                $enable  =  isset( $_POST['enable'] ) ? intval( wp_unslash( $_POST['enable'] ) ) : 0;
                 $metaKey  =  isset( $_POST['metaKey'] ) ? sanitize_text_field( wp_unslash( $_POST['metaKey'] ) ) : '';
+
+                // Authorization: only users who can edit this specific post may change its pricing flags.
+                if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+                    wp_send_json_error([ 'message' => 'Permission denied' ]);
+                }
+
+                // Whitelist the meta keys this endpoint is allowed to write (prevents arbitrary meta writes).
+                $allowed_keys = array(
+                    'mpcrbm_enable_tired_discount',
+                    'mpcrbm_enable_day_wise_discount',
+                    'mpcrbm_enable_seasonal_discount',
+                );
+                if ( ! in_array( $metaKey, $allowed_keys, true ) ) {
+                    wp_send_json_error([ 'message' => 'Invalid setting key' ]);
+                }
 
                 if( $post_id && $metaKey ){
                     update_post_meta( $post_id, $metaKey, $enable );
