@@ -444,11 +444,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature"><i class="mi mi-list-timeline"></i> <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq"><i class="mi mi-messages-question"></i> <?php esc_attr_e( 'Manage Faq', 'car-rental-manager' );?></button>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition"><i class="mi mi-blog-text"></i> <?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></button>
-                        <?php if ( is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ) ) : ?>
                         <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_branch_manager"><i class="mi mi-map-location-track"></i> <?php esc_attr_e( 'Branch Manager', 'car-rental-manager' );?></button>
-                        <?php else : ?>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_branch_manager" data-pro-required="1"><i class="mi mi-map-location-track"></i> <?php esc_attr_e( 'Branch Manager', 'car-rental-manager' );?><span class="mpcrbm-pro-badge">PRO</span></button>
-                        <?php endif; ?>
 
                     </div>
                 </div>
@@ -547,11 +543,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             ?>
                         </div>
                         <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_branch_manager_holder" style="display: none">
-                            <?php if ( is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ) ) : ?>
-                                <div class="mpcrbm-branch-lazy-placeholder"></div>
-                            <?php else : ?>
-                                <?php self::render_branch_manager_dummy(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                            <?php endif; ?>
+                            <div class="mpcrbm-branch-lazy-placeholder"></div>
                         </div>
                     </div>
                 </div>
