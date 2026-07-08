@@ -196,6 +196,9 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
          */
             public function ajax_save_faq() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+                if ( ! current_user_can( 'manage_options' ) ) {
+                    wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+                }
 
                 $title  = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
                 $answer = wp_kses_post( wp_unslash( $_POST['answer'] ?? '' ) );
@@ -222,6 +225,9 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
             public function mpcrbm_save_term_and_condition() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+                if ( ! current_user_can( 'manage_options' ) ) {
+                    wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+                }
 
                 $title  = sanitize_text_field( wp_unslash( $_POST['title'] ?? '' ) );
                 $answer = wp_kses_post( wp_unslash( $_POST['answer'] ?? '' ) );
@@ -251,6 +257,9 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
              */
             public function ajax_delete_faq() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+                if ( ! current_user_can( 'manage_options' ) ) {
+                    wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+                }
 
                 $key = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
                 $faqs = get_option( $this->option_key, [] );
@@ -269,6 +278,9 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
              */
             public function mpcrbm_delete_term() {
                 check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+                if ( ! current_user_can( 'manage_options' ) ) {
+                    wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
+                }
 
                 $key = sanitize_text_field( wp_unslash( $_POST['key'] ?? '' ) );
                 $term_condition = get_option( $this->term_option_key, [] );

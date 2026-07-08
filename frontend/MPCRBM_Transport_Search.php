@@ -93,6 +93,11 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
         }
 
         public function mpcrbm_get_map_search_result() {
+            // Security check - verify nonce BEFORE any state-changing side effect (empty_cart).
+            if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] )
+                || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) ), 'mpcrbm_transportation_type_nonce' ) ) {
+                wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
+            }
             if ( function_exists( 'WC' ) && WC()->cart ) {
                 WC()->cart->empty_cart();
             }

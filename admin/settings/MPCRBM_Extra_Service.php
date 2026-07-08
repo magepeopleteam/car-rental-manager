@@ -17,7 +17,9 @@
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'ex_service_settings' ] );
 				//*******************//
 				add_action( 'wp_ajax_mpcrbm_get_ex_service', array( $this, 'mpcrbm_get_ex_service' ) );
-				add_action( 'wp_ajax_nopriv_mpcrbm_get_ex_service', array( $this, 'mpcrbm_get_ex_service' ) );
+				// NOTE: no nopriv registration — this handler mutates post meta and requires
+				// edit_post capability, so anonymous access was always rejected. Removing the
+				// nopriv hook eliminates dead, unauthenticated attack surface.
 			}
 
 			public function extra_service_meta() {
