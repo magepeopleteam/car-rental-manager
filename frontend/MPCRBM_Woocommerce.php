@@ -32,6 +32,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'product_custom_field_to_custom_order_notes' ), 100, 2 );
             add_filter( 'woocommerce_add_cart_item_data', array( $this, 'cart_item_data' ), 90, 3 );
             add_action( 'woocommerce_before_calculate_totals', array( $this, 'before_calculate_totals' ), 90 );
+            add_action( 'woocommerce_cart_calculate_fees', array( $this, 'add_security_deposit_fee' ), 90 );
             add_filter( 'woocommerce_cart_item_thumbnail', array( $this, 'cart_item_thumbnail' ), 90, 3 );
             add_filter( 'woocommerce_get_item_data', array( $this, 'get_item_data' ), 90, 2 );
             //************//
@@ -126,6 +127,9 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
                 $cart_item_data['mpcrbm_security_deposit']   = $security_deposit;
                 $total_deposit                               = $security_deposit * intval( $quantity );
+                // Security deposit is refundable and must never be taxed, so it is kept out of the
+                // taxable product price and charged separately as a non-taxable fee (see add_security_deposit_fee()).
+                $cart_item_data['mpcrbm_taxable_price']      = $total_price;
                 $cart_item_data['mpcrbm_tp']                  = $total_price + $total_deposit;
                 $cart_item_data['line_total']                = $total_price + $total_deposit;
                 $cart_item_data['line_subtotal']             = $total_price + $total_deposit;
@@ -145,7 +149,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             foreach ( $cart_object->cart_contents as $value ) {
                 $post_id = array_key_exists( 'mpcrbm_id', $value ) ? $value['mpcrbm_id'] : 0;
                 if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
-                    $total_price = $value['mpcrbm_tp'];
+                    // Use the deposit-excluded price so WooCommerce only taxes the rental amount.
+                    $total_price = array_key_exists( 'mpcrbm_taxable_price', $value ) ? $value['mpcrbm_taxable_price'] : $value['mpcrbm_tp'];
                     if ( isset( $_SESSION[ 'geo_fence_post_' . $post_id ] ) ) {
                         // Extract amount from session
                         $session_key  = 'geo_fence_post_' . intval( $post_id ); // Ensure $post_id is an integer
@@ -162,6 +167,23 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     $value['data']->set_sold_individually( 'yes' );
                     $value['data']->get_price();
                 }
+            }
+        }
+
+        // Charges the refundable security deposit as a separate, non-taxable cart fee
+        // instead of folding it into the (taxable) rental price.
+        public function add_security_deposit_fee( $cart_object ) {
+            $total_deposit = 0;
+            foreach ( $cart_object->cart_contents as $value ) {
+                $post_id = array_key_exists( 'mpcrbm_id', $value ) ? $value['mpcrbm_id'] : 0;
+                if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
+                    $deposit  = array_key_exists( 'mpcrbm_security_deposit', $value ) ? floatval( $value['mpcrbm_security_deposit'] ) : 0;
+                    $quantity = array_key_exists( 'mpcrbm_car_quantity', $value ) ? intval( $value['mpcrbm_car_quantity'] ) : 1;
+                    $total_deposit += $deposit * $quantity;
+                }
+            }
+            if ( $total_deposit > 0 ) {
+                $cart_object->add_fee( esc_html__( 'Security Deposit (Refundable)', 'car-rental-manager' ), $total_deposit, false );
             }
         }
 
