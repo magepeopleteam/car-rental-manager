@@ -76,23 +76,22 @@
 				if ( ! wp_verify_nonce( $nonce, 'mpcrbm_save_operation_area_nonce' ) ) {
 					return;
 				}
+				// A <select multiple> with nothing selected is omitted from $_POST entirely by the
+				// browser, so an empty array here is a legitimate "clear the operation area" request
+				// and must still be saved, not skipped.
 				$terms_location = isset( $_POST['mpcrbm_terms_start_location'] )
 					? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_terms_start_location'] ) )
 					: [];
-				if ( ! empty( $terms_location ) ) {
-					$terms_price_infos = [];
-					foreach ( $terms_location as $index => $location ) {
-						if ( $location ) {
-							$terms_price_infos[ $index ] = [
-								'start_location' => $location,
-								'end_location'   => $location, // Or modify this if end_location differs
-							];
-						}
-					}
-					if ( ! empty( $terms_price_infos ) ) {
-						update_post_meta( $post_id, 'mpcrbm_terms_price_info', $terms_price_infos );
+				$terms_price_infos = [];
+				foreach ( $terms_location as $index => $location ) {
+					if ( $location ) {
+						$terms_price_infos[ $index ] = [
+							'start_location' => $location,
+							'end_location'   => $location, // Or modify this if end_location differs
+						];
 					}
 				}
+				update_post_meta( $post_id, 'mpcrbm_terms_price_info', $terms_price_infos );
 			}
 
 		}
