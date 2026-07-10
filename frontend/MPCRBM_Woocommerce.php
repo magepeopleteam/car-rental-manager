@@ -741,25 +741,26 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
         //**********************//
         public static function cart_extra_service_info( $post_id ): array {
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
-                return false;
+                return [];
             }
             // Sanitize and verify the nonce
             $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
             if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
-                return false;
+                return [];
             }
             $start_date       = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
             $service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];
-            $service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service_qty'] ) ) : [];
+            $service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'absint', wp_unslash( $_POST['mpcrbm_extra_service_qty'] ) ) : [];
             $extra_service    = array();
             if ( sizeof( $service_name ) > 0 ) {
                 for ( $i = 0; $i < count( $service_name ); $i ++ ) {
-                    if ( $service_name[ $i ] && $service_quantity[ $i ] > 0 ) {
+                    $quantity = array_key_exists( $i, $service_quantity ) ? $service_quantity[ $i ] : 0;
+                    if ( $service_name[ $i ] && $quantity > 0 ) {
                         $price                                   = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ] );
                         $wc_price                                = MPCRBM_Global_Function::wc_price( $post_id, $price );
                         $raw_price                               = MPCRBM_Global_Function::price_convert_raw( $wc_price );
                         $extra_service[ $i ]['service_name']     = $service_name[ $i ];
-                        $extra_service[ $i ]['service_quantity'] = $service_quantity[ $i ];
+                        $extra_service[ $i ]['service_quantity'] = $quantity;
                         $extra_service[ $i ]['service_price']    = $raw_price;
                         $extra_service[ $i ]['mpcrbm_date']       = $start_date ?? '';
                     }
