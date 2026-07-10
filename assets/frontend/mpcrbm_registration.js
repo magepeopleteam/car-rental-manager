@@ -939,6 +939,30 @@ jQuery(document).ready(function($) {
 
     }
 
+    // Computes the selected rental duration (in whole days) directly from the start/return
+    // date+time fields. Used for day-wise extra-service pricing estimates. Reading straight
+    // from these fields (instead of the #mpcrbm_car_selected_day label, which only exists on
+    // the single car-details page and only refreshes after a return-time pick) keeps this
+    // working consistently on both the search-results flow and the car-details page.
+    function mpcrbm_calculate_rental_days(parent) {
+        let startDate = parent.find('#mpcrbm_map_start_date').first().val() || $('#mpcrbm_map_start_date').first().val();
+        let endDate = parent.find('#mpcrbm_map_return_date').first().val() || $('#mpcrbm_map_return_date').first().val();
+        if (!startDate || !endDate) {
+            return 1;
+        }
+        let start_time = parseFloat(parent.find('#mpcrbm_map_start_time').first().val() || $('#mpcrbm_map_start_time').first().val()) || 0;
+        let return_time = parseFloat(parent.find('#mpcrbm_map_return_time').first().val() || $('#mpcrbm_map_return_time').first().val()) || 0;
+        let startDateTime = new Date(startDate);
+        startDateTime.setHours(start_time);
+        let endDateTime = new Date(endDate);
+        endDateTime.setHours(return_time);
+        let diffMs = endDateTime - startDateTime;
+        if (isNaN(diffMs) || diffMs <= 0) {
+            return 1;
+        }
+        return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    }
+
     // Price calculation function
     function mpcrbm_price_calculation(parent) {
         let number_of_car = mpcrbm_number_of_car_booked( parent );
@@ -958,7 +982,8 @@ jQuery(document).ready(function($) {
                     let ex_qty = parseInt(ex_target.val());
                     let ex_price = ex_target.data("price");
                     ex_price = ex_price && ex_price > 0 ? ex_price : 0;
-                    total = total + parseFloat(ex_price) * ex_qty;
+                    let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
+                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
                 }
             });
 
@@ -1008,7 +1033,8 @@ jQuery(document).ready(function($) {
                     let ex_qty = parseInt(ex_target.val());
                     let ex_price = ex_target.data("price");
                     ex_price = ex_price && ex_price > 0 ? ex_price : 0;
-                    total = total + parseFloat(ex_price) * ex_qty;
+                    let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
+                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
                 }
             });
 

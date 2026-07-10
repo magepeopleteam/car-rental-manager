@@ -213,8 +213,12 @@
 			}
 
 			/*****************************/
-			public static function qty_input( $input_name, $price, $available_seat = 1, $default_qty = 0, $min_qty = 0, $max_qty = '', $input_type = '', $text = '' ) {
+			public static function qty_input( $input_name, $price, $available_seat = 1, $default_qty = 0, $min_qty = 0, $max_qty = '', $input_type = '', $text = '', $data_attrs = [] ) {
 				$min_qty = max( $default_qty, $min_qty );
+				$extra_attrs = '';
+				foreach ( $data_attrs as $attr_name => $attr_value ) {
+					$extra_attrs .= ' data-' . esc_attr( $attr_name ) . '="' . esc_attr( $attr_value ) . '"';
+				}
 				if ( $available_seat > $min_qty ) {
 					if ( $input_type != 'dropdown' ) {
 						?>
@@ -229,7 +233,8 @@
                                        name="<?php echo esc_attr( $input_name ); ?>"
                                        value="<?php echo esc_attr( max( 0, $default_qty ) ); ?>"
                                        min="<?php echo esc_attr( $min_qty ); ?>"
-                                       max="<?php echo esc_attr( $max_qty > 0 ? $max_qty : $available_seat ); ?>"/>
+                                       max="<?php echo esc_attr( $max_qty > 0 ? $max_qty : $available_seat ); ?>"
+									<?php echo $extra_attrs; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- each name/value already esc_attr()'d above ?>/>
                             </label>
                             <div class="incQty addonGroupContent">
                                 <span class="fas fa-plus"></span>
@@ -241,6 +246,7 @@
                         <label>
                             <select name="<?php echo esc_attr( $input_name ); ?>"
                                     data-price="<?php echo esc_attr( $price ); ?>"
+								<?php echo wp_kses_post( $extra_attrs ); ?>
                                     class="formControl">
                                 <option selected value="0"><?php echo esc_html__( 'Please select', 'car-rental-manager' ) . ' ' . esc_html( $text ); ?></option>
 								<?php

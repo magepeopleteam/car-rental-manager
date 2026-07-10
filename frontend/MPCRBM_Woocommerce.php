@@ -123,7 +123,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         : $ow_value;
                 }
                 $cart_item_data['mpcrbm_branch_one_way_fee'] = $one_way_fee;
-                $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id );
+                $rental_days = $return_date_time ? MPCRBM_Function::get_days_from_start_end_date( $start_time, $return_date_time ) : 1;
+                $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id, $rental_days );
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
                 $cart_item_data['mpcrbm_security_deposit']   = $security_deposit;
                 $total_deposit                               = $security_deposit * intval( $quantity );
@@ -308,7 +309,14 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     foreach ( $extra_service as $service ) {
                         $item->add_meta_data( esc_html__( 'Services Name ', 'car-rental-manager' ), $service['service_name'] );
                         $item->add_meta_data( esc_html__( 'Services Quantity ', 'car-rental-manager' ), $service['service_quantity'] );
-                        $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ') = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) ) );
+                        $service_days = $service['service_days'] ?? 1;
+                        if ( ( $service['service_price_type'] ?? 'flat' ) === 'day' && $service_days > 1 ) {
+                            $unit_per_day = wc_price( $service['service_price'] / $service_days );
+                            $price_line   = esc_html( ' ( ' ) . wp_kses_post( $unit_per_day ) . esc_html( '/day X ' . $service_days . ' days X ' . $service['service_quantity'] . ' ) = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                        } else {
+                            $price_line = esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ') = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                        }
+                        $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), $price_line );
                     }
                 }
                 if ( class_exists( 'MPCRBM_Plugin_Ecab_Calendar_Addon' ) ) {
@@ -674,7 +682,14 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 </li>
                                 <li>
                                     <h6 class="_mR_xs"><?php esc_html_e( 'Price : ', 'car-rental-manager' ); ?></h6>
-                                    <span><?php echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) ); ?></span>
+                                    <span>
+                                        <?php if ( ( $service['service_price_type'] ?? 'flat' ) === 'day' && ( $service['service_days'] ?? 1 ) > 1 ) {
+                                            $unit_per_day = $service['service_quantity'] > 0 ? $service['service_price'] / $service['service_days'] : 0;
+                                            echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $unit_per_day ) ) . esc_html( '/day X ' . $service['service_days'] . ' days X ' . $service['service_quantity'] . ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                                        } else {
+                                            echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                                        } ?>
+                                    </span>
                                 </li>
                             </ul>
                         </div>
@@ -739,7 +754,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
         }
 
         //**********************//
-        public static function cart_extra_service_info( $post_id ): array {
+        public static function cart_extra_service_info( $post_id, $days = 1 ): array {
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
                 return [];
             }
@@ -756,13 +771,15 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 for ( $i = 0; $i < count( $service_name ); $i ++ ) {
                     $quantity = array_key_exists( $i, $service_quantity ) ? $service_quantity[ $i ] : 0;
                     if ( $service_name[ $i ] && $quantity > 0 ) {
-                        $price                                   = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ] );
-                        $wc_price                                = MPCRBM_Global_Function::wc_price( $post_id, $price );
-                        $raw_price                               = MPCRBM_Global_Function::price_convert_raw( $wc_price );
-                        $extra_service[ $i ]['service_name']     = $service_name[ $i ];
-                        $extra_service[ $i ]['service_quantity'] = $quantity;
-                        $extra_service[ $i ]['service_price']    = $raw_price;
-                        $extra_service[ $i ]['mpcrbm_date']       = $start_date ?? '';
+                        $price                                     = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $days );
+                        $wc_price                                  = MPCRBM_Global_Function::wc_price( $post_id, $price );
+                        $raw_price                                 = MPCRBM_Global_Function::price_convert_raw( $wc_price );
+                        $extra_service[ $i ]['service_name']       = $service_name[ $i ];
+                        $extra_service[ $i ]['service_quantity']   = $quantity;
+                        $extra_service[ $i ]['service_price']      = $raw_price;
+                        $extra_service[ $i ]['service_price_type'] = MPCRBM_Function::get_extra_service_price_type_by_name( $post_id, $service_name[ $i ] );
+                        $extra_service[ $i ]['service_days']       = $days;
+                        $extra_service[ $i ]['mpcrbm_date']         = $start_date ?? '';
                     }
                 }
             }
@@ -827,14 +844,15 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             }
             $service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];
             $service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'absint', $_POST['mpcrbm_extra_service_qty'] ) : [];
+            $rental_days      = $return_date_time ? MPCRBM_Function::get_days_from_start_end_date( $start_time, $return_date_time ) : 1;
 
             if ( sizeof( $service_name ) > 0 ) {
                 for ( $i = 0; $i < count( $service_name ); $i ++ ) {
                     if ( $service_name[ $i ] ) {
                         if ( array_key_exists( $i, $service_quantity ) && isset( $service_quantity[ $i ] ) ) {
-                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ] ) * $service_quantity[ $i ];
+                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days ) * $service_quantity[ $i ];
                         } else {
-                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ] );
+                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days );
                         }
                     }
                 }

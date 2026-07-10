@@ -23,6 +23,7 @@ if ($mpcrbm_display_extra_services == 'on' && is_array( $mpcrbm_extra_services )
             $mpcrbm_service_price = isset( $mpcrbm_service['service_price'] ) ? floatval($mpcrbm_service['service_price'] ) : 0;
             $mpcrbm_description = isset( $mpcrbm_service['extra_service_description'] ) ? wp_kses_post($mpcrbm_service['extra_service_description'] ) : '';
             $mpcrbm_service_qty_type = isset( $mpcrbm_service['service_qty_type'] ) ? sanitize_text_field($mpcrbm_service['service_qty_type'] ) : 'inputbox';
+            $mpcrbm_service_price_type = isset( $mpcrbm_service['service_price_type'] ) ? sanitize_text_field($mpcrbm_service['service_price_type'] ) : 'flat';
 
             // Skip if required fields are missing
             if (!$mpcrbm_service_name || $mpcrbm_service_price < 0) {
@@ -53,9 +54,14 @@ if ($mpcrbm_display_extra_services == 'on' && is_array( $mpcrbm_extra_services )
                             <?php MPCRBM_Custom_Layout::load_more_text($mpcrbm_description, 100); ?>
                         </div>
                         <div class="price-quantity-box">
-                            <div class="mpcrbm-price"><?php echo wp_kses_post(wc_price($mpcrbm_service_price)); ?></div>
+                            <div class="mpcrbm-price">
+                                <?php echo wp_kses_post(wc_price($mpcrbm_service_price)); ?>
+                                <?php if ( $mpcrbm_service_price_type === 'day' ) { ?>
+                                    <span class="mpcrbm-price-per-day"><?php esc_html_e( '/ day', 'car-rental-manager' ); ?></span>
+                                <?php } ?>
+                            </div>
                             <div class="_mR_min_100" data-collapse="<?php echo esc_attr($mpcrbm_ex_unique_id); ?>">
-                                <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_extra_service_qty[]', $mpcrbm_service_price, 100, 1, 0, '', $mpcrbm_service_qty_type); ?>
+                                <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_extra_service_qty[]', $mpcrbm_service_price, 100, 1, 0, '', $mpcrbm_service_qty_type, '', [ 'price-type' => $mpcrbm_service_price_type ] ); ?>
                             </div>
 
                             <button type="button" class="mpcrbm_price_calculation" data-extra-item data-collapse-target="<?php echo esc_attr($mpcrbm_ex_unique_id); ?>" data-open-icon="far fa-check-circle" data-close-icon="" data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>" data-close-text="<?php esc_attr_e('Selected', 'car-rental-manager'); ?>" data-add-class="mActive">

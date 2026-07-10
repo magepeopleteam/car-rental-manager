@@ -358,7 +358,7 @@
 				return $return_discount_amount;
 			}
 
-			public static function get_extra_service_price_by_name( $post_id, $service_name ) {
+			public static function get_extra_service_price_by_name( $post_id, $service_name, $days = 1 ) {
 				$display_extra_services = MPCRBM_Global_Function::get_post_info( $post_id, 'display_mpcrbm_extra_services', 'on' );
 				$service_id             = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_services_id', $post_id );
 				$extra_services         = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
@@ -367,12 +367,33 @@
 					foreach ( $extra_services as $service ) {
 						$ex_service_name = array_key_exists( 'service_name', $service ) ? $service['service_name'] : '';
 						if ( $ex_service_name == $service_name ) {
-							return array_key_exists( 'service_price', $service ) ? $service['service_price'] : 0;
+							$unit_price = array_key_exists( 'service_price', $service ) ? floatval( $service['service_price'] ) : 0;
+							$price_type = array_key_exists( 'service_price_type', $service ) ? $service['service_price_type'] : 'flat';
+							if ( $price_type === 'day' ) {
+								$unit_price = $unit_price * max( 1, (int) $days );
+							}
+
+							return $unit_price;
 						}
 					}
 				}
 
 				return $price;
+			}
+
+			public static function get_extra_service_price_type_by_name( $post_id, $service_name ) {
+				$service_id     = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_services_id', $post_id );
+				$extra_services = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
+				if ( is_array( $extra_services ) ) {
+					foreach ( $extra_services as $service ) {
+						$ex_service_name = array_key_exists( 'service_name', $service ) ? $service['service_name'] : '';
+						if ( $ex_service_name == $service_name ) {
+							return array_key_exists( 'service_price_type', $service ) ? $service['service_price_type'] : 'flat';
+						}
+					}
+				}
+
+				return 'flat';
 			}
 
 			public static function get_all_start_location( $post_id = '' ) {
