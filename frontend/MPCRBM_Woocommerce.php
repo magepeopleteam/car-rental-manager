@@ -941,10 +941,15 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
                 $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 
+                // Empty the cart BEFORE validating the new add: otherwise, when a customer goes
+                // back and re-books with a changed selection, WooCommerce's own "already in your
+                // cart" check still sees the previous booking sitting in the cart and rejects the
+                // new add_to_cart() call outright, silently leaving the old selection in place.
+                WC()->cart->empty_cart();
+
                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                 $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
                 $product_status = get_post_status($product_id);
-                WC()->cart->empty_cart();
                 ob_start();
                 if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
                     echo esc_url(wc_get_checkout_url());
