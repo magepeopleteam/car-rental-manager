@@ -65,6 +65,9 @@
                             <li data-tabs-target="#mpcrbm_term_and_condition">
                                 <span class="mi mi-wishlist-star"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
                             </li>
+                            <li data-tabs-target="#mpcrbm_security_deposit">
+                                <span class="mi mi-wishlist-star"></span><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?>
+                            </li>
                             <?php
                                 // Allow pro plugins to add their own tabs
                                 do_action( 'mpcrbm_settings_tab_navigation' );

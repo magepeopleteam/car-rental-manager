@@ -70,7 +70,7 @@
                 global $wpdb;
 
                 if ( empty( $slug ) || empty( $taxonomy ) ) {
-                    return false;
+                    return '';
                 }
 
                 $cache_key = 'mpcrbm_term_name_' . md5( $slug . '_' . $taxonomy );
@@ -98,7 +98,27 @@
                     return $term_name;
                 }
 
-                return false;
+                if ( is_numeric( $slug ) ) {
+                    $term_name = self::get_taxonomy_name_by_id( (int) $slug, $taxonomy );
+                }
+
+                if ( ! $term_name ) {
+                    $term = get_term_by( 'slug', $slug, $taxonomy );
+                    if ( $term && ! is_wp_error( $term ) ) {
+                        $term_name = $term->name;
+                    }
+                }
+
+                // Fixed by Shahnur — blank pickup/dropoff location labels fallback and 2026-05-05 08:00 AM (Asia/Dhaka)
+                if ( ! $term_name ) {
+                    $fallback_name = sanitize_text_field( urldecode( (string) $slug ) );
+                    $fallback_name = str_replace( array( '-', '_' ), ' ', $fallback_name );
+                    $term_name     = ucwords( trim( preg_replace( '/\s+/', ' ', $fallback_name ) ) );
+                }
+
+                wp_cache_set( $cache_key, $term_name, 'mpcrbm_taxonomy_terms' );
+
+                return $term_name;
             }
 
             public static function get_taxonomy_name_by_id( $term_id, $taxonomy ) {
@@ -338,7 +358,7 @@
 				return $return_discount_amount;
 			}
 
-			public static function get_extra_service_price_by_name( $post_id, $service_name ) {
+			public static function get_extra_service_price_by_name( $post_id, $service_name, $days = 1 ) {
 				$display_extra_services = MPCRBM_Global_Function::get_post_info( $post_id, 'display_mpcrbm_extra_services', 'on' );
 				$service_id             = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_services_id', $post_id );
 				$extra_services         = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
@@ -347,12 +367,33 @@
 					foreach ( $extra_services as $service ) {
 						$ex_service_name = array_key_exists( 'service_name', $service ) ? $service['service_name'] : '';
 						if ( $ex_service_name == $service_name ) {
-							return array_key_exists( 'service_price', $service ) ? $service['service_price'] : 0;
+							$unit_price = array_key_exists( 'service_price', $service ) ? floatval( $service['service_price'] ) : 0;
+							$price_type = array_key_exists( 'service_price_type', $service ) ? $service['service_price_type'] : 'flat';
+							if ( $price_type === 'day' ) {
+								$unit_price = $unit_price * max( 1, (int) $days );
+							}
+
+							return $unit_price;
 						}
 					}
 				}
 
 				return $price;
+			}
+
+			public static function get_extra_service_price_type_by_name( $post_id, $service_name ) {
+				$service_id     = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_services_id', $post_id );
+				$extra_services = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
+				if ( is_array( $extra_services ) ) {
+					foreach ( $extra_services as $service ) {
+						$ex_service_name = array_key_exists( 'service_name', $service ) ? $service['service_name'] : '';
+						if ( $ex_service_name == $service_name ) {
+							return array_key_exists( 'service_price_type', $service ) ? $service['service_price_type'] : 'flat';
+						}
+					}
+				}
+
+				return 'flat';
 			}
 
 			public static function get_all_start_location( $post_id = '' ) {
@@ -817,16 +858,28 @@
              * @return array
              */
             public static function get_vehicle_pickup_locations( $post_id ) {
-                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
-                
-                if ( ! $multi_location_enabled ) {
-                    // Return default locations from existing system
-                    return self::get_all_start_location( $post_id );
-                }
-                
-                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
                 $pickup_locations = array();
-                
+
+                // Branch assignment: effective branch is always a valid pickup location.
+                // Applies when branch management is enabled OR when branch meta is set
+                // (e.g. car transferred via Branch Manager without explicit enable toggle).
+                $branch_enabled   = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
+                $current_branch   = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
+                $home_branch      = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
+                $effective_branch = ! empty( $current_branch ) ? $current_branch : $home_branch;
+
+                if ( ( $branch_enabled === '1' || ! empty( $effective_branch ) ) && ! empty( $effective_branch ) ) {
+                    $pickup_locations[] = $effective_branch;
+                }
+
+                $multi_location_enabled = get_post_meta( $post_id, 'mpcrbm_multi_location_enabled', true );
+
+                if ( ! $multi_location_enabled ) {
+                    return array_unique( array_merge( $pickup_locations, self::get_all_start_location( $post_id ) ) );
+                }
+
+                $location_prices = get_post_meta( $post_id, 'mpcrbm_location_prices', true );
+
                 if ( ! empty( $location_prices ) && is_array( $location_prices ) ) {
                     foreach ( $location_prices as $price_data ) {
                         if ( ! empty( $price_data['pickup_location'] ) ) {
@@ -834,8 +887,28 @@
                         }
                     }
                 }
-                
+
                 return array_unique( $pickup_locations );
+            }
+
+            /**
+             * Get only the effective branch location for a vehicle, or empty string if none.
+             *
+             * @param int $post_id
+             * @return array Branch slug, or '' if no branch is assigned/enabled.
+             */
+            public static function get_vehicle_branch_location( $post_id ) {
+                $pickup_locations = array();
+                $branch_enabled   = get_post_meta( $post_id, 'mpcrbm_branch_enabled', true );
+                $current_branch   = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
+                $home_branch      = get_post_meta( $post_id, 'mpcrbm_home_branch', true );
+                $effective_branch = ! empty( $current_branch ) ? $current_branch : $home_branch;
+
+                if ( ( $branch_enabled === '1' || ! empty( $effective_branch ) ) && ! empty( $effective_branch ) ) {
+                    $pickup_locations[] = $effective_branch;
+                }
+
+                return $pickup_locations;
             }
 
             /**
@@ -952,77 +1025,48 @@
 
             public static function mpcrbm_check_operation_area_seach_form($post_id, $start_place, $end_place)
             {
-                // Check if multi-location is enabled for this vehicle
+                // 1. Branch check: only when branch assignment is enabled for this car
+                $branch_enabled = get_post_meta($post_id, 'mpcrbm_branch_enabled', true);
+                if ($branch_enabled === '1') {
+                    $home_branch    = get_post_meta($post_id, 'mpcrbm_home_branch', true);
+                    $current_branch = get_post_meta($post_id, 'mpcrbm_current_branch', true);
+                    $effective_branch = !empty($current_branch) ? $current_branch : $home_branch;
+                    if (!empty($effective_branch) && $start_place === $effective_branch) {
+                        return true;
+                    }
+                }
+
+                // 2. Multi-location check
                 $multi_location_enabled = get_post_meta($post_id, 'mpcrbm_multi_location_enabled', true);
+                $location_prices        = get_post_meta($post_id, 'mpcrbm_location_prices', true);
 
-                $location_prices = get_post_meta($post_id, 'mpcrbm_location_prices', true);
-
-                if ($multi_location_enabled && !empty($location_prices) && is_array($location_prices) ) {
-                    // Use new multi-location system
-
-
-                    if (!empty($location_prices) && is_array($location_prices)) {
-                        // First, try to find exact match
-                        foreach ($location_prices as $price_data) {
-                            if ($price_data['pickup_location'] === $start_place &&
-                                $price_data['dropoff_location'] === $end_place) {
-                                return true; // Found exact matching location combination
-                            }
-                        }
-
-                        // If no exact match, check if both locations exist in any combination
-                        $start_found = false;
-                        $end_found = false;
-
-                        foreach ($location_prices as $price_data) {
-                            if ($price_data['pickup_location'] === $start_place ||
-                                $price_data['dropoff_location'] === $start_place) {
-                                $start_found = true;
-                            }
-                            if ($price_data['pickup_location'] === $end_place ||
-                                $price_data['dropoff_location'] === $end_place) {
-                                $end_found = true;
-                            }
-
-                            if ($start_found && $end_found) {
-                                return true;
-                            }
-                        }
-                    }
-
-                    return false;
-                } else {
-                    // Use old location system - be more flexible
-                    $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
-
-                    if (!is_array($saved_locations) || empty($saved_locations)) {
-                        return true;
-                    }
-
-                    $start_place = strtolower(trim($start_place));
-                    $end_place   = strtolower(trim($end_place));
-
-                    $start_locations = array_column($saved_locations, 'start_location');
-                    $start_locations = array_map(function($value) {
-                        return strtolower(trim($value));
-                    }, $start_locations);
-                    $start_locations = array_unique($start_locations);
-                    $start_place = strtolower(trim($start_place));
-                    if ( in_array($start_place, $start_locations) && in_array($end_place, $start_locations) ) {
-                        return true;
-                    }
-
-
-                    /*foreach ($saved_locations as $location) {
-                        $start_location = strtolower(trim($location['start_location'] ?? ''));
-                        $end_location   = strtolower(trim($location['end_location'] ?? ''));
-                        if ($start_location === $start_place && $end_location === $end_place) {
+                if ($multi_location_enabled && !empty($location_prices) && is_array($location_prices)) {
+                    foreach ($location_prices as $price_data) {
+                        if ($price_data['pickup_location'] === $start_place &&
+                            $price_data['dropoff_location'] === $end_place) {
                             return true;
                         }
-                    }*/
-
-                    return false;
+                    }
                 }
+
+                // 3. Old operation area check
+                $saved_locations = get_post_meta($post_id, 'mpcrbm_terms_price_info', true);
+
+                if (!is_array($saved_locations) || empty($saved_locations)) {
+                    return true;
+                }
+
+                $start_place     = strtolower(trim($start_place));
+                $end_place       = strtolower(trim($end_place));
+                $start_locations = array_unique(array_map(function($value) {
+                    return strtolower(trim($value));
+                }, array_column($saved_locations, 'start_location')));
+
+                if (in_array($start_place, $start_locations) && in_array($end_place, $start_locations)) {
+                    return true;
+                }
+
+                return false;
             }
             public static function mpcrbm_get_schedule_search_form($post_id, $days_name, $selected_date, $start_time_schedule, $return_time_schedule, $price_based)
             {

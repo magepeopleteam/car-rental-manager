@@ -1,0 +1,1146 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Branch Manager — Admin Styles (Modern)
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Design Tokens ───────────────────────────────────────────────────── */
+.mpcrbm-branch-dashboard {
+    --bm-primary:       #2563eb;
+    --bm-primary-dark:  #1d4ed8;
+    --bm-primary-light: #dbeafe;
+    --bm-success:       #10b981;
+    --bm-surface:       #ffffff;
+    --bm-bg:            #f8fafc;
+    --bm-border:        #e2e8f0;
+    --bm-text:          #0f172a;
+    --bm-text-sec:      #64748b;
+    --bm-text-muted:    #94a3b8;
+    --bm-radius:        10px;
+    --bm-shadow-sm:     0 1px 3px rgba(15,23,42,0.08);
+    --bm-shadow-md:     0 4px 16px rgba(15,23,42,0.1);
+    --bm-shadow-lg:     0 8px 32px rgba(15,23,42,0.14);
+}
+
+/* ── Dashboard Layout ────────────────────────────────────────────────── */
+.mpcrbm-branch-dashboard {
+    display: flex;
+    flex-direction: column;
+    background: var(--bm-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--bm-border);
+    box-shadow: var(--bm-shadow-md);
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Branch Grid Section (top) ───────────────────────────────────────── */
+.mpcrbm-branch-sidebar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--bm-surface);
+    border-bottom: 1px solid var(--bm-border);
+}
+
+.mpcrbm-branch-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 15px;
+    border-bottom: 1px solid var(--bm-border);
+    flex-shrink: 0;
+}
+
+.mpcrbm-branch-sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mpcrbm-branch-sidebar-title i {
+    font-size: 16px;
+    color: var(--bm-primary);
+}
+
+.mpcrbm-branch-sidebar-title span {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bm-text-sec);
+}
+
+.mpcrbm-branch-total-pill {
+    background: var(--bm-primary-light);
+    color: var(--bm-primary);
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.mpcrbm-branch-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px;
+    padding: 12px 14px;
+}
+
+.mpcrbm-no-branches {
+    color: var(--bm-text-muted);
+    font-size: 13px;
+    text-align: center;
+    padding: 40px 24px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ── Branch Card (compact grid tile) ────────────────────────────────── */
+.mpcrbm-branch-card {
+    background: var(--bm-surface);
+    border: 1px solid var(--bm-border);
+    border-radius: 7px;
+    border-left: 3px solid #cbd5e1;
+    padding: 8px 10px 8px 9px;
+    cursor: pointer;
+    transition: box-shadow 0.18s ease, transform 0.15s ease, border-color 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mpcrbm-branch-card:hover {
+    border-color: #93c5fd;
+    border-left-color: #60a5fa;
+    box-shadow: 0 3px 10px rgba(37,99,235,0.1);
+    transform: translateY(-1px);
+}
+
+.mpcrbm-branch-card.is-active {
+    background: #f0f6ff;
+    border-color: var(--bm-primary);
+    border-left-color: var(--bm-primary);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.1), 0 3px 10px rgba(37,99,235,0.12);
+    transform: translateY(-1px);
+}
+
+/* Header row: name + car count pill */
+.mpcrbm-branch-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+
+.mpcrbm-branch-name {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--bm-text);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mpcrbm-car-count-badge {
+    background: var(--bm-primary-light);
+    color: var(--bm-primary);
+    border-radius: 20px;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 6px;
+    min-width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+}
+
+.mpcrbm-branch-card.is-active .mpcrbm-car-count-badge {
+    background: var(--bm-primary);
+    color: #fff;
+}
+
+/* Meta rows: address / phone */
+.mpcrbm-branch-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--bm-text-sec);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.mpcrbm-branch-meta-row span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mpcrbm-branch-meta-row i {
+    color: #93c5fd;
+    flex-shrink: 0;
+    font-size: 10px;
+}
+
+.mpcrbm-branch-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.mpcrbm-badge {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.mpcrbm-badge-multiplier {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde047;
+}
+
+.mpcrbm-badge-fee {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+}
+
+/* Action buttons row */
+.mpcrbm-branch-card-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 3px;
+}
+
+.mpcrbm-branch-card-actions .button {
+    font-size: 9px !important;
+    padding: 0 7px !important;
+    height: 16px !important;
+    line-height: 16px !important;
+    border-radius: 4px !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.mpcrbm-branch-card-actions .button i {
+    font-size: 10px;
+}
+
+.mpcrbm-branch-card-actions .button-primary {
+    background: var(--bm-primary) !important;
+    border-color: var(--bm-primary) !important;
+    color: #fff !important;
+}
+
+.mpcrbm-branch-card-actions .button-primary:hover {
+    background: var(--bm-primary-dark) !important;
+    border-color: var(--bm-primary-dark) !important;
+}
+
+/* ── Branch Grid Footer ──────────────────────────────────────────────── */
+.mpcrbm-branch-sidebar-footer {
+    padding: 0 16px 16px;
+}
+
+.mpcrbm-add-branch-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--bm-primary);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 7px 16px;
+    border-radius: 7px;
+    border: 1.5px dashed #93c5fd;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.mpcrbm-add-branch-link:hover {
+    background: var(--bm-primary-light);
+    border-color: var(--bm-primary);
+    color: var(--bm-primary);
+    text-decoration: none;
+}
+
+.mpcrbm-add-branch-link i {
+    font-size: 13px;
+}
+
+/* ── Cars Panel (full-width bottom section) ──────────────────────────── */
+.mpcrbm-branch-cars-panel {
+    width: 100%;
+    background: var(--bm-bg);
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--bm-border);
+}
+
+.mpcrbm-branch-cars-panel-header {
+    background: linear-gradient(135deg, #1e40af 0%, var(--bm-primary) 100%);
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+    flex-shrink: 0;
+}
+
+.mpcrbm-branch-cars-panel-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.mpcrbm-panel-car-count {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.mpcrbm-branch-cars-panel-body {
+    padding: 20px 24px;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bm-border) transparent;
+}
+
+/* ── Select Prompt ───────────────────────────────────────────────────── */
+.mpcrbm-select-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    gap: 14px;
+    text-align: center;
+    color: var(--bm-text-muted);
+}
+
+.mpcrbm-select-prompt i {
+    font-size: 54px;
+    color: #cbd5e1;
+    display: block;
+}
+
+.mpcrbm-select-prompt p {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--bm-text-sec);
+}
+
+.mpcrbm-select-prompt span {
+    font-size: 13px;
+    color: var(--bm-text-muted);
+}
+
+.mpcrbm-no-cars {
+    color: var(--bm-text-muted);
+    font-size: 14px;
+    padding: 40px 0;
+    text-align: center;
+    margin: 0;
+    font-style: normal;
+}
+
+/* ── Car Cards Grid ──────────────────────────────────────────────────── */
+.mpcrbm-branch-cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.mpcrbm-branch-car-card {
+    border-radius: var(--bm-radius);
+    overflow: hidden;
+    background: var(--bm-surface);
+    border: 1px solid var(--bm-border);
+    box-shadow: var(--bm-shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.mpcrbm-branch-car-card:hover {
+    box-shadow: var(--bm-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.mpcrbm-car-thumb {
+    height: 140px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mpcrbm-car-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mpcrbm-car-thumb-placeholder {
+    color: #cbd5e1;
+    font-size: 52px;
+}
+
+.mpcrbm-car-info {
+    padding: 12px 14px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.mpcrbm-car-info strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bm-text);
+    display: block;
+}
+
+.mpcrbm-home-badge {
+    font-size: 11px;
+    color: var(--bm-text-sec);
+    background: var(--bm-bg);
+    padding: 2px 8px;
+    border-radius: 20px;
+    display: inline-block;
+    font-weight: 500;
+    border: 1px solid var(--bm-border);
+}
+
+.mpcrbm-price-badge {
+    font-size: 13px;
+    color: #16a34a;
+    font-weight: 700;
+}
+
+/* ── Transfer Form ───────────────────────────────────────────────────── */
+.mpcrbm-car-transfer-form {
+    padding: 10px 14px 14px;
+    border-top: 1px solid var(--bm-border);
+    background: var(--bm-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.mpcrbm-transfer-target,
+.mpcrbm-transfer-reason {
+    width: 100%;
+    font-size: 12px;
+    padding: 6px 9px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: var(--bm-surface);
+    color: var(--bm-text);
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+}
+
+.mpcrbm-transfer-target:focus,
+.mpcrbm-transfer-reason:focus {
+    border-color: var(--bm-primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.mpcrbm-car-transfer-form .button {
+    font-size: 12px !important;
+    padding: 5px 12px !important;
+    height: auto !important;
+    line-height: 1.7 !important;
+    border-radius: 6px !important;
+    text-align: center;
+    transition: all 0.15s ease;
+}
+
+.mpcrbm-do-transfer.button-primary {
+    background: var(--bm-primary) !important;
+    border-color: var(--bm-primary) !important;
+    color: #fff !important;
+}
+
+.mpcrbm-do-transfer.button-primary:hover {
+    background: var(--bm-primary-dark) !important;
+    border-color: var(--bm-primary-dark) !important;
+}
+
+/* ── Transfer Log Table (car edit page) ─────────────────────────────── */
+.mpcrbm-transfer-log-table {
+    font-size: 13px;
+    margin-top: 0;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.mpcrbm-transfer-log-table th {
+    font-weight: 600;
+    color: var(--bm-text-sec, #64748b);
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 10px 14px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+}
+
+.mpcrbm-transfer-log-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #374151;
+    vertical-align: middle;
+}
+
+.mpcrbm-transfer-log-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.mpcrbm-transfer-log-table tbody tr:hover td {
+    background: #f8fafc;
+}
+
+/* ── Hours Table (term edit page) ───────────────────────────────────── */
+.mpcrbm-hours-table {
+    border-collapse: collapse;
+    font-size: 13px;
+    width: 100%;
+    max-width: 520px;
+}
+
+.mpcrbm-hours-table th,
+.mpcrbm-hours-table td {
+    padding: 9px 12px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.mpcrbm-hours-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #64748b;
+}
+
+.mpcrbm-hours-table td:first-child {
+    font-weight: 600;
+    color: #374151;
+}
+
+.mpcrbm-hours-table input[type="time"] {
+    padding: 5px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    width: 115px;
+    font-size: 13px;
+    color: #374151;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+}
+
+.mpcrbm-hours-table input[type="time"]:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+}
+
+.mpcrbm-hours-table input[type="time"]:disabled {
+    background: #f8fafc;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
+
+.mpcrbm-hours-table input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2563eb;
+}
+
+/* ── Branch Section Title (term add/edit pages) ─────────────────────── */
+.mpcrbm-branch-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 16px 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #dbeafe;
+}
+
+.mpcrbm-branch-section-row td {
+    padding-bottom: 0 !important;
+}
+
+/* ── Loading Spinner ─────────────────────────────────────────────────── */
+.mpcrbm-branch-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 0;
+    color: #94a3b8;
+    font-size: 13px;
+    gap: 14px;
+}
+
+.mpcrbm-branch-loading::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: mpcrbm-spin 0.7s linear infinite;
+}
+
+@keyframes mpcrbm-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Toast Notification ──────────────────────────────────────────────── */
+.mpcrbm-branch-toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    z-index: 99999;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    animation: mpcrbm-toast-in 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    max-width: 360px;
+    line-height: 1.5;
+}
+
+.mpcrbm-branch-toast.is-success {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.mpcrbm-branch-toast.is-error {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+@keyframes mpcrbm-toast-in {
+    from { opacity: 0; transform: translateY(16px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Pro Gate — Tab Badge, Popup, Dummy Content
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── PRO badge on sidebar tab button ─────────────────────────────────── */
+.mpcrbm-pro-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff !important;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    margin-left: 6px;
+    vertical-align: middle;
+    line-height: 1.5;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+/* ── Pro Upgrade Popup ───────────────────────────────────────────────── */
+.mpcrbm-pro-upgrade-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,0.6);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+}
+
+.mpcrbm-pro-upgrade-popup {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 32px 32px;
+    max-width: 460px;
+    width: 92%;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(15,23,42,0.22);
+    text-align: center;
+    animation: mpcrbm-pro-popup-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes mpcrbm-pro-popup-in {
+    from { opacity: 0; transform: scale(0.88) translateY(24px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.mpcrbm-pro-upgrade-close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 5px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.mpcrbm-pro-upgrade-close:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+}
+
+.mpcrbm-pro-popup-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.mpcrbm-pro-popup-crown {
+    font-size: 40px;
+    line-height: 1;
+}
+
+.mpcrbm-pro-popup-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.1em;
+}
+
+.mpcrbm-pro-popup-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+}
+
+.mpcrbm-pro-popup-desc {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.65;
+    margin: 0 0 20px;
+}
+
+.mpcrbm-pro-popup-features {
+    list-style: none;
+    margin: 0 0 26px;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.mpcrbm-pro-popup-features li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.mpcrbm-pro-popup-features li i {
+    color: #10b981;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.mpcrbm-pro-popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.mpcrbm-pro-buy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff !important;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 13px 28px;
+    border-radius: 8px;
+    text-decoration: none !important;
+    width: 100%;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mpcrbm-pro-buy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.45);
+}
+
+.mpcrbm-pro-buy-btn i {
+    font-size: 16px;
+}
+
+.mpcrbm-pro-learn-link {
+    font-size: 13px;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.mpcrbm-pro-learn-link:hover {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+/* ── Dummy Content (right side when pro is inactive) ─────────────────── */
+.mpcrbm-pro-branch-preview {
+    position: relative;
+    min-height: 60vh;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+}
+
+.mpcrbm-pro-dummy-dashboard {
+    display: flex;
+    min-height: 60vh;
+    filter: blur(3px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.65;
+}
+
+/* Dummy Sidebar */
+.mpcrbm-pro-dummy-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+}
+
+.mpcrbm-pro-dummy-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 18px 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.mpcrbm-pro-dummy-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #64748b;
+}
+
+.mpcrbm-pro-dummy-pill {
+    background: #dbeafe;
+    color: #2563eb;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+}
+
+.mpcrbm-pro-dummy-branch-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.mpcrbm-pro-dummy-branch-card {
+    padding: 13px 16px;
+    border-left: 3px solid transparent;
+    border-top: 1px solid #f1f5f9;
+}
+
+.mpcrbm-pro-dummy-branch-card.is-active {
+    background: #eff6ff;
+    border-left-color: #2563eb;
+}
+
+.mpcrbm-pro-dummy-branch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #0f172a;
+}
+
+.mpcrbm-pro-dummy-count {
+    background: #dbeafe;
+    color: #2563eb;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 9px;
+}
+
+.mpcrbm-pro-dummy-count.is-active {
+    background: #2563eb;
+    color: #fff;
+}
+
+.mpcrbm-pro-dummy-meta {
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    margin: 2px 0;
+}
+
+.mpcrbm-pro-dummy-meta i {
+    color: #93c5fd;
+    font-size: 12px;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.mpcrbm-pro-dummy-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 9px;
+}
+
+.mpcrbm-pro-dummy-btn-primary {
+    background: #2563eb;
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.mpcrbm-pro-dummy-btn {
+    background: #f1f5f9;
+    color: #374151;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px solid #e2e8f0;
+}
+
+.mpcrbm-pro-dummy-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.mpcrbm-pro-dummy-add-link {
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Dummy Panel */
+.mpcrbm-pro-dummy-panel {
+    flex: 1;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+}
+
+.mpcrbm-pro-dummy-panel-header {
+    background: linear-gradient(135deg, #1e40af, #2563eb);
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.mpcrbm-pro-dummy-panel-count {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    padding: 3px 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.mpcrbm-pro-dummy-cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    padding: 16px;
+}
+
+.mpcrbm-pro-dummy-car-card {
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 4px rgba(15,23,42,0.06);
+}
+
+.mpcrbm-pro-dummy-car-thumb {
+    height: 110px;
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cbd5e1;
+    font-size: 44px;
+}
+
+.mpcrbm-pro-dummy-car-info {
+    padding: 10px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mpcrbm-pro-dummy-car-info strong {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.mpcrbm-pro-dummy-home-badge {
+    font-size: 11px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 7px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid #e2e8f0;
+}
+
+.mpcrbm-pro-dummy-price {
+    font-size: 13px;
+    color: #16a34a;
+    font-weight: 700;
+}
+
+.mpcrbm-pro-dummy-transfer {
+    padding: 8px 12px 10px;
+    border-top: 1px solid #f1f5f9;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mpcrbm-pro-dummy-select,
+.mpcrbm-pro-dummy-input {
+    display: block;
+    font-size: 11px;
+    color: #94a3b8;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 5px 8px;
+}
+
+/* ── Lock Overlay (inside dummy preview) ─────────────────────────────── */
+.mpcrbm-pro-content-lock {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248,250,252,0.72);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+    gap: 14px;
+    text-align: center;
+    padding: 32px 24px;
+}
+
+.mpcrbm-pro-lock-crown {
+    font-size: 52px;
+    line-height: 1;
+}
+
+.mpcrbm-pro-lock-badge {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.1em;
+}
+
+.mpcrbm-pro-lock-title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.mpcrbm-pro-lock-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+    max-width: 380px;
+    line-height: 1.65;
+}
+
+.mpcrbm-pro-lock-buy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff !important;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 13px 32px;
+    border-radius: 8px;
+    text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-top: 4px;
+}
+
+.mpcrbm-pro-lock-buy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37,99,235,0.45);
+}

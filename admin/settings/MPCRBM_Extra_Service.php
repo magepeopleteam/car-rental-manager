@@ -17,7 +17,9 @@
 				add_action( 'mpcrbm_settings_tab_content', [ $this, 'ex_service_settings' ] );
 				//*******************//
 				add_action( 'wp_ajax_mpcrbm_get_ex_service', array( $this, 'mpcrbm_get_ex_service' ) );
-				add_action( 'wp_ajax_nopriv_mpcrbm_get_ex_service', array( $this, 'mpcrbm_get_ex_service' ) );
+				// NOTE: no nopriv registration — this handler mutates post meta and requires
+				// edit_post capability, so anonymous access was always rejected. Removing the
+				// nopriv hook eliminates dead, unauthenticated attack surface.
 			}
 
 			public function extra_service_meta() {
@@ -63,6 +65,7 @@
                                                     <th><span><?php esc_html_e( 'Service Name', 'car-rental-manager' ); ?></span></th>
                                                     <th><span><?php esc_html_e( 'Short description', 'car-rental-manager' ); ?></span></th>
                                                     <th><span><?php esc_html_e( 'Service Price', 'car-rental-manager' ); ?></span></th>
+                                                    <th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
                                                     <th><span><?php esc_html_e( 'Qty Box Type', 'car-rental-manager' ); ?></span></th>
                                                     <th><span><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></span></th>
                                                 </tr>
@@ -95,6 +98,7 @@
 				$service_name  = array_key_exists( 'service_name', $field ) ? $field['service_name'] : '';
 				$service_price = array_key_exists( 'service_price', $field ) ? $field['service_price'] : '';
 				$input_type    = array_key_exists( 'service_qty_type', $field ) ? $field['service_qty_type'] : 'inputbox';
+				$price_type    = array_key_exists( 'service_price_type', $field ) ? $field['service_price_type'] : 'flat';
 				$description   = array_key_exists( 'extra_service_description', $field ) ? $field['extra_service_description'] : '';
 				$icon          = $image = "";
 				if ( $service_icon ) {
@@ -119,6 +123,12 @@
                     </td>
                     <td class="text-center">
                         <input type="number" pattern="[0-9]*" step="0.01" class="small price_validation" name="service_price[]" placeholder="<?php esc_attr_e( 'EX: 10', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_price ); ?>"/>
+                    </td>
+                    <td>
+                        <select name="service_price_type[]" class='mideum'>
+                            <option value="flat" <?php echo esc_attr( $price_type == 'flat' ? 'selected' : '' ); ?>><?php esc_html_e( 'Flat', 'car-rental-manager' ); ?></option>
+                            <option value="day" <?php echo esc_attr( $price_type == 'day' ? 'selected' : '' ); ?>><?php esc_html_e( 'Per Day', 'car-rental-manager' ); ?></option>
+                        </select>
                     </td>
                     <td>
                         <select name="service_qty_type[]" class='mideum'>
@@ -224,11 +234,7 @@
 
 			public function ex_service_table( $service_id, $post_id ) {
 				if ( $service_id && $post_id ) {
-//					$extra_services = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
-					$extra_services = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_extra_service_infos', [] );
-
-
-
+					$extra_services = MPCRBM_Global_Function::get_post_info( $service_id, 'mpcrbm_extra_service_infos', [] );
 					?>
                     <section>
                         <div>
@@ -239,6 +245,7 @@
                                     <th><span><?php esc_html_e( 'Name', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Description', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Price', 'car-rental-manager' ); ?></span></th>
+                                    <th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Qty Box Type', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Action', 'car-rental-manager' ); ?></span></th>
                                 </tr>
@@ -298,6 +305,12 @@
 				$extra_qty_type = is_array( $raw_qty_types ) ? array_map( function ( $type ) {
 					return in_array( $type, array( 'inputbox', 'dropdown' ) ) ? $type : 'inputbox';
 				}, $raw_qty_types ) : array();
+				$raw_price_types = isset( $_POST['service_price_type'] ) ?
+					array_map( 'sanitize_text_field', wp_unslash( $_POST['service_price_type'] ) ) :
+					array();
+				$extra_price_type = is_array( $raw_price_types ) ? array_map( function ( $type ) {
+					return in_array( $type, array( 'flat', 'day' ) ) ? $type : 'flat';
+				}, $raw_price_types ) : array();
 				$extra_service_description = isset( $_POST['extra_service_description'] ) ?
 					array_map( 'sanitize_textarea_field', wp_unslash( $_POST['extra_service_description'] ) ) :
 					array();
@@ -309,6 +322,7 @@
 							'service_icon'              => isset( $extra_icon[ $i ] ) ? $extra_icon[ $i ] : '',
 							'service_name'              => $extra_names[ $i ],
 							'service_price'             => isset( $extra_price[ $i ] ) ? $extra_price[ $i ] : 0,
+							'service_price_type'        => isset( $extra_price_type[ $i ] ) ? $extra_price_type[ $i ] : 'flat',
 							'service_qty_type'          => isset( $extra_qty_type[ $i ] ) ? $extra_qty_type[ $i ] : 'inputbox',
 							'extra_service_description' => isset( $extra_service_description[ $i ] ) ? $extra_service_description[ $i ] : ''
 						);

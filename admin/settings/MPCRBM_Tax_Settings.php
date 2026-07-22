@@ -82,12 +82,23 @@
 			}
 
 			public function settings_save( $post_id ) {
+				if (
+					! isset( $_POST['tax_settings_nonce'] ) ||
+					! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['tax_settings_nonce'] ) ), 'save_tax_settings' ) ||
+					( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
+					wp_is_post_revision( $post_id ) ||
+					! current_user_can( 'edit_post', $post_id )
+				) {
+					return;
+				}
 				if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
-					// Create and store nonce
-					$nonce = wp_create_nonce( 'settings_save_action' );
-					update_post_meta( $post_id, '_settings_save_nonce', $nonce );
-					$tax_status = MPCRBM_Global_Function::get_submit_info( '_tax_status', 'none' );
-					$tax_class  = MPCRBM_Global_Function::get_submit_info( '_tax_class' );
+					// Fixed by Shahnur — 2026-04-28 11:56 AM (Asia/Dhaka)
+					$allowed_tax_status = array( 'taxable', 'shipping', 'none' );
+					$tax_status         = isset( $_POST['_tax_status'] ) ? sanitize_text_field( wp_unslash( $_POST['_tax_status'] ) ) : 'none';
+					$tax_status         = in_array( $tax_status, $allowed_tax_status, true ) ? $tax_status : 'none';
+					$tax_class          = isset( $_POST['_tax_class'] ) ? sanitize_title( wp_unslash( $_POST['_tax_class'] ) ) : '';
+					$allowed_tax_class  = array_keys( MPCRBM_Global_Function::all_tax_list() );
+					$tax_class          = in_array( $tax_class, $allowed_tax_class, true ) ? $tax_class : '';
 					update_post_meta( $post_id, '_tax_status', $tax_status );
 					update_post_meta( $post_id, '_tax_class', $tax_class );
 				}

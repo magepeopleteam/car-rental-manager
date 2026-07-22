@@ -14,6 +14,8 @@ if (!defined('ABSPATH')) {
 				add_action('save_post', array($this, 'run_link_product_on_save'), 99, 1);
 				add_action('parse_query', array($this, 'hide_wc_hidden_product_from_product_list'));
 				add_action('wp', array($this, 'hide_hidden_wc_product_from_frontend'));
+				add_action('before_delete_post', array($this, 'delete_hidden_wc_product'));
+				add_action('wp_trash_post', array($this, 'trash_hidden_wc_product'));
 			}
 			public function create_hidden_wc_product_on_publish($post_id, $post) {
 				if ($post->post_type == MPCRBM_Function::get_cpt() && $post->post_status == 'publish' && empty(MPCRBM_Global_Function::get_post_info($post_id, 'check_if_run_once'))) {
@@ -123,6 +125,24 @@ if (!defined('ABSPATH')) {
 				$terms = array('exclude-from-catalog', 'exclude-from-search');
 				wp_set_object_terms($pid, $terms, 'product_visibility');
 				update_post_meta($post_id, 'check_if_run_once', true);
+			}
+			public function delete_hidden_wc_product($post_id) {
+				$post = get_post($post_id);
+				if ($post && $post->post_type == MPCRBM_Function::get_cpt()) {
+					$product_id = MPCRBM_Global_Function::get_post_info($post_id, 'link_wc_product', 0);
+					if ($product_id > 0) {
+						wp_delete_post($product_id, true);
+					}
+				}
+			}
+			public function trash_hidden_wc_product($post_id) {
+				$post = get_post($post_id);
+				if ($post && $post->post_type == MPCRBM_Function::get_cpt()) {
+					$product_id = MPCRBM_Global_Function::get_post_info($post_id, 'link_wc_product', 0);
+					if ($product_id > 0) {
+						wp_trash_post($product_id);
+					}
+				}
 			}
 			public function count_hidden_wc_product( $post_id ): int {
 				$args = array(

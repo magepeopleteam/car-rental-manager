@@ -149,31 +149,31 @@ jQuery(document).ready(function($) {
 
     // Initialize map and autocomplete
     $(".mpcrbm ul.input_select_list").hide();
-        if ($("#mpcrbm_map_area").length > 0) {
-            mpcrbm_set_cookie_distance_duration();
+    if ($("#mpcrbm_map_area").length > 0) {
+        mpcrbm_set_cookie_distance_duration();
         if ($("#mpcrbm_map_start_place").length > 0 && $("#mpcrbm_map_end_place").length > 0) {
-                let start_place = document.getElementById("mpcrbm_map_start_place");
-                let end_place = document.getElementById("mpcrbm_map_end_place");
+            let start_place = document.getElementById("mpcrbm_map_start_place");
+            let end_place = document.getElementById("mpcrbm_map_end_place");
             let start_place_autoload = new google.maps.places.Autocomplete(start_place);
-                let mpcrbm_restrict_search_to_country = $('[name="mpcrbm_restrict_search_country"]').val();
-                let mpcrbm_country = $('[name="mpcrbm_country"]').val();
+            let mpcrbm_restrict_search_to_country = $('[name="mpcrbm_restrict_search_country"]').val();
+            let mpcrbm_country = $('[name="mpcrbm_country"]').val();
 
-                if(mpcrbm_restrict_search_to_country == 'yes'){
-                    start_place_autoload.setComponentRestrictions({
-                        country: [mpcrbm_country]
-                    });
-                }
+            if(mpcrbm_restrict_search_to_country == 'yes'){
+                start_place_autoload.setComponentRestrictions({
+                    country: [mpcrbm_country]
+                });
+            }
 
             google.maps.event.addListener(start_place_autoload, "place_changed", function() {
                 mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
             });
 
             let end_place_autoload = new google.maps.places.Autocomplete(end_place);
-                if(mpcrbm_restrict_search_to_country == 'yes'){
-                    end_place_autoload.setComponentRestrictions({
-                        country: [mpcrbm_country]
-                    });
-                }
+            if(mpcrbm_restrict_search_to_country == 'yes'){
+                end_place_autoload.setComponentRestrictions({
+                    country: [mpcrbm_country]
+                });
+            }
 
             google.maps.event.addListener(end_place_autoload, "place_changed", function() {
                 mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
@@ -218,21 +218,54 @@ jQuery(document).ready(function($) {
             target_extra_service.slideUp(400);
             target_extra_service_summary.slideUp(400);
             parent.find('[name="mpcrbm_post_id"]').val('');
+            parent.find('[name="mpcrbm_security_deposit_value"]').val(0);
+            target_summary.find('.mpcrbm_security_deposit_summary').remove();
         } else {
             // Select new vehicle
             parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
 
-            let transport_name = $this.attr('data-transport-name');
+            let transport_name  = $this.attr('data-transport-name');
             let transport_price = parseFloat($this.attr('data-transport-price'));
-            let post_id = $this.attr('data-post-id');
+            let base_price      = parseFloat($this.attr('data-base-price'));
+            if (isNaN(base_price)) { base_price = transport_price; }
+            let post_id         = $this.attr('data-post-id');
+            let security_deposit = parseFloat($this.attr('data-security-deposit')) || 0;
+
+            // Determine one-way fee: always trust the PHP-baked data attributes (server already
+            // computed the per-car fee for the current pickup/dropoff pair), then zero out only
+            // when the "same location" checkbox is checked.
+            let isSameLocChk = $('#mpcrbm_is_drop_off').is(':checked');
+            let $feeField    = $('#mpcrbm_branch_one_way_fee');
+            let oneWayFee    = isSameLocChk ? 0 : Math.max(0, transport_price - base_price);
+
+            // Sync hidden field (create inside parent if missing — branch-search context has no booking form)
+            if (!$feeField.length) {
+                $feeField = $('<input type="hidden" id="mpcrbm_branch_one_way_fee" name="mpcrbm_branch_one_way_fee">').appendTo(parent);
+            }
+            $feeField.val(oneWayFee);
+
+            // Store deposit in hidden input for later quantity/extra-service recalculations
+            parent.find('[name="mpcrbm_security_deposit_value"]').val(security_deposit);
+
+            // Build initial total: base price + one-way fee + deposit
+            let initial_total = base_price + oneWayFee + security_deposit;
 
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
             target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(transport_price));
-            target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(transport_price));
+
+            // Show or update deposit row in summary
+            target_summary.find('.mpcrbm_security_deposit_summary').remove();
+            if (security_deposit > 0) {
+                target_summary.find('.mpcrbm_extra_service_summary').after(
+                    '<div class="mpcrbm_security_deposit_summary"><div class="divider"></div><div class="justifyBetween"><span>Security Deposit:</span><span class="mpcrbm_security_deposit_price _textTheme">' + mpcrbm_price_format(security_deposit) + '</span></div></div>'
+                );
+            }
+
+            target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(initial_total));
 
             $this.addClass('active_select');
-            parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', transport_price);
+            parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', base_price);
 
             // Show summary sections
             target_summary.slideDown(400);
@@ -275,12 +308,26 @@ jQuery(document).ready(function($) {
     });
 
     $(document).on('change','#mpcrbm_is_drop_off', function() {
+        let $parent = $(this).closest('.mpcrbm_transport_search_area');
         if ($(this).is(':checked')) {
             $('#mpcrbm_drop_off_location').hide();
             $('#mpcrbm-vertical-divide-location').hide();
+            // Mirror start_place into end_place so cart/checkout see same location
+            let startVal = $parent.find('[name="mpcrbm_start_place"]').val()
+                        || $('[name="mpcrbm_start_place"]').first().val();
+            if (startVal) {
+                $parent.find('[name="mpcrbm_end_place"]').val(startVal);
+                $('[name="mpcrbm_end_place"]').val(startVal);
+            }
         } else {
             $('#mpcrbm_drop_off_location').show();
             $('#mpcrbm-vertical-divide-location').show();
+            // Restore end_place from the visible dropoff select
+            let dropoffVal = $('#mpcrbm_manual_end_place').val();
+            if (dropoffVal) {
+                $parent.find('[name="mpcrbm_end_place"]').val(dropoffVal);
+                $('[name="mpcrbm_end_place"]').val(dropoffVal);
+            }
         }
     });
 
@@ -892,6 +939,30 @@ jQuery(document).ready(function($) {
 
     }
 
+    // Computes the selected rental duration (in whole days) directly from the start/return
+    // date+time fields. Used for day-wise extra-service pricing estimates. Reading straight
+    // from these fields (instead of the #mpcrbm_car_selected_day label, which only exists on
+    // the single car-details page and only refreshes after a return-time pick) keeps this
+    // working consistently on both the search-results flow and the car-details page.
+    function mpcrbm_calculate_rental_days(parent) {
+        let startDate = parent.find('#mpcrbm_map_start_date').first().val() || $('#mpcrbm_map_start_date').first().val();
+        let endDate = parent.find('#mpcrbm_map_return_date').first().val() || $('#mpcrbm_map_return_date').first().val();
+        if (!startDate || !endDate) {
+            return 1;
+        }
+        let start_time = parseFloat(parent.find('#mpcrbm_map_start_time').first().val() || $('#mpcrbm_map_start_time').first().val()) || 0;
+        let return_time = parseFloat(parent.find('#mpcrbm_map_return_time').first().val() || $('#mpcrbm_map_return_time').first().val()) || 0;
+        let startDateTime = new Date(startDate);
+        startDateTime.setHours(start_time);
+        let endDateTime = new Date(endDate);
+        endDateTime.setHours(return_time);
+        let diffMs = endDateTime - startDateTime;
+        if (isNaN(diffMs) || diffMs <= 0) {
+            return 1;
+        }
+        return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+    }
+
     // Price calculation function
     function mpcrbm_price_calculation(parent) {
         let number_of_car = mpcrbm_number_of_car_booked( parent );
@@ -911,13 +982,39 @@ jQuery(document).ready(function($) {
                     let ex_qty = parseInt(ex_target.val());
                     let ex_price = ex_target.data("price");
                     ex_price = ex_price && ex_price > 0 ? ex_price : 0;
-                    total = total + parseFloat(ex_price) * ex_qty;
+                    let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
+                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
                 }
             });
 
+            let deposit = parseFloat(parent.find('[name="mpcrbm_security_deposit_value"]').val()) || 0;
+            if (deposit > 0) {
+                let total_deposit = deposit * number_of_car;
+                total = total + total_deposit;
+                let deposit_row = target_summary.find('.mpcrbm_security_deposit_summary');
+                if (deposit_row.length > 0) {
+                    deposit_row.find('.mpcrbm_security_deposit_price').html(mpcrbm_price_format(total_deposit));
+                }
+            }
+
+            // Add one-way fee when different locations are selected
+            let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
+            if (oneWayFee > 0) {
+                total = total + oneWayFee * number_of_car;
+            }
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
+
+    // When the one-way fee changes (location re-selected), recalculate the active vehicle's total
+    $(document).on('mpcrbm_one_way_fee_changed', function (e, fee) {
+        let $active = $('.mpcrbm_transport_select.active_select');
+        if (!$active.length) { return; }
+        let parent = $active.closest('.mpcrbm_transport_search_area');
+        if (!parent.length) { return; }
+        mpcrbm_price_calculation(parent);
+    });
+
     function mpcrbm_price_calculation_car_details_page(parent, number_of_car) {
         // let number_of_car = mpcrbm_number_of_car_booked( parent );
 
@@ -936,17 +1033,34 @@ jQuery(document).ready(function($) {
                     let ex_qty = parseInt(ex_target.val());
                     let ex_price = ex_target.data("price");
                     ex_price = ex_price && ex_price > 0 ? ex_price : 0;
-                    total = total + parseFloat(ex_price) * ex_qty;
+                    let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
+                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
                 }
             });
 
+            let deposit = parseFloat(parent.find('[name="mpcrbm_security_deposit_value"]').val()) || 0;
+            if (deposit > 0) {
+                let total_deposit = deposit * number_of_car;
+                total = total + total_deposit;
+                target_summary.find('.mpcrbm_security_deposit_price').html(mpcrbm_price_format(total_deposit));
+            }
+
+            let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
+            if (oneWayFee > 0) {
+                let oneWayTotal = oneWayFee * number_of_car;
+                total = total + oneWayTotal;
+                let $feeDisplay = parent.find('#mpcrbm_car_one_way_fee_display');
+                if ($feeDisplay.length) {
+                    $feeDisplay.html(mpcrbm_price_format(oneWayFee) + ' &times; ' + number_of_car + ' = ' + mpcrbm_price_format(oneWayTotal));
+                }
+            }
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
 
     // Handle taxi return and waiting time changes
     $(document).on("change", ".mpcrbm_transport_search_area [name='mpcrbm_taxi_return'], .mpcrbm_transport_search_area [name='mpcrbm_waiting_time']", function() {
-            let parent = $(this).closest(".mpcrbm_transport_search_area");
+        let parent = $(this).closest(".mpcrbm_transport_search_area");
         mpcrbm_content_refresh(parent);
     });
 
@@ -955,7 +1069,11 @@ jQuery(document).ready(function($) {
         let parent = $(this).closest('.mpcrbm_transport_search_area');
         let target_checkout = parent.find('.mpcrbm_checkout_area');
         let start_place = parent.find('[name="mpcrbm_start_place"]').val();
-        let end_place = parent.find('[name="mpcrbm_end_place"]').val();
+        let end_place   = parent.find('[name="mpcrbm_end_place"]').val();
+        // When "same location" checkbox is checked, treat end_place = start_place
+        if ($('#mpcrbm_is_drop_off').is(':checked')) {
+            end_place = start_place;
+        }
         let mpcrbm_waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let mpcrbm_taxi_return = parent.find('[name="mpcrbm_taxi_return"]').val();
         let return_target_date = parent.find("#mpcrbm_map_return_date").val();
@@ -1048,7 +1166,7 @@ jQuery(document).ready(function($) {
     $(document).on("click", ".mpcrbm_car_details_continue_btn", function() {
         let parent = $(this).closest('.mpcrbm_car_details_wrapper');
         let start_place = parent.find('#mpcrbm_manual_start_place').val();
-        let end_place = parent.find('#mpcrbm_manual_end_place').val();
+        let end_place   = parent.find('#mpcrbm_manual_end_place').val();
         let mpcrbm_waiting_time = '';
         let mpcrbm_taxi_return = '';
         let mpcrbm_start_date = parent.find("#mpcrbm_map_start_date").val();
@@ -1067,8 +1185,8 @@ jQuery(document).ready(function($) {
         if( start_place === null ){
             start_place = '';
         }
-        // console.log( date );
-        if( end_place === '' || end_place === null ){
+        // When "same location" checkbox is checked, treat end = start (no one-way fee)
+        if ( $('#mpcrbm_is_drop_off').is(':checked') || end_place === '' || end_place === null ) {
             end_place = start_place;
         }
         // console.log( date );
@@ -1392,10 +1510,15 @@ jQuery(document).ready(function($) {
                     let calculated_price = mpcrbm_price_format( data.data.calculated_price );
                     let day_wise = data.data.calculated_price/totalDays;
                     let day_wise_price = mpcrbm_price_format( day_wise );
-                    parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
                     parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
                     parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
+                    // Re-apply one-way fee on top of the updated base price
+                    let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
+                    let carQty = parseInt(parentClass.find('#mpcrbm_selected_car_quantity').val()) || 1;
+                    let deposit = parseFloat(parentClass.find('#mpcrbm_security_deposit_value').val()) || 0;
+                    let totalWithFee = data.data.calculated_price + (oneWayFee * carQty) + deposit;
+                    parentClass.find("#mpcrbm_car_total_price").html(mpcrbm_price_format(totalWithFee));
                 }
             },
             error: function(response) {

@@ -1,0 +1,390 @@
+/* ============================================
+   MPCRBM Dependency Installer Popup
+   Light WordPress-native design with smooth
+   animations. Shared by the WooCommerce
+   installer and the dummy-import modal.
+   ============================================ */
+
+/* ---------- Overlay ---------- */
+.mpcrbm-woo-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 999999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	animation: mpcrbmOverlayIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes mpcrbmOverlayIn {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+/* ---------- Popup Card ---------- */
+.mpcrbm-woo-popup {
+	position: relative;
+	width: 500px;
+	max-width: 92vw;
+	border-radius: 12px;
+	background: #fff;
+	box-shadow:
+		0 1px 3px rgba(0, 0, 0, 0.08),
+		0 20px 60px rgba(0, 0, 0, 0.15);
+	text-align: center;
+	overflow: hidden;
+	animation: mpcrbmPopupIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+@keyframes mpcrbmPopupIn {
+	from {
+		opacity: 0;
+		transform: translateY(24px) scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+/* ---------- Header Strip ---------- */
+.mpcrbm-woo-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 14px 24px;
+	background: linear-gradient(135deg, #F12971 0%, #F7568F 100%);
+	color: #fff;
+}
+
+.mpcrbm-woo-header-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	background: rgba(255, 255, 255, 0.18);
+	border-radius: 8px;
+}
+
+.mpcrbm-woo-header-icon svg {
+	width: 18px;
+	height: 18px;
+}
+
+.mpcrbm-woo-header-text {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+}
+
+/* ---------- Icon ---------- */
+.mpcrbm-woo-icon-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 32px;
+	padding-bottom: 8px;
+}
+
+.mpcrbm-woo-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #fde7f0 0%, #fcd4e4 100%);
+	color: #F12971;
+	border: 1px solid #f9b8d2;
+	animation: mpcrbmPulseIcon 3s ease-in-out infinite;
+}
+
+@keyframes mpcrbmPulseIcon {
+	0%, 100% { box-shadow: 0 0 0 0 rgba(241, 41, 113, 0.08); }
+	50%      { box-shadow: 0 0 0 12px rgba(241, 41, 113, 0.04); }
+}
+
+/* ---------- Content ---------- */
+.mpcrbm-woo-content {
+	padding: 16px 36px 0;
+}
+
+.mpcrbm-woo-title {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 21px;
+	font-weight: 600;
+	color: #1d2327;
+	margin: 0 0 10px;
+	line-height: 1.3;
+}
+
+.mpcrbm-woo-desc {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #50575e;
+	margin: 0;
+}
+
+/* ---------- Feature Highlights ---------- */
+.mpcrbm-woo-features {
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	flex-wrap: wrap;
+	padding: 20px 36px 0;
+}
+
+.mpcrbm-woo-feature {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 13px;
+	color: #3c434a;
+}
+
+.mpcrbm-woo-feature-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: #ecfdf3;
+	color: #039855;
+	flex-shrink: 0;
+}
+
+.mpcrbm-woo-feature-icon svg {
+	width: 12px;
+	height: 12px;
+}
+
+/* ---------- Progress ---------- */
+.mpcrbm-woo-progress {
+	padding: 0 36px;
+	margin-bottom: 8px;
+	animation: mpcrbmFadeIn 0.35s ease both;
+}
+
+@keyframes mpcrbmFadeIn {
+	from { opacity: 0; transform: translateY(6px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.mpcrbm-woo-progress-bar {
+	width: 100%;
+	height: 8px;
+	background: #f0f0f1;
+	border-radius: 100px;
+	overflow: hidden;
+}
+
+.mpcrbm-woo-progress-fill {
+	height: 100%;
+	width: 0%;
+	border-radius: 100px;
+	background: linear-gradient(90deg, #F12971, #F7568F);
+	transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+	position: relative;
+}
+
+.mpcrbm-woo-progress-fill::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+	animation: mpcrbmShimmer 1.5s linear infinite;
+}
+
+@keyframes mpcrbmShimmer {
+	from { transform: translateX(-100%); }
+	to   { transform: translateX(100%); }
+}
+
+.mpcrbm-woo-status-text {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 13px;
+	color: #50575e;
+	margin: 10px 0 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+/* Spinner for status text */
+.mpcrbm-woo-status-text::before {
+	content: '';
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border: 2px solid #dcdde1;
+	border-top-color: #F12971;
+	border-radius: 50%;
+	animation: mpcrbmSpin 0.7s linear infinite;
+	flex-shrink: 0;
+}
+
+@keyframes mpcrbmSpin {
+	to { transform: rotate(360deg); }
+}
+
+.mpcrbm-woo-status-text.mpcrbm-success {
+	color: #039855;
+}
+
+.mpcrbm-woo-status-text.mpcrbm-success::before {
+	display: none;
+}
+
+.mpcrbm-woo-status-text.mpcrbm-error {
+	color: #d92d20;
+}
+
+.mpcrbm-woo-status-text.mpcrbm-error::before {
+	display: none;
+}
+
+/* ---------- Action Buttons ---------- */
+.mpcrbm-woo-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	align-items: center;
+	padding: 24px 36px 0;
+}
+
+.mpcrbm-woo-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: all 0.2s ease;
+	line-height: 1;
+}
+
+.mpcrbm-woo-btn-primary {
+	width: 100%;
+	padding: 14px 24px;
+	background: linear-gradient(135deg, #F12971 0%, #F7568F 100%);
+	color: #fff;
+	box-shadow: 0 1px 2px rgba(241, 41, 113, 0.2), 0 4px 12px rgba(241, 41, 113, 0.15);
+}
+
+.mpcrbm-woo-btn-primary:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(241, 41, 113, 0.25), 0 8px 24px rgba(241, 41, 113, 0.2);
+	color: #fff;
+}
+
+.mpcrbm-woo-btn-primary:active {
+	transform: translateY(0);
+}
+
+.mpcrbm-woo-btn-primary:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+	transform: none !important;
+}
+
+.mpcrbm-woo-btn-secondary {
+	padding: 8px 16px;
+	background: transparent;
+	color: #50575e;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.mpcrbm-woo-btn-secondary:hover {
+	color: #1d2327;
+	text-decoration: underline;
+}
+
+/* ---------- Footer Note ---------- */
+.mpcrbm-woo-footer-note {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 12px;
+	color: #8c8f94;
+	margin: 0;
+	padding: 16px 36px 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+}
+
+/* ---------- Success State ---------- */
+.mpcrbm-woo-popup.mpcrbm-state-success .mpcrbm-woo-icon {
+	background: linear-gradient(135deg, #ecfdf3 0%, #d1fadf 100%);
+	color: #039855;
+	border-color: #a6f4c5;
+	animation: mpcrbmSuccessBounce 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mpcrbmSuccessBounce {
+	0%   { transform: scale(0.85); }
+	50%  { transform: scale(1.08); }
+	100% { transform: scale(1); }
+}
+
+.mpcrbm-woo-popup.mpcrbm-state-success .mpcrbm-woo-progress-fill {
+	background: linear-gradient(90deg, #039855, #12b76a);
+}
+
+.mpcrbm-woo-popup.mpcrbm-state-success .mpcrbm-woo-header {
+	background: linear-gradient(135deg, #039855 0%, #12b76a 100%);
+}
+
+/* ---------- Error State ---------- */
+.mpcrbm-woo-popup.mpcrbm-state-error .mpcrbm-woo-progress-fill {
+	background: linear-gradient(90deg, #d92d20, #f04438);
+}
+
+.mpcrbm-woo-popup.mpcrbm-state-error .mpcrbm-woo-header {
+	background: linear-gradient(135deg, #d92d20 0%, #f04438 100%);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 520px) {
+	.mpcrbm-woo-popup {
+		border-radius: 10px;
+	}
+
+	.mpcrbm-woo-content,
+	.mpcrbm-woo-features,
+	.mpcrbm-woo-actions,
+	.mpcrbm-woo-progress,
+	.mpcrbm-woo-footer-note {
+		padding-left: 24px;
+		padding-right: 24px;
+	}
+
+	.mpcrbm-woo-title {
+		font-size: 18px;
+	}
+
+	.mpcrbm-woo-desc {
+		font-size: 13px;
+	}
+
+	.mpcrbm-woo-features {
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+	}
+}

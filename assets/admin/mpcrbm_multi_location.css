@@ -178,3 +178,38 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+
+/*
+.mpcrbm_suggested_text_container {
+    width: 400px;
+    position: relative;
+}
+
+#mpcrbm_set_pickup_location {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.mpcrbm_text_suggestions {
+    position: absolute;
+    width: 100%;
+    border: 1px solid #ddd;
+    background: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 999;
+}
+
+.mpcrbm_text_item {
+    display: flex;
+    padding: 10px;
+    cursor: pointer;
+    line-height: normal;
+}
+
+.mpcrbm_text_item:hover {
+    background: #f0f0f0;
+}*/

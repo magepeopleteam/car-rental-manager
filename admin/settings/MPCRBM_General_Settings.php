@@ -37,6 +37,7 @@
 				$max_passenger    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_passenger' );
 				$max_bag          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_maximum_bag' );
 				$stock_car          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
+                $pickup_location          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_set_pickup_location', '' );
 				$booking_period          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_minimum_booking_period');
                 $enable_driver_information    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
 
@@ -170,6 +171,25 @@
                             </label>
                         </section>
 
+                        <section>
+                            <label class="label">
+                                <div>
+                                    <h6><?php esc_html_e( 'Set Pickup Location ', 'car-rental-manager' ); ?></h6>
+                                    <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_car_stock' ); ?></span>
+                                </div>
+
+                                <div class="formControl mpcrbm_suggested_text_container">
+                                    <input
+                                            name="mpcrbm_set_pickup_location"
+                                            type="text"
+                                            id="mpcrbm_set_pickup_location"
+                                            value="<?php echo esc_attr( $pickup_location ); ?>"
+                                            placeholder="<?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?>">
+<!--                                    <div id="mpcrbm_text_suggestions" class="mpcrbm_text_suggestions"></div>-->
+                                </div>
+                            </label>
+                        </section>
+
                         <?php
                         if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) { ?>
                             <section>
@@ -227,6 +247,7 @@
 					$max_passenger = isset( $_POST['mpcrbm_maximum_passenger'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_maximum_passenger'] ) ) : '';
 					$max_bag       = isset( $_POST['mpcrbm_maximum_bag'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_maximum_bag'] ) ) : '';
 					$car_stock       = isset( $_POST['mpcrbm_car_stock'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_stock'] ) ) : 1;
+                    $pickup_location       = isset( $_POST['mpcrbm_set_pickup_location'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_pickup_location'] ) ) : '';
 					$minimum_booking_period  = isset( $_POST['mpcrbm_minimum_booking_period'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_minimum_booking_period'] ) ) : '';
 
 					$taxonomies = [
@@ -252,6 +273,7 @@
 					update_post_meta( $post_id, 'mpcrbm_maximum_passenger', $max_passenger );
 					update_post_meta( $post_id, 'mpcrbm_maximum_bag', $max_bag );
 					update_post_meta( $post_id, 'mpcrbm_car_stock', $car_stock );
+					update_post_meta( $post_id, 'mpcrbm_set_pickup_location', $pickup_location );
 					update_post_meta( $post_id, 'mpcrbm_enable_driver_information', $mpcrbm_enable_driver_information );
 					update_post_meta( $post_id, 'mpcrbm_minimum_booking_period', $minimum_booking_period );
 

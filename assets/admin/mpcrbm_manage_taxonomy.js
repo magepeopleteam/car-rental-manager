@@ -9,9 +9,49 @@
             $('.mpcrbm_taxonomies_tab').removeClass('active');
             $(this).addClass('active');
             currentType = $(this).data('target');
-            let content_holder_id = currentType+'_holder';
-            $("#"+content_holder_id).fadeIn();
+            var content_holder_id = currentType + '_holder';
+            $('#' + content_holder_id).fadeIn();
 
+            // Pro gate: show upgrade popup if tab requires pro and pro is not active
+            var isProRequired = $(this).data('pro-required') == 1;
+            var isPro = (typeof mpcrbmBranchAdmin !== 'undefined') && !!mpcrbmBranchAdmin.isPro;
+            if ( isProRequired && !isPro ) {
+                $('#mpcrbm-pro-upgrade-overlay').fadeIn(200);
+                return;
+            }
+
+            // Lazy-load branch dashboard on first click (avoids heavy queries on page load)
+            if ( currentType === 'mpcrbm_branch_manager' ) {
+                var $holder = $('#mpcrbm_branch_manager_holder');
+                if ( $holder.find('.mpcrbm-branch-lazy-placeholder').length && !$holder.data('bm-loaded') ) {
+                    $holder.html('<div class="mpcrbm-branch-loading">' + ( (typeof mpcrbmBranchAdmin !== 'undefined' && mpcrbmBranchAdmin.loadingText) || 'Loading…' ) + '</div>');
+                    $.post(ajaxurl, {
+                        action: 'mpcrbm_render_branch_dashboard',
+                        nonce:  mpcrbm_admin_nonce.nonce,
+                    }, function (res) {
+                        if ( res.success ) {
+                            $holder.html(res.data.html);
+                            $holder.data('bm-loaded', true);
+                        } else {
+                            $holder.html('<p style="padding:24px;color:#64748b;">Failed to load Branch Manager. Please refresh the page.</p>');
+                        }
+                    }).fail(function () {
+                        $holder.html('<p style="padding:24px;color:#64748b;">Network error. Please refresh the page.</p>');
+                    });
+                }
+            }
+        });
+
+        // Pro popup close — button
+        $(document).on('click', '#mpcrbm-pro-upgrade-close', function () {
+            $('#mpcrbm-pro-upgrade-overlay').fadeOut(200);
+        });
+
+        // Pro popup close — click backdrop
+        $(document).on('click', '.mpcrbm-pro-upgrade-overlay', function (e) {
+            if ( $(e.target).hasClass('mpcrbm-pro-upgrade-overlay') ) {
+                $(this).fadeOut(200);
+            }
         });
 
         $(document).on('click', '.mpcrbm_taxonomies_add_btn', function () {

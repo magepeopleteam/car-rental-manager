@@ -133,6 +133,71 @@ jQuery(document).ready(function ($) {
         mpcrbm_off_days_ary = get_off_days_numbers( mpcrbm_off_days );
     }
 
+    /**
+     * True if this calendar day is blocked (same rules as flatpickr disable[]).
+     */
+    function mpcrbm_is_disabled_booking_date(date) {
+        if (mpcrbm_off_days_ary.includes(date.getDay())) {
+            return true;
+        }
+        for (let i = 0; i < mpcrbm_offDates.length; i++) {
+            const od = (mpcrbm_offDates[i] || '').trim();
+            if (!od) {
+                continue;
+            }
+            const parsed = new Date(od);
+            if (!isNaN(parsed.getTime()) &&
+                parsed.getFullYear() === date.getFullYear() &&
+                parsed.getMonth() === date.getMonth() &&
+                parsed.getDate() === date.getDate()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Earliest return date on or after start + minDayNum calendar days that is not disabled.
+     */
+    function mpcrbm_find_minimum_valid_return(start, minDayNum) {
+        let candidate = new Date(start.getTime());
+        candidate.setDate(candidate.getDate() + minDayNum);
+        let guard = 0;
+        while (mpcrbm_is_disabled_booking_date(candidate) && guard < 370) {
+            candidate.setDate(candidate.getDate() + 1);
+            guard++;
+        }
+        return candidate;
+    }
+
+    function mpcrbm_apply_car_date_range_to_dom(selectedDates, instance) {
+        let startDate = instance.formatDate(selectedDates[0], "Y-m-d");
+        let endDate = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
+
+        let startDateDisplay = instance.formatDate(selectedDates[0], "D M d Y");
+        let endDateDisplay = selectedDates[1] ? instance.formatDate(selectedDates[1], "D M d Y") : '';
+
+        $("#mpcrbm_start_date").val(startDateDisplay);
+        $("#mpcrbm_return_date").val(endDateDisplay);
+
+        $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
+        $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
+
+        if (parent.length > 0) {
+            parent.find("#mpcrbm_car_details_continue_btn").fadeIn();
+            parent.find("#mpcrbm_car_already_booked").fadeOut();
+
+            let car_id = parent.find('[name="mpcrbm_post_id"]').val();
+            let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
+
+            if (endDate) {
+                mpcrbm_get_car_qty(startDate, car_id, day_wise_price);
+            }
+        }
+
+        mpcrbm_get_selected_days();
+    }
+
     let selectors = ['#mpcrbm_start_date', '#mpcrbm_return_date'];
     let mpcrbm_start_date = $( "#mpcrbm_start_calendar_day").val();
     /*selectors.forEach(function (selector) {
@@ -210,43 +275,30 @@ jQuery(document).ready(function ($) {
 
                 onChange: function(selectedDates, dateStr, instance) {
 
-                    if (selectedDates.length === 2) {
+                    const minDayNum = parseInt(minDay, 10) || 0;
 
-                        let start = selectedDates[0];
-                        let end   = selectedDates[1];
-                        let diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                        if (diffDays < minDay) {
-                            alert(`Minimum booking is ${minDay} days`);
-                            instance.clear(); // reset selection
+                    if (selectedDates.length === 1 && minDayNum > 0) {
+                        const start = selectedDates[0];
+                        const endMin = mpcrbm_find_minimum_valid_return(start, minDayNum);
+                        const range = [start, endMin];
+                        instance.setDate(range, false);
+                        mpcrbm_apply_car_date_range_to_dom(range, instance);
+                        return;
+                    }
+
+                    if (selectedDates.length === 2) {
+                        const start = selectedDates[0];
+                        const end = selectedDates[1];
+                        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                        if (minDayNum > 0 && diffDays < minDayNum) {
+                            const endAdj = mpcrbm_find_minimum_valid_return(start, minDayNum);
+                            const range = [start, endAdj];
+                            instance.setDate(range, false);
+                            mpcrbm_apply_car_date_range_to_dom(range, instance);
                             return;
                         }
 
-
-                        let startDate = instance.formatDate(selectedDates[0], "Y-m-d");
-                        let endDate = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
-
-                        let startDateDisplay = instance.formatDate(selectedDates[0], "D M d Y");
-                        let endDateDisplay = selectedDates[1] ? instance.formatDate(selectedDates[1], "D M d Y") : '';
-
-                        $("#mpcrbm_start_date").val(startDateDisplay);
-                        $("#mpcrbm_return_date").val(endDateDisplay);
-
-                        $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
-                        $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
-
-                        if (parent.length > 0) {
-                            parent.find("#mpcrbm_car_details_continue_btn").fadeIn();
-                            parent.find("#mpcrbm_car_already_booked").fadeOut();
-
-                            let car_id = parent.find('[name="mpcrbm_post_id"]').val();
-                            let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
-
-                            if (endDate) {
-                                mpcrbm_get_car_qty(startDate, car_id, day_wise_price);
-                            }
-                        }
-
-                        mpcrbm_get_selected_days();
+                        mpcrbm_apply_car_date_range_to_dom(selectedDates, instance);
                     }
                 }
             });

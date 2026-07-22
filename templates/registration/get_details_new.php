@@ -37,6 +37,8 @@ if( isset( $mpcrbm_general_settings_data['search_subtitle_display'] ) &&  !empty
     $mpcrbm_sub_title = $mpcrbm_general_settings_data['search_subtitle_display'];
 }
 
+$mpcrbm_time_format_display = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'time_format_display');
+$mpcrbm_with_out_location = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'booking_with_out_location');
 
 foreach ($mpcrbm_all_transport_id as $mpcrbm_key => $mpcrbm_value) {
     if (MPCRBM_Global_Function::get_post_info($mpcrbm_value, 'mpcrbm_available_for_all_time') == 'on') {
@@ -114,6 +116,9 @@ if( $mpcrbm_form_style === 'horizontal' ){
     $mpcrbm_type_text_return = 'Return';
     $mpcrbm_form_class = 'mpcrbm_inline_search_form';
     $mpcrbm_width_class = 'mpcrbm_width_33';
+    if( $mpcrbm_with_out_location === 'yes' ){
+        $mpcrbm_width_class = 'mpcrbm_width_50';
+    }
 }
 
 if( $is_title === 'no' ){
@@ -215,8 +220,14 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                     <input type="hidden" id="mpcrbm_start_calendar_day" name="mpcrbm_start_calendar_day" value="<?php echo esc_attr($mpcrbm_start_day); ?>" />
 
 
+                    <?php
+                    $location_input = '';
+                    if( $mpcrbm_with_out_location === 'yes' ){
+                        $location_input = 'none';
+                    }
+                    ?>
                     <div class="<?php echo esc_attr( $mpcrbm_form_class );?>">
-                        <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>">
+                        <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>" style=" display: <?php echo esc_attr( $location_input );?>">
                             <div class="mpcrbm_location_checkbox input_select">
                                 <label class="mpcrbm_manual_end_place ">
                                     <span class="mpcrbm_search_title">
@@ -291,7 +302,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                             </div>
                         </div>
 
-                        <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>">
+                        <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>" >
                             <div class="input_select">
                                 <label class="fdColumn1">
                                     <input type="hidden" id="mpcrbm_map_start_date" value="<?php echo esc_attr( $mpcrbm_start_date );?>" />
@@ -462,7 +473,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                 </div>
 
                 <div class="mprcbm_checkbox_search_btn_holder">
-                    <div class="mprcbm_checkbox_group_new">
+                    <div class="mprcbm_checkbox_group_new" style=" display: <?php echo esc_attr( $location_input );?>">
                         <input type="checkbox" name="mpcrbm_is_drop_off" id="mpcrbm_is_drop_off" class="mpcrbm_my-checkbox mpcrbm_is_drop_off" checked="">
                         <span for="is-drop-off" class="mpcrbm-my-checkbox-label drop-off"><?php esc_html_e( 'Return car in same location', 'car-rental-manager'); ?></span>
                     </div>

@@ -40,7 +40,7 @@ $mpcrbm_price_based = $mpcrbm_price_based ?? '';
                         </div>
 
 
-                       <!-- <div class="mpcrbm_summary_show">
+                        <!-- <div class="mpcrbm_summary_show">
                             <span class=""><?php /*esc_html_e('Return Location', 'car-rental-manager'); */?></span>
                             <?php /*if($mpcrbm_price_based == 'manual'){ */?>
                                 <p class="_textLight_1 mpcrbm_map_end_place"><?php /*echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_end_place,'mpcrbm_locations' )); */?></p>
@@ -52,10 +52,10 @@ $mpcrbm_price_based = $mpcrbm_price_based ?? '';
                         <?php if($mpcrbm_two_way>1){
                             ?>
                             <?php if(!empty($mpcrbm_return_date_time)){ ?>
-                            <div class="mpcrbm_summary_show">
-                                <span><i class="mi mi-calendar"></i> <?php esc_html_e('Return Date & Time', 'car-rental-manager'); ?></span>
-                                <p><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time)) .'. '.esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time,'time')) ?></p>
-                            </div>
+                                <div class="mpcrbm_summary_show">
+                                    <span><i class="mi mi-calendar"></i> <?php esc_html_e('Return Date & Time', 'car-rental-manager'); ?></span>
+                                    <p><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time)) .'. '.esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time,'time')) ?></p>
+                                </div>
                             <?php } ?>
                         <?php } ?>
 

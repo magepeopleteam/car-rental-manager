@@ -13,6 +13,11 @@
 
                 add_shortcode( 'mpcrbm_car_list', [ $this, 'mpcrbm_car_list_shortcode'] );
 
+                add_shortcode( 'mpcrbm_my_bookings', [ $this, 'mpcrbm_my_bookings_shortcode' ] );
+                add_action( 'wp_ajax_mpcrbm_mb_load',       [ $this, 'mpcrbm_mb_load' ] );
+                add_action( 'wp_ajax_mpcrbm_mb_detail',     [ $this, 'mpcrbm_mb_detail' ] );
+                add_action( 'wp_ajax_mpcrbm_mb_mod_request', [ $this, 'mpcrbm_mb_mod_request' ] );
+
 			}
 
             public static function mpcrbm_get_car_data( $atts ) {
@@ -409,6 +414,531 @@
 					'search_result_same_page' => 'no',
 				);
 			}
+
+            public function mpcrbm_my_bookings_shortcode( $atts ) {
+                if ( ! is_user_logged_in() ) {
+                    ob_start(); ?>
+                    <div class="mpcrbm mpcrbm-mb-wrap">
+                        <div class="mpcrbm-mb-login-notice">
+                            <i class="mi mi-lock-alt"></i>
+                            <p><?php esc_html_e( 'Please log in to view your bookings.', 'car-rental-manager' ); ?></p>
+                            <a href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>" class="mpcrbm-mb-login-btn">
+                                <?php esc_html_e( 'Login', 'car-rental-manager' ); ?>
+                            </a>
+                        </div>
+                    </div>
+                    <?php return ob_get_clean();
+                }
+
+                $nonce    = wp_create_nonce( 'mpcrbm_my_bookings' );
+                $per_page = 20;
+                $user_id  = get_current_user_id();
+
+                $order_ids = wc_get_orders( [
+                    'customer_id' => $user_id,
+                    'limit'       => -1,
+                    'return'      => 'ids',
+                ] );
+
+                $has_more    = false;
+                $cards_html  = '';
+
+                if ( ! empty( $order_ids ) ) {
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+                    $meta_q = [ [ 'key' => 'mpcrbm_order_id', 'value' => $order_ids, 'compare' => 'IN' ] ];
+                    $query  = new WP_Query( [
+                        'post_type'      => 'mpcrbm_booking',
+                        'posts_per_page' => $per_page,
+                        'paged'          => 1,
+                        'post_status'    => 'any',
+                        'orderby'        => 'date',
+                        'order'          => 'DESC',
+                        'no_found_rows'  => false,
+                        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+                        'meta_query'     => $meta_q,
+                    ] );
+                    $has_more = $query->found_posts > $per_page;
+                    if ( $query->have_posts() ) {
+                        ob_start();
+                        while ( $query->have_posts() ) {
+                            $query->the_post();
+                            echo wp_kses_post( $this->mpcrbm_mb_render_card( get_post() ) );
+                        }
+                        wp_reset_postdata();
+                        $cards_html = ob_get_clean();
+                    }
+                }
+
+                ob_start(); ?>
+                <div class="mpcrbm mpcrbm-mb-wrap"
+                     data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>"
+                     data-nonce="<?php echo esc_attr( $nonce ); ?>">
+                    <div class="mpcrbm-mb-grid" id="mpcrbm-mb-grid">
+                        <?php if ( $cards_html ) : ?>
+                            <?php echo $cards_html; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                        <?php else : ?>
+                            <div class="mpcrbm-mb-empty">
+                                <i class="mi mi-car"></i>
+                                <p><?php esc_html_e( 'You have no bookings yet.', 'car-rental-manager' ); ?></p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <?php if ( $has_more ) : ?>
+                    <div class="mpcrbm-mb-loadmore-wrap" id="mpcrbm-mb-loadmore-wrap">
+                        <button class="mpcrbm-mb-loadmore" id="mpcrbm-mb-loadmore" data-page="2">
+                            <span class="mpcrbm-mb-loadmore-text"><?php esc_html_e( 'Load More', 'car-rental-manager' ); ?></span>
+                            <span class="mpcrbm-mb-loadmore-spinner" style="display:none"><div class="mpcrbm-mb-spinner mpcrbm-mb-spinner-sm"></div></span>
+                        </button>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <div class="mpcrbm-mb-modal" id="mpcrbm-mb-modal" aria-hidden="true">
+                    <div class="mpcrbm-mb-modal-backdrop" id="mpcrbm-mb-modal-backdrop"></div>
+                    <div class="mpcrbm-mb-modal-dialog">
+                        <button class="mpcrbm-mb-modal-close" id="mpcrbm-mb-modal-close" aria-label="Close">
+                            <i class="mi mi-close"></i>
+                        </button>
+                        <div class="mpcrbm-mb-modal-body" id="mpcrbm-mb-modal-body">
+                            <div class="mpcrbm-mb-loading"><div class="mpcrbm-mb-spinner"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <?php return ob_get_clean();
+            }
+
+            public function mpcrbm_mb_load() {
+                check_ajax_referer( 'mpcrbm_my_bookings', 'nonce' );
+                if ( ! is_user_logged_in() ) {
+                    wp_send_json_error();
+                }
+
+                $per_page  = 20;
+                $page      = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
+                $user_id   = get_current_user_id();
+
+                $order_ids = wc_get_orders( [
+                    'customer_id' => $user_id,
+                    'limit'       => -1,
+                    'return'      => 'ids',
+                ] );
+
+                if ( empty( $order_ids ) ) {
+                    wp_send_json_success( [ 'html' => '', 'has_more' => false, 'total' => 0 ] );
+                }
+
+                // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+                $meta_q = [ [ 'key' => 'mpcrbm_order_id', 'value' => $order_ids, 'compare' => 'IN' ] ];
+
+                $query = new WP_Query( [
+                    'post_type'      => 'mpcrbm_booking',
+                    'posts_per_page' => $per_page,
+                    'paged'          => $page,
+                    'post_status'    => 'any',
+                    'orderby'        => 'date',
+                    'order'          => 'DESC',
+                    'no_found_rows'  => false,
+                    // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+                    'meta_query'     => $meta_q,
+                ] );
+
+                $total    = (int) $query->found_posts;
+                $has_more = ( $page * $per_page ) < $total;
+
+                ob_start();
+                if ( $query->have_posts() ) {
+                    while ( $query->have_posts() ) {
+                        $query->the_post();
+                        echo wp_kses_post( $this->mpcrbm_mb_render_card( get_post() ) );
+                    }
+                    wp_reset_postdata();
+                }
+                $html = ob_get_clean();
+
+                wp_send_json_success( [ 'html' => $html, 'has_more' => $has_more, 'total' => $total, 'page' => $page ] );
+            }
+
+            public function mpcrbm_mb_detail() {
+                check_ajax_referer( 'mpcrbm_my_bookings', 'nonce' );
+                if ( ! is_user_logged_in() ) {
+                    wp_send_json_error();
+                }
+
+                $booking_id = isset( $_POST['id'] ) ? absint( $_POST['id'] ) : 0;
+                $booking    = $booking_id ? get_post( $booking_id ) : null;
+
+                if ( ! $booking || $booking->post_type !== 'mpcrbm_booking' ) {
+                    wp_send_json_error( [ 'message' => __( 'Booking not found.', 'car-rental-manager' ) ] );
+                }
+
+                $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
+                $order_obj = $order_id ? wc_get_order( $order_id ) : null;
+                if ( $order_obj && (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
+                    wp_send_json_error( [ 'message' => __( 'Access denied.', 'car-rental-manager' ) ] );
+                }
+
+                wp_send_json_success( [ 'html' => $this->mpcrbm_mb_render_detail( $booking_id, $order_obj ) ] );
+            }
+
+            private function mpcrbm_mb_render_card( $booking ) {
+                $id          = $booking->ID;
+                $car_id      = get_post_meta( $id, 'mpcrbm_id', true );
+                $pickup_dt   = get_post_meta( $id, 'mpcrbm_date', true );
+                $return_dt   = get_post_meta( $id, 'return_date_time', true );
+                $start_place = get_post_meta( $id, 'mpcrbm_start_place', true );
+                $end_place   = get_post_meta( $id, 'mpcrbm_end_place', true );
+                $order_id    = get_post_meta( $id, 'mpcrbm_order_id', true );
+                $status      = (string) get_post_meta( $id, 'mpcrbm_order_status', true );
+                $total       = get_post_meta( $id, 'mpcrbm_tp', true );
+                $car_img     = $car_id ? get_the_post_thumbnail_url( (int) $car_id, 'medium' ) : '';
+                $car_title   = $car_id ? get_the_title( (int) $car_id ) : __( 'Car Rental', 'car-rental-manager' );
+                $pickup_date = $pickup_dt ? MPCRBM_Global_Function::date_format( $pickup_dt ) : '—';
+                $pickup_time = $pickup_dt ? MPCRBM_Global_Function::date_format( $pickup_dt, 'time' ) : '';
+                $return_date = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt ) : '—';
+                $return_time = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt, 'time' ) : '';
+
+                ob_start(); ?>
+                <div class="mpcrbm-mb-card" data-id="<?php echo esc_attr( $id ); ?>">
+                    <div class="mpcrbm-mb-card-thumb">
+                        <?php if ( $car_img ) : ?>
+                            <img src="<?php echo esc_url( $car_img ); ?>" alt="<?php echo esc_attr( $car_title ); ?>" class="mpcrbm-mb-card-img">
+                        <?php else : ?>
+                            <div class="mpcrbm-mb-card-img-placeholder"><i class="mi mi-car"></i></div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="mpcrbm-mb-card-body">
+                        <div class="mpcrbm-mb-card-info">
+                            <h3 class="mpcrbm-mb-card-title"><?php echo esc_html( $car_title ); ?></h3>
+                            <span class="mpcrbm-mb-card-num">#<?php echo esc_html( $order_id ?: $id ); ?></span>
+                        </div>
+                        <div class="mpcrbm-mb-card-dates">
+                            <div class="mpcrbm-mb-card-date">
+                                <span class="mpcrbm-mb-card-date-label"><?php esc_html_e( 'Pickup', 'car-rental-manager' ); ?></span>
+                                <span class="mpcrbm-mb-card-date-val"><?php echo esc_html( $pickup_date ); ?></span>
+                                <?php if ( $pickup_time ) : ?><span class="mpcrbm-mb-card-date-time"><?php echo esc_html( $pickup_time ); ?></span><?php endif; ?>
+                            </div>
+                            <div class="mpcrbm-mb-card-date-arrow"><i class="mi mi-arrow-right-long"></i></div>
+                            <div class="mpcrbm-mb-card-date">
+                                <span class="mpcrbm-mb-card-date-label"><?php esc_html_e( 'Return', 'car-rental-manager' ); ?></span>
+                                <span class="mpcrbm-mb-card-date-val"><?php echo esc_html( $return_date ); ?></span>
+                                <?php if ( $return_time ) : ?><span class="mpcrbm-mb-card-date-time"><?php echo esc_html( $return_time ); ?></span><?php endif; ?>
+                            </div>
+                        </div>
+                        <?php if ( $start_place ) : ?>
+                        <div class="mpcrbm-mb-card-route">
+                            <i class="mi mi-map-pin-alt"></i>
+                            <span><?php echo esc_html( $start_place ); ?></span>
+                            <?php if ( $end_place && $end_place !== $start_place ) : ?>
+                                <i class="mi mi-arrow-right"></i>
+                                <span><?php echo esc_html( $end_place ); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+                        <div class="mpcrbm-mb-card-footer">
+                            <span class="mpcrbm-mb-badge mpcrbm-mb-badge--<?php echo esc_attr( $status ); ?>"><?php echo esc_html( ucfirst( $status ) ); ?></span>
+                            <span class="mpcrbm-mb-card-price"><?php echo $total ? wp_kses_post( wc_price( (float) $total ) ) : ''; ?></span>
+                            <button class="mpcrbm-mb-view-btn js-mpcrbm-mb-view" data-id="<?php echo esc_attr( $id ); ?>">
+                                <?php esc_html_e( 'View Details', 'car-rental-manager' ); ?>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <?php return ob_get_clean();
+            }
+
+            private function mpcrbm_mb_render_detail( $booking_id, $order_obj ) {
+                $car_id     = get_post_meta( $booking_id, 'mpcrbm_id', true );
+                $pickup_dt  = get_post_meta( $booking_id, 'mpcrbm_date', true );
+                $return_dt  = get_post_meta( $booking_id, 'return_date_time', true );
+                $from       = (string) get_post_meta( $booking_id, 'mpcrbm_start_place', true );
+                $to         = (string) get_post_meta( $booking_id, 'mpcrbm_end_place', true );
+                $order_id   = get_post_meta( $booking_id, 'mpcrbm_order_id', true );
+                $status     = (string) get_post_meta( $booking_id, 'mpcrbm_order_status', true );
+                $total      = (float) get_post_meta( $booking_id, 'mpcrbm_tp', true );
+                $base_price = (float) get_post_meta( $booking_id, 'mpcrbm_base_price', true );
+                $quantity   = (int) get_post_meta( $booking_id, 'mpcrbm_car_quantity', true ) ?: 1;
+                $deposit    = (float) get_post_meta( $booking_id, 'mpcrbm_security_deposit_amount', true );
+                $one_way    = (float) get_post_meta( $booking_id, 'mpcrbm_branch_one_way_fee', true );
+                $payment    = (string) get_post_meta( $booking_id, 'mpcrbm_payment_method', true );
+                $bill_name  = (string) get_post_meta( $booking_id, 'mpcrbm_billing_name', true );
+                $bill_email = (string) get_post_meta( $booking_id, 'mpcrbm_billing_email', true );
+                $bill_phone = (string) get_post_meta( $booking_id, 'mpcrbm_billing_phone', true );
+                $car_img    = $car_id ? get_the_post_thumbnail_url( (int) $car_id, 'medium' ) : '';
+                $car_title  = $car_id ? get_the_title( (int) $car_id ) : __( 'Car Rental', 'car-rental-manager' );
+
+                $pickup_date = $pickup_dt ? MPCRBM_Global_Function::date_format( $pickup_dt ) : '—';
+                $pickup_time = $pickup_dt ? MPCRBM_Global_Function::date_format( $pickup_dt, 'time' ) : '';
+                $return_date = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt ) : '—';
+                $return_time = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt, 'time' ) : '';
+
+                $duration = '';
+                if ( $pickup_dt && $return_dt ) {
+                    $diff     = abs( strtotime( $return_dt ) - strtotime( $pickup_dt ) );
+                    $days     = max( 1, (int) ceil( $diff / DAY_IN_SECONDS ) );
+                    $duration = $days . ' ' . _n( 'day', 'days', $days, 'car-rental-manager' );
+                }
+
+                ob_start(); ?>
+                <div class="mpcrbm-mb-detail">
+                    <div class="mpcrbm-mb-detail-hero">
+                        <?php if ( $car_img ) : ?>
+                            <img src="<?php echo esc_url( $car_img ); ?>" alt="<?php echo esc_attr( $car_title ); ?>" class="mpcrbm-mb-detail-car-img">
+                        <?php else : ?>
+                            <div class="mpcrbm-mb-detail-car-img-placeholder"><i class="mi mi-car"></i></div>
+                        <?php endif; ?>
+                        <div class="mpcrbm-mb-detail-hero-info">
+                            <h2 class="mpcrbm-mb-detail-car-title"><?php echo esc_html( $car_title ); ?></h2>
+                            <div class="mpcrbm-mb-detail-meta">
+                                <span class="mpcrbm-mb-badge mpcrbm-mb-badge--<?php echo esc_attr( $status ); ?>"><?php echo esc_html( ucfirst( $status ) ); ?></span>
+                                <span class="mpcrbm-mb-detail-order-num"><?php echo esc_html__( 'Order', 'car-rental-manager' ); ?> #<?php echo esc_html( $order_id ?: $booking_id ); ?></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mpcrbm-mb-detail-sections">
+                        <div class="mpcrbm-mb-detail-section">
+                            <h4 class="mpcrbm-mb-detail-section-title"><i class="mi mi-calendar-check"></i> <?php esc_html_e( 'Rental Period', 'car-rental-manager' ); ?></h4>
+                            <div class="mpcrbm-mb-detail-dates">
+                                <div class="mpcrbm-mb-detail-date-block">
+                                    <span class="mpcrbm-mb-detail-date-label"><?php esc_html_e( 'Pickup', 'car-rental-manager' ); ?></span>
+                                    <span class="mpcrbm-mb-detail-date-val"><?php echo esc_html( $pickup_date ); ?></span>
+                                    <?php if ( $pickup_time ) : ?><span class="mpcrbm-mb-detail-date-time"><?php echo esc_html( $pickup_time ); ?></span><?php endif; ?>
+                                </div>
+                                <?php if ( $duration ) : ?>
+                                <div class="mpcrbm-mb-detail-duration"><i class="mi mi-time-quarter-to"></i> <?php echo esc_html( $duration ); ?></div>
+                                <?php endif; ?>
+                                <div class="mpcrbm-mb-detail-date-block">
+                                    <span class="mpcrbm-mb-detail-date-label"><?php esc_html_e( 'Return', 'car-rental-manager' ); ?></span>
+                                    <span class="mpcrbm-mb-detail-date-val"><?php echo esc_html( $return_date ); ?></span>
+                                    <?php if ( $return_time ) : ?><span class="mpcrbm-mb-detail-date-time"><?php echo esc_html( $return_time ); ?></span><?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php if ( $from || $to ) : ?>
+                        <div class="mpcrbm-mb-detail-section">
+                            <h4 class="mpcrbm-mb-detail-section-title"><i class="mi mi-map-pin-alt"></i> <?php esc_html_e( 'Locations', 'car-rental-manager' ); ?></h4>
+                            <div class="mpcrbm-mb-detail-locations">
+                                <?php if ( $from ) : ?>
+                                <div class="mpcrbm-mb-detail-loc">
+                                    <span class="mpcrbm-mb-detail-loc-label"><?php esc_html_e( 'From', 'car-rental-manager' ); ?></span>
+                                    <span><?php echo esc_html( $from ); ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ( $to && $to !== $from ) : ?>
+                                <div class="mpcrbm-mb-detail-loc">
+                                    <span class="mpcrbm-mb-detail-loc-label"><?php esc_html_e( 'To', 'car-rental-manager' ); ?></span>
+                                    <span><?php echo esc_html( $to ); ?></span>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <div class="mpcrbm-mb-detail-section">
+                            <h4 class="mpcrbm-mb-detail-section-title"><i class="mi mi-money-bill"></i> <?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?></h4>
+                            <div class="mpcrbm-mb-detail-pricing">
+                                <?php if ( $base_price > 0 ) : ?>
+                                <div class="mpcrbm-mb-detail-price-row">
+                                    <span><?php echo esc_html( sprintf( __( 'Base Price × %d', 'car-rental-manager' ), $quantity ) ); ?></span>
+                                    <span><?php echo wp_kses_post( wc_price( $base_price * $quantity ) ); ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ( $one_way > 0 ) : ?>
+                                <div class="mpcrbm-mb-detail-price-row">
+                                    <span><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></span>
+                                    <span><?php echo wp_kses_post( wc_price( $one_way ) ); ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ( $deposit > 0 ) : ?>
+                                <div class="mpcrbm-mb-detail-price-row">
+                                    <span><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></span>
+                                    <span><?php echo wp_kses_post( wc_price( $deposit ) ); ?></span>
+                                </div>
+                                <?php endif; ?>
+                                <div class="mpcrbm-mb-detail-price-row mpcrbm-mb-detail-price-total">
+                                    <span><?php esc_html_e( 'Total', 'car-rental-manager' ); ?></span>
+                                    <span><?php echo wp_kses_post( wc_price( $total ) ); ?></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mpcrbm-mb-detail-section mpcrbm-mb-detail-section--row">
+                            <?php if ( $bill_name || $bill_email || $bill_phone ) : ?>
+                            <div class="mpcrbm-mb-detail-subsection">
+                                <h4 class="mpcrbm-mb-detail-section-title"><i class="mi mi-person"></i> <?php esc_html_e( 'Customer', 'car-rental-manager' ); ?></h4>
+                                <?php if ( $bill_name ) : ?><p><?php echo esc_html( $bill_name ); ?></p><?php endif; ?>
+                                <?php if ( $bill_email ) : ?><p><?php echo esc_html( $bill_email ); ?></p><?php endif; ?>
+                                <?php if ( $bill_phone ) : ?><p><?php echo esc_html( $bill_phone ); ?></p><?php endif; ?>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ( $payment ) : ?>
+                            <div class="mpcrbm-mb-detail-subsection">
+                                <h4 class="mpcrbm-mb-detail-section-title"><i class="mi mi-credit-card"></i> <?php esc_html_e( 'Payment', 'car-rental-manager' ); ?></h4>
+                                <p><?php echo esc_html( $payment ); ?></p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <?php
+                        $modifiable = in_array( $status, [ 'pending', 'processing', 'on-hold' ], true );
+                        $mod_reqs   = get_post_meta( $booking_id, 'mpcrbm_mod_requests', true );
+                        if ( ! is_array( $mod_reqs ) ) $mod_reqs = [];
+                        $pending_req = null;
+                        foreach ( array_reverse( $mod_reqs ) as $_r ) {
+                            if ( ( $_r['status'] ?? '' ) === 'pending' ) { $pending_req = $_r; break; }
+                        }
+                        if ( $modifiable ) : ?>
+                        <div class="mpcrbm-mb-mod-section" data-booking-id="<?php echo esc_attr( $booking_id ); ?>">
+                            <h4 class="mpcrbm-mb-mod-title">
+                                <i class="mi mi-edit"></i> <?php esc_html_e( 'Request Modification', 'car-rental-manager' ); ?>
+                            </h4>
+                            <?php if ( $pending_req ) : ?>
+                            <div class="mpcrbm-mb-mod-pending">
+                                <i class="mi mi-time-quarter-to"></i>
+                                <?php
+                                echo esc_html( $pending_req['type'] === 'cancellation'
+                                    ? __( 'You have a pending cancellation request. We\'ll respond shortly.', 'car-rental-manager' )
+                                    : __( 'You have a pending date change request. We\'ll respond shortly.', 'car-rental-manager' )
+                                ); ?>
+                            </div>
+                            <?php else : ?>
+                            <div class="mpcrbm-mb-mod-btns">
+                                <button type="button" class="mpcrbm-mb-mod-toggle-btn js-mpcrbm-mod-open" data-target="mpcrbm-mod-cancel-form">
+                                    <i class="mi mi-close-circle"></i> <?php esc_html_e( 'Cancel Booking', 'car-rental-manager' ); ?>
+                                </button>
+                                <button type="button" class="mpcrbm-mb-mod-toggle-btn js-mpcrbm-mod-open" data-target="mpcrbm-mod-date-form">
+                                    <i class="mi mi-calendar-edit"></i> <?php esc_html_e( 'Change Dates', 'car-rental-manager' ); ?>
+                                </button>
+                            </div>
+                            <div class="mpcrbm-mb-mod-pending-after" style="display:none;">
+                                <i class="mi mi-check-circle"></i>
+                                <?php esc_html_e( 'Your request has been submitted. We\'ll respond shortly.', 'car-rental-manager' ); ?>
+                            </div>
+
+                            <form class="mpcrbm-mb-mod-form" id="mpcrbm-mod-cancel-form" data-type="cancellation" style="display:none;">
+                                <div class="mpcrbm-mb-mod-form-field">
+                                    <label><?php esc_html_e( 'Reason (optional)', 'car-rental-manager' ); ?></label>
+                                    <textarea name="note" rows="3" placeholder="<?php esc_attr_e( 'Tell us why you want to cancel…', 'car-rental-manager' ); ?>"></textarea>
+                                </div>
+                                <div class="mpcrbm-mb-mod-form-actions">
+                                    <button type="submit" class="mpcrbm-mb-mod-submit-btn mpcrbm-mb-mod-submit-btn--danger">
+                                        <?php esc_html_e( 'Submit Cancellation Request', 'car-rental-manager' ); ?>
+                                    </button>
+                                    <button type="button" class="mpcrbm-mb-mod-dismiss-btn js-mpcrbm-mod-dismiss">
+                                        <?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?>
+                                    </button>
+                                </div>
+                                <div class="mpcrbm-mb-mod-result"></div>
+                            </form>
+
+                            <form class="mpcrbm-mb-mod-form" id="mpcrbm-mod-date-form" data-type="date_change" style="display:none;">
+                                <div class="mpcrbm-mb-mod-date-row">
+                                    <div class="mpcrbm-mb-mod-form-field">
+                                        <label><?php esc_html_e( 'New Pickup Date & Time', 'car-rental-manager' ); ?></label>
+                                        <input type="text" name="new_pickup" class="mpcrbm-mod-datepicker"
+                                               value="<?php echo esc_attr( $pickup_dt ); ?>"
+                                               data-default="<?php echo esc_attr( $pickup_dt ); ?>"
+                                               placeholder="YYYY-MM-DD HH:MM" autocomplete="off" required>
+                                    </div>
+                                    <div class="mpcrbm-mb-mod-form-field">
+                                        <label><?php esc_html_e( 'New Return Date & Time', 'car-rental-manager' ); ?></label>
+                                        <input type="text" name="new_return" class="mpcrbm-mod-datepicker"
+                                               value="<?php echo esc_attr( $return_dt ); ?>"
+                                               data-default="<?php echo esc_attr( $return_dt ); ?>"
+                                               placeholder="YYYY-MM-DD HH:MM" autocomplete="off" required>
+                                    </div>
+                                </div>
+                                <div class="mpcrbm-mb-mod-form-field">
+                                    <label><?php esc_html_e( 'Note (optional)', 'car-rental-manager' ); ?></label>
+                                    <textarea name="note" rows="2" placeholder="<?php esc_attr_e( 'Any additional details…', 'car-rental-manager' ); ?>"></textarea>
+                                </div>
+                                <div class="mpcrbm-mb-mod-form-actions">
+                                    <button type="submit" class="mpcrbm-mb-mod-submit-btn">
+                                        <?php esc_html_e( 'Submit Date Change Request', 'car-rental-manager' ); ?>
+                                    </button>
+                                    <button type="button" class="mpcrbm-mb-mod-dismiss-btn js-mpcrbm-mod-dismiss">
+                                        <?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?>
+                                    </button>
+                                </div>
+                                <div class="mpcrbm-mb-mod-result"></div>
+                            </form>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php return ob_get_clean();
+            }
+
+            public function mpcrbm_mb_mod_request() {
+                check_ajax_referer( 'mpcrbm_my_bookings', 'nonce' );
+                if ( ! is_user_logged_in() ) { wp_send_json_error(); }
+
+                $booking_id = isset( $_POST['booking_id'] ) ? absint( $_POST['booking_id'] ) : 0;
+                $req_type   = isset( $_POST['req_type'] )   ? sanitize_key( wp_unslash( $_POST['req_type'] ) ) : '';
+                $note       = isset( $_POST['note'] )       ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+                $new_pickup = isset( $_POST['new_pickup'] ) ? sanitize_text_field( wp_unslash( $_POST['new_pickup'] ) ) : '';
+                $new_return = isset( $_POST['new_return'] ) ? sanitize_text_field( wp_unslash( $_POST['new_return'] ) ) : '';
+
+                if ( ! $booking_id || ! in_array( $req_type, [ 'cancellation', 'date_change' ], true ) ) {
+                    wp_send_json_error( [ 'message' => __( 'Invalid request.', 'car-rental-manager' ) ] );
+                }
+
+                $booking = get_post( $booking_id );
+                if ( ! $booking || $booking->post_type !== 'mpcrbm_booking' ) {
+                    wp_send_json_error( [ 'message' => __( 'Booking not found.', 'car-rental-manager' ) ] );
+                }
+
+                $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
+                $order_obj = $order_id ? wc_get_order( $order_id ) : null;
+                if ( ! $order_obj || (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
+                    wp_send_json_error( [ 'message' => __( 'Access denied.', 'car-rental-manager' ) ] );
+                }
+
+                $status = (string) get_post_meta( $booking_id, 'mpcrbm_order_status', true );
+                if ( ! in_array( $status, [ 'pending', 'processing', 'on-hold' ], true ) ) {
+                    wp_send_json_error( [ 'message' => __( 'This booking cannot be modified.', 'car-rental-manager' ) ] );
+                }
+
+                $mod_reqs = get_post_meta( $booking_id, 'mpcrbm_mod_requests', true );
+                if ( ! is_array( $mod_reqs ) ) $mod_reqs = [];
+                foreach ( $mod_reqs as $r ) {
+                    if ( ( $r['status'] ?? '' ) === 'pending' ) {
+                        wp_send_json_error( [ 'message' => __( 'You already have a pending modification request.', 'car-rental-manager' ) ] );
+                    }
+                }
+
+                $mod_reqs[] = [
+                    'type'       => $req_type,
+                    'status'     => 'pending',
+                    'submitted'  => time(),
+                    'note'       => $note,
+                    'new_pickup' => $new_pickup,
+                    'new_return' => $new_return,
+                ];
+                update_post_meta( $booking_id, 'mpcrbm_mod_requests', $mod_reqs );
+
+                $user      = wp_get_current_user();
+                $car_id    = get_post_meta( $booking_id, 'mpcrbm_id', true );
+                $car_title = $car_id ? get_the_title( (int) $car_id ) : __( 'Car Rental', 'car-rental-manager' );
+                $type_label = $req_type === 'cancellation' ? 'Cancellation' : 'Date Change';
+                $subject   = sprintf( '[%s] Booking %s Request — #%d', get_bloginfo( 'name' ), $type_label, $booking_id );
+                $body  = "A customer has submitted a booking modification request.\n\n";
+                $body .= "Car: {$car_title}\n";
+                $body .= "Booking ID: #{$booking_id}\n";
+                $body .= "Order ID: #{$order_id}\n";
+                $body .= "Customer: {$user->display_name} ({$user->user_email})\n";
+                $body .= "Request Type: {$type_label}\n";
+                if ( $req_type === 'date_change' ) {
+                    $body .= "New Pickup: {$new_pickup}\n";
+                    $body .= "New Return: {$new_return}\n";
+                }
+                if ( $note ) { $body .= "Note: {$note}\n"; }
+                wp_mail( get_option( 'admin_email' ), $subject, $body );
+
+                wp_send_json_success( [ 'message' => __( 'Your request has been submitted. We\'ll get back to you shortly.', 'car-rental-manager' ) ] );
+            }
+
 		}
 		new MPCRBM_Shortcodes();
 	}

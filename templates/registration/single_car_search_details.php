@@ -211,74 +211,74 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                     <div class="<?php echo esc_attr( $mpcrbm_form_class );?>">
 
                         <?php if( $mpcrbm_with_out_location !== 'yes' ){?>
-                        <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>">
-                            <div class="mpcrbm_location_checkbox input_select">
-                                <label class="mpcrbm_manual_end_place ">
+                            <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>">
+                                <div class="mpcrbm_location_checkbox input_select">
+                                    <label class="mpcrbm_manual_end_place ">
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-marker"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Pick-up', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <?php if (  $mpcrbm_price_based == 'manual') {
-                                        ?>
-                                        <?php
-                                        // Get all available pickup locations (supporting multi-location)
-                                        $mpcrbm_all_start_locations = MPCRBM_Function::get_all_start_location();
+                                        <?php if (  $mpcrbm_price_based == 'manual') {
+                                            ?>
+                                            <?php
+                                            // Get all available pickup locations (supporting multi-location)
+                                            $mpcrbm_all_start_locations = MPCRBM_Function::get_all_start_location();
 
-                                        // If multi-location is enabled for any vehicle, get all unique locations
-                                        $mpcrbm_multi_location_locations = array();
-                                        foreach ($mpcrbm_all_transport_id as $mpcrbm_vehicle_id) {
-                                            $mpcrbm_vehicle_pickup_locations = MPCRBM_Function::get_vehicle_pickup_locations($mpcrbm_vehicle_id);
-                                            $mpcrbm_multi_location_locations = array_merge($mpcrbm_multi_location_locations, $mpcrbm_vehicle_pickup_locations);
-                                        }
-                                        $mpcrbm_multi_location_locations = array_unique($mpcrbm_multi_location_locations);
+                                            // If multi-location is enabled for any vehicle, get all unique locations
+                                            $mpcrbm_multi_location_locations = array();
+                                            foreach ($mpcrbm_all_transport_id as $mpcrbm_vehicle_id) {
+                                                $mpcrbm_vehicle_pickup_locations = MPCRBM_Function::get_vehicle_pickup_locations($mpcrbm_vehicle_id);
+                                                $mpcrbm_multi_location_locations = array_merge($mpcrbm_multi_location_locations, $mpcrbm_vehicle_pickup_locations);
+                                            }
+                                            $mpcrbm_multi_location_locations = array_unique($mpcrbm_multi_location_locations);
 
-                                        // Combine with existing locations
-                                        $mpcrbm_all_locations = array_unique(array_merge($mpcrbm_all_start_locations, $mpcrbm_multi_location_locations));
-                                        ?>                                        
-                                        <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
-                                            <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
-                                            <?php if (sizeof($mpcrbm_all_locations) > 0) { ?>
-                                                <?php foreach ($mpcrbm_all_locations as $mpcrbm_start_location) {
-                                                    $mpcrbm_start_selected = ( $mpcrbm_pickup_location === $mpcrbm_start_location) ? 'selected' : '';
-                                                    ?>
-                                                    <option value="<?php echo esc_attr($mpcrbm_start_location); ?>" <?php echo esc_attr( $mpcrbm_start_selected ); ?>>
-                                                        <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_location, 'mpcrbm_locations')); ?>
-                                                    </option>
+                                            // Combine with existing locations
+                                            $mpcrbm_all_locations = array_unique(array_merge($mpcrbm_all_start_locations, $mpcrbm_multi_location_locations));
+                                            ?>
+                                            <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
+                                                <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
+                                                <?php if (sizeof($mpcrbm_all_locations) > 0) { ?>
+                                                    <?php foreach ($mpcrbm_all_locations as $mpcrbm_start_location) {
+                                                        $mpcrbm_start_selected = ( $mpcrbm_pickup_location === $mpcrbm_start_location) ? 'selected' : '';
+                                                        ?>
+                                                        <option value="<?php echo esc_attr($mpcrbm_start_location); ?>" <?php echo esc_attr( $mpcrbm_start_selected ); ?>>
+                                                            <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_location, 'mpcrbm_locations')); ?>
+                                                        </option>
+                                                    <?php } ?>
                                                 <?php } ?>
-                                            <?php } ?>
-                                        </select>
-                                    <?php } else { ?>
-                                        <input type="text" id="mpcrbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'car-rental-manager'); ?>" value="" />
-                                    <?php } ?>
-                                </label>
-                            </div>
-                            <div class="mpcrbm-vertical-divider" id="mpcrbm-vertical-divide-location" style="display: none"></div>
-                            <div class="mpcrbm_location_checkbox input_select" id="mpcrbm_drop_off_location" style="display: none">
-                                <label class="mpcrbm_manual_end_place" >
+                                            </select>
+                                        <?php } else { ?>
+                                            <input type="text" id="mpcrbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'car-rental-manager'); ?>" value="" />
+                                        <?php } ?>
+                                    </label>
+                                </div>
+                                <div class="mpcrbm-vertical-divider" id="mpcrbm-vertical-divide-location" style="display: none"></div>
+                                <div class="mpcrbm_location_checkbox input_select" id="mpcrbm_drop_off_location" style="display: none">
+                                    <label class="mpcrbm_manual_end_place" >
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-marker"></i>
                                         <span class="mprcbm_text"><?php esc_html_e('Drop-off', 'car-rental-manager'); ?></span>
                                     </span>
-                                    <?php if ($mpcrbm_price_based == 'manual') { ?>
-                                        <select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
-                                            <option selected disabled><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
-                                            <?php if (sizeof($mpcrbm_all_locations) > 0) {
-                                                ?>
-                                                <?php foreach ( $mpcrbm_all_locations as $mpcrbm_start_location ) {
-                                                    $mpcrbm_end_selected = ( $mpcrbm_return_location === $mpcrbm_start_location) ? 'selected' : '';
+                                        <?php if ($mpcrbm_price_based == 'manual') { ?>
+                                            <select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
+                                                <option selected disabled><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
+                                                <?php if (sizeof($mpcrbm_all_locations) > 0) {
                                                     ?>
-                                                    <option value="<?php echo esc_attr($mpcrbm_start_location); ?>" <?php echo esc_attr( $mpcrbm_end_selected ); ?>>
-                                                        <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_location, 'mpcrbm_locations')); ?>
-                                                    </option>
+                                                    <?php foreach ( $mpcrbm_all_locations as $mpcrbm_start_location ) {
+                                                        $mpcrbm_end_selected = ( $mpcrbm_return_location === $mpcrbm_start_location) ? 'selected' : '';
+                                                        ?>
+                                                        <option value="<?php echo esc_attr($mpcrbm_start_location); ?>" <?php echo esc_attr( $mpcrbm_end_selected ); ?>>
+                                                            <?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_location, 'mpcrbm_locations')); ?>
+                                                        </option>
+                                                    <?php } ?>
                                                 <?php } ?>
-                                            <?php } ?>
-                                        </select>
-                                    <?php } else { ?>
-                                        <input class="formControl textCapitalize" type="text" id="mpcrbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Return Location', 'car-rental-manager'); ?>" value="" />
-                                    <?php } ?>
-                                </label>
+                                            </select>
+                                        <?php } else { ?>
+                                            <input class="formControl textCapitalize" type="text" id="mpcrbm_map_end_place" class="formControl" placeholder="<?php esc_html_e(' Enter Return Location', 'car-rental-manager'); ?>" value="" />
+                                        <?php } ?>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
                         <?php }?>
 
                         <div class="mpcrbm_horizontal_date_time_input <?php echo esc_attr( $mpcrbm_width_class );?>">
@@ -329,7 +329,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_time_formatted, 'time')); ?></li>
                                         <?php }else{?>
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html( $mpcrbm_data_value ); ?></li>
-                                    <?php }
+                                        <?php }
                                     } ?>
 
                                 </ul>
@@ -411,7 +411,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_time_formatted, 'time')); ?></li>
                                         <?php }else{?>
                                             <li data-value="<?php echo esc_attr($mpcrbm_data_value); ?>"><?php echo esc_html( $mpcrbm_data_value ); ?></li>
-                                    <?php }
+                                        <?php }
                                     } ?>
                                 </ul>
                                 <ul class="input_select_list return_time_list">

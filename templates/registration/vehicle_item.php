@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 
 // Verify nonce
 if (
-    !isset($_POST['mpcrbm_transportation_type_nonce']) || 
+    !isset($_POST['mpcrbm_transportation_type_nonce']) ||
     !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_transportation_type_nonce'])), 'mpcrbm_transportation_type_nonce')
 ) {
     wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
@@ -84,10 +84,35 @@ if ($post_id) {
     // Use multi-location pricing if enabled, otherwise use default pricing
     $mpcrbm_price = MPCRBM_Function::calculate_multi_location_price($post_id, $mpcrbm_start_place, $mpcrbm_end_place, $mpcrbm_start_date_time, $mpcrbm_return_date_time);
 
+    $mpcrbm_car_one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
+    $mpcrbm_branch_one_way_fee  = 0;
+    if ( $mpcrbm_car_one_way_enabled && $mpcrbm_start_place !== $mpcrbm_end_place ) {
+        $ow_value = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
+        $ow_type  = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
+        $mpcrbm_branch_one_way_fee = ( $ow_type === 'percentage' )
+            ? round( $mpcrbm_price * $ow_value / 100, 2 )
+            : $ow_value;
+    }
+
+    $mpcrbm_price = $mpcrbm_price + $mpcrbm_branch_one_way_fee;
+
     if (!$mpcrbm_price || $mpcrbm_price <= 0) {
         return;
     }
-    
+
+    $deposit_price  = 0;
+    $deposit_amount = 0;
+    $deposit_enable =  MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_security_deposit_enable', 'off' );
+    if ( $deposit_enable === 'on' ) {
+        $security_deposit_type = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_security_deposit_type', 'fixed' ) ;
+        $deposit_amount = floatval( MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_security_deposit', 0 ) ) ;
+        if( $security_deposit_type === 'fixed' ){
+            $deposit_price = $deposit_amount;
+        }else{
+            $deposit_price = $mpcrbm_price * ( $deposit_amount / 100 );
+        }
+    }
+
     $mpcrbm_wc_price = MPCRBM_Global_Function::wc_price( $post_id, $mpcrbm_price );
     $mpcrbm_raw_price = MPCRBM_Global_Function::price_convert_raw( $mpcrbm_wc_price );
 
@@ -135,7 +160,7 @@ if ($post_id) {
     if( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ){
         $mpcrbm_line_through = 'mpcrbm_line_through';
     }
-    
+
     $mpcrbm_car_type_terms     = wp_get_post_terms($post_id, 'mpcrbm_car_type');
     $mpcrbm_fuel_type_terms    = wp_get_post_terms($post_id, 'mpcrbm_fuel_type');
     $mpcrbm_seating_terms      = wp_get_post_terms($post_id, 'mpcrbm_seating_capacity');
@@ -212,6 +237,32 @@ if ($post_id) {
                             <div class="spec-value"><?php echo esc_html($mpcrbm_bag_count); ?></div>
                         </div>
                     </div>
+
+                    <div class="" style="display: flex; gap: 15px;">
+                        <?php if ( $deposit_price > 0 ) : ?>
+                            <div class="mpcrbm_price_hover_wrap mpcrbm_deposit_wrap">
+                            <span class="mpcrbm_security_deposit_badge">
+                                <span class="fa fa-shield-alt"></span>
+                                <span><?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?> <?php echo wp_kses_post( wc_price( $deposit_price ) ); ?></span>
+                                <span class="fa fa-info-circle mpcrbm_deposit_info_icon"></span>
+                            </span>
+                                <div class="mpcrbm_display_pricing_rules mpcrbm_deposit_tooltip">
+                                    <h4><span class="fa fa-shield-alt"></span> <?php esc_html_e( 'Security Deposit (Refundable)', 'car-rental-manager' ); ?></h4>
+                                    <p><?php esc_html_e( 'This security deposit is refundable. After your order and trip are completed, the owner can refund this amount fully or partially based on the vehicle condition.', 'car-rental-manager' ); ?></p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ( $mpcrbm_branch_one_way_fee > 0 ) : ?>
+                            <div class="mpcrbm_price_hover_wrap mpcrbm_deposit_wrap">
+                            <span class="mpcrbm_one_way_price_badge">
+                                <span class="fa fa-shield-alt"></span>
+                                <span><?php esc_html_e( 'One Way Fee:', 'car-rental-manager' ); ?> <?php echo wp_kses_post( wc_price( $mpcrbm_branch_one_way_fee ) ); ?></span>
+                            </span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
                 </div>
                 <div class="mpcrbm_discount_booking">
                     <div class="mpcrbm_price_holder">
@@ -232,7 +283,7 @@ if ($post_id) {
                                 <?php }?>
                             </div>
                             <?php
-//                            error_log( print_r( [ '$mpcrbm_base_price' =>$mpcrbm_base_price, '$mpcrbm_day_price' =>$mpcrbm_day_price ], true ) );
+                            //                            error_log( print_r( [ '$mpcrbm_base_price' =>$mpcrbm_base_price, '$mpcrbm_day_price' =>$mpcrbm_day_price ], true ) );
                             if( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ){ ?>
                                 <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                             <?php } ?>
@@ -256,7 +307,7 @@ if ($post_id) {
                             <div class="mpcrbm-price-container">
                                 <?php if ($mpcrbm_early_bird_discount > 0): ?>
                                     <div class="mpcrbm-original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em; text-align: end">
-                                        <?php echo wp_kses_post(wc_price($mpcrbm_raw_price)); ?>
+                                        <!--                                        --><?php //echo wp_kses_post(wc_price($mpcrbm_raw_price)); ?>
                                     </div>
                                     <div class="mpcrbm-discounted-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338;">
                                         <?php echo wp_kses_post(wc_price($mpcrbm_discounted_price)); ?>
@@ -298,7 +349,7 @@ if ($post_id) {
                                     <div class="mpcrbm_discount-info" style="color: #d26e4b; font-weight: bold; margin-top: 2px;">
                                         <?php echo sprintf(
                                         // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-                                                esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))
+                                            esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))
                                         ); ?>
                                     </div>
                                 <?php endif; ?>
@@ -306,22 +357,43 @@ if ($post_id) {
 
                         </div>
                     </div>
+                    <?php
+                    $mpcrbm_in_cart = false;
+                    if ( function_exists( 'WC' ) && WC()->cart ) {
+                        foreach ( WC()->cart->get_cart() as $mpcrbm_cart_item ) {
+                            if ( isset( $mpcrbm_cart_item['mpcrbm_id'] ) && (int) $mpcrbm_cart_item['mpcrbm_id'] === (int) $post_id ) {
+                                $mpcrbm_in_cart = true;
+                                break;
+                            }
+                        }
+                    }
+                    ?>
                     <div class="mpcrbm_add_multiple_qty">
                         <div class=" mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
                             <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $mpcrbm_raw_price, $mpcrbm_car_qty, 1, 0); ?>
                         </div>
-                        <button type="button"
-                                class="_mpBtn_xs mpcrbm_transport_select"
-                                data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
-                                data-transport-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
-                                data-post-id="<?php echo esc_attr($post_id); ?>"
-                                data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
-                                data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
-                                data-open-icon=""
-                                data-close-icon="fas fa-check mR_xs">
-                            <span class="" data-icon></span>
-                            <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
-                        </button>
+                        <?php if ( $mpcrbm_in_cart ) : ?>
+                            <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>"
+                               class="_mpBtn_xs mpcrbm_in_cart_btn">
+                                <span class="fas fa-shopping-cart mR_xs"></span>
+                                <span><?php esc_html_e( 'In Cart – Go to Checkout', 'car-rental-manager' ); ?></span>
+                            </a>
+                        <?php else : ?>
+                            <button type="button"
+                                    class="_mpBtn_xs mpcrbm_transport_select"
+                                    data-transport-name="<?php echo esc_attr(get_the_title($post_id)); ?>"
+                                    data-transport-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
+                                    data-base-price="<?php echo esc_attr($mpcrbm_discounted_price - $mpcrbm_branch_one_way_fee); ?>"
+                                    data-security-deposit="<?php echo esc_attr($deposit_price); ?>"
+                                    data-post-id="<?php echo esc_attr($post_id); ?>"
+                                    data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
+                                    data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
+                                    data-open-icon=""
+                                    data-close-icon="fas fa-check mR_xs">
+                                <span class="" data-icon></span>
+                                <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
+                            </button>
+                        <?php endif; ?>
                     </div>
 
                 </div>

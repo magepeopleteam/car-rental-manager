@@ -18,7 +18,7 @@ $schedule = [];
 
 // Verify nonce
 if (
-    !isset($_POST['mpcrbm_transportation_type_nonce']) || 
+    !isset($_POST['mpcrbm_transportation_type_nonce']) ||
     !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['mpcrbm_transportation_type_nonce'])), 'mpcrbm_transportation_type_nonce')
 ) {
     wp_send_json_error(array('message' => esc_html__('Security check failed', 'car-rental-manager')));
@@ -60,7 +60,7 @@ if ($mpcrbm_start_time !== "") {
         }
 
         $mpcrbm_interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time');
-        
+
         // Calculate minutes based on interval time
         if ($mpcrbm_interval_time == "5" || $mpcrbm_interval_time == "15") {
             $mpcrbm_minutes = $mpcrbm_decimal_part != 3 ? $mpcrbm_decimal_part : ($mpcrbm_decimal_part * 10);
@@ -121,7 +121,7 @@ if ($mpcrbm_two_way > 1) {
             wp_send_json_error(array('message' => esc_html__('Invalid return date format', 'car-rental-manager')));
             wp_die();
         }
-        
+
         // Ensure return date is not before start date
         if ($mpcrbm_start_date && strtotime($mpcrbm_return_date) < strtotime($mpcrbm_start_date)) {
             wp_send_json_error(array('message' => esc_html__('Return date cannot be before start date', 'car-rental-manager')));
@@ -159,7 +159,7 @@ if ($mpcrbm_two_way > 1) {
             }
 
             $mpcrbm_interval_time = MPCRBM_Function::get_general_settings('pickup_interval_time');
-            
+
             // Calculate minutes based on interval time
             if ($mpcrbm_interval_time == "5" || $mpcrbm_interval_time == "15") {
                 $mpcrbm_minutes = $mpcrbm_decimal_part * 1;
@@ -200,10 +200,10 @@ if ($mpcrbm_two_way > 1) {
 // Handle feature filtering
 if (MPCRBM_Global_Function::get_settings("mpcrbm_general_settings", "enable_filter_via_features") == "yes") {
     $mpcrbm_feature_passenger_number = isset($_POST["feature_passenger_number"])
-        ? absint(wp_unslash($_POST["feature_passenger_number"])) 
+        ? absint(wp_unslash($_POST["feature_passenger_number"]))
         : 0;
     $mpcrbm_feature_bag_number = isset($_POST["feature_bag_number"])
-        ? absint(wp_unslash($_POST["feature_bag_number"])) 
+        ? absint(wp_unslash($_POST["feature_bag_number"]))
         : 0;
 }
 
@@ -243,8 +243,8 @@ if ( $mpcrbm_all_posts->found_posts > 0 ) {
     $mpcrbm_remove_class_item_post_id = [];
     foreach ($mpcrbm_posts as $mpcrbm_post) {
         $mpcrbm_get_post_id = $mpcrbm_post->ID;
-       /* $mpcrbm_check_schedule = mpcrbm_get_schedule($post_id, $days_name, $mpcrbm_start_date, $mpcrbm_start_time_schedule, $mpcrbm_return_time_schedule, $mpcrbm_start_place_coordinates, $mpcrbm_end_place_coordinates, $mpcrbm_price_based);
-        $mpcrbm_check_operation_area = mpcrbm_check_operation_area($post_id, $mpcrbm_start_place, $mpcrbm_end_place);*/
+        /* $mpcrbm_check_schedule = mpcrbm_get_schedule($post_id, $days_name, $mpcrbm_start_date, $mpcrbm_start_time_schedule, $mpcrbm_return_time_schedule, $mpcrbm_start_place_coordinates, $mpcrbm_end_place_coordinates, $mpcrbm_price_based);
+         $mpcrbm_check_operation_area = mpcrbm_check_operation_area($post_id, $mpcrbm_start_place, $mpcrbm_end_place);*/
 
         $mpcrbm_check_schedule = MPCRBM_Function::mpcrbm_get_schedule_search_form($mpcrbm_get_post_id, $days_name, $mpcrbm_start_date, $mpcrbm_start_time_schedule, $mpcrbm_return_time_schedule, $mpcrbm_price_based);
         $mpcrbm_check_operation_area = MPCRBM_Function::mpcrbm_check_operation_area_seach_form($mpcrbm_get_post_id, $mpcrbm_start_place, $mpcrbm_end_place);
@@ -281,8 +281,8 @@ if( is_array( $mpcrbm_post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
 
 
 if( $is_redirect === 'yes' ){
-?>
-<div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
+    ?>
+    <div data-tabs-next_redirect="#mpcrbm_search_result" class="mpcrbm_map_search_result" id="mpcrbm_search_result">
 <?php } else {
     if( $mpcrbm_ajax_search === 'yes' ){?>
         <div class="mpcrbm_map_search_result" id="mpcrbm_search_result" >
@@ -300,6 +300,7 @@ if( $is_redirect === 'yes' ){
     <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($mpcrbm_return_time); ?>" />
 
     <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
+    <input type="hidden" id="mpcrbm_security_deposit_value" name="mpcrbm_security_deposit_value" value="0" />
 
     <div class="sticky_section mpcrbm_search_result_holder" >
         <div class="mpcrbm_left_filter">
@@ -341,23 +342,23 @@ if( $is_redirect === 'yes' ){
                             </div>
 
                         </div>
-                    <?php
+                        <?php
                     } ?>
                     <!-- Filter area end -->
                     <?php
 
-//                    $mpcrbm_all_posts = MPCRBM_Query::query_transport_list($mpcrbm_price_based);
+                    //                    $mpcrbm_all_posts = MPCRBM_Query::query_transport_list($mpcrbm_price_based);
 
                     if ( count( $mpcrbm_post_ids ) > 0 ) {
                         foreach ( $mpcrbm_post_ids as $mpcrbm_post_id) {
                             include MPCRBM_Function::template_path("registration/vehicle_item.php");
                         }
                     } else {
-                    ?>
+                        ?>
                         <div class="_dLayout_mT_bgWarning">
                             <h3><?php esc_html_e("No Transport Available !", "car-rental-manager"); ?></h3>
                         </div>
-                    <?php
+                        <?php
                     }
                     ?>
                     <div class="_dLayout_mT_bgWarning geo-fence-no-transport">
@@ -390,19 +391,19 @@ if( $is_redirect === 'yes' ){
         </div>
     </div>
 
-</div>
-<div data-tabs-next="#mpcrbm_order_summary" class="mpcrbm_order_summary">
-    <div class="sticky_section">
-        <div class="flexWrap">
-            <?php
-            include MPCRBM_Function::template_path("registration/summary.php"); ?>
-            <div class="mpcrbm_mainSection ">
-                <div class="sticky_depend_area fdColumn mpcrbm_checkout_area">
+    </div>
+    <div data-tabs-next="#mpcrbm_order_summary" class="mpcrbm_order_summary">
+        <div class="sticky_section">
+            <div class="flexWrap">
+                <?php
+                include MPCRBM_Function::template_path("registration/summary.php"); ?>
+                <div class="mpcrbm_mainSection ">
+                    <div class="sticky_depend_area fdColumn mpcrbm_checkout_area">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 <?php
 
 ?>
