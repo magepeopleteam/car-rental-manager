@@ -39,11 +39,11 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
 
             // Define nice display titles
             $titles = array(
-                'mpcrbm_car_type'         => 'Car Type',
-                'mpcrbm_fuel_type'        => 'Fuel Type',
-                'mpcrbm_seating_capacity' => 'Seating Capacity',
-                'mpcrbm_car_brand'        => 'Car Brand',
-                'mpcrbm_make_year'        => 'Make Year',
+                'mpcrbm_car_type'         => esc_html__( 'Car Type', 'car-rental-manager' ),
+                'mpcrbm_fuel_type'        => esc_html__( 'Fuel Type', 'car-rental-manager' ),
+                'mpcrbm_seating_capacity' => esc_html__( 'Seating Capacity', 'car-rental-manager' ),
+                'mpcrbm_car_brand'        => esc_html__( 'Car Brand', 'car-rental-manager' ),
+                'mpcrbm_make_year'        => esc_html__( 'Make Year', 'car-rental-manager' ),
             ); ?>
 
             <div class="mpcrbm-left-filter">

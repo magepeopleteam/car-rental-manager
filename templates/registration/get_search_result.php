@@ -215,7 +215,7 @@ if( is_array( $mpcrbm_post_ids ) && is_array( $mpcrbm_all_booked_car_ids ) ){
                         }
                         if( count( $mpcrbm_post_ids ) > 10 ){ ?>
                             <div class="mpcrbm_search_result_load_more_holder">
-                                <div class="mpcrbm_load_more_btn">Load More Car</div>
+                                <div class="mpcrbm_load_more_btn"><?php esc_html_e( 'Load More Car', 'car-rental-manager' ); ?></div>
                             </div>
                         <?php }
                     } else {
