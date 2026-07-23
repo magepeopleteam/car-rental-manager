@@ -43,8 +43,8 @@ $mpcrbm_loop = 1;
 
 $mpcrbm_general_settings_data       = get_option( 'mpcrbm_general_settings' );
 
-$mpcrbm_title = 'Car Rental Booking';
-$mpcrbm_sub_title = 'Find and reserve your perfect vehicle';
+$mpcrbm_title = esc_html__('Car Rental Booking', 'car-rental-manager');
+$mpcrbm_sub_title = esc_html__('Find and reserve your perfect vehicle', 'car-rental-manager');
 if( isset( $mpcrbm_general_settings_data['search_title_display'] ) &&  !empty( $mpcrbm_general_settings_data['search_title_display']  ) ){
     $mpcrbm_title = $mpcrbm_general_settings_data['search_title_display'];
 }
@@ -125,8 +125,8 @@ if( $mpcrbm_form_style === 'horizontal' ){
     $mpcrbm_form_class = 'mpcrbm_horizontal_search_form';
     $mpcrbm_width_class = 'mpcrbm_100_width';
 }else{
-    $mpcrbm_type_text_pickup = 'Pickup';
-    $mpcrbm_type_text_return = 'Return';
+    $mpcrbm_type_text_pickup = esc_html__('Pickup Date', 'car-rental-manager');
+    $mpcrbm_type_text_return = esc_html__('Return Date', 'car-rental-manager');
     $mpcrbm_form_class = 'mpcrbm_inline_search_form';
     $mpcrbm_width_class = 'mpcrbm_width_33';
 }
@@ -289,8 +289,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-calendar"></i>
                                         <span class="mprcbm_text">
                                             <?php
-                                            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-                                            esc_html_e($mpcrbm_type_text_pickup.' Date', 'car-rental-manager');
+                                            echo esc_html( $mpcrbm_type_text_pickup !== '' ? $mpcrbm_type_text_pickup : esc_html__('Date', 'car-rental-manager') );
                                             ?>
                                         </span>
                                     </span>
@@ -364,8 +363,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-calendar"></i>
                                         <span class="mprcbm_text">
                                             <?php
-                                            // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
-                                            esc_html_e($mpcrbm_type_text_return.' Date', 'car-rental-manager');
+                                            echo esc_html( $mpcrbm_type_text_return !== '' ? $mpcrbm_type_text_return : esc_html__('Date', 'car-rental-manager') );
                                             ?>
                                         </span>
                                     </span>

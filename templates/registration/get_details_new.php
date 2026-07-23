@@ -28,8 +28,8 @@ $mpcrbm_start_day = get_option('start_of_week', 0);
 
 $mpcrbm_general_settings_data  = get_option( 'mpcrbm_general_settings' );
 
-$mpcrbm_title = 'Car Rental Booking';
-$mpcrbm_sub_title = 'Find and reserve your perfect vehicle';
+$mpcrbm_title = esc_html__('Car Rental Booking', 'car-rental-manager');
+$mpcrbm_sub_title = esc_html__('Find and reserve your perfect vehicle', 'car-rental-manager');
 if( isset( $mpcrbm_general_settings_data['search_title_display'] ) &&  !empty( $mpcrbm_general_settings_data['search_title_display']  ) ){
     $mpcrbm_title = $mpcrbm_general_settings_data['search_title_display'];
 }
@@ -112,8 +112,8 @@ if( $mpcrbm_form_style === 'horizontal' ){
     $mpcrbm_form_class = 'mpcrbm_horizontal_search_form';
     $mpcrbm_width_class = 'mpcrbm_100_width';
 }else{
-    $mpcrbm_type_text_pickup = 'Pickup';
-    $mpcrbm_type_text_return = 'Return';
+    $mpcrbm_type_text_pickup = esc_html__('Pickup Date', 'car-rental-manager');
+    $mpcrbm_type_text_return = esc_html__('Return Date', 'car-rental-manager');
     $mpcrbm_form_class = 'mpcrbm_inline_search_form';
     $mpcrbm_width_class = 'mpcrbm_width_33';
     if( $mpcrbm_with_out_location === 'yes' ){
@@ -308,7 +308,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                     <input type="hidden" id="mpcrbm_map_start_date" value="<?php echo esc_attr( $mpcrbm_start_date );?>" />
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-calendar"></i>
-                                        <span class="mprcbm_text"><?php echo esc_html($mpcrbm_type_text_pickup.' Date'); ?></span>
+                                        <span class="mprcbm_text"><?php echo esc_html( $mpcrbm_type_text_pickup !== '' ? $mpcrbm_type_text_pickup : esc_html__('Date', 'car-rental-manager') ); ?></span>
                                     </span>
                                     <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_date );?>" readonly />
                                 </label>
@@ -378,7 +378,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                     <input type="hidden" id="mpcrbm_map_return_date" value="<?php echo esc_attr( $mpcrbm_end_date );?>" />
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-calendar"></i>
-                                        <span class="mprcbm_text"><?php echo esc_html($mpcrbm_type_text_return.' Date'); ?></span>
+                                        <span class="mprcbm_text"><?php echo esc_html( $mpcrbm_type_text_return !== '' ? $mpcrbm_type_text_return : esc_html__('Date', 'car-rental-manager') ); ?></span>
                                     </span>
                                     <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_date );?>" readonly name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
