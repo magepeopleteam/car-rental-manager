@@ -17,9 +17,10 @@
 			}
 			public function guideline_page() {
 				$label = MPCRBM_Function::get_name();
+				MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Guideline', 'car-rental-manager' ) );
 				?>
-				<div class="wrap"></div>
-				<div class="mpcrbm">
+				<div class="mpcrbm-card">
+				<div class="mpcrbm-card-content">
 					<div class="_dShadow_6_adminLayout">
 						<h2 class="textCenter"><?php echo esc_html($label) . '  ' . esc_html__('Shortcode', 'car-rental-manager'); ?></h2>
 						<div class="divider"></div>
@@ -43,7 +44,9 @@
 						</table>
 					</div>
 				</div>
+				</div>
 				<?php
+				MPCRBM_Admin_Shell::render_shell_close();
 			}
 		}
 		new MPCRBM_Guideline();

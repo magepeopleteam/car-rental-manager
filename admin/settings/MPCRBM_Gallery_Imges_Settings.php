@@ -15,29 +15,23 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
             add_action('save_post', array($this, 'settings_save'), 99, 1);
         }
 
-        public function section_header(){
-            ?>
-            <h2><?php esc_html_e( 'Gallery Configuration', 'car-rental-manager' ); ?></h2>
-            <p><?php esc_html_e( 'Here you can configure gallery', 'car-rental-manager' ); ?></p>
-
-            <?php
-        }
-
-        public function panel_header( $title, $description ){
-            ?>
-            <section class="bg-light">
-                <h6><?php echo esc_html( $title ); ?></h6>
-                <span><?php echo esc_html( $description ); ?></span>
-            </section>
-            <?php
-        }
-
         public function add_tabs_content( $post_id ) {
             wp_nonce_field( 'mpcrbm_save_gallery_image_nonce', 'mpcrbm_gallery_image_nonce' );
+            $enable_gallery = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_gallery', 'on' );
+            $is_gallery_checked = ( $enable_gallery === 'on' ) ? 'checked' : '';
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_settings_gallery_images">
-                <?php $this->section_header(); ?>
-                <?php $this->panel_header('Gallery ','Please upload gallary images size in ratio 4:3. Ex: Image size width=1200px and height=900px. gallery and feature image should be in same size.'); ?>
+                <div class="mpcrbm-gallery-enable-row">
+                    <h6><?php esc_html_e( 'Enable/Disable Gallery', 'car-rental-manager' ); ?></h6>
+                    <label class="roundSwitchLabel">
+                        <input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_gallery" name="mpcrbm_enable_gallery" <?php echo esc_attr( $is_gallery_checked ); ?>>
+                        <span class="roundSwitch"></span>
+                    </label>
+                </div>
+                <div class="mpcrbm-gallery-images-label">
+                    <h6><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?></h6>
+                    <span class="mpcrbm-gallery-images-info" title="<?php esc_attr_e( 'Please upload gallery images in a 4:3 ratio (e.g. 1200x900px), matching the featured image size.', 'car-rental-manager' ); ?>">?</span>
+                </div>
                 <section>
                     <div  id="field-wrapper-<?php echo esc_attr($post_id); ?>" class="<?php if(!empty($depends)) echo 'dependency-field'; ?> field-wrapper field-media-multi-wrapper field-media-multi-wrapper-<?php echo esc_attr($post_id); ?>">
                         <div class='button upload' id='media_upload_<?php echo esc_attr($post_id); ?>'>
@@ -119,6 +113,9 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
                     : [];
 //                $gallery_images = isset( $_POST['mpcrbm_gallery_images'] ) ? map_deep( sanitize_text_field( wp_unslash( $_POST['mpcrbm_gallery_images'] ) ), 'absint' ) : [];
                 update_post_meta($post_id, 'mpcrbm_gallery_images', $gallery_images);
+
+                $enable_gallery = isset( $_POST['mpcrbm_enable_gallery'] ) ? 'on' : 'off';
+                update_post_meta( $post_id, 'mpcrbm_enable_gallery', $enable_gallery );
 
             }
         }

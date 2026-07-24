@@ -1,0 +1,345 @@
+<?php
+	/*
+   * @Author 		MagePeople Team
+   * Copyright: 	mage-people.com
+   */
+	if ( ! defined( 'ABSPATH' ) ) {
+		die;
+	} // Cannot access pages directly.
+
+	if ( ! class_exists( 'MPCRBM_Admin_Shell' ) ) {
+		class MPCRBM_Admin_Shell {
+
+			const SCREEN_IDS = [
+				'mpcrbm_rent_page_mpcrbm_car_rental',
+				'mpcrbm_rent_page_mpcrbm_settings_page',
+				'mpcrbm_rent_page_mpcrbm_status_page',
+				'mpcrbm_rent_page_mpcrbm_guideline_page',
+				'mpcrbm_rent_page_mpcrbm_branch_managers',
+				'mpcrbm_rent_page_mpcrbm_my_branch',
+				'mpcrbm_rent_page_mpcrbm_bm_bookings',
+			];
+
+			public function __construct() {
+				add_filter( 'admin_body_class', [ $this, 'add_body_class' ] );
+				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_shell_assets' ] );
+				add_action( 'wp_ajax_mpcrbm_set_menu_layout_style', [ $this, 'ajax_set_menu_layout_style' ] );
+				add_action( 'in_admin_header', [ $this, 'render_edit_screen_chrome' ] );
+			}
+
+			// Detects whether the current wp-admin screen is one of this plugin's own dashboard-style pages.
+			public static function is_plugin_screen(): bool {
+				if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
+					return false;
+				}
+				$screen = get_current_screen();
+
+				return $screen && in_array( $screen->id, self::SCREEN_IDS, true );
+			}
+
+			// The native Add/Edit Car screen (post.php/post-new.php for our CPT). WordPress
+			// renders this screen itself (we don't control the callback), so unlike the 7
+			// dashboard-style pages above it can't be wrapped with render_shell_open/close —
+			// instead the sidebar/topbar are injected via in_admin_header as a fixed overlay
+			// (see render_edit_screen_chrome() and the "post-type-mpcrbm_rent" CSS rules).
+			public static function is_metabox_screen(): bool {
+				if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
+					return false;
+				}
+				$screen = get_current_screen();
+
+				return $screen && $screen->base === 'post' && $screen->post_type === MPCRBM_Function::get_cpt();
+			}
+
+			public function add_body_class( $classes ) {
+				if ( self::is_plugin_screen() ) {
+					// mpcrbm-admin: generic "hide WP's own chrome" marker, safe on any of our screens.
+					// mpcrbm-admin-shell: only the 7 dashboard-style pages that get the full flex
+					// shell + notice/screen-meta suppression (the edit screen needs those visible).
+					$classes .= ' mpcrbm-admin mpcrbm-admin-shell';
+				} elseif ( self::is_metabox_screen() ) {
+					$classes .= ' mpcrbm-admin';
+				}
+
+				return $classes;
+			}
+
+			// Injects a fixed-position sidebar + topbar around WordPress's native post-edit
+			// screen for our CPT. Reuses the same markup/classes as render_shell_open()'s
+			// sidebar so all existing hover/active styling applies unchanged; only the
+			// outer positioning (fixed vs the flex layout's sticky) differs, via the
+			// ".mpcrbm-shell-fixed" modifier class and its CSS in mpcrbm-shell.css.
+			public function render_edit_screen_chrome(): void {
+				if ( ! self::is_metabox_screen() ) {
+					return;
+				}
+
+				$menu_items   = self::get_menu_items();
+				$post         = get_post();
+				$post_title   = $post ? get_the_title( $post ) : '';
+				$post_status  = $post ? get_post_status( $post ) : '';
+				$status_obj   = $post_status ? get_post_status_object( $post_status ) : null;
+				$status_label = $status_obj ? $status_obj->label : '';
+				$car_list_url = admin_url( 'edit.php?post_type=' . MPCRBM_Function::get_cpt() . '&page=mpcrbm_car_rental' );
+				?>
+				<div class="mpcrbm-shell-sidebar mpcrbm-shell-fixed">
+					<div class="mpcrbm-shell-sidebar-top">
+						<div class="mpcrbm-shell-logo">
+							<span class="mpcrbm-shell-logo-icon"><i class="fas fa-car-side"></i></span>
+							<span class="mpcrbm-shell-logo-text"><?php echo esc_html( MPCRBM_Function::get_name() ); ?> <?php esc_html_e( 'Rental', 'car-rental-manager' ); ?></span>
+						</div>
+					</div>
+					<ul class="mpcrbm-shell-menu">
+						<?php foreach ( $menu_items as $item ) :
+							// While editing a car, highlight "Car Rental" — there's no separate "Cars" item.
+							$is_active = ( 'mpcrbm_car_rental' === $item['slug'] );
+							?>
+							<li class="<?php echo $is_active ? 'is-active has-children' : ''; ?>">
+								<a href="<?php echo esc_url( $item['link'] ); ?>">
+									<i class="<?php echo esc_attr( $item['icon'] ); ?>"></i>
+									<span><?php echo esc_html( $item['label'] ); ?></span>
+								</a>
+								<?php if ( $is_active ) : ?>
+									<ul class="mpcrbm-shell-submenu">
+										<?php foreach ( self::get_car_rental_taxonomy_tabs() as $tab ) : ?>
+											<li>
+												<a href="<?php echo esc_url( $item['link'] ); ?>">
+													<i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i>
+													<span><?php echo esc_html( $tab['label'] ); ?></span>
+												</a>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								<?php endif; ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+					<a href="<?php echo esc_url( admin_url() ); ?>" class="mpcrbm-shell-back-to-wp">
+						<i class="fab fa-wordpress"></i>
+						<span><?php esc_html_e( 'Back to WordPress', 'car-rental-manager' ); ?></span>
+					</a>
+				</div>
+				<div class="mpcrbm-shell-topbar mpcrbm-shell-fixed mpcrbm-edit-topbar">
+					<a href="<?php echo esc_url( $car_list_url ); ?>" class="mpcrbm-edit-topbar-back">
+						<i class="fas fa-arrow-left"></i>
+						<span><?php esc_html_e( 'Back to Cars', 'car-rental-manager' ); ?></span>
+					</a>
+					<div class="mpcrbm-edit-topbar-title" id="mpcrbm-edit-topbar-title"><?php echo esc_html( $post_title ); ?></div>
+					<div class="mpcrbm-edit-topbar-actions">
+						<?php if ( $status_label ) : ?>
+							<span class="mpcrbm-edit-topbar-status mpcrbm-edit-topbar-status-<?php echo esc_attr( $post_status ); ?>" id="mpcrbm-edit-topbar-status"><?php echo esc_html( $status_label ); ?></span>
+						<?php endif; ?>
+						<button type="button" class="mpcrbm-btn mpcrbm-btn-outline mpcrbm-btn-sm" id="mpcrbm-edit-topbar-preview">
+							<i class="far fa-eye"></i> <?php esc_html_e( 'Preview', 'car-rental-manager' ); ?>
+						</button>
+						<button type="button" class="mpcrbm-btn mpcrbm-btn-sm" id="mpcrbm-edit-topbar-update">
+							<?php esc_html_e( 'Update', 'car-rental-manager' ); ?>
+						</button>
+					</div>
+				</div>
+				<?php
+			}
+
+			public function enqueue_shell_assets() {
+				if ( ! self::is_plugin_screen() && ! self::is_metabox_screen() ) {
+					return;
+				}
+
+				$css_path = MPCRBM_PLUGIN_DIR . '/assets/admin/mpcrbm-shell.css';
+				$js_path  = MPCRBM_PLUGIN_DIR . '/assets/admin/mpcrbm-shell.js';
+
+				wp_enqueue_style( 'mpcrbm-shell', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-shell.css', [ 'mpcrbm_admin' ], file_exists( $css_path ) ? filemtime( $css_path ) : MPCRBM_PLUGIN_VERSION );
+				wp_enqueue_script( 'mpcrbm-shell', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-shell.js', [ 'jquery' ], file_exists( $js_path ) ? filemtime( $js_path ) : MPCRBM_PLUGIN_VERSION, true );
+
+				wp_localize_script( 'mpcrbm-shell', 'mpcrbmShell', [
+					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+					'nonce'   => wp_create_nonce( 'mpcrbm_shell_nonce' ),
+				] );
+			}
+
+			public function ajax_set_menu_layout_style() {
+				check_ajax_referer( 'mpcrbm_shell_nonce', 'nonce' );
+				$style = ( isset( $_POST['style'] ) && in_array( $_POST['style'], [ 'full', 'compact' ], true ) ) ? sanitize_key( $_POST['style'] ) : 'full';
+				update_user_meta( get_current_user_id(), 'mpcrbm_admin_menu_style', $style );
+				wp_send_json_success( [ 'style' => $style ] );
+			}
+
+			public static function get_menu_layout_style(): string {
+				$style = get_user_meta( get_current_user_id(), 'mpcrbm_admin_menu_style', true );
+
+				return in_array( $style, [ 'full', 'compact' ], true ) ? $style : 'full';
+			}
+
+			// Sidebar nav items. Kept in one place so every wrapped page shows identical, capability-aware navigation.
+			public static function get_menu_items(): array {
+				$cpt      = MPCRBM_Function::get_cpt();
+				$base_url = admin_url( 'edit.php?post_type=' . $cpt );
+				$items    = [];
+
+				$items[] = [
+					'slug'  => 'mpcrbm_car_rental',
+					'label' => esc_html__( 'Car Rental', 'car-rental-manager' ),
+					'icon'  => 'fas fa-car-side',
+					'link'  => $base_url . '&page=mpcrbm_car_rental',
+				];
+
+				if ( current_user_can( 'manage_options' ) ) {
+					$items[] = [
+						'slug'  => 'mpcrbm_branch_managers',
+						'label' => esc_html__( 'Branch Managers', 'car-rental-manager' ),
+						'icon'  => 'fas fa-user-tie',
+						'link'  => $base_url . '&page=mpcrbm_branch_managers',
+					];
+				}
+
+				if ( class_exists( 'MPCRBM_User_Branch_Manager' ) && MPCRBM_User_Branch_Manager::is_branch_manager() ) {
+					$items[] = [
+						'slug'  => 'mpcrbm_my_branch',
+						'label' => esc_html__( 'My Branch', 'car-rental-manager' ),
+						'icon'  => 'fas fa-store',
+						'link'  => $base_url . '&page=mpcrbm_my_branch',
+					];
+					$items[] = [
+						'slug'  => 'mpcrbm_bm_bookings',
+						'label' => esc_html__( 'Bookings', 'car-rental-manager' ),
+						'icon'  => 'fas fa-calendar-check',
+						'link'  => $base_url . '&page=mpcrbm_bm_bookings',
+					];
+				}
+
+				if ( current_user_can( 'manage_options' ) ) {
+					$items[] = [
+						'slug'  => 'mpcrbm_settings_page',
+						'label' => esc_html__( 'Global Settings', 'car-rental-manager' ),
+						'icon'  => 'fas fa-sliders-h',
+						'link'  => $base_url . '&page=mpcrbm_settings_page',
+					];
+					$items[] = [
+						'slug'  => 'mpcrbm_status_page',
+						'label' => esc_html__( 'Status', 'car-rental-manager' ),
+						'icon'  => 'fas fa-heartbeat',
+						'link'  => $base_url . '&page=mpcrbm_status_page',
+					];
+					$items[] = [
+						'slug'  => 'mpcrbm_guideline_page',
+						'label' => esc_html__( 'Guideline', 'car-rental-manager' ),
+						'icon'  => 'fas fa-book',
+						'link'  => $base_url . '&page=mpcrbm_guideline_page',
+					];
+				}
+
+				return $items;
+			}
+
+			// The Car Rental dashboard's own tabs (Car List, Car Type, ...) — kept in one
+			// place so both the dashboard page's sidebar sub-menu (JS-driven data-target
+			// buttons, see MPCRBM_Taxonomies.php) and the Add/Edit Car screen's sidebar
+			// sub-menu (plain links, see render_edit_screen_chrome()) stay in sync.
+			public static function get_car_rental_taxonomy_tabs(): array {
+				return [
+					[ 'target' => 'mpcrbm_car_list', 'icon' => 'mi mi-cars', 'label' => esc_html__( 'Car List', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_car_type', 'icon' => 'mi mi-tachometer-fast', 'label' => esc_html__( 'Car Type', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_fuel_type', 'icon' => 'mi mi-gas-pump-alt', 'label' => esc_html__( 'Fuel Type', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_seating_capacity', 'icon' => 'mi mi-person-seat', 'label' => esc_html__( 'Seating Capacity', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_car_brand', 'icon' => 'mi mi-bonus', 'label' => esc_html__( 'Car Brand', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_make_year', 'icon' => 'mi mi-time-quarter-to', 'label' => esc_html__( 'Make Year', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_car_feature', 'icon' => 'mi mi-list-timeline', 'label' => esc_html__( 'Car Feature', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_manage_faq', 'icon' => 'mi mi-messages-question', 'label' => esc_html__( 'Manage Faq', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_manage_term_condition', 'icon' => 'mi mi-blog-text', 'label' => esc_html__( 'Manage Term & Condition', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_branch_manager', 'icon' => 'mi mi-map-location-track', 'label' => esc_html__( 'Branch Manager', 'car-rental-manager' ) ],
+				];
+			}
+
+			// Opens the shell: sidebar + top bar + page header/tabs + content wrapper.
+			// $tabs (optional): array of ['label'=>string,'icon'=>string,'link'=>url] OR ['label','icon','target'=>'#css-selector','active'=>bool] for JS-driven in-page tabs.
+			// $sidebar_submenu_html (optional): raw <li>...</li> HTML, nested under whichever
+			// sidebar item's slug matches the current page — used by pages whose own in-page
+			// tabs are shown as a sidebar sub-menu instead of page-header tabs (e.g. Car Rental).
+			public static function render_shell_open( string $page_title, ?array $tabs = null, ?string $sidebar_submenu_html = null ) {
+				$menu_items   = self::get_menu_items();
+				$current_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+				$menu_style   = self::get_menu_layout_style();
+				?>
+				<div class="mpcrbm-shell side-menu-<?php echo esc_attr( $menu_style ); ?>">
+					<div class="mpcrbm-shell-content-and-menu">
+						<div class="mpcrbm-shell-sidebar">
+							<div class="mpcrbm-shell-sidebar-top">
+								<div class="mpcrbm-shell-logo">
+									<span class="mpcrbm-shell-logo-icon"><i class="fas fa-car-side"></i></span>
+									<span class="mpcrbm-shell-logo-text"><?php echo esc_html( MPCRBM_Function::get_name() ); ?> <?php esc_html_e( 'Rental', 'car-rental-manager' ); ?></span>
+								</div>
+								<a href="#" class="mpcrbm-shell-fold-trigger" title="<?php esc_attr_e( 'Collapse menu', 'car-rental-manager' ); ?>">
+									<i class="fas fa-bars"></i>
+								</a>
+							</div>
+							<ul class="mpcrbm-shell-menu">
+								<?php foreach ( $menu_items as $item ) :
+									$is_active   = ( $current_page === $item['slug'] );
+									$has_submenu = ( $is_active && ! empty( $sidebar_submenu_html ) );
+									$li_class    = trim( ( $is_active ? 'is-active' : '' ) . ( $has_submenu ? ' has-children' : '' ) );
+									?>
+									<li class="<?php echo esc_attr( $li_class ); ?>">
+										<a href="<?php echo esc_url( $item['link'] ); ?>">
+											<i class="<?php echo esc_attr( $item['icon'] ); ?>"></i>
+											<span><?php echo esc_html( $item['label'] ); ?></span>
+										</a>
+										<?php if ( $has_submenu ) : ?>
+											<ul class="mpcrbm-shell-submenu">
+												<?php echo $sidebar_submenu_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-built, already-escaped markup from the calling page. ?>
+											</ul>
+										<?php endif; ?>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+							<a href="<?php echo esc_url( admin_url() ); ?>" class="mpcrbm-shell-back-to-wp">
+								<i class="fab fa-wordpress"></i>
+								<span><?php esc_html_e( 'Back to WordPress', 'car-rental-manager' ); ?></span>
+							</a>
+						</div>
+						<div class="mpcrbm-shell-content">
+							<div class="mpcrbm-shell-topbar">
+								<a href="#" class="mpcrbm-shell-mobile-trigger" title="<?php esc_attr_e( 'Menu', 'car-rental-manager' ); ?>"><i class="fas fa-bars"></i></a>
+								<div class="mpcrbm-shell-topbar-spacer"></div>
+								<a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener" class="mpcrbm-shell-topbar-link" title="<?php esc_attr_e( 'View Site', 'car-rental-manager' ); ?>">
+									<i class="fas fa-external-link-alt"></i>
+								</a>
+								<div class="mpcrbm-shell-user">
+									<div class="mpcrbm-shell-user-avatar" style="background-image:url('<?php echo esc_url( get_avatar_url( get_current_user_id() ) ); ?>')"></div>
+								</div>
+							</div>
+							<?php if ( ! empty( $page_title ) ) : ?>
+								<div class="mpcrbm-shell-page-header">
+									<h1 class="mpcrbm-shell-page-title"><?php echo esc_html( $page_title ); ?></h1>
+									<?php if ( ! empty( $tabs ) ) : ?>
+										<div class="mpcrbm-shell-page-tabs-w">
+											<ul class="mpcrbm-shell-page-tabs">
+												<?php foreach ( $tabs as $tab ) :
+													$href = ! empty( $tab['target'] ) ? '#' : ( $tab['link'] ?? '#' );
+													?>
+													<li class="<?php echo ! empty( $tab['active'] ) ? 'is-active' : ''; ?>">
+														<a href="<?php echo esc_attr( $href ); ?>" <?php echo ! empty( $tab['target'] ) ? 'data-target="' . esc_attr( $tab['target'] ) . '"' : ''; ?> class="mpcrbm-shell-page-tab">
+															<?php if ( ! empty( $tab['icon'] ) ) : ?><i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i><?php endif; ?>
+															<span><?php echo esc_html( $tab['label'] ); ?></span>
+														</a>
+													</li>
+												<?php endforeach; ?>
+											</ul>
+										</div>
+									<?php endif; ?>
+								</div>
+							<?php endif; ?>
+							<div class="mpcrbm-shell-body mpcrbm">
+				<?php
+			}
+
+			public static function render_shell_close() {
+				?>
+							</div><!-- .mpcrbm-shell-body -->
+						</div><!-- .mpcrbm-shell-content -->
+					</div><!-- .mpcrbm-shell-content-and-menu -->
+				</div><!-- .mpcrbm-shell -->
+				<?php
+			}
+		}
+		new MPCRBM_Admin_Shell();
+	}

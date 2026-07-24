@@ -426,31 +426,18 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
 //            error_log( print_r( [ '$current_order_count' => $current_order_count ], true ) );
 
+            ob_start();
+            foreach ( MPCRBM_Admin_Shell::get_car_rental_taxonomy_tabs() as $i => $tab ) {
+                $classes = 'mpcrbm_taxonomies_tab' . ( 0 === $i ? ' mpcrbm_car_list_tab active' : '' );
+                ?>
+                <li><button class="<?php echo esc_attr( $classes ); ?>" data-target="<?php echo esc_attr( $tab['target'] ); ?>"><i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i> <span><?php echo esc_html( $tab['label'] ); ?></span></button></li>
+                <?php
+            }
+            $sidebar_submenu_html = ob_get_clean();
+
+            MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Car Rental', 'car-rental-manager' ), null, $sidebar_submenu_html );
             ?>
-            <div class="mpcrbm_taxonomies_wrap">
-                <div class="mpcrbm_left_sidebar">
-                    <div class="mpcrbm_car_rental_title">
-                        <h2><?php esc_html_e( 'Car Rental', 'car-rental-manager' );?> </h2>
-                        <p><?php esc_html_e( 'Management System', 'car-rental-manager' );?></p>
-                    </div>
-
-                    <div class="mpcrbm_taxonomies_tabs">
-                        <button class="mpcrbm_car_list_tab mpcrbm_taxonomies_tab active" data-target="mpcrbm_car_list"><i class="mi mi-cars"></i> <?php esc_attr_e( 'Car List', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_type"><i class="mi mi-tachometer-fast"></i> <?php esc_attr_e( 'Car Type', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_fuel_type"><i class="mi mi-gas-pump-alt"></i> <?php esc_attr_e( 'Fuel Type', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_seating_capacity"><i class="mi mi-person-seat"></i> <?php esc_attr_e( 'Seating Capacity', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_brand"><i class="mi mi-bonus"></i> <?php esc_attr_e( 'Car Brand', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_make_year"><i class="mi mi-time-quarter-to"></i> <?php esc_attr_e( 'Make Year', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_car_feature"><i class="mi mi-list-timeline"></i> <?php esc_attr_e( 'Car Feature', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_faq"><i class="mi mi-messages-question"></i> <?php esc_attr_e( 'Manage Faq', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_manage_term_condition"><i class="mi mi-blog-text"></i> <?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></button>
-                        <button class="mpcrbm_taxonomies_tab" data-target="mpcrbm_branch_manager"><i class="mi mi-map-location-track"></i> <?php esc_attr_e( 'Branch Manager', 'car-rental-manager' );?></button>
-
-                    </div>
-                </div>
-                <div class="mpcrbm_left_main_content">
-
-                    <div class="mpcrbm_analytics">
+                <div class="mpcrbm_analytics">
                         <div class="mpcrbm_stat-card total">
                             <div class="mpcrbm_stat-left">
                                 <i class="mi mi-cars"></i>
@@ -546,7 +533,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             <div class="mpcrbm-branch-lazy-placeholder"></div>
                         </div>
                     </div>
-                </div>
 
                 <!-- Popup Form -->
                 <div class="mpcrbm_taxonomies_popup_overlay">
@@ -597,9 +583,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     </div>
                 </div>
 
-            </div>
-
             <?php
+            MPCRBM_Admin_Shell::render_shell_close();
         }
 
 

@@ -45,7 +45,6 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 
 			// Admin panel pages + form handlers
 			add_action( 'admin_menu',            [ $this, 'register_menus' ] );
-			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_styles' ] );
 			add_action( 'admin_post_mpcrbm_save_bm',   [ $this, 'handle_save_bm' ] );
 			add_action( 'admin_post_mpcrbm_delete_bm', [ $this, 'handle_delete_bm' ] );
 
@@ -457,6 +456,12 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$action = isset( $_GET['action'] ) ? sanitize_key( $_GET['action'] ) : 'list';
 			$bm_id  = isset( $_GET['bm_id'] )  ? (int) $_GET['bm_id']           : 0;
 
+			$title = in_array( $action, [ 'add', 'edit' ], true )
+				? ( $bm_id ? esc_html__( 'Edit Branch Manager', 'car-rental-manager' ) : esc_html__( 'Add Branch Manager', 'car-rental-manager' ) )
+				: esc_html__( 'Branch Managers', 'car-rental-manager' );
+
+			MPCRBM_Admin_Shell::render_shell_open( $title );
+
 			$this->render_admin_notices();
 
 			switch ( $action ) {
@@ -467,6 +472,8 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 				default:
 					$this->render_bm_list();
 			}
+
+			MPCRBM_Admin_Shell::render_shell_close();
 		}
 
 		private function render_admin_notices(): void {
@@ -501,19 +508,20 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$page_url = admin_url( 'edit.php?post_type=' . MPCRBM_Function::get_cpt() . '&page=mpcrbm_branch_managers' );
 			$add_url  = add_query_arg( 'action', 'add', $page_url );
 			?>
-			<div class="wrap">
-				<h1 class="wp-heading-inline"><?php esc_html_e( 'Branch Managers', 'car-rental-manager' ); ?></h1>
-				<a href="<?php echo esc_url( $add_url ); ?>" class="page-title-action">
-					+ <?php esc_html_e( 'Add Branch Manager', 'car-rental-manager' ); ?>
-				</a>
-				<hr class="wp-header-end">
-
+			<div class="mpcrbm-card">
+				<div class="mpcrbm-card-header">
+					<h2><?php esc_html_e( 'Branch Managers', 'car-rental-manager' ); ?></h2>
+					<a href="<?php echo esc_url( $add_url ); ?>" class="mpcrbm-btn">
+						<i class="fas fa-plus"></i> <?php esc_html_e( 'Add Branch Manager', 'car-rental-manager' ); ?>
+					</a>
+				</div>
+				<div class="mpcrbm-card-content">
 				<?php if ( empty( $managers ) ) : ?>
-					<div class="notice notice-info inline" style="margin-top:16px">
+					<div class="notice notice-info inline">
 						<p><?php esc_html_e( 'No branch managers yet. Click "Add Branch Manager" to create one.', 'car-rental-manager' ); ?></p>
 					</div>
 				<?php else : ?>
-					<table class="wp-list-table widefat fixed striped mpcrbm-bm-table" style="margin-top:16px">
+					<table class="mpcrbm-table mpcrbm-bm-table">
 						<thead>
 							<tr>
 								<th style="width:220px"><?php esc_html_e( 'Name', 'car-rental-manager' ); ?></th>
@@ -557,11 +565,11 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 									</span>
 								</td>
 								<td>
-									<a href="<?php echo esc_url( $edit_url ); ?>" class="button button-small">
+									<a href="<?php echo esc_url( $edit_url ); ?>" class="mpcrbm-btn mpcrbm-btn-outline mpcrbm-btn-sm">
 										<?php esc_html_e( 'Edit', 'car-rental-manager' ); ?>
 									</a>
 									<a href="<?php echo esc_url( $del_url ); ?>"
-									   class="button button-small mpcrbm-btn-delete"
+									   class="mpcrbm-btn mpcrbm-btn-danger mpcrbm-btn-sm"
 									   onclick="return confirm('<?php esc_attr_e( 'Delete this branch manager? This cannot be undone.', 'car-rental-manager' ); ?>')">
 										<?php esc_html_e( 'Delete', 'car-rental-manager' ); ?>
 									</a>
@@ -571,6 +579,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 						</tbody>
 					</table>
 				<?php endif; ?>
+				</div>
 			</div>
 			<?php
 		}
@@ -584,14 +593,8 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$branches = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
 			$page_url = admin_url( 'edit.php?post_type=' . MPCRBM_Function::get_cpt() . '&page=mpcrbm_branch_managers' );
 			?>
-			<div class="wrap">
-				<h1>
-					<?php echo $bm_id
-						? esc_html__( 'Edit Branch Manager', 'car-rental-manager' )
-						: esc_html__( 'Add Branch Manager', 'car-rental-manager' ); ?>
-				</h1>
-				<hr class="wp-header-end">
-
+			<div class="mpcrbm-card">
+				<div class="mpcrbm-card-content">
 				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="mpcrbm-bm-form" style="max-width:780px">
 					<?php wp_nonce_field( 'mpcrbm_save_bm_' . $bm_id, 'mpcrbm_bm_nonce' ); ?>
 					<input type="hidden" name="action" value="mpcrbm_save_bm">
@@ -687,16 +690,17 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 					</table>
 
 					<p class="submit">
-						<button type="submit" class="button button-primary">
+						<button type="submit" class="mpcrbm-btn">
 							<?php echo $bm_id
 								? esc_html__( 'Update Branch Manager', 'car-rental-manager' )
 								: esc_html__( 'Create Branch Manager', 'car-rental-manager' ); ?>
 						</button>
-						<a href="<?php echo esc_url( $page_url ); ?>" class="button" style="margin-left:8px">
+						<a href="<?php echo esc_url( $page_url ); ?>" class="mpcrbm-btn mpcrbm-btn-secondary" style="margin-left:8px">
 							<?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?>
 						</a>
 					</p>
 				</form>
+				</div>
 			</div>
 			<script>
 			document.querySelector('.mpcrbm-gen-pwd')?.addEventListener('click', function () {
@@ -839,21 +843,19 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$branches = self::get_current_user_branches();
 			$cpt      = MPCRBM_Function::get_cpt();
 
+			MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'My Branch Dashboard', 'car-rental-manager' ) );
+
 			if ( empty( $branches ) ) {
 				?>
-				<div class="wrap">
-					<div class="notice notice-warning inline" style="margin-top:16px"><p>
-						<?php esc_html_e( 'No branch has been assigned to your account yet. Please contact the administrator.', 'car-rental-manager' ); ?>
-					</p></div>
+				<div class="notice notice-warning inline">
+					<p><?php esc_html_e( 'No branch has been assigned to your account yet. Please contact the administrator.', 'car-rental-manager' ); ?></p>
 				</div>
 				<?php
+				MPCRBM_Admin_Shell::render_shell_close();
 				return;
 			}
 			?>
-			<div class="wrap mpcrbm-my-branch-wrap">
-				<h1><?php esc_html_e( 'My Branch Dashboard', 'car-rental-manager' ); ?></h1>
-				<hr class="wp-header-end">
-
+			<div class="mpcrbm-my-branch-wrap">
 				<?php foreach ( $branches as $slug ) :
 					$term = get_term_by( 'slug', $slug, 'mpcrbm_locations' );
 					if ( ! $term ) { continue; }
@@ -868,11 +870,11 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 					<div class="mpcrbm-branch-section-header">
 						<h2><?php echo esc_html( $term->name ); ?></h2>
 						<div class="mpcrbm-branch-section-actions">
-							<a href="<?php echo esc_url( $edit_url ); ?>" class="button">
+							<a href="<?php echo esc_url( $edit_url ); ?>" class="mpcrbm-btn mpcrbm-btn-secondary">
 								<?php esc_html_e( 'Edit Branch Details', 'car-rental-manager' ); ?>
 							</a>
-							<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $cpt ) ); ?>" class="button button-primary">
-								+ <?php esc_html_e( 'Add Car', 'car-rental-manager' ); ?>
+							<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $cpt ) ); ?>" class="mpcrbm-btn">
+								<i class="fas fa-plus"></i> <?php esc_html_e( 'Add Car', 'car-rental-manager' ); ?>
 							</a>
 						</div>
 					</div>
@@ -912,7 +914,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 							</a>
 						</p>
 					<?php else : ?>
-						<table class="widefat striped mpcrbm-bm-cars-table">
+						<table class="mpcrbm-table mpcrbm-bm-cars-table">
 							<thead>
 								<tr>
 									<th style="width:48px"></th>
@@ -946,7 +948,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 										<?php endif; ?>
 									</td>
 									<td>
-										<a href="<?php echo esc_url( (string) get_edit_post_link( $car->ID ) ); ?>" class="button button-small">
+										<a href="<?php echo esc_url( (string) get_edit_post_link( $car->ID ) ); ?>" class="mpcrbm-btn mpcrbm-btn-outline mpcrbm-btn-sm">
 											<?php esc_html_e( 'Edit', 'car-rental-manager' ); ?>
 										</a>
 									</td>
@@ -959,6 +961,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 				<?php endforeach; ?>
 			</div>
 			<?php
+			MPCRBM_Admin_Shell::render_shell_close();
 		}
 
 		// ═══════════════════════════════════════════════════════════════════
@@ -966,10 +969,13 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 		// ═══════════════════════════════════════════════════════════════════
 
 		public function render_bookings_page(): void {
+			MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Branch Bookings', 'car-rental-manager' ) );
+
 			if ( ! function_exists( 'wc_get_order' ) ) {
-				echo '<div class="wrap"><div class="notice notice-warning inline" style="margin-top:16px"><p>';
+				echo '<div class="notice notice-warning inline"><p>';
 				esc_html_e( 'WooCommerce is required to view bookings.', 'car-rental-manager' );
-				echo '</p></div></div>';
+				echo '</p></div>';
+				MPCRBM_Admin_Shell::render_shell_close();
 				return;
 			}
 
@@ -982,22 +988,20 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$pages      = $total ? (int) ceil( $total / $per_page ) : 0;
 			$page_ids   = $has_orders ? array_slice( $all_ids, ( $current_pg - 1 ) * $per_page, $per_page ) : [];
 			?>
-			<div class="wrap">
-				<h1><?php esc_html_e( 'Branch Bookings', 'car-rental-manager' ); ?></h1>
-				<hr class="wp-header-end">
-
+			<div class="mpcrbm-card">
+				<div class="mpcrbm-card-content">
 				<?php if ( ! $has_orders ) : ?>
-					<div class="notice notice-info inline" style="margin-top:16px">
+					<div class="notice notice-info inline">
 						<p><?php esc_html_e( 'No bookings found for your assigned branch(es).', 'car-rental-manager' ); ?></p>
 					</div>
 				<?php else : ?>
-					<p class="description" style="margin:12px 0">
+					<p class="description" style="margin:0 0 12px">
 						<?php printf(
 							esc_html( _n( '%d booking found.', '%d bookings found.', $total, 'car-rental-manager' ) ),
 							(int) $total
 						); ?>
 					</p>
-					<table class="widefat striped mpcrbm-bookings-table">
+					<table class="mpcrbm-table mpcrbm-bookings-table">
 						<thead>
 							<tr>
 								<th><?php esc_html_e( 'Order #', 'car-rental-manager' ); ?></th>
@@ -1067,7 +1071,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 									<?php endif; ?>
 								</td>
 								<td>
-									<a href="<?php echo esc_url( (string) get_edit_post_link( $oid ) ); ?>" class="button button-small">
+									<a href="<?php echo esc_url( (string) get_edit_post_link( $oid ) ); ?>" class="mpcrbm-btn mpcrbm-btn-outline mpcrbm-btn-sm">
 										<?php esc_html_e( 'View', 'car-rental-manager' ); ?>
 									</a>
 								</td>
@@ -1091,96 +1095,12 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 					</div>
 					<?php endif; ?>
 				<?php endif; ?>
+				</div>
 			</div>
 			<?php
+			MPCRBM_Admin_Shell::render_shell_close();
 		}
 
-		// ═══════════════════════════════════════════════════════════════════
-		// STYLES
-		// ═══════════════════════════════════════════════════════════════════
-
-		public function enqueue_styles( string $hook ): void {
-			$is_bm_page = strpos( $hook, 'mpcrbm_branch_managers' ) !== false
-			           || strpos( $hook, 'mpcrbm_my_branch' )       !== false
-			           || strpos( $hook, 'mpcrbm_bm_bookings' )     !== false;
-
-			if ( ! $is_bm_page ) {
-				return;
-			}
-
-			echo '<style>
-			/* ── Stats row ─────────────────────────── */
-			.mpcrbm-bm-stats {
-				display:flex; gap:14px; flex-wrap:wrap; margin:14px 0 22px;
-			}
-			.mpcrbm-bm-stat-box {
-				background:#fff; border:1px solid #dcdcde; border-radius:8px;
-				padding:14px 20px; min-width:110px;
-				display:flex; flex-direction:column; align-items:center;
-				gap:4px; text-align:center; box-shadow:0 1px 2px rgba(0,0,0,.05);
-			}
-			.mpcrbm-bm-stat-num { font-size:1.75em; font-weight:700; color:#2271b1; line-height:1.2; }
-			.mpcrbm-bm-stat-lbl { font-size:.8em; color:#555; max-width:140px; }
-
-			/* ── Branch section card ──────────────── */
-			.mpcrbm-branch-section {
-				background:#fff; border:1px solid #dcdcde; border-radius:8px;
-				padding:20px 24px; margin-bottom:22px;
-			}
-			.mpcrbm-branch-section-header {
-				display:flex; align-items:center; justify-content:space-between;
-				flex-wrap:wrap; gap:12px; margin-bottom:14px;
-			}
-			.mpcrbm-branch-section-header h2 { margin:0; }
-			.mpcrbm-branch-section-actions   { display:flex; gap:8px; }
-
-			/* ── Branch Managers list table ───────── */
-			.mpcrbm-bm-table td  { vertical-align:middle; }
-			.mpcrbm-bm-avatar    { border-radius:50%; vertical-align:middle; }
-			.mpcrbm-branch-tag {
-				display:inline-block; background:#e5f0fb; color:#2271b1;
-				border-radius:4px; padding:2px 8px; font-size:.82em; margin:2px 2px 2px 0;
-			}
-			.mpcrbm-status-badge { padding:3px 10px; border-radius:3px; font-size:.82em; font-weight:600; }
-			.mpcrbm-status-active   { background:#d1fae5; color:#065f46; }
-			.mpcrbm-status-inactive { background:#fee2e2; color:#991b1b; }
-			.mpcrbm-btn-delete { color:#d63638 !important; border-color:#d63638 !important; }
-			.mpcrbm-btn-delete:hover { background:#d63638 !important; color:#fff !important; }
-
-			/* ── Add/Edit form ────────────────────── */
-			.mpcrbm-bm-form .form-table th { width:190px; }
-			.mpcrbm-branch-checkboxes {
-				display:flex; flex-wrap:wrap; gap:8px 24px; margin-bottom:6px;
-			}
-			.mpcrbm-branch-chk-label {
-				display:flex; align-items:center; gap:6px; cursor:pointer; padding:4px 0;
-			}
-
-			/* ── Car table ────────────────────────── */
-			.mpcrbm-bm-cars-table td { vertical-align:middle; padding:8px 10px; }
-			.mpcrbm-car-status        { font-weight:600; }
-			.mpcrbm-status-publish    { color:#008a20; }
-			.mpcrbm-status-draft      { color:#646970; }
-			.mpcrbm-status-pending    { color:#b45309; }
-
-			/* ── Bookings table ───────────────────── */
-			.mpcrbm-bookings-table td  { vertical-align:middle; padding:8px 10px; }
-			.mpcrbm-order-status       { padding:2px 8px; border-radius:3px; font-size:.82em; }
-			.mpcrbm-wc-status-completed  { background:#d1fae5; color:#065f46; }
-			.mpcrbm-wc-status-processing { background:#fef3c7; color:#92400e; }
-			.mpcrbm-wc-status-pending    { background:#e0e7ff; color:#3730a3; }
-			.mpcrbm-wc-status-on-hold    { background:#fef3c7; color:#92400e; }
-			.mpcrbm-wc-status-cancelled  { background:#fee2e2; color:#991b1b; }
-			.mpcrbm-wc-status-refunded   { background:#f3f4f6; color:#374151; }
-			.mpcrbm-location-tag {
-				display:inline-flex; align-items:center; gap:4px;
-				padding:2px 8px; border-radius:4px; font-size:.82em; font-weight:500;
-			}
-			.mpcrbm-location-pickup  { background:#e0f2fe; color:#075985; }
-			.mpcrbm-location-dropoff { background:#fef9c3; color:#713f12; }
-			.mpcrbm-location-same    { color:#888; font-size:.82em; font-style:italic; }
-			</style>';
-		}
 	}
 
 	new MPCRBM_User_Branch_Manager();

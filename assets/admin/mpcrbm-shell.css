@@ -1,0 +1,1553 @@
+/* ==========================================================================
+   MPCRBM Admin Shell — LatePoint-style custom app shell
+   Scoped entirely under body.mpcrbm-admin. Only enqueued on this plugin's
+   own dashboard-style admin pages (see MPCRBM_Admin_Shell::SCREEN_IDS).
+   Accent color matches LatePoint's own palette (#1d7bff) rather than the
+   plugin's existing --mpcrbm-primary, per explicit design request.
+   ========================================================================== */
+
+body.mpcrbm-admin {
+	--mpcrbm-shell-primary: #1d7bff;
+	--mpcrbm-shell-radius-xs: 8px;
+	--mpcrbm-shell-radius-sm: 12px;
+	--mpcrbm-shell-radius: 16px;
+	--mpcrbm-shell-radius-lg: 20px;
+	--mpcrbm-shell-shadow: 0 5px 15px -5px rgba(115, 125, 146, .11), 0 1px 2px 0 rgba(160, 170, 185, .6);
+	--mpcrbm-shell-border: #e7e7ea;
+	--mpcrbm-shell-text: #1f222b;
+	--mpcrbm-shell-text-faded: #788291;
+	--mpcrbm-shell-bg: #f5f6fa;
+	--mpcrbm-shell-sidebar-width: 240px;
+	--mpcrbm-shell-sidebar-width-compact: 76px;
+	--mpcrbm-shell-topbar-height: 64px;
+}
+
+/* --------------------------------------------------------------------
+   Hide native WP admin chrome (scoped so nothing else in wp-admin is
+   affected — this file only loads on this plugin's own pages anyway).
+   -------------------------------------------------------------------- */
+body.mpcrbm-admin #adminmenumain,
+body.mpcrbm-admin #wpadminbar,
+body.mpcrbm-admin #wpfooter {
+	display: none;
+}
+
+body.mpcrbm-admin #wpcontent,
+body.mpcrbm-admin #wpfooter {
+	margin-left: 0;
+	padding-left: 0;
+}
+
+body.mpcrbm-admin #wpbody-content {
+	padding-bottom: 0;
+}
+
+/* The following two rules only apply on the 7 dashboard-style pages (which get
+   the full flex shell) — NOT on the native Add/Edit Car screen, where Screen
+   Options and WP's own "Car updated." notices are still genuinely useful. */
+body.mpcrbm-admin-shell #wpbody-content > #screen-meta,
+body.mpcrbm-admin-shell #wpbody-content > #screen-meta-links {
+	display: none;
+}
+
+/* Only suppress notices WP prints itself above our output (direct children
+   of #wpbody-content); notices our own render functions echo stay untouched
+   since they live nested inside .mpcrbm-shell. */
+body.mpcrbm-admin-shell #wpbody-content > .notice,
+body.mpcrbm-admin-shell #wpbody-content > .updated,
+body.mpcrbm-admin-shell #wpbody-content > .error {
+	display: none !important;
+}
+
+body.mpcrbm-admin.wp-toolbar {
+	margin-top: -32px;
+}
+
+@media (max-width: 782px) {
+	body.mpcrbm-admin.wp-toolbar {
+		margin-top: -46px;
+	}
+}
+
+body.mpcrbm-admin {
+	background-color: var(--mpcrbm-shell-bg);
+}
+
+body.mpcrbm-admin *,
+body.mpcrbm-admin *:before,
+body.mpcrbm-admin *:after {
+	box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------
+   Shell layout
+   -------------------------------------------------------------------- */
+.mpcrbm-shell-content-and-menu {
+	display: flex;
+	align-items: stretch;
+	min-height: 100vh;
+}
+
+.mpcrbm-shell-sidebar {
+	flex: 0 0 var(--mpcrbm-shell-sidebar-width);
+	width: var(--mpcrbm-shell-sidebar-width);
+	background-color: #fff;
+	border-right: 1px solid var(--mpcrbm-shell-border);
+	display: flex;
+	flex-direction: column;
+	position: sticky;
+	top: 0;
+	height: 100vh;
+	transition: width .15s ease, flex-basis .15s ease;
+}
+
+.mpcrbm-shell.side-menu-compact .mpcrbm-shell-sidebar {
+	flex-basis: var(--mpcrbm-shell-sidebar-width-compact);
+	width: var(--mpcrbm-shell-sidebar-width-compact);
+}
+
+.mpcrbm-shell-sidebar-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 16px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	min-height: var(--mpcrbm-shell-topbar-height);
+}
+
+.mpcrbm-shell-logo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.mpcrbm-shell-logo-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	background-color: var(--mpcrbm-shell-primary);
+	color: #fff;
+	flex: 0 0 auto;
+	font-size: 14px;
+}
+
+.mpcrbm-shell.side-menu-compact .mpcrbm-shell-logo-text {
+	display: none;
+}
+
+.mpcrbm-shell-fold-trigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	color: var(--mpcrbm-shell-text-faded);
+	text-decoration: none;
+	flex: 0 0 auto;
+}
+
+.mpcrbm-shell-fold-trigger:hover {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-menu {
+	list-style: none;
+	margin: 12px 0 0;
+	padding: 0 10px;
+	flex: 1;
+	overflow-y: auto;
+}
+
+.mpcrbm-shell-menu li {
+	margin: 0 0 2px;
+}
+
+/* All of these use a direct-child combinator (">") on purpose: .mpcrbm-shell-menu's
+   <li> items also contain a nested <ul class="mpcrbm-shell-submenu"> (see the
+   "Car Rental dashboard" section below) with its own <a> links. A plain descendant
+   selector here would also match those, painting every sub-menu item with the
+   same permanent "active" background instead of just the top-level link. */
+.mpcrbm-shell-menu li > a {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 10px 12px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	color: var(--mpcrbm-shell-text-faded);
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.mpcrbm-shell-menu li > a i {
+	width: 18px;
+	flex: 0 0 auto;
+	text-align: center;
+	font-size: 15px;
+}
+
+.mpcrbm-shell.side-menu-compact .mpcrbm-shell-menu li > a span {
+	display: none;
+}
+
+.mpcrbm-shell-menu li > a:hover {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-menu li.is-active > a {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-menu li.is-active > a i {
+	color: var(--mpcrbm-shell-primary);
+}
+
+.mpcrbm-shell-back-to-wp {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 20px;
+	border-top: 1px solid var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text-faded);
+	text-decoration: none;
+	font-size: 13px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.mpcrbm-shell-back-to-wp:hover {
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell.side-menu-compact .mpcrbm-shell-back-to-wp span {
+	display: none;
+}
+
+.mpcrbm-shell-content {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.mpcrbm-shell-topbar {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	min-height: var(--mpcrbm-shell-topbar-height);
+	padding: 0 24px;
+	background-color: #fff;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-mobile-trigger {
+	display: none;
+	color: var(--mpcrbm-shell-text-faded);
+	text-decoration: none;
+}
+
+.mpcrbm-shell-topbar-spacer {
+	flex: 1;
+}
+
+.mpcrbm-shell-topbar-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	color: var(--mpcrbm-shell-text-faded);
+	text-decoration: none;
+}
+
+.mpcrbm-shell-topbar-link:hover {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-user-avatar {
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background-size: cover;
+	background-position: center;
+	border: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-page-header {
+	padding: 24px 30px 0;
+}
+
+.mpcrbm-shell-page-title {
+	font-size: 24px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+	margin: 0 0 16px;
+}
+
+.mpcrbm-shell-page-tabs-w {
+	margin-bottom: -1px;
+}
+
+.mpcrbm-shell-page-tabs {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-page-tab {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border-radius: var(--mpcrbm-shell-radius-xs) var(--mpcrbm-shell-radius-xs) 0 0;
+	color: var(--mpcrbm-shell-text-faded);
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.mpcrbm-shell-page-tab:hover {
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-page-tabs li.is-active .mpcrbm-shell-page-tab {
+	color: var(--mpcrbm-shell-primary);
+	background-color: #fff;
+	box-shadow: inset 0 -2px 0 0 var(--mpcrbm-shell-primary);
+}
+
+.mpcrbm-shell-body {
+	padding: 24px 30px 40px;
+}
+
+/* --------------------------------------------------------------------
+   Mobile
+   -------------------------------------------------------------------- */
+@media (max-width: 960px) {
+	.mpcrbm-shell-sidebar {
+		position: fixed;
+		left: -100%;
+		top: 0;
+		z-index: 100000;
+		box-shadow: var(--mpcrbm-shell-shadow);
+		transition: left .2s ease;
+	}
+
+	.mpcrbm-shell.mobile-menu-open .mpcrbm-shell-sidebar {
+		left: 0;
+	}
+
+	.mpcrbm-shell-mobile-trigger {
+		display: inline-flex;
+	}
+}
+
+/* ==========================================================================
+   Reusable components — buttons, cards, tables, badges, notices
+   ========================================================================== */
+
+.mpcrbm-shell-body .mpcrbm-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 18px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	border: 1px solid transparent;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 1;
+	cursor: pointer;
+	text-decoration: none;
+	background-color: var(--mpcrbm-shell-primary);
+	color: #fff;
+}
+
+.mpcrbm-shell-body .mpcrbm-btn:hover {
+	opacity: .9;
+	color: #fff;
+}
+
+.mpcrbm-shell-body .mpcrbm-btn-secondary {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm-btn-danger {
+	background-color: var(--mpcrbm-red);
+	color: #fff;
+}
+
+.mpcrbm-shell-body .mpcrbm-btn-outline {
+	background-color: transparent;
+	border-color: var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm-btn-sm {
+	padding: 6px 12px;
+	font-size: 13px;
+}
+
+.mpcrbm-shell-body .mpcrbm-card {
+	background-color: #fff;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	box-shadow: var(--mpcrbm-shell-shadow);
+	margin-bottom: 24px;
+}
+
+.mpcrbm-shell-body .mpcrbm-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 24px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-body .mpcrbm-card-header h2,
+.mpcrbm-shell-body .mpcrbm-card-header h3 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm-card-content {
+	padding: 24px;
+}
+
+.mpcrbm-shell-body table.mpcrbm-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.mpcrbm-shell-body table.mpcrbm-table thead th {
+	text-align: left;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text-faded);
+	padding: 0 10px 10px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-body table.mpcrbm-table tbody td {
+	padding: 14px 10px;
+	border-top: 1px solid #f0f2f7;
+	font-size: 14px;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body table.mpcrbm-table tbody tr:hover td {
+	background-color: var(--mpcrbm-shell-bg);
+}
+
+.mpcrbm-shell-body .mpcrbm-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 10px;
+	border-radius: 100px;
+	font-size: 12px;
+	font-weight: 600;
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text-faded);
+}
+
+.mpcrbm-shell-body .mpcrbm-badge-success {
+	background-color: #e6f7ee;
+	color: #1c9d5b;
+}
+
+.mpcrbm-shell-body .mpcrbm-badge-warning {
+	background-color: #fff6e0;
+	color: #b3821a;
+}
+
+.mpcrbm-shell-body .mpcrbm-badge-danger {
+	background-color: var(--mpcrbm-red-light);
+	color: var(--mpcrbm-red);
+}
+
+/* mpcrbm_global.css has a blanket ".mpcrbm a:not(.wp_editor a) { color: var(--color_theme) }"
+   rule (pink) that's specific enough to beat the button/link colors above and the
+   car-title/action-icon colors below. Re-assert them here with body.mpcrbm-admin
+   prefixed on to guarantee higher specificity, rather than leaving buttons/links
+   inside the shell incorrectly pink. */
+body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm-btn,
+body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn {
+	color: #fff;
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn-secondary,
+body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn-outline {
+	color: var(--mpcrbm-shell-text);
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
+	color: #fff;
+}
+
+/* Restyle native WP notices that our own render functions echo inside the shell */
+.mpcrbm-shell-body .notice,
+.mpcrbm-shell-body .notice-success,
+.mpcrbm-shell-body .notice-error,
+.mpcrbm-shell-body .notice-warning {
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	border-left-width: 4px;
+	padding: 12px 16px;
+	margin: 0 0 20px;
+	box-shadow: none;
+}
+
+/* ==========================================================================
+   Car Rental dashboard (mpcrbm_car_rental) — the taxonomy tabs (Car List,
+   Car Type, Fuel Type, etc.) are rendered as a sidebar sub-menu nested under
+   the "Car Rental" item (see .mpcrbm-shell-submenu below), not in the page
+   content. Existing classes/data-target attrs are untouched so
+   mpcrbm_manage_taxonomy.js keeps working — only the look is overridden here.
+   The same sub-menu is also rendered (as plain links, see .mpcrbm-shell-submenu
+   > li > a below) under "Car Rental" on the Add/Edit Car screen, where there's
+   no in-page tab content for data-target buttons to toggle.
+   ========================================================================== */
+
+.mpcrbm-shell-submenu {
+	list-style: none;
+	margin: 4px 0 8px;
+	padding: 0 0 0 30px;
+}
+
+.mpcrbm-shell-submenu li {
+	margin: 0 0 2px;
+}
+
+.mpcrbm-shell-submenu .mpcrbm_taxonomies_tab,
+.mpcrbm-shell-submenu > li > a {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	margin: 0;
+	padding: 7px 10px;
+	border: none;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	background: transparent;
+	color: var(--mpcrbm-shell-text-faded);
+	font-size: 13px;
+	text-align: left;
+	text-decoration: none;
+	cursor: pointer;
+	box-shadow: none;
+	transform: none;
+}
+
+.mpcrbm-shell-submenu .mpcrbm_taxonomies_tab i,
+.mpcrbm-shell-submenu > li > a i {
+	width: 16px;
+	text-align: center;
+	font-size: 13px;
+	margin: 0;
+	color: inherit;
+}
+
+.mpcrbm-shell-submenu .mpcrbm_taxonomies_tab:hover,
+.mpcrbm-shell-submenu > li > a:hover {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+	transform: none;
+	box-shadow: none;
+}
+
+.mpcrbm-shell-submenu .mpcrbm_taxonomies_tab.active,
+.mpcrbm-shell-submenu .mpcrbm_taxonomies_tab.active i {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-primary);
+	font-weight: 600;
+}
+
+.mpcrbm-shell-submenu .mpcrbm_taxonomies_tab.active::after {
+	content: none;
+}
+
+.mpcrbm-shell-body .mpcrbm_analytics {
+	padding: 0;
+	margin: 0 0 24px;
+	gap: 16px;
+}
+
+.mpcrbm-shell-body .mpcrbm_stat-card {
+	flex: 1 1 220px;
+	border-radius: var(--mpcrbm-shell-radius);
+	box-shadow: var(--mpcrbm-shell-shadow);
+	border-color: var(--mpcrbm-shell-border);
+	padding: 18px;
+}
+
+.mpcrbm-shell-body .mpcrbm_stat-card i {
+	color: var(--mpcrbm-shell-primary);
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_control_btn.btn-primary {
+	background: var(--mpcrbm-shell-primary);
+}
+
+/* Car title + row action icons — overriding the same blanket pink ".mpcrbm a"
+   link-color rule mentioned above (car-title and .mpcrbm_action_btn are both
+   plain <a> tags with no color of their own, so they fell back to it). */
+body.mpcrbm-admin .mpcrbm-shell-body a.car-title {
+	color: var(--mpcrbm-shell-text);
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body a.car-title:hover {
+	color: var(--mpcrbm-shell-primary);
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn {
+	color: var(--mpcrbm-shell-text-faded);
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn.edit {
+	color: #b3821a;
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn.duplicate {
+	color: var(--mpcrbm-shell-primary);
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn.delete {
+	color: var(--mpcrbm-red);
+}
+
+body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
+	background-color: var(--mpcrbm-shell-primary);
+	color: #fff;
+}
+
+/* ==========================================================================
+   Global Settings page (mpcrbm_settings_page) — shared leftTabs/tabLists/
+   tabsContent component (also used by the per-car metabox, restyled there
+   separately). Only visuals are touched; data-tabs-target click handling
+   lives in mp_global/assets/mp_style/mpcrbm_global.js, untouched.
+   ========================================================================== */
+
+.mpcrbm-shell-body .leftTabs {
+	display: flex;
+	align-items: flex-start;
+}
+
+.mpcrbm-shell-body .tabLists {
+	flex: 0 0 230px;
+	list-style: none;
+	margin: 0;
+	padding: 16px;
+	border-right: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-body .tabLists li {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	margin-bottom: 2px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	color: var(--mpcrbm-shell-text-faded);
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.mpcrbm-shell-body .tabLists li span {
+	width: 18px;
+	text-align: center;
+	flex: 0 0 auto;
+}
+
+.mpcrbm-shell-body .tabLists li:hover {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .tabLists li.active {
+	background-color: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-primary);
+	font-weight: 600;
+}
+
+.mpcrbm-shell-body .tabsContent {
+	flex: 1;
+	min-width: 0;
+	padding: 24px 30px;
+}
+
+.mpcrbm-shell-body .tabsContent table.form-table th,
+.mpcrbm-shell-body .tabsContent table th {
+	color: var(--mpcrbm-shell-text);
+}
+
+/* ==========================================================================
+   Branch Manager pages (mpcrbm_branch_managers / mpcrbm_my_branch /
+   mpcrbm_bm_bookings) — moved from an inline <style> block previously
+   echoed by MPCRBM_User_Branch_Manager::enqueue_styles(), tokens updated
+   to match the shell's design language.
+   ========================================================================== */
+
+.mpcrbm-shell-body .mpcrbm-bm-stats {
+	display: flex;
+	gap: 14px;
+	flex-wrap: wrap;
+	margin: 0 0 22px;
+}
+
+.mpcrbm-shell-body .mpcrbm-bm-stat-box {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	padding: 14px 20px;
+	min-width: 110px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	text-align: center;
+	box-shadow: var(--mpcrbm-shell-shadow);
+}
+
+.mpcrbm-shell-body .mpcrbm-bm-stat-num {
+	font-size: 1.75em;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-primary);
+	line-height: 1.2;
+}
+
+.mpcrbm-shell-body .mpcrbm-bm-stat-lbl {
+	font-size: .8em;
+	color: var(--mpcrbm-shell-text-faded);
+	max-width: 140px;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-section {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	box-shadow: var(--mpcrbm-shell-shadow);
+	padding: 20px 24px;
+	margin-bottom: 22px;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-section-header h2 {
+	margin: 0;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-section-actions {
+	display: flex;
+	gap: 8px;
+}
+
+.mpcrbm-shell-body .mpcrbm-bm-avatar {
+	border-radius: 50%;
+	vertical-align: middle;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-tag {
+	display: inline-block;
+	background: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-primary);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	padding: 2px 8px;
+	font-size: .82em;
+	margin: 2px 2px 2px 0;
+}
+
+.mpcrbm-shell-body .mpcrbm-status-badge {
+	padding: 3px 10px;
+	border-radius: 100px;
+	font-size: .82em;
+	font-weight: 600;
+}
+
+.mpcrbm-shell-body .mpcrbm-status-active {
+	background: #e6f7ee;
+	color: #1c9d5b;
+}
+
+.mpcrbm-shell-body .mpcrbm-status-inactive {
+	background: var(--mpcrbm-red-light);
+	color: var(--mpcrbm-red);
+}
+
+.mpcrbm-shell-body .mpcrbm-bm-form .form-table th {
+	width: 190px;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-checkboxes {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 24px;
+	margin-bottom: 6px;
+}
+
+.mpcrbm-shell-body .mpcrbm-branch-chk-label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	padding: 4px 0;
+}
+
+.mpcrbm-shell-body .mpcrbm-car-status {
+	font-weight: 600;
+}
+
+.mpcrbm-shell-body .mpcrbm-status-publish {
+	color: #1c9d5b;
+}
+
+.mpcrbm-shell-body .mpcrbm-status-draft {
+	color: var(--mpcrbm-shell-text-faded);
+}
+
+.mpcrbm-shell-body .mpcrbm-status-pending {
+	color: #b3821a;
+}
+
+.mpcrbm-shell-body .mpcrbm-order-status {
+	padding: 2px 8px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	font-size: .82em;
+}
+
+.mpcrbm-shell-body .mpcrbm-wc-status-completed  { background: #e6f7ee; color: #1c9d5b; }
+.mpcrbm-shell-body .mpcrbm-wc-status-processing { background: #fff6e0; color: #b3821a; }
+.mpcrbm-shell-body .mpcrbm-wc-status-pending    { background: #e0e7ff; color: #3730a3; }
+.mpcrbm-shell-body .mpcrbm-wc-status-on-hold    { background: #fff6e0; color: #b3821a; }
+.mpcrbm-shell-body .mpcrbm-wc-status-cancelled  { background: var(--mpcrbm-red-light); color: var(--mpcrbm-red); }
+.mpcrbm-shell-body .mpcrbm-wc-status-refunded   { background: var(--mpcrbm-shell-bg); color: var(--mpcrbm-shell-text-faded); }
+
+.mpcrbm-shell-body .mpcrbm-location-tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 2px 8px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	font-size: .82em;
+	font-weight: 500;
+}
+
+.mpcrbm-shell-body .mpcrbm-location-pickup  { background: #e0f2fe; color: #075985; }
+.mpcrbm-shell-body .mpcrbm-location-dropoff { background: #fef9c3; color: #713f12; }
+.mpcrbm-shell-body .mpcrbm-location-same    { color: var(--mpcrbm-shell-text-faded); font-size: .82em; font-style: italic; }
+
+/* ==========================================================================
+   Per-car metabox (native Add/Edit Car screen, "Information Settings" panel)
+   — visual-only polish so its leftTabs/tabLists component matches the new
+   shell's blue accent. Fallbacks are given explicitly since older cached
+   markup/older callers may render this metabox outside the body-class scope.
+   ========================================================================== */
+
+/* Header bar (title, version badge, drag/collapse handles) removed per
+   explicit request — the leftTabs navigation already conveys what this
+   panel is, so the extra WP-postbox chrome on top of it was redundant. */
+#mpcrbm_meta_box_panel .postbox-header {
+	display: none;
+}
+
+/* Field description text (the small helper line under each field's h6 title)
+   recolored to match the shell's faded-text token, replacing the plugin's
+   original var(--mpcrbm-secondary) (assets/admin/mpcrbm_admin.css) — per
+   explicit request, for consistency with the rest of the redesign. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section .label span.desc {
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Tab navigation moved from a left-side vertical sidebar to a horizontal top
+   bar, per explicit request. Overrides mp_global/assets/mp_style/mpcrbm_global.css's
+   ".mpcrbm .leftTabs {display:flex}" / ".leftTabs > .tabLists {flex-flow:column;
+   min-width:250px; max-width:283px}" (a left-column layout) — everything here
+   is scoped to #mpcrbm_meta_box_panel only, so the Global Settings page (which
+   reuses the same .leftTabs/.tabLists classes) is unaffected. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .leftTabs {
+	flex-direction: column;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists {
+	flex-flow: row wrap;
+	min-width: 0;
+	max-width: none;
+	width: 100%;
+	background-color: #fafbfc;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	padding: 8px 12px;
+	gap: 4px;
+}
+
+#mpcrbm_meta_box_panel .tabLists span {
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	margin-right: 6px;
+}
+
+#mpcrbm_meta_box_panel [data-tabs-target] {
+	border-left: none;
+	border-bottom: 2px solid transparent;
+	padding: 10px 12px;
+}
+
+/* The vertical-list divider pseudo-element (a full-height bottom border per
+   stacked item) doesn't make sense once the tabs run horizontally. */
+#mpcrbm_meta_box_panel .leftTabs [data-tabs-target]::after {
+	content: none;
+}
+
+#mpcrbm_meta_box_panel [data-tabs-target]:hover,
+#mpcrbm_meta_box_panel [data-tabs-target].active {
+	border-left-color: transparent;
+	border-bottom-color: var(--mpcrbm-shell-primary, #1d7bff);
+	background-color: #eaf2ff;
+}
+
+/* Persistent right sidebar inside tabsContent — holds the native "Car Feature
+   Image" box (WP core's #postimagediv, moved here by mpcrbm-shell.js) so it
+   stays visible alongside whichever tab is active, not tied to one tab.
+   .tabsContent's old width:80% (mp_global/assets/admin/mpcrbm_admin.css) was
+   sized for the previous left-sidebar layout; now that tabs run across the
+   top, it needs to be 100% or this whole area is a fixed 20% short.
+
+   IMPORTANT: the sidebar is appended as a plain sibling of the .tabsItem
+   panels (not wrapped around them) and positioned with absolute/padding —
+   NOT flex/wrapAll. mpcrbm_global.js's tab switcher does
+   "tabsContent.children('[data-tabs=\"...\"]')", a DIRECT-CHILD-only
+   selector; wrapping the .tabsItem panels in an extra parent div (an earlier
+   version of this used .wrapAll()) took them out of .tabsContent's direct
+   children and silently broke every tab except the one already open on load. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent {
+	position: relative;
+	width: 100%;
+	padding: 20px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent > .tabsItem {
+	padding-right: 288px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 260px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar .postbox {
+	margin: 0;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+	box-shadow: var(--mpcrbm-shell-shadow, 0 5px 15px -5px rgba(115,125,146,.11));
+	overflow: hidden;
+}
+
+/* Keep the title ("Car Feature Image") but drop the move-up/move-down/
+   collapse controls — once out of the postbox-container sortable group
+   they have nothing left to do. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar .postbox-header {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar .postbox-header .handle-actions {
+	display: none;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar .postbox .hndle {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar .postbox .inside {
+	padding: 16px;
+}
+
+/* "Gallery Images" card (moved from its own tab, see mpcrbm-shell.js) — the
+   grid/thumbnail/button styling below is scoped to .mpcrbm-gallery-sidebar-card
+   specifically, not the bare .mpcrbm_gallery-image/-images-lists classes
+   (assets/admin/mpcrbm_admin.css), since those are shared with the frontend
+   car-detail gallery display and shouldn't be touched globally. */
+.mpcrbm-gallery-sidebar-card .mpcrbm_gallery-images-lists {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	margin: 0 0 14px;
+}
+
+.mpcrbm-gallery-sidebar-card .mpcrbm_gallery-image {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	margin: 0;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	overflow: hidden;
+}
+
+.mpcrbm-gallery-sidebar-card img.mpcrbm_gallery-images {
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+}
+
+.mpcrbm-gallery-sidebar-card .mpcrbm_gallery_image_remove {
+	top: 4px;
+	bottom: auto;
+	right: 4px;
+	left: auto;
+	background: rgba(0, 0, 0, .55);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 11px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.mpcrbm-gallery-sidebar-card .button.upload,
+.mpcrbm-gallery-sidebar-card .button.clear {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 10px 16px;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	text-align: center;
+}
+
+.mpcrbm-gallery-sidebar-card .button.upload {
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+	margin-bottom: 8px;
+}
+
+.mpcrbm-gallery-sidebar-card .button.upload::before {
+	content: "+ ";
+}
+
+.mpcrbm-gallery-sidebar-card .button.clear {
+	background: transparent;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* "Enable/Disable Gallery" toggle row (top of the card) and the "Gallery
+   Images" sub-label above the grid — see MPCRBM_Gallery_Imges_Settings.php. */
+.mpcrbm-gallery-sidebar-card .mpcrbm-gallery-enable-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-bottom: 14px;
+	margin-bottom: 14px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm-gallery-sidebar-card .mpcrbm-gallery-enable-row h6 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-gallery-sidebar-card .mpcrbm-gallery-images-label {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 12px;
+}
+
+.mpcrbm-gallery-sidebar-card .mpcrbm-gallery-images-label h6 {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-gallery-sidebar-card .mpcrbm-gallery-images-info {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 15px;
+	height: 15px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	font-size: 10px;
+	font-weight: 700;
+	cursor: help;
+}
+
+/* Every round-switch toggle inside this metabox (Enable Driver Information,
+   One-Way Fee, this new gallery toggle, etc.) still turns the plugin's old
+   pink when checked — assets/admin/mpcrbm_admin.css's
+   "...section .label .roundSwitchLabel input:checked + .roundSwitch" rule
+   uses var(--mpcrbm-primary) for switches nested in a ".label" div (e.g.
+   Enable Driver Information), and mp_global/assets/mp_style/mpcrbm_global.css
+   has a more generic ".mpcrbm .roundSwitchLabel..." fallback using
+   var(--color_theme) for switches that aren't (e.g. this new gallery one).
+   Neither was caught by the earlier per-component color pass, since no
+   toggle had been switched ON when that was checked visually. Both variants
+   are overridden below — the ".label" one needs the extra class repeated to
+   safely outweigh the original's own ".label" class in the specificity count. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .roundSwitchLabel input:checked + .roundSwitch {
+	background-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section .label .roundSwitchLabel.roundSwitchLabel input:checked + .roundSwitch {
+	background-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+@media (max-width: 900px) {
+	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent > .tabsItem {
+		padding-right: 0;
+	}
+
+	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
+		position: static;
+		width: 100%;
+		margin-top: 16px;
+	}
+}
+
+/* ==========================================================================
+   Add/Edit Car screen (native post.php/post-new.php) — WordPress renders
+   this screen itself, so unlike the 7 dashboard pages we can't wrap it with
+   render_shell_open()/close(). Instead MPCRBM_Admin_Shell::render_edit_screen_chrome()
+   injects the same sidebar/topbar markup via in_admin_header as a FIXED
+   overlay (not part of the normal flex layout flow), and #wpcontent gets a
+   matching margin/padding so WP's native title/editor/metaboxes shift right
+   instead of sitting underneath it. WP's admin bar/menu are still hidden via
+   the shared "body.mpcrbm-admin" rules above.
+
+   IMPORTANT: WordPress adds "post-type-mpcrbm_rent" to <body> on ALL of this
+   CPT's admin submenu pages (the other 7 dashboard pages included), not just
+   the real edit screen — scoping on that class alone pushed every shell page's
+   content an extra 240px/64px right/down, leaving a blank gap. "post-php" /
+   "post-new-php" are the classes WP only adds on the actual edit/add screens,
+   so those are what must gate this rule.
+   ========================================================================== */
+
+body.mpcrbm-admin.post-php.post-type-mpcrbm_rent #wpcontent,
+body.mpcrbm-admin.post-new-php.post-type-mpcrbm_rent #wpcontent {
+	margin-left: var(--mpcrbm-shell-sidebar-width);
+	padding-top: var(--mpcrbm-shell-topbar-height);
+}
+
+.mpcrbm-shell-sidebar.mpcrbm-shell-fixed {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	height: auto;
+	z-index: 9990;
+}
+
+.mpcrbm-shell-topbar.mpcrbm-shell-fixed {
+	position: fixed;
+	top: 0;
+	left: var(--mpcrbm-shell-sidebar-width);
+	right: 0;
+	z-index: 9980;
+}
+
+/* Add/Edit Car top bar: back link, centered title, status badge + Preview/
+   Update — replaces the generic shell topbar content (View Site link/avatar)
+   on this screen only, per reference design. Preview/Update are real buttons
+   here, but only proxy-click the native WP controls (see mpcrbm-shell.js) —
+   the actual #publish/#post-preview elements stay exactly where WP put them. */
+.mpcrbm-edit-topbar {
+	justify-content: space-between;
+}
+
+.mpcrbm-edit-topbar-back {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex: 0 0 auto;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.mpcrbm-edit-topbar-back:hover {
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+.mpcrbm-edit-topbar-title {
+	flex: 1;
+	min-width: 0;
+	text-align: center;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	padding: 0 20px;
+}
+
+.mpcrbm-edit-topbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 0 0 auto;
+}
+
+.mpcrbm-edit-topbar-status {
+	padding: 4px 12px;
+	border-radius: 100px;
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+	background: #e6f7ee;
+	color: #1c9d5b;
+}
+
+.mpcrbm-edit-topbar-status-draft {
+	background: #f3f4f6;
+	color: #6b7280;
+}
+
+.mpcrbm-edit-topbar-status-pending {
+	background: #fff6e0;
+	color: #b3821a;
+}
+
+.mpcrbm-edit-topbar-status-future {
+	background: #e0e7ff;
+	color: #3730a3;
+}
+
+/* .mpcrbm-btn's base rules all require an ".mpcrbm-shell-body" ancestor
+   (see the "Reusable components" section above), which the top bar — a
+   sibling of .mpcrbm-shell-body, not a descendant — doesn't have. Repeated
+   here rather than relying on that ancestor. */
+.mpcrbm-edit-topbar-actions .mpcrbm-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 14px;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	border: 1px solid transparent;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+	cursor: pointer;
+	text-decoration: none;
+	background-color: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+}
+
+.mpcrbm-edit-topbar-actions .mpcrbm-btn:hover {
+	opacity: .9;
+	color: #fff;
+}
+
+.mpcrbm-edit-topbar-actions .mpcrbm-btn-outline {
+	background-color: transparent;
+	border-color: var(--mpcrbm-shell-border, #e7e7ea);
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-edit-topbar-actions .mpcrbm-btn-outline:hover {
+	opacity: 1;
+	background-color: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+/* ==========================================================================
+   Add/Edit Car screen — visual polish for the native WP postboxes (Publish,
+   Featured Image, Information Settings) and title field. This is CSS-only:
+   no IDs/classes WP's own JS depends on (autosave, publish box toggles, media
+   uploader, TinyMCE) are touched, only their appearance. Scoped to the real
+   edit screen the same way as the layout rules above (.post-php/.post-new-php).
+   ========================================================================== */
+
+body.mpcrbm-admin.post-php #wpbody-content,
+body.mpcrbm-admin.post-new-php #wpbody-content {
+	padding: 0 30px 40px;
+}
+
+/* Single-column post-edit layout is now achieved by mpcrbm-shell.js swapping
+   #post-body's "columns-2" class for "columns-1" (WP's own conditional float/
+   margin rules for the 2-column layout simply stop applying once that class
+   is gone — no CSS overrides needed here). */
+
+/* Publish box (#submitdiv, the only thing left in #postbox-container-1 now
+   that Featured Image has been moved into the tabsContent sidebar) removed
+   from view per explicit request — its Update/Preview/status are already
+   replicated in the top bar. display:none rather than remove_meta_box(): the
+   real #publish/#post-preview elements must still exist in the DOM, since the
+   top bar's buttons proxy-click them (see mpcrbm-shell.js) rather than
+   duplicating their behavior — actually unregistering this metabox would stop
+   them from rendering at all and break the top bar buttons.
+   NOTE: this also removes the only UI for editing Visibility (Public/Private/
+   Password), the scheduled publish date, and "Move to Trash" — there's no
+   replacement control for those right now. Deleting a car is still possible
+   from the Car List table's row actions on the Car Rental dashboard. */
+body.mpcrbm-admin.post-php #postbox-container-1,
+body.mpcrbm-admin.post-new-php #postbox-container-1 {
+	display: none;
+}
+
+/* Screen Options removed on this screen per explicit request (it stays
+   available on the other 7 dashboard pages via a separate rule — see the
+   "mpcrbm-admin-shell" notice-hiding rule near the top of this file). */
+body.mpcrbm-admin.post-php #screen-meta-links,
+body.mpcrbm-admin.post-new-php #screen-meta-links,
+body.mpcrbm-admin.post-php #screen-meta,
+body.mpcrbm-admin.post-new-php #screen-meta {
+	display: none;
+}
+
+body.mpcrbm-admin.post-php .wrap,
+body.mpcrbm-admin.post-new-php .wrap {
+	margin-top: 24px;
+}
+
+/* "Edit Car" heading + "Add New Car" link removed per explicit request —
+   redundant now that the top bar already shows the car's title and a
+   "Back to Cars" link. */
+body.mpcrbm-admin.post-php .wrap .wp-heading-inline,
+body.mpcrbm-admin.post-new-php .wrap .wp-heading-inline,
+body.mpcrbm-admin.post-php .wrap .page-title-action,
+body.mpcrbm-admin.post-new-php .wrap .page-title-action,
+body.mpcrbm-admin.post-php .wrap hr.wp-header-end,
+body.mpcrbm-admin.post-new-php .wrap hr.wp-header-end {
+	display: none;
+}
+
+body.mpcrbm-admin.post-php #titlediv #title,
+body.mpcrbm-admin.post-new-php #titlediv #title {
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	padding: 14px 16px;
+	font-size: 20px;
+	background: #fff;
+}
+
+body.mpcrbm-admin.post-php .postbox,
+body.mpcrbm-admin.post-new-php .postbox {
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	box-shadow: var(--mpcrbm-shell-shadow);
+	background: #fff;
+}
+
+body.mpcrbm-admin.post-php .postbox .postbox-header,
+body.mpcrbm-admin.post-new-php .postbox .postbox-header {
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius) var(--mpcrbm-shell-radius) 0 0;
+}
+
+body.mpcrbm-admin.post-php .postbox .hndle,
+body.mpcrbm-admin.post-new-php .postbox .hndle {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+}
+
+body.mpcrbm-admin.post-php .postbox .inside,
+body.mpcrbm-admin.post-new-php .postbox .inside {
+	padding: 16px;
+}
+
+body.mpcrbm-admin.post-php #postdivrich,
+body.mpcrbm-admin.post-new-php #postdivrich {
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	overflow: hidden;
+}
+
+/* Title field + content editor are relocated into the "General Info" tab by
+   mpcrbm-shell.js; this just adds the spacing they'd normally get from
+   #post-body-content, since they now sit directly above the "General
+   Information Settings" heading instead. The tab panel has no id of its own
+   (only a data-tabs="#mpcrbm_general_info" attribute the tab JS matches on),
+   hence the attribute selector rather than an ID selector. */
+[data-tabs="#mpcrbm_general_info"] #titlediv {
+	margin-bottom: 16px;
+}
+
+[data-tabs="#mpcrbm_general_info"] #postdivrich {
+	margin-bottom: 12px;
+}
+
+[data-tabs="#mpcrbm_general_info"] #post-status-info {
+	margin-bottom: 24px;
+}
+
+body.mpcrbm-admin.post-php #wp-content-wrap,
+body.mpcrbm-admin.post-new-php #wp-content-wrap {
+	border-color: var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+}
+
+/* Publish box actions restyled to match the shell's button component */
+body.mpcrbm-admin.post-php #submitdiv #publish,
+body.mpcrbm-admin.post-new-php #submitdiv #publish {
+	background: var(--mpcrbm-shell-primary);
+	border-color: var(--mpcrbm-shell-primary);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	text-shadow: none;
+	box-shadow: none;
+}
+
+body.mpcrbm-admin.post-php #submitdiv #publish:hover,
+body.mpcrbm-admin.post-new-php #submitdiv #publish:hover {
+	background: var(--mpcrbm-shell-text);
+	border-color: var(--mpcrbm-shell-text);
+}
+
+body.mpcrbm-admin.post-php #submitdiv .preview.button,
+body.mpcrbm-admin.post-new-php #submitdiv .preview.button {
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	border-color: var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text);
+}
+
+body.mpcrbm-admin.post-php #submitdiv .submitdelete,
+body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
+	color: var(--mpcrbm-red);
+}
+
+/* ==========================================================================
+   General Info tab — fields grouped into cards (Vehicle Details, Capacity &
+   Stock, Pickup & Booking, Driver Information — see MPCRBM_General_Settings.php)
+   instead of one flat stacked list, per reference design. Only this tab's
+   markup uses .mpcrbm-info-card/-grid, so none of the other tabs (Date,
+   Pricing, Gallery, etc.) are affected — they keep the original stacked-
+   section look untouched. Selectors are written to fully match/exceed the
+   specificity of "#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent
+   .tabsItem section" (mp_global/assets/mp_style/mpcrbm_global.css) so these
+   rules reliably win regardless of stylesheet load order.
+   ========================================================================== */
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-note {
+	background-color: #eff6ff;
+	border: 1px solid #dbeafe;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	padding: 14px 16px;
+	margin-bottom: 20px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-note h6 {
+	margin: 0 0 4px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-note span {
+	font-size: 13px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+	box-shadow: var(--mpcrbm-shell-shadow, 0 5px 15px -5px rgba(115,125,146,.11));
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	background: #fafbfc;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header i {
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	font-size: 15px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-body {
+	padding: 18px 20px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .mpcrbm-info-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+@media (max-width: 900px) {
+	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .mpcrbm-info-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Grid cells: override the stacked/overlapping-border "list row" look those
+   sections use everywhere else, since a bordered card already frames them. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .mpcrbm-info-grid section {
+	border: none;
+	padding: 0;
+	margin-top: 0;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .mpcrbm-info-grid section .label {
+	align-items: flex-start;
+	flex-direction: column;
+	gap: 6px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .mpcrbm-info-grid section .label .formControl {
+	width: 100%;
+}
+
+/* Driver-info card: the enable/disable toggle row keeps the original bg-light
+   "section" styling (it isn't inside .mpcrbm-info-grid), only the 4 driver
+   fields underneath (Name/Phone/Email/Age) go into the 2-column grid. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card .mpcrbm_driver_info_holder .bg-light {
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	background-color: var(--mpcrbm-shell-bg, #f5f6fa);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card .mpcrbm_driver_info.mpcrbm-info-grid {
+	margin-top: 16px;
+}

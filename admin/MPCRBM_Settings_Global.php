@@ -21,23 +21,18 @@
 				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Global Settings', 'car-rental-manager'), esc_html__('Global Settings', 'car-rental-manager'), 'manage_options', 'mpcrbm_settings_page', array($this, 'settings_page'));
 			}
 			public function settings_page() {
+				MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Global Settings', 'car-rental-manager' ) );
 				?>
-                <div class="mpcrbm">
-                    <div class="global_settings">
-                        <div class="mpcrbm_panel">
-                            <div class="panel_header"><?php esc_html_e(' Global Settings', 'car-rental-manager'); ?></div>
-                            <div class="panel_body mp_zero">
-                                <div class="mpcrbm_tabs leftTabs">
-									<?php $this->settings_api->show_navigation(); ?>
-                                    <div class="tabsContent">
-										<?php $this->settings_api->show_forms(); ?>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="mpcrbm-card global_settings">
+                    <div class="mpcrbm_tabs leftTabs">
+						<?php $this->settings_api->show_navigation(); ?>
+                        <div class="tabsContent">
+							<?php $this->settings_api->show_forms(); ?>
                         </div>
                     </div>
                 </div>
 				<?php
+				MPCRBM_Admin_Shell::render_shell_close();
 			}
 			public function admin_init() {
 				$sections = $this->get_settings_sections();

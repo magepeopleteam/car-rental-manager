@@ -41,9 +41,6 @@
                             <li data-tabs-target="#mpcrbm_settings_pricing">
                                 <span class="mi mi-coins"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
-                            <li data-tabs-target="#mpcrbm_settings_gallery_images">
-                                <span class="mi mi-images"></span><?php esc_html_e( 'Gallery Images', 'car-rental-manager' ); ?>
-                            </li>
                             <li data-tabs-target="#mpcrbm_settings_ex_service">
                                 <span class="mi mi-basket-shopping-plus"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
                             </li>

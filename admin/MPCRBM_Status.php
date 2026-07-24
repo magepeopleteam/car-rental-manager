@@ -26,11 +26,12 @@
                 $is_modern = version_compare( $wc_v, '4.8', '>' );
 				$from_name  = get_option( 'woocommerce_email_from_name' );
 				$from_email = get_option( 'woocommerce_email_from_address' );
+				MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Status', 'car-rental-manager' ) );
 				?>
-                <div class="wrap"></div>
-                <div class="mpcrbm">
+                <div class="mpcrbm-card">
+                <div class="mpcrbm-card-content">
 					<?php do_action( 'mpcrbm_status_notice_sec' ); ?>
-                    <div class=_dShadow_6_adminLayout">
+                    <div class="_dShadow_6_adminLayout">
                         <h2 class="textCenter"><?php echo esc_html( $label ) . '  ' . esc_html__( 'For Woocommerce Environment Status', 'car-rental-manager' ); ?></h2>
                         <div class="divider"></div>
                         <table>
@@ -73,7 +74,9 @@
                         </table>
                     </div>
                 </div>
+                </div>
 				<?php
+				MPCRBM_Admin_Shell::render_shell_close();
 			}
 		}
 		new MPCRBM_Status();
