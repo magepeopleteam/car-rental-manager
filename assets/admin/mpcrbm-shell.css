@@ -1151,9 +1151,8 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	gap: 10px;
 	border: none;
 	border-left: 0;
-	border-bottom: 2px solid transparent;
-	border-radius: 0;
-	padding: 10px 14px;
+	border-radius: 100px;
+	padding: 10px 16px;
 	color: var(--mpcrbm-shell-text-faded, #788291);
 	background-color: transparent;
 	font-size: 14px;
@@ -1169,9 +1168,8 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 }
 
 /* The vertical-list divider pseudo-element (a full-height bottom border per
-   stacked item) doesn't make sense once the tabs run horizontally. The
-   active tab's underline further below is a plain border-bottom on the <li>
-   itself, not this pseudo-element. */
+   stacked item) doesn't make sense once the tabs run horizontally, and the
+   soft-pill active state further below needs no divider at all. */
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target]::after,
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active::after {
 	content: none;
@@ -1184,15 +1182,15 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	box-shadow: none;
 }
 
-/* Active tab only — flat (no pill background, matching the tab bar's own
-   background) with bolder primary-blue text/icon and a bottom-border
-   underline as the sole "selected" indicator, per explicit request. */
+/* Active tab only — soft blue-tinted pill (not solid, not white) with
+   bolder primary-blue text/icon, per explicit request. #eaf3ff matches the
+   same light-blue tint mpcrbm_admin.css already uses for this list's hover
+   state (#EAF6FF), so the active pill reads as a natural extension of it. */
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active,
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active:hover {
-	background-color: transparent;
+	background-color: #eaf3ff;
 	color: var(--mpcrbm-shell-primary, #1d7bff);
 	font-weight: 600;
-	border-bottom-color: var(--mpcrbm-shell-primary, #1d7bff);
 	transform: none;
 	box-shadow: none;
 }
@@ -1489,6 +1487,37 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section .label .roundSwitchLabel.roundSwitchLabel input:checked + .roundSwitch {
 	background-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+/* Loading state on a round-switch toggle while its AJAX save is in flight
+   (mpcrbm_admin.js's ".mpcrbm_switch_checkbox" click handler) — shown BEFORE
+   the corresponding "#<id>_holder" card body reveals/hides, since that only
+   happens once the request's success callback actually runs. */
+.roundSwitchLabel.mpcrbm-switch-loading {
+	position: relative;
+	pointer-events: none;
+}
+
+.roundSwitchLabel.mpcrbm-switch-loading .roundSwitch {
+	opacity: .5;
+}
+
+.roundSwitchLabel.mpcrbm-switch-loading::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 14px;
+	height: 14px;
+	margin: -7px 0 0 -7px;
+	border: 2px solid rgba(0, 0, 0, .15);
+	border-top-color: var(--mpcrbm-shell-primary, #1d7bff);
+	border-radius: 50%;
+	animation: mpcrbm-switch-spin .6s linear infinite;
+}
+
+@keyframes mpcrbm-switch-spin {
+	to { transform: rotate(360deg); }
 }
 
 @media (max-width: 900px) {
@@ -1919,12 +1948,15 @@ body.mpcrbm-admin.post-new-php #wpbody-content {
 }
 
 /* #post-body-content is empty now that mpcrbm-shell.js has moved its real
-   contents (title, editor, word-count row) into the Basic Information card —
-   but it's still float:left;width:100% per WP core (common.css), unconditional
-   on the columns-1/2 class, and a stray sibling left behind by that move
-   (.uploader-editor, the drag-and-drop overlay — only #titlediv/#postdivrich/
-   #post-status-info get relocated) was still sitting inside it. Hiding it
-   removes the blank gap it left above the metabox tabs. */
+   contents (title, editor) into the Basic Information card — but it's still
+   float:left;width:100% per WP core (common.css), unconditional on the
+   columns-1/2 class, and a stray sibling left behind by that move
+   (.uploader-editor, the drag-and-drop overlay — only #titlediv/#postdivrich
+   get relocated) was still sitting inside it. Hiding it removes the blank
+   gap it left above the metabox tabs — and, as a side effect, also
+   permanently hides #post-status-info (word count/autosave-status/resize-
+   handle row), which is deliberately left un-relocated here per explicit
+   request to remove it (see mpcrbm-shell.js). */
 body.mpcrbm-admin.post-php #post-body-content,
 body.mpcrbm-admin.post-new-php #post-body-content {
 	display: none;
@@ -2103,8 +2135,9 @@ body.mpcrbm-admin.post-new-php #postdivrich .wp-editor-area {
 	border-bottom: none;
 }
 
-[data-tabs="#mpcrbm_general_info"] #post-status-info {
-	margin-bottom: 24px;
+div.mce-panel {
+	border: 0;
+	background: #f5f5f5;
 }
 
 body.mpcrbm-admin.post-php #wp-content-wrap,
@@ -2199,6 +2232,52 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	padding: 16px 20px;
 	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
 	background: #f2f4f7;
+}
+
+/* Card-header enable/disable switch (One-Way Fee, Tiered Discount Rules,
+   Day-wise Pricing, Seasonal Pricing — MPCRBM_Price_Settings.php — and
+   Extra Service Options, MPCRBM_Extra_Service.php) — pushed to the header's
+   right edge via margin-left rather than justify-content:space-between on
+   the shared header class above, since that would also space out every
+   OTHER card's plain icon+h3 header (only 2 children, no third element to
+   push away). */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header .roundSwitchLabel {
+	margin-left: auto;
+}
+
+/* Header subtitle (the description text moved up from each card's body,
+   wrapped alongside its <h3> so it stacks on its own line underneath —
+   <h3>'s block display already pushes this span down, same mechanism the
+   "Enable Driver Information"-style h6+span.desc rows rely on elsewhere in
+   this plugin). */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header h3 {
+	margin: 0 0 2px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header .desc {
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Extra Service Options card — .mpcrbm-info-card-body's only child is the
+   existing ".settings_area[data-collapse]" wrapper (mp_global/assets/
+   mp_style/mpcrbm_global.css already hides it via "display:none" until its
+   "mActive" class is added/removed by the real, working data-collapse-target
+   click handler, mp_global/assets/mp_style/mpcrbm_global.js). Padding is
+   moved from the body onto that wrapper instead of living on both, so the
+   body collapses to nothing (no empty padded box) while the toggle is off,
+   without touching ".settings_area" itself — MPCRBM_Custom_Layout's "Add
+   Extra New Service" button handler (mp_global/assets/admin/
+   mpcrbm_admin_settings.js) does $(this).closest('.settings_area') to find
+   its row-insertion target, so that class/attribute has to stay exactly
+   where it already is. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm_extra_services_setting .mpcrbm-info-card-body {
+	padding: 0;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm_extra_services_setting .mpcrbm-info-card-body .settings_area {
+	padding: 18px 20px;
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header i {

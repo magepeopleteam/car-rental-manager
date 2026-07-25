@@ -41,9 +41,6 @@
                             <li data-tabs-target="#mpcrbm_settings_pricing">
                                 <span class="mi mi-coins"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
-                            <li data-tabs-target="#mpcrbm_settings_ex_service">
-                                <span class="mi mi-basket-shopping-plus"></span><?php esc_html_e( 'Extra Service', 'car-rental-manager' ); ?>
-                            </li>
                             <li data-tabs-target="#wbtm_settings_tax">
                                 <span class="mi mi-calendar-event-tax"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
                             </li>
@@ -51,7 +48,7 @@
                                 <span class="mi mi-map-location-track"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_multi_location">
-                                <span class="mi mi-map-marker"></span><?php esc_html_e( 'Multi-Location Fee', 'car-rental-manager' ); ?>
+                                <span class="mi mi-map-marker"></span><?php esc_html_e( 'Fee & Deposit', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_manage_faq">
                                 <span class="mi mi-messages-question"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>
@@ -61,9 +58,6 @@
                             </li>
                             <li data-tabs-target="#mpcrbm_term_and_condition">
                                 <span class="mi mi-wishlist-star"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
-                            </li>
-                            <li data-tabs-target="#mpcrbm_security_deposit">
-                                <span class="mi mi-wishlist-star"></span><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?>
                             </li>
                             <?php
                                 // Allow pro plugins to add their own tabs

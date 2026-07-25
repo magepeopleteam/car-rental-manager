@@ -84,10 +84,18 @@
 						</section>
 						</div>
 					</div>
+
+					<?php
+					// "Security Deposit" card (MPCRBM_Security_Deposit_Setting::security_deposit_settings())
+					// moved here, and out of its own separate tab — this tab was renamed from
+					// "Multi-Location Fee" to "Fee & Deposit" to reflect it, and the "Security
+					// Deposit" nav <li> was removed from MPCRBM_Settings.php.
+					do_action( 'mpcrbm_multi_location_tab_after_pricing', $post_id );
+					?>
 				</div>
 				<?php
 			}
-			
+
 			private function render_location_price_row( $index, $price_data, $location_terms ) {
 				$pickup_location = isset( $price_data['pickup_location'] ) ? $price_data['pickup_location'] : '';
 				$dropoff_location = isset( $price_data['dropoff_location'] ) ? $price_data['dropoff_location'] : '';

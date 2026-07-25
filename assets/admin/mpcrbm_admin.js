@@ -195,12 +195,23 @@
 			$(this).siblings().slideToggle(300);
 		});
 		$(document).on('click', '.mpcrbm_switch_checkbox', function() {
-			let checked = $(this).is(':checked') ? 1 : 0;
+			let $checkbox = $(this);
+			let checked = $checkbox.is(':checked') ? 1 : 0;
 			let post_id = $('[name="mpcrbm_post_id"]').val();
-			let metaKey  = $(this).attr('id');
+			let metaKey  = $checkbox.attr('id');
 			let containerId =metaKey+'_holder';
 
-			var heading = $(this).closest('.mpcrbm-section').find('.mpcrbm-heading');
+			var heading = $checkbox.closest('.mpcrbm-section').find('.mpcrbm-heading');
+
+			// Visible loading state on the switch itself while the AJAX call is
+			// in flight, so there's feedback right away instead of the card
+			// body just silently sitting there until the request finishes —
+			// it's this callback's success handler (below), not the click
+			// itself, that actually reveals/hides #<metaKey>_holder.
+			let $switchLabel = $checkbox.closest('.roundSwitchLabel');
+			$checkbox.prop('disabled', true);
+			$switchLabel.addClass('mpcrbm-switch-loading');
+
 			$.ajax({
 				type: 'POST',
 				url: mpcrbm_ajax_url,
@@ -227,6 +238,17 @@
 					}else{
 						alert( response.data.message );
 					}
+				},
+				error: function() {
+					// Request failed outright — revert the switch rather than
+					// leaving it checked/unchecked out of sync with the saved
+					// (unsaved) meta value.
+					$checkbox.prop('checked', checked !== 1);
+					alert('Something went wrong while saving this setting. Please try again.');
+				},
+				complete: function() {
+					$checkbox.prop('disabled', false);
+					$switchLabel.removeClass('mpcrbm-switch-loading');
 				}
 			});
 		});

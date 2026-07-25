@@ -12,7 +12,11 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
     class MPCRBM_Security_Deposit_Setting {
 
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'security_deposit_settings' ], 10, 1 );
+            // Renders inside the "Fee & Deposit" tab (formerly "Multi-Location Fee")
+            // rather than as its own tab — see MPCRBM_Multi_Location_Settings::
+            // multi_location_settings()'s do_action() call and the removed
+            // "Security Deposit" nav <li> in MPCRBM_Settings.php.
+            add_action( 'mpcrbm_multi_location_tab_after_pricing', [ $this, 'security_deposit_settings' ], 10, 1 );
             add_action( 'save_post', [ $this, 'save_security_deposit_settings' ] );
         }
 
@@ -56,7 +60,7 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             }
             </style>
 
-            <div class="tabsItem" data-tabs="#mpcrbm_security_deposit">
+            <div class="mpcrbm-security-deposit-setting">
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-header">
                         <i class="fas fa-shield-halved"></i>

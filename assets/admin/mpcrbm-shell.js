@@ -67,7 +67,12 @@
 		// Label for the title field, matching the same pattern as the
 		// description label above — inserted right before #titlediv.
 		var $titleLabel = $('<h6 class="mpcrbm-content-editor-label">Vehicle Title</h6>');
-		$basicInfoCard.find('.mpcrbm-info-card-body').append($titleLabel, $titlediv, $descriptionLabel, $('#postdivrich'), $('#post-status-info'));
+		// #post-status-info (word count/autosave-status/resize-handle row) is
+		// deliberately NOT relocated here, unlike the other elements — left in
+		// its original position inside #post-body-content, which is already
+		// hidden via display:none below, so it's simply never shown at all
+		// (removed per explicit request).
+		$basicInfoCard.find('.mpcrbm-info-card-body').append($titleLabel, $titlediv, $descriptionLabel, $('#postdivrich'));
 		$generalInfoTab.prepend($basicInfoCard);
 	}
 

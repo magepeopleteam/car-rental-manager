@@ -14,7 +14,10 @@
 				//********************//
 				add_action( 'mpcrbm_extra_service_item', array( $this, 'extra_service_item' ) );
 				//****************************//
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'ex_service_settings' ] );
+				// Renders inside the Pricing tab (after Seasonal Pricing) rather than as its
+				// own tab — see MPCRBM_Price_Settings::price_settings()'s do_action() call and
+				// the removed "Extra Service" nav <li> in MPCRBM_Settings.php.
+				add_action( 'mpcrbm_pricing_tab_after_seasonal', [ $this, 'ex_service_settings' ] );
 				//*******************//
 				add_action( 'wp_ajax_mpcrbm_get_ex_service', array( $this, 'mpcrbm_get_ex_service' ) );
 				// NOTE: no nopriv registration — this handler mutates post meta and requires
@@ -190,22 +193,17 @@
 				$checked            = $display == 'off' ? '' : 'checked';
 				$all_ex_services_id = MPCRBM_Query::query_post_id( 'mpcrbm_ex_services' );
 				?>
-                <div class="tabsItem mpcrbm_extra_services_setting" data-tabs="#mpcrbm_settings_ex_service">
+                <div class="mpcrbm_extra_services_setting">
                     <div class="mpcrbm-info-card">
                         <div class="mpcrbm-info-card-header">
-                            <i class="fas fa-basket-shopping"></i>
-                            <h3><?php esc_html_e( 'Extra Service Options', 'car-rental-manager' ); ?></h3>
-                        </div>
-                        <div class="mpcrbm-info-card-body">
-                    <section>
-                        <label class="label">
+                            <i class="fas fa-shopping-basket"></i>
                             <div>
-                                <h6><?php esc_html_e( 'Display Extra Services', 'car-rental-manager' ); ?></h6>
+                                <h3><?php esc_html_e( 'Extra Service Options', 'car-rental-manager' ); ?></h3>
                                 <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_extra_services' ); ?></span>
                             </div>
 							<?php MPCRBM_Custom_Layout::switch_button( 'display_mpcrbm_extra_services', $checked ); ?>
-                        </label>
-                    </section>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <div data-collapse="#display_mpcrbm_extra_services" class="settings_area <?php echo esc_attr( $active ); ?>">
                         <section>
                             <label class="label">

@@ -110,20 +110,15 @@
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-header">
                         <i class="fas fa-layer-group"></i>
-                        <h3><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></h3>
-                    </div>
-                    <div class="mpcrbm-info-card-body">
-                    <section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e('Enable Tiered Discount Rules', 'car-rental-manager'); ?></h6>
-                                <span class="desc"><?php esc_html_e('By default tired discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_tired_discount', $tired_checked ); ?>
+                        <div>
+                            <h3><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></h3>
+                            <span class="desc"><?php esc_html_e('By default tired discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
                         </div>
-                    </section>
-                    <section class="mpcrbm-price-content-container" id="mpcrbm_enable_tired_discount_holder" style="display: <?php echo esc_attr( $tired_display )?>">
-                        
+                        <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_tired_discount', $tired_checked ); ?>
+                    </div>
+                    <div class="mpcrbm-info-card-body" id="mpcrbm_enable_tired_discount_holder" style="display: <?php echo esc_attr( $tired_display )?>">
+                    <section>
+
                         <div>
                             <h6><?php esc_html_e('Set discount percentages', 'car-rental-manager'); ?></h6>
                             <span class="desc"><?php esc_html_e( 'Set discount percentages based on rental duration. Longer rentals get better rates.', 'car-rental-manager' ); ?></span>
@@ -218,19 +213,14 @@
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-header">
                         <i class="fas fa-calendar-week"></i>
-                        <h3><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></h3>
-                    </div>
-                    <div class="mpcrbm-info-card-body">
-                    <section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e('Enable Day Wise Discount Rules', 'car-rental-manager'); ?></h6>
-                                <span class="desc"><?php esc_html_e('By default day wise discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_day_wise_discount', $day_wise_checked ); ?>
+                        <div>
+                            <h3><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></h3>
+                            <span class="desc"><?php esc_html_e('By default day wise discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
                         </div>
-                    </section>
-                    <section class="mpcrbm-price-content-container" id="mpcrbm_enable_day_wise_discount_holder" style="display: <?php echo esc_attr( $day_wise_display )?>">
+                        <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_day_wise_discount', $day_wise_checked ); ?>
+                    </div>
+                    <div class="mpcrbm-info-card-body" id="mpcrbm_enable_day_wise_discount_holder" style="display: <?php echo esc_attr( $day_wise_display )?>">
+                    <section>
                         <div>
                             <h6><?php esc_html_e('Specific Rates', 'car-rental-manager'); ?></h6>
                             <span class="desc"><?php esc_html_e( 'Set specific rates for each day of the week. Leave empty to use base daily price.', 'car-rental-manager' ); ?></span>
@@ -268,19 +258,14 @@
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-header">
                         <i class="fas fa-umbrella-beach"></i>
-                        <h3><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></h3>
-                    </div>
-                    <div class="mpcrbm-info-card-body">
-                    <section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e('Enable Seasonal Discount Rules', 'car-rental-manager'); ?></h6>
-                                <span class="desc"><?php esc_html_e('By default seasonal discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_seasonal_discount', $seasonal_checked ); ?>
+                        <div>
+                            <h3><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></h3>
+                            <span class="desc"><?php esc_html_e('By default seasonal discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
                         </div>
-                    </section>
-                    <section class="mpcrbm-price-content-container" id="mpcrbm_enable_seasonal_discount_holder" style="display: <?php echo esc_attr( $seasonal_display )?>">
+                        <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_seasonal_discount', $seasonal_checked ); ?>
+                    </div>
+                    <div class="mpcrbm-info-card-body" id="mpcrbm_enable_seasonal_discount_holder" style="display: <?php echo esc_attr( $seasonal_display )?>">
+                    <section>
                         <h6><?php esc_html_e('Seasonal Discount Rules', 'car-rental-manager'); ?></h6>
                         <span class="desc"><?php esc_html_e('Create seasonal pricing rules that override base rates during specific date ranges. Choose between fixed prices or percentage adjustments.', 'car-rental-manager'); ?></span>
                         <div class="mpcrbm-warning-banner">
@@ -371,19 +356,14 @@
                     <div class="mpcrbm-info-card">
                         <div class="mpcrbm-info-card-header">
                             <i class="fas fa-route"></i>
-                            <h3><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h3>
-                        </div>
-                        <div class="mpcrbm-info-card-body">
-                    <section>
-                        <div style="display:flex;align-items:center;justify-content:space-between;">
                             <div>
-                                <h6><?php esc_html_e( 'Enable One-Way Fee', 'car-rental-manager' ); ?></h6>
+                                <h3><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h3>
                                 <span class="desc"><?php esc_html_e( 'Charge an extra fee when pickup and drop-off locations differ.', 'car-rental-manager' ); ?></span>
                             </div>
                             <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_car_one_way_enabled', $one_way_checked ); ?>
                         </div>
-                    </section>
-                    <section style="display:<?php echo esc_attr( $one_way_display ); ?>;" id="mpcrbm_car_one_way_enabled_holder">
+                        <div class="mpcrbm-info-card-body" id="mpcrbm_car_one_way_enabled_holder" style="display:<?php echo esc_attr( $one_way_display ); ?>;">
+                    <section>
                         <label class="label" style="margin-bottom:12px;">
                             <div>
                                 <h6><?php esc_html_e( 'Fee Type', 'car-rental-manager' ); ?></h6>
@@ -441,6 +421,17 @@
                     <!-- Manual price: set_price_meta_box() renders its own Tiered/
                          Day-wise/Seasonal cards below, each with its own header. -->
                     <?php echo $this->set_price_meta_box( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+                    <?php
+                    // "Extra Service Options" card (MPCRBM_Extra_Service::ex_service_settings())
+                    // moved here, after Seasonal Pricing, and out of its own separate tab — see
+                    // the removed "Extra Service" <li> in MPCRBM_Settings.php's tab nav. Fired as
+                    // its own action (rather than just relocating the class's existing
+                    // mpcrbm_settings_tab_content hook) so the card renders at this exact
+                    // position within the Pricing tabsItem instead of as a whole separate
+                    // tabsItem div of its own.
+                    do_action( 'mpcrbm_pricing_tab_after_seasonal', $post_id );
+                    ?>
                 </div>
 				<?php
 			}
