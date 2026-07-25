@@ -649,6 +649,117 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 	background: var(--mpcrbm-shell-primary);
 }
 
+/* Car Inventory table — modernized: rounded card container instead of a bare
+   collapsed table, flat rows with a hover highlight instead of zebra
+   striping, more generous padding, and softer borders/radii matching the
+   shell's tokens. Overrides assets/admin/mpcrbm_manage_taxonomy.css. */
+.mpcrbm-shell-body .mpcrbm_car_list_table_container {
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	overflow: hidden;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_thead {
+	background: var(--mpcrbm-shell-bg);
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_table th {
+	padding: 12px 16px;
+	color: var(--mpcrbm-shell-text-faded);
+	font-size: 11px;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_table td {
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+/* Flat rows instead of zebra striping — hover highlight only. */
+.mpcrbm-shell-body .mpcrbm_car_list_car_table tr:nth-child(even) {
+	background-color: transparent;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_table tbody tr:hover {
+	background-color: var(--mpcrbm-shell-bg);
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_table .car-title {
+	font-size: 14px;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_car_table input[type="checkbox"].checkbox {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--mpcrbm-shell-primary);
+	cursor: pointer;
+}
+
+.mpcrbm-shell-body .mpcrbm_action_btn {
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	transition: background-color .15s, color .15s;
+}
+
+.mpcrbm-shell-body .badge,
+.mpcrbm-shell-body .status-published {
+	border-radius: 100px;
+	font-weight: 600;
+	letter-spacing: .2px;
+}
+
+/* Search/filter row — a plain unscoped "input[type=text], select {...}" rule
+   in mpcrbm_manage_taxonomy.css styles every text input/select on the page;
+   these IDs/this container are specific enough to safely override just this
+   row without touching that broader (and rather risky/global) rule. Search
+   gets a magnifying-glass icon, selects get a custom chevron (native select
+   styling can't be fully replaced without JS, but a plain, consistently
+   sized/bordered/focused input row already reads as far more modern). */
+.mpcrbm-shell-body .mpcrbm_car_list_search_filter {
+	align-items: center;
+}
+
+.mpcrbm-shell-body #mpcrbm_searchInput {
+	flex: 1 1 220px;
+	min-width: 180px;
+	padding: 10px 14px 10px 36px;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	font-size: 14px;
+	color: var(--mpcrbm-shell-text);
+	background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23788291' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") no-repeat 12px center;
+	background-size: 15px;
+	transition: border-color .15s;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_search_filter select {
+	flex: 0 0 auto;
+	padding: 10px 30px 10px 14px;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	font-size: 14px;
+	color: var(--mpcrbm-shell-text);
+	background-color: #fff;
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23788291' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 10px center;
+	background-size: 12px;
+	transition: border-color .15s;
+}
+
+.mpcrbm-shell-body #mpcrbm_searchInput:focus,
+.mpcrbm-shell-body .mpcrbm_car_list_search_filter select:focus {
+	border-color: var(--mpcrbm-shell-primary);
+	outline: none;
+}
+
 /* Car title + row action icons — overriding the same blanket pink ".mpcrbm a"
    link-color rule mentioned above (car-title and .mpcrbm_action_btn are both
    plain <a> tags with no color of their own, so they fell back to it). */
