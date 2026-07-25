@@ -33,15 +33,13 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_term_and_condition">
-                <h2><?php esc_html_e( 'Term Condition', 'car-rental-manager' ); ?></h2>
-                <p><?php esc_html_e( 'Manage Term Condition settings.', 'car-rental-manager' ); ?></p>
-
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>
-                <section class="bg-light">
-                    <h6><?php esc_html_e( 'Manage Term Condition', 'car-rental-manager' ); ?></h6>
-                    <span><?php esc_html_e( 'Configure and manage term condition', 'car-rental-manager' ); ?></span>
-                </section>
-
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-file-contract"></i>
+                        <h3><?php esc_html_e( 'Manage Term Condition', 'car-rental-manager' ); ?></h3>
+                    </div>
+                    <div class="mpcrbm-info-card-body">
                 <section class="mpcrbm_faq_question_holder">
                     <div class="mpcrbm_all_term_condition">
                         <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
@@ -85,7 +83,8 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
                     <input type="hidden" id="mpcrbm_added_term_condition_input" name="mpcrbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_terms_data)); ?>">
                 </section>
-
+                    </div>
+                </div>
 
             </div>
 

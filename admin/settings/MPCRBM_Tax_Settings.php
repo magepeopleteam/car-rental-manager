@@ -16,20 +16,20 @@
 			public function tab_content( $post_id ) {
 				?>
                 <div class="tabsItem" data-tabs="#wbtm_settings_tax">
-                    <h2><?php esc_html_e( 'Tax Configuration', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'Tax Configuration settings.', 'car-rental-manager' ); ?></p>
 					<?php
 						$tax_status    = MPCRBM_Global_Function::get_post_info( $post_id, '_tax_status' );
 						$tax_class     = MPCRBM_Global_Function::get_post_info( $post_id, '_tax_class' );
 						$all_tax_class = MPCRBM_Global_Function::all_tax_list();
 					?>
 					<?php wp_nonce_field( 'save_tax_settings', 'tax_settings_nonce' ); ?>
-                    <section class="bg-light">
-                        <h6><?php esc_html_e( 'Tax Settings Information', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Configure and manage tax settings', 'car-rental-manager' ); ?></span>
-                    </section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-receipt"></i>
+                            <h3><?php esc_html_e( 'Tax Settings Information', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
 					<?php if ( get_option( 'woocommerce_calc_taxes' ) == 'yes' ) { ?>
-                        <div class="">
+                        <div class="mpcrbm-info-grid">
                             <section>
                                 <label class="label">
                                     <div>
@@ -77,6 +77,8 @@
 							<?php MPCRBM_Layout::msg( esc_html__( 'Tax not active. Please add Tax settings from woocommerce.', 'car-rental-manager' ) ); ?>
                         </div>
 					<?php } ?>
+                        </div>
+                    </div>
                 </div>
 				<?php
 			}

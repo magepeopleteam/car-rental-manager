@@ -24,12 +24,12 @@
 				}
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_setting_operation_area">
-                    <h2><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'You can choose multiple regions as your operational area', 'car-rental-manager' ); ?></p>
-                    <section class="bg-light">
-						<h6><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h6>
-						<span><?php esc_html_e( 'Operation Area settings', 'car-rental-manager' ); ?></span>
-					</section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-map-location-dot"></i>
+                            <h3><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
 					<section>
 						<label class="label">
 							<div>
@@ -62,7 +62,9 @@
 							</select>
 						</label>
 					</section>
-				</div>
+                        </div>
+                    </div>
+                </div>
 				<?php
 			}
 

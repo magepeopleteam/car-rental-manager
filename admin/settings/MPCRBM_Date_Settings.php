@@ -104,13 +104,13 @@
 				$date_type   = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_date_type', 'repeated' );
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_settings_date">
-                    <h2><?php esc_html_e( 'Date Settings', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'Here you can configure date.', 'car-rental-manager' ); ?></p>
                     <!-- General Date config -->
-                    <section class="bg-light">
-                        <h6><?php esc_html_e( 'General Date Configuration', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Here you can configure general date', 'car-rental-manager' ); ?></span>
-                    </section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-calendar-check"></i>
+                            <h3><?php esc_html_e( 'General Date Configuration', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <section>
                         <label class="label">
                             <div>
@@ -201,10 +201,14 @@
 							<?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_available_for_all_time', $checked ); ?>
                         </label>
                     </section>
-                    <section class="bg-light" style="margin-top: 20px;">
-                        <h6><?php esc_html_e( 'Schedule Date Configuration', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Here you can configure Schedule date.', 'car-rental-manager' ); ?></span>
-                    </section>
+                        </div>
+                    </div>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-clock"></i>
+                            <h3><?php esc_html_e( 'Schedule Date Configuration', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <section>
                         <table>
                             <thead>
@@ -226,10 +230,14 @@
                         </table>
                     </section>
                     <!-- End Schedule date config -->
-                    <section class="bg-light" style="margin-top: 20px;">
-                        <h6><?php esc_html_e( 'Off Days & Dates Configuration', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Here you can configure Off Days & Dates.', 'car-rental-manager' ); ?></span>
-                    </section>
+                        </div>
+                    </div>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-calendar-xmark"></i>
+                            <h3><?php esc_html_e( 'Off Days & Dates Configuration', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <section data-collapse="#mp_repeated" class="<?php echo esc_attr( $date_type == 'repeated' ? 'mActive' : '' ); ?>">
                         <label class="label">
                             <div>
@@ -283,6 +291,8 @@
                         </label>
                     </section>
                     <!-- End Off days and date config -->
+                        </div>
+                    </div>
                 </div>
 				<?php
 			}

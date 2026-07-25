@@ -31,16 +31,6 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             $unit     = $type === 'percentage' ? '%' : $currency;
             ?>
             <style>
-            .mpcrbm-sd-card{background:#fff;border:1px solid #e5e9f0;border-radius:12px;overflow:hidden;margin-bottom:14px;}
-            .mpcrbm-sd-card-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f0f2f5;}
-            .mpcrbm-sd-card-header-info{display:flex;align-items:center;gap:12px;}
-            .mpcrbm-sd-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;}
-            .mpcrbm-sd-icon-blue{background:#eff6ff;color:#2563eb;}
-            .mpcrbm-sd-icon-green{background:#f0fdf4;color:#16a34a;}
-            .mpcrbm-sd-icon-orange{background:#fff7ed;color:#ea580c;}
-            .mpcrbm-sd-label{font-size:14px;font-weight:600;color:#111827;margin:0 0 2px;}
-            .mpcrbm-sd-desc{font-size:12px;color:#6b7280;margin:0;}
-            .mpcrbm-sd-body{padding:20px;}
             .mpcrbm-sd-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
             .mpcrbm-sd-type-option{position:relative;}
             .mpcrbm-sd-type-option input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
@@ -67,20 +57,19 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             </style>
 
             <div class="tabsItem" data-tabs="#mpcrbm_security_deposit">
-                <h2><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></h2>
-                <p><?php esc_html_e( 'Configure security deposit settings for this vehicle.', 'car-rental-manager' ); ?></p>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-shield-halved"></i>
+                        <h3><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></h3>
+                    </div>
+                    <div class="mpcrbm-info-card-body">
 
-                <!-- Enable toggle card -->
-                <div class="mpcrbm-sd-card">
-                    <div class="mpcrbm-sd-card-header">
-                        <div class="mpcrbm-sd-card-header-info">
-                            <div class="mpcrbm-sd-icon mpcrbm-sd-icon-blue">
-                                <span class="dashicons dashicons-shield"></span>
-                            </div>
-                            <div>
-                                <p class="mpcrbm-sd-label"><?php esc_html_e( 'Enable Security Deposit', 'car-rental-manager' ); ?></p>
-                                <p class="mpcrbm-sd-desc"><?php esc_html_e( 'Require a refundable deposit at the time of booking.', 'car-rental-manager' ); ?></p>
-                            </div>
+                <!-- Enable toggle -->
+                <section>
+                    <div class="label">
+                        <div>
+                            <h6><?php esc_html_e( 'Enable Security Deposit', 'car-rental-manager' ); ?></h6>
+                            <span class="desc"><?php esc_html_e( 'Require a refundable deposit at the time of booking.', 'car-rental-manager' ); ?></span>
                         </div>
                         <label class="roundSwitchLabel">
                             <input type="checkbox"
@@ -91,24 +80,19 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
                             <span class="roundSwitch" data-collapse-target="#mpcrbm_security_deposit_enable"></span>
                         </label>
                     </div>
-                </div>
+                </section>
 
-                <!-- Configuration card (shown when enabled) -->
-                <div class="mpcrbm-sd-card" id="mpcrbm_security_deposit_enable_holder" style="display:<?php echo esc_attr( $section_display ); ?>">
+                <!-- Configuration (shown when enabled) -->
+                <section id="mpcrbm_security_deposit_enable_holder" style="display:<?php echo esc_attr( $section_display ); ?>">
 
                     <!-- Deposit type -->
-                    <div class="mpcrbm-sd-card-header">
-                        <div class="mpcrbm-sd-card-header-info">
-                            <div class="mpcrbm-sd-icon mpcrbm-sd-icon-green">
-                                <span class="dashicons dashicons-tag"></span>
-                            </div>
-                            <div>
-                                <p class="mpcrbm-sd-label"><?php esc_html_e( 'Deposit Type', 'car-rental-manager' ); ?></p>
-                                <p class="mpcrbm-sd-desc"><?php esc_html_e( 'Choose how the deposit amount is calculated.', 'car-rental-manager' ); ?></p>
-                            </div>
+                    <label class="label" style="align-items: start; margin-bottom: 12px;">
+                        <div>
+                            <h6><?php esc_html_e( 'Deposit Type', 'car-rental-manager' ); ?></h6>
+                            <span class="desc"><?php esc_html_e( 'Choose how the deposit amount is calculated.', 'car-rental-manager' ); ?></span>
                         </div>
-                    </div>
-                    <div class="mpcrbm-sd-body">
+                    </label>
+                    <div>
                         <div class="mpcrbm-sd-type-grid">
                             <div class="mpcrbm-sd-type-option">
                                 <input type="radio" name="mpcrbm_security_deposit_type" value="fixed"
@@ -156,6 +140,8 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
                                 <?php esc_html_e( 'Calculated as a % of the total booking price at checkout.', 'car-rental-manager' ); ?>
                             </span>
                         </p>
+                    </div>
+                </section>
                     </div>
                 </div>
             </div>

@@ -191,12 +191,12 @@
 				$all_ex_services_id = MPCRBM_Query::query_post_id( 'mpcrbm_ex_services' );
 				?>
                 <div class="tabsItem mpcrbm_extra_services_setting" data-tabs="#mpcrbm_settings_ex_service">
-                    <h2><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'Configure extra services for this vehicle', 'car-rental-manager' ); ?></p>
-                    <section class="bg-light">
-                        <h6><?php esc_html_e( 'Extra Service Options', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Enable or disable extra services and select predefined services', 'car-rental-manager' ); ?></span>
-                    </section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-basket-shopping"></i>
+                            <h3><?php esc_html_e( 'Extra Service Options', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <section>
                         <label class="label">
                             <div>
@@ -226,6 +226,8 @@
                         </section>
                         <div class="mpcrbm_extra_service_area">
 							<?php $this->ex_service_table( $service_id, $post_id ); ?>
+                        </div>
+                    </div>
                         </div>
                     </div>
                 </div>

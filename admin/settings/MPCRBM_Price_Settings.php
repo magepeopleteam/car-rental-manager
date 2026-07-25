@@ -107,11 +107,12 @@
                     </div>
                 </div>-->
 
-                <div class="mpcrbm-section">
-                    <section class="bg-light <?php echo esc_attr( $tired_toggle_class );?>">
-                        <h6><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></h6>
-                        <span><?php esc_html_e('Add tiered discount rules', 'car-rental-manager'); ?></span>
-                    </section>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-layer-group"></i>
+                        <h3><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></h3>
+                    </div>
+                    <div class="mpcrbm-info-card-body">
                     <section>
                         <div class="label">
                             <div>
@@ -211,13 +212,15 @@
                         </div>
                         <button type="button" id="mpcrbm-add-tier" class="_themeButton_xs_mT_xs mpcrbm-price-add-btn"><i class="mi mi-plus"></i> <?php esc_html_e( 'Add Tier', 'car-rental-manager' ); ?></button>
                     </section>
+                    </div>
                 </div>
 
-                <div class="mpcrbm-section">
-                    <section class="bg-light <?php echo esc_attr( $day_wise_toggle_class );?>">
-                        <h6><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></h6>
-                        <span class="desc"><?php esc_html_e('Day-wise Pricing Configuration', 'car-rental-manager'); ?></span>   
-                    </section>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-calendar-week"></i>
+                        <h3><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></h3>
+                    </div>
+                    <div class="mpcrbm-info-card-body">
                     <section>
                         <div class="label">
                             <div>
@@ -259,13 +262,15 @@
                             <?php endforeach; ?>
                         </div>
                     </section>
+                    </div>
                 </div>
 
-                <div class="mpcrbm-section">
-                    <section class="bg-light <?php echo esc_attr( $seasonal_toggle_class );?>">
-                        <h6><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></h6>
-                        <span class="desc"><?php esc_html_e('Seasonal Pricing Configuration', 'car-rental-manager'); ?></span>   
-                    </section>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <h3><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></h3>
+                    </div>
+                    <div class="mpcrbm-info-card-body">
                     <section>
                         <div class="label">
                             <div>
@@ -303,6 +308,7 @@
                         </div>
                         <button type="button" id="mpcrbm-add-season" class="_themeButton_xs_mT_xs mpcrbm-price-add-btn"><i class="mi mi-plus"></i> <?php esc_html_e('Add Season', 'car-rental-manager'); ?></button>
                     </section>
+                    </div>
                 </div>
 
                 <?php
@@ -317,12 +323,12 @@
 				$location_terms        = get_terms( array( 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ) );
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_settings_pricing">
-                    <h2><?php esc_html_e( 'Price Settings', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'here you can set initial price, Waiting Time price, price calculation model', 'car-rental-manager' ); ?></p>
-                    <section class="bg-light">
-                        <h6><?php esc_html_e( 'Price Settings', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Here you can set price', 'car-rental-manager' ); ?></span>
-                    </section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3><?php esc_html_e( 'Price Settings', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <section>
                         <label class="label">
                             <div>
@@ -360,10 +366,18 @@
                     .mpcrbm-ow-amount-prefix{padding:20px 12px 0 12px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:40px;display:flex;align-items:center;font-weight:700;font-size:14px;color:#374151;min-width:40px;justify-content:center;}
                     #mpcrbm_car_one_way_fee_input{border:none!important;outline:none!important;box-shadow:none!important;padding:0 12px;height:40px;font-size:14px;font-weight:600;color:#111827;width:100%;background:#fff;}
                     </style>
-                    <section class="bg-light" style="margin-top: 20px;">
+                        </div>
+                    </div>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-route"></i>
+                            <h3><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
+                    <section>
                         <div style="display:flex;align-items:center;justify-content:space-between;">
                             <div>
-                                <h6><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h6>
+                                <h6><?php esc_html_e( 'Enable One-Way Fee', 'car-rental-manager' ); ?></h6>
                                 <span class="desc"><?php esc_html_e( 'Charge an extra fee when pickup and drop-off locations differ.', 'car-rental-manager' ); ?></span>
                             </div>
                             <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_car_one_way_enabled', $one_way_checked ); ?>
@@ -421,13 +435,11 @@
                         });
                     })(jQuery);
                     </script>
+                        </div>
+                    </div>
 
-                    <!-- Manual price -->
-                    <section class="bg-light" style="margin-top: 20px;" data-collapse="#mp_manual">
-                        <h6><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></span>
-                    </section>
-
+                    <!-- Manual price: set_price_meta_box() renders its own Tiered/
+                         Day-wise/Seasonal cards below, each with its own header. -->
                     <?php echo $this->set_price_meta_box( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                 </div>
 				<?php

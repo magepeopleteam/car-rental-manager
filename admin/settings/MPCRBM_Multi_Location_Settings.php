@@ -28,15 +28,13 @@
 				?>
 				
 				<div class="tabsItem" data-tabs="#mpcrbm_setting_multi_location">
-					<h2><?php esc_html_e( 'Multi-Location Support', 'car-rental-manager' ); ?></h2>
-					<p><?php esc_html_e( 'Enable multiple pickup and drop-off locations for this vehicle with location-based pricing', 'car-rental-manager' ); ?></p>
-					
 					<!-- Enable Multi-Location -->
-					<section class="bg-light">
-						<h6><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h6>
-						<span><?php esc_html_e( 'Configure multiple locations and pricing', 'car-rental-manager' ); ?></span>
-					</section>
-
+					<div class="mpcrbm-info-card">
+						<div class="mpcrbm-info-card-header">
+							<i class="fas fa-map-pin"></i>
+							<h3><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h3>
+						</div>
+						<div class="mpcrbm-info-card-body">
 					<section>
                         <div class="label">
                             <div>
@@ -46,16 +44,16 @@
 							<?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_multi_location_enabled', $enabled_checked ); ?>
                         </div>
                     </section>
-					
+						</div>
+					</div>
+
 					<!-- Multi-Location Configuration -->
-					<div class="mpcrbm-section" id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_multi_location_enabled">
-						
-						
-						<section class="bg-light">
-							<h6><?php esc_html_e( 'Location-Based Pricing', 'car-rental-manager' ); ?></h6>
-							<span><?php esc_html_e( 'Set different prices for different pickup/drop-off location combinations', 'car-rental-manager' ); ?></span>
-						</section>
-						
+					<div class="mpcrbm-info-card" id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_multi_location_enabled">
+						<div class="mpcrbm-info-card-header">
+							<i class="fas fa-tags"></i>
+							<h3><?php esc_html_e( 'Location-Based Pricing', 'car-rental-manager' ); ?></h3>
+						</div>
+						<div class="mpcrbm-info-card-body">
 						<section>
 							<!-- Location Management Info -->
 							<div class="mpcrbm-info-box">
@@ -84,6 +82,7 @@
 								<i class="mi mi-plus"></i> <?php esc_html_e( 'Add Location Price', 'car-rental-manager' ); ?>
 							</button>
 						</section>
+						</div>
 					</div>
 				</div>
 				<?php
