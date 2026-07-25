@@ -1030,6 +1030,31 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    markup/older callers may render this metabox outside the body-class scope.
    ========================================================================== */
 
+/* Design tokens copied from tour-booking-manager's Add/Edit Tour screen
+   (C:\Program Files\Ampps\www\tour\wp-content\plugins\tour-booking-manager,
+   assets/admin/ttbm_admin_modern.css's --ttbm-a-* custom properties),
+   applied ONLY within #mpcrbm_meta_box_panel per explicit request — the rest
+   of the shell (sidebar, topbar, Car Rental dashboard, etc.) keeps its
+   original LatePoint-blue palette untouched.
+   Every rule in this whole "Per-car metabox" section already reads its
+   colors/radii/shadows through var(--mpcrbm-shell-*, fallback) rather than
+   hardcoded values, so redefining those custom properties here is enough to
+   retheme the entire area — none of those individual rules need to change.
+   --mpcrbm-shell-sidebar-width/-topbar-height are deliberately NOT touched:
+   those size this plugin's own fixed app-shell chrome, which has no
+   equivalent in tour-booking-manager's design (it reuses WP's native
+   post-edit screen instead of a persistent icon sidebar). */
+#mpcrbm_meta_box_panel {
+	--mpcrbm-shell-primary: #2271b1;       /* was #1d7bff (LatePoint blue) → ttbm's --ttbm-a-primary (WP admin blue) */
+	--mpcrbm-shell-text: #0f172a;           /* was #1f222b → --ttbm-a-text */
+	--mpcrbm-shell-text-faded: #64748b;     /* was #788291 → --ttbm-a-muted */
+	--mpcrbm-shell-border: #e2e8f0;         /* was #e7e7ea → --ttbm-a-border */
+	--mpcrbm-shell-bg: #f8fafc;             /* was #f5f6fa → --ttbm-a-bg */
+	--mpcrbm-shell-radius-xs: 6px;          /* was 8px → --ttbm-a-radius-sm */
+	--mpcrbm-shell-radius: 14px;            /* was 16px → --ttbm-a-radius-lg (card radius) */
+	--mpcrbm-shell-shadow: 0 1px 2px rgba(15, 23, 42, .05); /* was LatePoint's dual-layer shadow → --ttbm-a-shadow-sm */
+}
+
 /* Header bar (title, version badge, drag/collapse handles) removed per
    explicit request — the leftTabs navigation already conveys what this
    panel is, so the extra WP-postbox chrome on top of it was redundant. */
