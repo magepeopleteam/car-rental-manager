@@ -60,20 +60,25 @@
 		}
 	});
 	$(document).ready(function () {
-		$('#operation_area_select').on('change', function () {
-			// Loop through all options
-			$(this).find('option').each(function () {
-				// Add or remove the 'selected' class based on the selected state
-				if ($(this).is(':selected')) {
-					$(this).addClass('operation_area_selected');
-				} else {
-					$(this).removeClass('operation_area_selected');
-				}
+		// Modern tag-style multi-select (replaces the bare native <select
+		// multiple>, which needed Ctrl/Cmd+click to pick more than one
+		// option) — mp_select_2 is already enqueued plugin-wide
+		// (MPCRBM_Global_File_Load.php), same library mpcrbm_admin_settings.js
+		// already uses elsewhere (".add_select2"), so no new dependency here.
+		if ($('#operation_area_select').length && $.fn.select2) {
+			$('#operation_area_select').select2({
+				width: '100%',
+				placeholder: 'Select operation area(s)',
+				// Select2's dropdown is appended to <body> (not inside
+				// #mpcrbm_meta_box_panel), so it can't be styled via a normal
+				// ancestor selector — these custom classes (styled in
+				// mpcrbm-shell.css) give both the selection box and the
+				// dropdown a stable hook regardless of where in the DOM they
+				// end up.
+				containerCssClass: 'mpcrbm-select2',
+				dropdownCssClass: 'mpcrbm-select2-dropdown'
 			});
-		});
-
-		// Trigger change on page load to apply the correct styles for pre-selected options
-		$('#operation_area_select').trigger('change');
+		}
 	});
 }(jQuery));
 (function($) {

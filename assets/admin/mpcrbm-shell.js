@@ -134,12 +134,38 @@
 				// No featured image set yet: WP core's link is plain text
 				// with no fixed size, so the card would be visibly shorter
 				// than the "has image" state and jump in height once one is
-				// set. Style it as a fixed-aspect-ratio placeholder instead
+				// set. Style it as a fixed-aspect-ratio dropzone instead
 				// (same 4:3 ratio the Gallery Images tooltip asks for — see
 				// MPCRBM_Gallery_Imges_Settings.php) so the card holds its
 				// position either way.
-				$thumbLink.addClass('mpcrbm-featured-image-placeholder')
-					.html('<i class="fas fa-image"></i><span>Upload image</span>');
+				$thumbLink.addClass('mpcrbm-featured-image-placeholder').html(
+					'<i class="fas fa-cloud-upload-alt"></i>' +
+					'<strong>Click to upload or drag &amp; drop</strong>' +
+					'<span>PNG, JPG or WebP (max. 5MB)</span>'
+				);
+
+				// WP core doesn't render the "Change image"/"Remove" row at all
+				// when no thumbnail is set (_wp_post_thumbnail_html(), wp-admin/
+				// includes/post.php) — synthesized here purely so the layout
+				// matches the "has image" state. Reuses the same id/classes
+				// (safe: the real ones only exist when an image IS set, i.e.
+				// never at the same time as these) so the existing "Change
+				// image"/"Remove" CSS applies unchanged; "Remove" additionally
+				// gets "mpcrbm-inert" since there's nothing to remove yet, per
+				// explicit request to still show it for consistent layout.
+				var $emptyActions = $(
+					'<div class="mpcrbm-featured-image-actions">' +
+						'<p class="hide-if-no-js howto mpcrbm-change-image" id="set-post-thumbnail-desc">Change image</p>' +
+						'<p class="hide-if-no-js"><a href="#" id="remove-post-thumbnail" class="mpcrbm-inert" aria-disabled="true">Remove</a></p>' +
+					'</div>'
+				);
+				$emptyActions.find('#set-post-thumbnail-desc').on('click', function () {
+					$thumbLink[0].click();
+				});
+				$emptyActions.find('#remove-post-thumbnail').on('click', function (e) {
+					e.preventDefault();
+				});
+				$thumbLink.after($emptyActions);
 			}
 		}
 

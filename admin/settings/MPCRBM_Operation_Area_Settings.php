@@ -34,7 +34,7 @@
 						<label class="label">
 							<div>
 								<h6><?php esc_html_e('Select Operation area', 'car-rental-manager'); ?></h6>
-								<span class="desc"><?php esc_html_e( 'Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager' ); ?></span>
+								<span class="desc"><?php esc_html_e( 'Click to add an area; click the × on a tag to remove it.', 'car-rental-manager' ); ?></span>
 							</div>
 							<select name="mpcrbm_terms_start_location[]" id="operation_area_select" class="formControl" multiple>
 								<?php

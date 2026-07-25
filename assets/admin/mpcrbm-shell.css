@@ -1294,19 +1294,36 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 6px;
 	width: 100%;
 	aspect-ratio: 4 / 3;
+	padding: 16px;
 	border: 1px dashed var(--mpcrbm-shell-border, #e7e7ea);
 	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
 	background: var(--mpcrbm-shell-bg, #f5f6fa);
-	color: var(--mpcrbm-shell-text-faded, #788291);
-	font-size: 13px;
-	font-weight: 500;
+	text-align: center;
+}
+
+#postimagediv #set-post-thumbnail.mpcrbm-featured-image-placeholder:hover {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	background: #eaf3ff;
 }
 
 #postimagediv #set-post-thumbnail.mpcrbm-featured-image-placeholder i {
-	font-size: 22px;
+	font-size: 26px;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+#postimagediv #set-post-thumbnail.mpcrbm-featured-image-placeholder strong {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+#postimagediv #set-post-thumbnail.mpcrbm-featured-image-placeholder span {
+	font-size: 11px;
+	font-weight: 400;
+	color: var(--mpcrbm-shell-text-faded, #788291);
 }
 
 /* "Change image" / "Remove" row (wrapped together by mpcrbm-shell.js only
@@ -1338,6 +1355,14 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 #postimagediv #remove-post-thumbnail {
 	color: var(--mpcrbm-red);
 	cursor: pointer;
+}
+
+/* Empty state's synthesized "Remove" (mpcrbm-shell.js) — shown for layout
+   consistency with the "has image" state, but there's nothing to remove
+   yet, so it's visually inert rather than the active red/pointer above. */
+#postimagediv #remove-post-thumbnail.mpcrbm-inert {
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	cursor: default;
 }
 
 /* "Gallery Images" card (moved from its own tab, see mpcrbm-shell.js) — the
@@ -2337,4 +2362,72 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card .mpcrbm_driver_info.mpcrbm-info-grid {
 	margin-top: 16px;
+}
+
+/* ==========================================================================
+   Operation Area's tag-style multi-select (mp_global's bundled Select2,
+   initialized in mpcrbm_admin.js on #operation_area_select — replaces the
+   bare native <select multiple>, which needed Ctrl/Cmd+click and had no
+   visual "chip" for each pick). Select2's dropdown is appended to <body>,
+   outside #mpcrbm_meta_box_panel entirely, so the "mpcrbm-select2"/
+   "mpcrbm-select2-dropdown" custom classes (passed via containerCssClass/
+   dropdownCssClass) are what scope these rules, not an ancestor selector.
+   ========================================================================== */
+
+.mpcrbm-select2.select2-container--default .select2-selection--multiple {
+	min-height: 44px;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	padding: 4px 6px;
+}
+
+.mpcrbm-select2.select2-container--default.select2-container--focus .select2-selection--multiple {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+.mpcrbm-select2 .select2-selection__rendered {
+	gap: 6px;
+}
+
+.mpcrbm-select2 .select2-selection__choice {
+	display: flex;
+	align-items: center;
+	margin: 4px 0 4px 4px;
+	padding: 4px 6px 4px 10px;
+	border: none;
+	border-radius: 100px;
+	background: #eaf3ff;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.mpcrbm-select2 .select2-selection__choice__remove {
+	order: 2;
+	margin: 0 0 0 6px;
+	border: none;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	opacity: .7;
+}
+
+.mpcrbm-select2 .select2-selection__choice__remove:hover {
+	opacity: 1;
+	background: transparent;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+.mpcrbm-select2 .select2-search__field {
+	font-size: 13px;
+	font-family: inherit;
+}
+
+.mpcrbm-select2-dropdown {
+	border-color: var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	box-shadow: var(--mpcrbm-shell-shadow, 0 5px 15px -5px rgba(115, 125, 146, .11));
+	overflow: hidden;
+}
+
+.mpcrbm-select2-dropdown .select2-results__option--highlighted[aria-selected] {
+	background-color: var(--mpcrbm-shell-primary, #1d7bff);
 }
