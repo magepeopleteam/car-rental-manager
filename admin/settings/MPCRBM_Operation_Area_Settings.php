@@ -64,6 +64,14 @@
 					</section>
                         </div>
                     </div>
+
+                    <?php
+                    // "Date" tab (MPCRBM_Date_Settings::date_settings()) moved here, after
+                    // Operation Area's content, and out of its own separate tab — this tab
+                    // was renamed from "Operation Area" to "Operation Area & Date Time" to
+                    // reflect it, and the "Date" nav <li> was removed from MPCRBM_Settings.php.
+                    do_action( 'mpcrbm_operation_area_tab_after_content', $post_id );
+                    ?>
                 </div>
 				<?php
 			}

@@ -35,9 +35,6 @@
                             <li data-tabs-target="#mpcrbm_general_info">
                                 <span class="mi mi-settings"></span><?php esc_html_e( 'General Info', 'car-rental-manager' ); ?>
                             </li>
-                            <li data-tabs-target="#mpcrbm_settings_date">
-                                <span class="mi mi-calendar"></span><?php esc_html_e( 'Date', 'car-rental-manager' ); ?>
-                            </li>
                             <li data-tabs-target="#mpcrbm_settings_pricing">
                                 <span class="mi mi-coins"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
@@ -45,7 +42,7 @@
                                 <span class="mi mi-calendar-event-tax"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_operation_area">
-                                <span class="mi mi-map-location-track"></span><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?>
+                                <span class="mi mi-map-location-track"></span><?php esc_html_e( 'Operation Area & Date Time', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_multi_location">
                                 <span class="mi mi-map-marker"></span><?php esc_html_e( 'Fee & Deposit', 'car-rental-manager' ); ?>

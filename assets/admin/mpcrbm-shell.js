@@ -76,6 +76,69 @@
 		$generalInfoTab.prepend($basicInfoCard);
 	}
 
+	// Relabels #postimagediv .inside's contents — called once at page load
+	// AND every time WP's media modal rewrites that same markup afterward
+	// (see the MutationObserver below). Must therefore re-find every element
+	// fresh each call rather than caching jQuery objects from an earlier run,
+	// since WP replaces the actual DOM nodes each time, not just their text.
+	function relabelFeaturedImageInside($featuredImageBox) {
+		var $thumbLink = $featuredImageBox.find('#set-post-thumbnail');
+		var $howto = $featuredImageBox.find('#set-post-thumbnail-desc');
+		var $removeP = $featuredImageBox.find('#remove-post-thumbnail').text('Remove').closest('p');
+		if ($thumbLink.find('img').length) {
+			// A featured image is already set: turn the descriptive
+			// "Click the image to edit or update" text into a "Change
+			// image" link that proxy-clicks the same thickbox trigger
+			// (same proxy-click pattern used for the Update/Preview
+			// top-bar buttons below) rather than rewriting the thickbox
+			// link itself.
+			$howto.text('Change image').addClass('mpcrbm-change-image').on('click', function () {
+				$thumbLink[0].click();
+			});
+			// Group "Change image" + "Remove" into one flex row (mpcrbm-
+			// shell.css) so Remove sits right-aligned opposite Change
+			// image, instead of stacking as two separate block-level <p>
+			// elements the way WP core prints them.
+			$howto.add($removeP).wrapAll('<div class="mpcrbm-featured-image-actions"></div>');
+		} else {
+			// No featured image set yet: WP core's link is plain text
+			// with no fixed size, so the card would be visibly shorter
+			// than the "has image" state and jump in height once one is
+			// set. Style it as a fixed-aspect-ratio dropzone instead
+			// (same 4:3 ratio the Gallery Images tooltip asks for — see
+			// MPCRBM_Gallery_Imges_Settings.php) so the card holds its
+			// position either way.
+			$thumbLink.addClass('mpcrbm-featured-image-placeholder').html(
+				'<i class="fas fa-cloud-upload-alt"></i>' +
+				'<strong>Click to upload or drag &amp; drop</strong>' +
+				'<span>PNG, JPG or WebP (max. 5MB)</span>'
+			);
+
+			// WP core doesn't render the "Change image"/"Remove" row at all
+			// when no thumbnail is set (_wp_post_thumbnail_html(), wp-admin/
+			// includes/post.php) — synthesized here purely so the layout
+			// matches the "has image" state. Reuses the same id/classes
+			// (safe: the real ones only exist when an image IS set, i.e.
+			// never at the same time as these) so the existing "Change
+			// image"/"Remove" CSS applies unchanged; "Remove" additionally
+			// gets "mpcrbm-inert" since there's nothing to remove yet, per
+			// explicit request to still show it for consistent layout.
+			var $emptyActions = $(
+				'<div class="mpcrbm-featured-image-actions">' +
+					'<p class="hide-if-no-js howto mpcrbm-change-image" id="set-post-thumbnail-desc">Change image</p>' +
+					'<p class="hide-if-no-js"><a href="#" id="remove-post-thumbnail" class="mpcrbm-inert" aria-disabled="true">Remove</a></p>' +
+				'</div>'
+			);
+			$emptyActions.find('#set-post-thumbnail-desc').on('click', function () {
+				$thumbLink[0].click();
+			});
+			$emptyActions.find('#remove-post-thumbnail').on('click', function (e) {
+				e.preventDefault();
+			});
+			$thumbLink.after($emptyActions);
+		}
+	}
+
 	// Move the native "Car Feature Image" box (WP core's postimagediv, labelled
 	// via this CPT's custom "featured_image" label) out of the side postbox
 	// column and into a persistent right sidebar inside the metabox's
@@ -110,62 +173,36 @@
 			// remove_featured_image labels — left alone there since those
 			// labels are shared by every CPT this plugin registers, not just
 			// Car, so relabeling only makes sense scoped to this screen).
+			// The .hndle title (in .postbox-header, not .inside) only needs
+			// setting once — unlike relabelFeaturedImageInside() below, WP
+			// never rewrites it after this point.
 			$featuredImageBox.find('.hndle').html('Featured Image <span class="mpcrbm-required">*</span>');
 
-			var $thumbLink = $featuredImageBox.find('#set-post-thumbnail');
-			var $howto = $featuredImageBox.find('#set-post-thumbnail-desc');
-			var $removeP = $featuredImageBox.find('#remove-post-thumbnail').text('Remove').closest('p');
-			if ($thumbLink.find('img').length) {
-				// A featured image is already set: turn the descriptive
-				// "Click the image to edit or update" text into a "Change
-				// image" link that proxy-clicks the same thickbox trigger
-				// (same proxy-click pattern used for the Update/Preview
-				// top-bar buttons below) rather than rewriting the thickbox
-				// link itself.
-				$howto.text('Change image').addClass('mpcrbm-change-image').on('click', function () {
-					$thumbLink[0].click();
-				});
-				// Group "Change image" + "Remove" into one flex row (mpcrbm-
-				// shell.css) so Remove sits right-aligned opposite Change
-				// image, instead of stacking as two separate block-level <p>
-				// elements the way WP core prints them.
-				$howto.add($removeP).wrapAll('<div class="mpcrbm-featured-image-actions"></div>');
-			} else {
-				// No featured image set yet: WP core's link is plain text
-				// with no fixed size, so the card would be visibly shorter
-				// than the "has image" state and jump in height once one is
-				// set. Style it as a fixed-aspect-ratio dropzone instead
-				// (same 4:3 ratio the Gallery Images tooltip asks for — see
-				// MPCRBM_Gallery_Imges_Settings.php) so the card holds its
-				// position either way.
-				$thumbLink.addClass('mpcrbm-featured-image-placeholder').html(
-					'<i class="fas fa-cloud-upload-alt"></i>' +
-					'<strong>Click to upload or drag &amp; drop</strong>' +
-					'<span>PNG, JPG or WebP (max. 5MB)</span>'
-				);
+			relabelFeaturedImageInside($featuredImageBox);
 
-				// WP core doesn't render the "Change image"/"Remove" row at all
-				// when no thumbnail is set (_wp_post_thumbnail_html(), wp-admin/
-				// includes/post.php) — synthesized here purely so the layout
-				// matches the "has image" state. Reuses the same id/classes
-				// (safe: the real ones only exist when an image IS set, i.e.
-				// never at the same time as these) so the existing "Change
-				// image"/"Remove" CSS applies unchanged; "Remove" additionally
-				// gets "mpcrbm-inert" since there's nothing to remove yet, per
-				// explicit request to still show it for consistent layout.
-				var $emptyActions = $(
-					'<div class="mpcrbm-featured-image-actions">' +
-						'<p class="hide-if-no-js howto mpcrbm-change-image" id="set-post-thumbnail-desc">Change image</p>' +
-						'<p class="hide-if-no-js"><a href="#" id="remove-post-thumbnail" class="mpcrbm-inert" aria-disabled="true">Remove</a></p>' +
-					'</div>'
-				);
-				$emptyActions.find('#set-post-thumbnail-desc').on('click', function () {
-					$thumbLink[0].click();
+			// WP's featured-image picker (wp-includes/js/media-editor.js —
+			// wp.media.featuredImage.set()/remove()) replaces #postimagediv
+			// .inside's ENTIRE innerHTML via an AJAX call ($('.inside',
+			// '#postimagediv').html(html)) every time the user sets or
+			// removes the image through the media modal, with fresh, un-
+			// relabeled markup straight from the server — silently undoing
+			// relabelFeaturedImageInside() above, which otherwise only ever
+			// runs once at page load. Re-running it on every such change
+			// (rather than only once) is what keeps "Featured Image"/"Change
+			// image"/"Remove"/the empty-state dropzone showing correctly
+			// after the user actually interacts with the picker, not just on
+			// first load. Guarded with disconnect()/observe() around the
+			// call since relabelFeaturedImageInside() itself edits this same
+			// subtree — without that, every relabel would immediately
+			// re-trigger this same observer.
+			var $inside = $featuredImageBox.find('.inside');
+			if ($inside.length && window.MutationObserver) {
+				var insideObserver = new MutationObserver(function () {
+					insideObserver.disconnect();
+					relabelFeaturedImageInside($featuredImageBox);
+					insideObserver.observe($inside[0], { childList: true });
 				});
-				$emptyActions.find('#remove-post-thumbnail').on('click', function (e) {
-					e.preventDefault();
-				});
-				$thumbLink.after($emptyActions);
+				insideObserver.observe($inside[0], { childList: true });
 			}
 		}
 

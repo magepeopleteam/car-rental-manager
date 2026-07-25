@@ -60,24 +60,38 @@
 		}
 	});
 	$(document).ready(function () {
-		// Modern tag-style multi-select (replaces the bare native <select
-		// multiple>, which needed Ctrl/Cmd+click to pick more than one
-		// option) — mp_select_2 is already enqueued plugin-wide
-		// (MPCRBM_Global_File_Load.php), same library mpcrbm_admin_settings.js
-		// already uses elsewhere (".add_select2"), so no new dependency here.
-		if ($('#operation_area_select').length && $.fn.select2) {
-			$('#operation_area_select').select2({
-				width: '100%',
-				placeholder: 'Select operation area(s)',
-				// Select2's dropdown is appended to <body> (not inside
-				// #mpcrbm_meta_box_panel), so it can't be styled via a normal
-				// ancestor selector — these custom classes (styled in
-				// mpcrbm-shell.css) give both the selection box and the
-				// dropdown a stable hook regardless of where in the DOM they
-				// end up.
-				containerCssClass: 'mpcrbm-select2',
-				dropdownCssClass: 'mpcrbm-select2-dropdown'
+		// City toggle-pills — a set of buttons built from #operation_area_select's
+		// own <option> elements, one per city. The <select multiple> itself is
+		// left completely untouched (still has the same name/id/<option>
+		// values) and just hidden via CSS; clicking a pill only flips that
+		// option's "selected" property. This means the exact same
+		// $_POST['mpcrbm_terms_start_location'] shape reaches
+		// MPCRBM_Operation_Area_Settings::save_operation_area_settings() as
+		// before — existing saved values keep working across the redesign,
+		// nothing about the underlying form field changed, only how it's
+		// presented.
+		var $operationAreaSelect = $('#operation_area_select');
+		if ($operationAreaSelect.length) {
+			var $pillGroup = $('<div class="mpcrbm-city-toggle-group"></div>');
+
+			$operationAreaSelect.find('option').each(function () {
+				var $option = $(this);
+				var $pill = $('<button type="button" class="mpcrbm-city-pill"></button>')
+					.attr('data-value', $option.val())
+					.toggleClass('is-selected', $option.prop('selected'))
+					.append($('<span class="mpcrbm-city-pill-label"></span>').text($.trim($option.text())))
+					.append('<i class="fas fa-check-circle"></i>');
+
+				$pill.on('click', function () {
+					var isSelected = !$option.prop('selected');
+					$option.prop('selected', isSelected);
+					$pill.toggleClass('is-selected', isSelected);
+				});
+
+				$pillGroup.append($pill);
 			});
+
+			$operationAreaSelect.hide().after($pillGroup);
 		}
 	});
 }(jQuery));

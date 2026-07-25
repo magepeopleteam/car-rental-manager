@@ -9,7 +9,12 @@
 	if ( ! class_exists( 'MPCRBM_Date_Settings' ) ) {
 		class MPCRBM_Date_Settings {
 			public function __construct() {
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'date_settings' ] );
+				// Renders inside the "Operation Area & Date Time" tab (formerly
+				// "Operation Area") rather than as its own tab — see
+				// MPCRBM_Operation_Area_Settings::operation_area_settings()'s
+				// do_action() call and the removed "Date" nav <li> in
+				// MPCRBM_Settings.php.
+				add_action( 'mpcrbm_operation_area_tab_after_content', [ $this, 'date_settings' ] );
 				add_action( 'save_post', [ $this, 'save_date_time_settings' ] );
 			}
 
@@ -103,7 +108,7 @@
 				$now         = date_i18n( $date_format, strtotime( current_time( 'Y-m-d' ) ) );
 				$date_type   = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_date_type', 'repeated' );
 				?>
-                <div class="tabsItem" data-tabs="#mpcrbm_settings_date">
+                <div class="mpcrbm-date-setting">
                     <!-- General Date config -->
                     <div class="mpcrbm-info-card">
                         <div class="mpcrbm-info-card-header">

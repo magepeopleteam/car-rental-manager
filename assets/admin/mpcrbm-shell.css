@@ -2365,69 +2365,47 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 }
 
 /* ==========================================================================
-   Operation Area's tag-style multi-select (mp_global's bundled Select2,
-   initialized in mpcrbm_admin.js on #operation_area_select — replaces the
-   bare native <select multiple>, which needed Ctrl/Cmd+click and had no
-   visual "chip" for each pick). Select2's dropdown is appended to <body>,
-   outside #mpcrbm_meta_box_panel entirely, so the "mpcrbm-select2"/
-   "mpcrbm-select2-dropdown" custom classes (passed via containerCssClass/
-   dropdownCssClass) are what scope these rules, not an ancestor selector.
+   Operation Area's city toggle-pills (mpcrbm_admin.js builds one button per
+   <option> from #operation_area_select, then hides the native <select
+   multiple> — it's still the actual form field submitted on save, just not
+   the visible UI anymore).
    ========================================================================== */
 
-.mpcrbm-select2.select2-container--default .select2-selection--multiple {
-	min-height: 44px;
-	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
-	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
-	padding: 4px 6px;
+.mpcrbm-city-toggle-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
 }
 
-.mpcrbm-select2.select2-container--default.select2-container--focus .select2-selection--multiple {
+.mpcrbm-city-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 18px;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: 100px;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text, #1f222b);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.mpcrbm-city-pill:hover {
 	border-color: var(--mpcrbm-shell-primary, #1d7bff);
 }
 
-.mpcrbm-select2 .select2-selection__rendered {
-	gap: 6px;
+.mpcrbm-city-pill i {
+	display: none;
+	font-size: 15px;
 }
 
-.mpcrbm-select2 .select2-selection__choice {
-	display: flex;
-	align-items: center;
-	margin: 4px 0 4px 4px;
-	padding: 4px 6px 4px 10px;
-	border: none;
-	border-radius: 100px;
-	background: #eaf3ff;
-	color: var(--mpcrbm-shell-primary, #1d7bff);
-	font-size: 13px;
-	font-weight: 500;
+.mpcrbm-city-pill.is-selected {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
 }
 
-.mpcrbm-select2 .select2-selection__choice__remove {
-	order: 2;
-	margin: 0 0 0 6px;
-	border: none;
-	color: var(--mpcrbm-shell-primary, #1d7bff);
-	opacity: .7;
-}
-
-.mpcrbm-select2 .select2-selection__choice__remove:hover {
-	opacity: 1;
-	background: transparent;
-	color: var(--mpcrbm-shell-primary, #1d7bff);
-}
-
-.mpcrbm-select2 .select2-search__field {
-	font-size: 13px;
-	font-family: inherit;
-}
-
-.mpcrbm-select2-dropdown {
-	border-color: var(--mpcrbm-shell-border, #e7e7ea);
-	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
-	box-shadow: var(--mpcrbm-shell-shadow, 0 5px 15px -5px rgba(115, 125, 146, .11));
-	overflow: hidden;
-}
-
-.mpcrbm-select2-dropdown .select2-results__option--highlighted[aria-selected] {
-	background-color: var(--mpcrbm-shell-primary, #1d7bff);
+.mpcrbm-city-pill.is-selected i {
+	display: inline-block;
 }
