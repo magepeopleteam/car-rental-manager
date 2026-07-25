@@ -2652,3 +2652,179 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	border-color: var(--mpcrbm-red, #d91e1e);
 	color: var(--mpcrbm-red, #d91e1e);
 }
+
+/* ==========================================================================
+   "Manage Taxonomies" dashboard page (MPCRBM_Taxonomies.php, wrapped by
+   MPCRBM_Admin_Shell::render_shell_open()) — Manage FAQ / Manage Term &
+   Condition tabs (MPCRBM_Manage_Faq.php). Scoped under .mpcrbm-shell-body,
+   same convention as the Car Inventory table redesign above, since
+   .btn-primary/.mpcrbm_faq_table/etc. are otherwise bare, unscoped classes
+   in assets/admin/mpcrbm_manage_taxonomy.css — .mpcrbm-shell-body limits
+   this to the shell-wrapped dashboard pages specifically.
+   ========================================================================== */
+
+.mpcrbm-shell-body .mpcrbm_faq_container {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	padding: 20px 24px;
+}
+
+/* .mpcrbm-faq-container-header wraps the <h2> + "Add" button (MPCRBM_Manage_Faq.php)
+   so they sit on one row with the button pinned right — the title/button pair
+   had no shared wrapper before, only the whole .mpcrbm_faq_container (which
+   also contains the table and modal, so it couldn't just be flexed itself). */
+.mpcrbm-shell-body .mpcrbm-faq-container-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_container h2 {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .btn-primary {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--mpcrbm-shell-primary);
+	border-radius: 100px;
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.mpcrbm-shell-body .btn-primary:hover {
+	opacity: .9;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table.widefat {
+	margin-top: 18px;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	border-collapse: separate;
+	border-spacing: 0;
+	overflow: hidden;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_container .widefat thead {
+	background-color: var(--mpcrbm-shell-bg);
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table th {
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text-faded);
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: .5px;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table td {
+	padding: 14px 16px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text);
+	font-size: 13px;
+	vertical-align: middle;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table tbody tr:hover {
+	background-color: var(--mpcrbm-shell-bg);
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table td.faq-title {
+	font-weight: 600;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table .button {
+	border-radius: 100px;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 4px 14px;
+	box-shadow: none;
+	text-shadow: none;
+	margin-right: 4px;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_edit_term,
+.mpcrbm-shell-body .mpcrbm_faq_table .edit-faq {
+	background: #fff;
+	border-color: var(--mpcrbm-shell-border);
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_edit_term:hover,
+.mpcrbm-shell-body .mpcrbm_faq_table .edit-faq:hover {
+	border-color: var(--mpcrbm-shell-primary);
+	color: var(--mpcrbm-shell-primary);
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_delete_term,
+.mpcrbm-shell-body .mpcrbm_faq_table .delete-faq {
+	background: transparent;
+	border-color: var(--mpcrbm-red);
+	color: var(--mpcrbm-red);
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_delete_term:hover,
+.mpcrbm-shell-body .mpcrbm_faq_table .delete-faq:hover {
+	background: var(--mpcrbm-red-light);
+}
+
+/* Add/Edit popup */
+.mpcrbm-shell-body .mpcrbm_modal_content {
+	border-radius: var(--mpcrbm-shell-radius);
+}
+
+.mpcrbm-shell-body .mpcrbm_modal_content h3 {
+	margin: 0 0 18px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm_modal_content label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm_modal_content input[type="text"] {
+	width: 100%;
+	margin-bottom: 4px;
+	padding: 10px 14px;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	font-size: 14px;
+}
+
+.mpcrbm-shell-body .mpcrbm_modal_content #mpcrbm_save_faq_btn,
+.mpcrbm-shell-body .mpcrbm_modal_content #mpcrbm_save_term_condition_btn {
+	background: var(--mpcrbm-shell-primary);
+	border-color: var(--mpcrbm-shell-primary);
+	border-radius: 100px;
+	padding: 6px 20px;
+	font-weight: 600;
+}
+
+.mpcrbm-shell-body .mpcrbm_modal_content #mpcrbm_cancel_faq_btn,
+.mpcrbm-shell-body .mpcrbm_modal_content #mpcrbm_cancel_term_condition_btn {
+	border-radius: 100px;
+	padding: 6px 20px;
+	font-weight: 600;
+}

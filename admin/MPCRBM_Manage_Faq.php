@@ -49,8 +49,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             $term_and_conditions = get_option( 'mpcrbm_term_condition_list', [] );
             ?>
             <div class="mpcrbm_faq_container">
-                <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
-                <button id="mpcrbm_add_term_condition_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Term & Condition', 'car-rental-manager' );?></button>
+                <div class="mpcrbm-faq-container-header">
+                    <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
+                    <button id="mpcrbm_add_term_condition_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Term & Condition', 'car-rental-manager' );?></button>
+                </div>
 
                 <table class="widefat mpcrbm_faq_table">
                     <thead>
@@ -127,8 +129,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             ?>
 
             <div class="mpcrbm_faq_container">
-                <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
-                <button id="mpcrbm_add_faq_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add FAQ', 'car-rental-manager' );?></button>
+                <div class="mpcrbm-faq-container-header">
+                    <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
+                    <button id="mpcrbm_add_faq_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add FAQ', 'car-rental-manager' );?></button>
+                </div>
 
                 <table class="widefat mpcrbm_faq_table">
                     <thead>
