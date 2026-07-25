@@ -93,6 +93,34 @@
 
 			$operationAreaSelect.hide().after($pillGroup);
 		}
+
+		// Search/filter box for the FAQ + Term & Condition "available"/"added"
+		// list-picker panels (MPCRBM_Faq_Settings.php and
+		// MPCRBM_Term_Condition_Setting.php render the same .mpcrbm_faq_item/
+		// .mpcrbm_selected_item row markup, just with different Add/Remove
+		// button classes) — these lists have no pagination and FAQ questions
+		// in particular run long, so a plain client-side text filter goes a
+		// long way for finding one quickly. Purely visual (toggles .hide()),
+		// doesn't touch the existing Add/Remove click handlers or the hidden
+		// mpcrbm_added_faq/mpcrbm_added_term_condition inputs at all.
+		$('.mpcrbm_faq_all_question_box, .mpcrbm_selected_faq_question_box, .mpcrbm_all_term_condition').each(function () {
+			var $box = $(this);
+			var $list = $box.children('div').first();
+			if (!$list.length) {
+				return;
+			}
+
+			var $search = $('<input type="text" class="formControl mpcrbm-list-search" placeholder="Search…">');
+			$box.find('> h3').after($search);
+
+			$search.on('keyup', function () {
+				var term = $.trim($(this).val()).toLowerCase();
+				$list.find('.mpcrbm_faq_item, .mpcrbm_selected_item').each(function () {
+					var title = ($(this).data('title') || '').toString().toLowerCase();
+					$(this).toggle(title.indexOf(term) !== -1);
+				});
+			});
+		});
 	});
 }(jQuery));
 (function($) {

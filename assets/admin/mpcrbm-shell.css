@@ -2409,3 +2409,246 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 .mpcrbm-city-pill.is-selected i {
 	display: inline-block;
 }
+
+/* ==========================================================================
+   "Manage Car Feature" tab (MPCRBM_Manage_Feature.php) — Include/Exclude
+   Feature checkboxes redesigned as toggle chips, two-column card layout.
+   Scoped via the [data-tabs="#mpcrbm_setting_feature"] ancestor rather than
+   the bare .mpcrbm_faq_question_holder/.mpcrbm_faq_all_question_box/
+   .mpcrbm_selected_faq_question_box classes, since those are SHARED with the
+   unrelated "Manage FAQ" tab (MPCRBM_Faq_Settings.php) — its inner markup is
+   Add/Remove item rows, not checkboxes, and must not be restyled by this.
+   .mpcrbm_include_feature/.mpcrbm_exclude_feature themselves are unique to
+   this tab, so those rules aren't re-scoped, but kept consistent anyway.
+   ========================================================================== */
+
+[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+}
+
+[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_all_question_box,
+[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_selected_faq_question_box {
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 14px);
+	padding: 18px 20px;
+}
+
+[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_all_question_box > h3,
+[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_selected_faq_question_box > h3 {
+	margin: 0 0 14px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+@media (max-width: 900px) {
+	[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
+		grid-template-columns: 1fr;
+	}
+}
+
+.mpcrbm_include_feature,
+.mpcrbm_exclude_feature {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.mpcrbm_include_feature label,
+.mpcrbm_exclude_feature label {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	line-height: 1;
+	gap: 6px;
+	padding: 13px 19px 17px 10px;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: 100px;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text, #1f222b);
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+
+.mpcrbm_include_feature label:hover,
+.mpcrbm_exclude_feature label:hover {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+/* Checkbox itself stays a real, functional input (mpcrbm_manage_taxonomy.js's
+   delegated change handlers and AJAX save are untouched) — just visually
+   hidden, since the label itself becomes the clickable chip. */
+.mpcrbm_include_feature label input,
+.mpcrbm_exclude_feature label input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+/* Selected state — Include uses primary blue, Exclude uses red, so the two
+   lists (the same 19 feature names in both) read as visually distinct at a
+   glance rather than needing to compare checkbox-by-checkbox. */
+.mpcrbm_include_feature label:has(input:checked) {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+}
+
+.mpcrbm_exclude_feature label:has(input:checked) {
+	border-color: var(--mpcrbm-red, #d91e1e);
+	background: var(--mpcrbm-red, #d91e1e);
+	color: #fff;
+}
+
+.mpcrbm_include_feature label:has(input:checked)::before,
+.mpcrbm_exclude_feature label:has(input:checked)::before {
+	content: '\2713';
+	font-weight: 700;
+}
+
+/* ==========================================================================
+   Shared "available list + Add" / "added list + Remove" two-column picker
+   component. Both "Manage FAQ" (MPCRBM_Faq_Settings.php) and "Manage Term
+   Condition" (MPCRBM_Term_Condition_Setting.php) render the exact same
+   .mpcrbm_faq_item/.mpcrbm_selected_item/.mpcrbm_faq_title item markup
+   (only their Add/Remove button classes differ), so this is styled once,
+   unscoped, rather than duplicated per tab — otherwise one tab would look
+   redesigned and the other wouldn't, despite being visually identical.
+   ========================================================================== */
+
+.mpcrbm_faq_all_question_box,
+.mpcrbm_selected_faq_question_box,
+.mpcrbm_all_term_condition {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 14px);
+	padding: 18px 20px;
+}
+
+/* .mpcrbm_all_term_condition (Term Condition's "Available" box) is missing
+   from the base flex-basis rule (assets/admin/mpcrbm_manage_taxonomy.css)
+   that its own sibling ".mpcrbm_selected_faq_question_box" and FAQ's
+   ".mpcrbm_faq_all_question_box" both get — without this it doesn't match
+   its sibling's width in the 2-column layout. */
+.mpcrbm_all_term_condition {
+	flex: 1 1 48%;
+	box-sizing: border-box;
+}
+
+.mpcrbm_faq_all_question_box > h3,
+.mpcrbm_selected_faq_question_box > h3,
+.mpcrbm_all_term_condition > h3 {
+	margin: 0 0 14px;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm_faq_all_question_box p,
+.mpcrbm_selected_faq_question_box p,
+.mpcrbm_all_term_condition p {
+	margin: 0;
+	font-size: 13px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Search box (inserted by mpcrbm_admin.js right after each box's <h3>) and a
+   height cap + scroll on the item list itself — together these keep a long
+   FAQ list from just growing the whole card taller and taller. */
+.mpcrbm-list-search {
+	width: 100%;
+	margin-bottom: 12px;
+}
+
+.mpcrbm_faq_all_question,
+.mpcrbm_selected_faq_question,
+.mpcrbm_selected_term_condition {
+	max-height: 340px;
+	overflow-y: auto;
+	padding-right: 4px;
+}
+
+.mpcrbm_faq_item,
+.mpcrbm_selected_item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	border: 1px solid transparent;
+	padding: 10px 14px;
+	margin-bottom: 8px;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	transition: border-color .15s ease, background-color .15s ease;
+}
+
+.mpcrbm_faq_item:last-child,
+.mpcrbm_selected_item:last-child {
+	margin-bottom: 0;
+}
+
+.mpcrbm_faq_item:hover,
+.mpcrbm_selected_item:hover {
+	background: #fff;
+	border-color: var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm_faq_title {
+	flex: 1 1 auto;
+	min-width: 0;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	/* FAQ questions run much longer than Term & Condition titles — without
+	   flex-grow above, a flex row with no growable child just sizes to
+	   content, so justify-content:space-between could leave the Add/Remove
+	   button sitting awkwardly close to (or far from) the text depending on
+	   its length instead of pinned to the row's right edge. */
+	word-break: break-word;
+}
+
+/* Add/Remove buttons — replace WP core's plain .button.button-small look
+   with small pill buttons matching the rest of this redesign. Add stays
+   primary blue; Remove reads as a lighter, reversible action (outline red)
+   since it only unlinks the item from this car, not a destructive delete. */
+.mpcrbm_faq_item .button.button-small,
+.mpcrbm_selected_item .button.button-small {
+	flex: 0 0 auto;
+	border-radius: 100px;
+	padding: 4px 14px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.8;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.mpcrbm_faq_item .button.button-small {
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+}
+
+.mpcrbm_faq_item .button.button-small:hover {
+	opacity: .9;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+}
+
+.mpcrbm_selected_item .button.button-small {
+	background: transparent;
+	border-color: var(--mpcrbm-red, #d91e1e);
+	color: var(--mpcrbm-red, #d91e1e);
+}
+
+.mpcrbm_selected_item .button.button-small:hover {
+	background: var(--mpcrbm-red-light, #f6dada);
+	border-color: var(--mpcrbm-red, #d91e1e);
+	color: var(--mpcrbm-red, #d91e1e);
+}
