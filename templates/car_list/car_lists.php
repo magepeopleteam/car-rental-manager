@@ -135,11 +135,11 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                                         <a href="<?php echo esc_url( get_permalink( $mpcrbm_car_id ) ); ?>"
                                            class="mpcrbm_action_btn view"
                                            title="<?php esc_attr_e( 'View', 'car-rental-manager' ); ?>"
-                                           target="_blank"><i class="mi mi-eye"></i></a>
+                                           target="_blank"><i class="far fa-eye"></i></a>
 
                                         <a href="<?php echo esc_url( get_edit_post_link( $mpcrbm_car_id ) ); ?>"
                                            class="mpcrbm_action_btn edit"
-                                           title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></a>
+                                           title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="far fa-edit"></i></a>
 
                                         <?php
                                         $mpcrbm_duplicate_url = wp_nonce_url(
@@ -149,14 +149,14 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                                         ?>
                                         <a href="<?php echo esc_url( $mpcrbm_duplicate_url ); ?>"
                                            class="mpcrbm_action_btn duplicate"
-                                           title="<?php esc_attr_e( 'Duplicate', 'car-rental-manager' ); ?>"><i class="mi mi-copy-alt"></i></a>
+                                           title="<?php esc_attr_e( 'Duplicate', 'car-rental-manager' ); ?>"><i class="far fa-copy"></i></a>
 
                                         <?php
                                         $mpcrbm_delete_url = get_delete_post_link( $mpcrbm_car_id, '', true );
                                         ?>
                                         <a href="<?php echo esc_url( $mpcrbm_delete_url ); ?>"
                                            class="mpcrbm_action_btn delete"
-                                           title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="mi mi-trash"></i></a>
+                                           title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
 

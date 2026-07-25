@@ -201,6 +201,15 @@ body.mpcrbm-admin *:after {
 	display: none;
 }
 
+/* The sub-menu (Car List, Car Type, ... under "Car Rental") had no compact-
+   mode rule at all, so its text labels stayed visible squeezed into the
+   collapsed 76px-wide column — that's the cramped/overlapping look in the
+   screenshot. Simplest correct fix: hide the whole sub-menu when collapsed,
+   same as most icon-only sidebar patterns (expand the sidebar to reach it). */
+.mpcrbm-shell.side-menu-compact .mpcrbm-shell-submenu {
+	display: none;
+}
+
 .mpcrbm-shell-menu li > a:hover {
 	background-color: var(--mpcrbm-shell-bg);
 	color: var(--mpcrbm-shell-text);
@@ -1037,48 +1046,82 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 }
 
 /* Tab navigation moved from a left-side vertical sidebar to a horizontal top
-   bar, per explicit request. Overrides mp_global/assets/mp_style/mpcrbm_global.css's
-   ".mpcrbm .leftTabs {display:flex}" / ".leftTabs > .tabLists {flex-flow:column;
-   min-width:250px; max-width:283px}" (a left-column layout) — everything here
-   is scoped to #mpcrbm_meta_box_panel only, so the Global Settings page (which
-   reuses the same .leftTabs/.tabLists classes) is unaffected. */
+   bar (see below), then restyled again to match the left sidebar's own nav
+   item look (rounded chip, faded-gray default, light-gray hover/active fill,
+   blue icon only on active — no underline) instead of the earlier
+   bottom-border-underline treatment. Overrides
+   mp_global/assets/mp_style/mpcrbm_global.css's ".mpcrbm .leftTabs
+   {display:flex}" / ".leftTabs > .tabLists {flex-flow:column; min-width:250px;
+   max-width:283px}" (a left-column layout) — everything here is scoped to
+   #mpcrbm_meta_box_panel only, so the Global Settings page (which reuses the
+   same .leftTabs/.tabLists classes) is unaffected. */
 #mpcrbm_meta_box_panel .mpcrbm_settings .leftTabs {
 	flex-direction: column;
 }
 
+/* NOTE: assets/admin/mpcrbm_admin.css has several rules scoped to the exact
+   same "#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li..." ancestor
+   chain (default pink icon color, pink active pill, pink hover) — an earlier,
+   shorter override here (e.g. "#mpcrbm_meta_box_panel [data-tabs-target]...")
+   LOST to those despite the shared ID, because CSS breaks specificity ties by
+   ID first, then by class/attribute count, and those rules have 3 class-tier
+   selectors (.mpcrbm_settings, .tabLists, .active) to this file's fewer. Every
+   selector below repeats that full chain so it reliably wins. */
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists {
+	position: sticky;
+	top: var(--mpcrbm-shell-topbar-height, 64px);
+	z-index: 10;
 	flex-flow: row wrap;
 	min-width: 0;
 	max-width: none;
 	width: 100%;
 	background-color: #fafbfc;
 	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
-	padding: 8px 12px;
+	padding: 10px 12px;
 	gap: 4px;
 }
 
-#mpcrbm_meta_box_panel .tabLists span {
-	color: var(--mpcrbm-shell-primary, #1d7bff);
-	margin-right: 6px;
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target] {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	border: none;
+	border-left: 0;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	padding: 10px 14px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	background-color: transparent;
+	font-size: 14px;
+	font-weight: 500;
+	transform: none;
+	box-shadow: none;
 }
 
-#mpcrbm_meta_box_panel [data-tabs-target] {
-	border-left: none;
-	border-bottom: 2px solid transparent;
-	padding: 10px 12px;
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li span {
+	color: inherit;
+	margin-right: 0;
+	font-size: 15px;
 }
 
 /* The vertical-list divider pseudo-element (a full-height bottom border per
-   stacked item) doesn't make sense once the tabs run horizontally. */
-#mpcrbm_meta_box_panel .leftTabs [data-tabs-target]::after {
+   stacked item) doesn't make sense once the tabs run horizontally, and the
+   chip-style redesign doesn't use an underline at all. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target]::after,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active::after {
 	content: none;
 }
 
-#mpcrbm_meta_box_panel [data-tabs-target]:hover,
-#mpcrbm_meta_box_panel [data-tabs-target].active {
-	border-left-color: transparent;
-	border-bottom-color: var(--mpcrbm-shell-primary, #1d7bff);
-	background-color: #eaf2ff;
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target]:hover,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active:hover {
+	background-color: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text, #1f222b);
+	transform: none;
+	box-shadow: none;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active span {
+	color: var(--mpcrbm-shell-primary, #1d7bff);
 }
 
 /* Persistent right sidebar inside tabsContent — holds the native "Car Feature
@@ -1449,6 +1492,18 @@ body.mpcrbm-admin.post-new-php.post-type-mpcrbm_rent #wpcontent {
 body.mpcrbm-admin.post-php #wpbody-content,
 body.mpcrbm-admin.post-new-php #wpbody-content {
 	padding: 0 30px 40px;
+}
+
+/* #post-body-content is empty now that mpcrbm-shell.js has moved its real
+   contents (title, editor, word-count row) into the Basic Information card —
+   but it's still float:left;width:100% per WP core (common.css), unconditional
+   on the columns-1/2 class, and a stray sibling left behind by that move
+   (.uploader-editor, the drag-and-drop overlay — only #titlediv/#postdivrich/
+   #post-status-info get relocated) was still sitting inside it. Hiding it
+   removes the blank gap it left above the metabox tabs. */
+body.mpcrbm-admin.post-php #post-body-content,
+body.mpcrbm-admin.post-new-php #post-body-content {
+	display: none;
 }
 
 /* Single-column post-edit layout is now achieved by mpcrbm-shell.js swapping
