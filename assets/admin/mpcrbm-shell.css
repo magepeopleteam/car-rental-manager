@@ -1204,18 +1204,28 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent {
 	position: relative;
 	width: 100%;
-	padding: 20px;
+	padding: 20px 20px 20px 2px;
 }
 
+/* margin-right (not padding-right): .tabsItem already has its own white
+   card box (background/border-radius/box-shadow — assets/admin/
+   mpcrbm_admin.css's "#mpcrbm_meta_box_panel .tabsContent .tabsItem" rule).
+   padding-right only shrinks the INNER content area, leaving the box's own
+   background/shadow stretching the full width underneath the absolutely-
+   positioned sidebar — so the two visually merged into one shape instead of
+   reading as separate cards. margin-right instead shrinks the box itself,
+   so its edge (and shadow) genuinely stops before the sidebar begins,
+   leaving a real gap between two distinct cards, per explicit request. */
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent > .tabsItem {
-	padding-right: 288px;
+	margin-right: 288px;
+	width: 84%;
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
 	position: absolute;
-	top: 0;
+	top: 15px;
 	right: 0;
-	width: 260px;
+	width: 280px;
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar .postbox {
@@ -1253,6 +1263,10 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    specifically, not the bare .mpcrbm_gallery-image/-images-lists classes
    (assets/admin/mpcrbm_admin.css), since those are shared with the frontend
    car-detail gallery display and shouldn't be touched globally. */
+.mpcrbm-info-card.mpcrbm-gallery-sidebar-card {
+	margin-top: 20px !important;
+}
+
 .mpcrbm-gallery-sidebar-card .mpcrbm_gallery-images-lists {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
@@ -1386,7 +1400,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 
 @media (max-width: 900px) {
 	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent > .tabsItem {
-		padding-right: 0;
+		margin-right: 0;
 	}
 
 	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
@@ -1603,7 +1617,17 @@ body.mpcrbm-admin.post-new-php #screen-meta {
 
 body.mpcrbm-admin.post-php .wrap,
 body.mpcrbm-admin.post-new-php .wrap {
-	margin-top: 24px;
+	margin-top: 0;
+}
+
+/* WP core's #poststuff{padding-top:10px} (wp-admin/css/edit.css) stacked on
+   top of the .wrap margin above and #wpcontent's own topbar-height offset,
+   showing as a visible blank band between the fixed top bar and the tab
+   navigation — removed per explicit request since the topbar offset alone
+   already provides the needed clearance. */
+body.mpcrbm-admin.post-php #poststuff,
+body.mpcrbm-admin.post-new-php #poststuff {
+	padding-top: 0;
 }
 
 /* "Edit Car" heading + "Add New Car" link removed per explicit request —
@@ -1623,7 +1647,10 @@ body.mpcrbm-admin.post-new-php #titlediv #title {
 	border: 1px solid var(--mpcrbm-shell-border);
 	border-radius: var(--mpcrbm-shell-radius-xs);
 	padding: 14px 16px;
-	font-size: 20px;
+	/* Matches every other text field's size (div.mpcrbm .formControl's
+	   font-size: var(--fs), mp_global/assets/mp_style/mpcrbm_global.css),
+	   replacing the previous 20px heading-sized value, per explicit request. */
+	font-size: var(--fs, 14px);
 	background: #fff;
 }
 

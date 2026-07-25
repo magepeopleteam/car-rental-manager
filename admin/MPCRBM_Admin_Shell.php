@@ -26,6 +26,28 @@
 				add_action( 'wp_ajax_mpcrbm_set_menu_layout_style', [ $this, 'ajax_set_menu_layout_style' ] );
 				add_action( 'in_admin_header', [ $this, 'render_edit_screen_chrome' ] );
 				add_filter( 'wp_editor_settings', [ $this, 'simplify_content_editor_toolbar' ], 10, 2 );
+				add_action( 'admin_head', [ $this, 'print_metabox_reveal_style' ] );
+			}
+
+			// Hides the per-car metabox panel from FIRST PAINT (inline <style> in
+			// <head>, so it applies immediately with no network round-trip) until
+			// mpcrbm-shell.js finishes relocating the title/content/featured-image
+			// into their final card positions. Without this, the browser paints the
+			// original narrow layout (native tabsContent width, before the "General
+			// Info" tab even has its Basic Information card) and then visibly snaps
+			// to the wider, restructured layout once that JS runs a moment later —
+			// per explicit request to stop "hiding with CSS" a transient state that
+			// still visibly flashes; this instead prevents that transient state from
+			// ever being painted at all. mpcrbm-shell.js removes this inline style
+			// once its synchronous relocation block finishes (see the bottom of that
+			// file). visibility (not display) is used so the panel still reserves
+			// its layout space and TinyMCE can still size the editor correctly while
+			// hidden.
+			public function print_metabox_reveal_style() {
+				if ( ! self::is_metabox_screen() ) {
+					return;
+				}
+				echo '<style id="mpcrbm-metabox-reveal">#mpcrbm_meta_box_panel{visibility:hidden;}</style>';
 			}
 
 			// Reduces the native content editor (the "Vehicle Description" field inside the

@@ -118,6 +118,12 @@
 
 		$tabsContent.append($sidebar);
 	}
+
+	// Reveal the panel now that every relocation above is done — see
+	// MPCRBM_Admin_Shell::print_metabox_reveal_style() for why it starts
+	// hidden (an inline <style> in <head>, removed here rather than just
+	// overridden, so nothing else needs to out-specificity it later).
+	document.getElementById('mpcrbm-metabox-reveal') && document.getElementById('mpcrbm-metabox-reveal').remove();
 }(jQuery));
 
 jQuery(function ($) {
