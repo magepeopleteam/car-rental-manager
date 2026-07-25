@@ -1786,15 +1786,21 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 }
 
 /* ==========================================================================
-   General Info tab — fields grouped into cards (Vehicle Details, Capacity &
-   Stock, Pickup & Booking, Driver Information — see MPCRBM_General_Settings.php)
-   instead of one flat stacked list, per reference design. Only this tab's
-   markup uses .mpcrbm-info-card/-grid, so none of the other tabs (Date,
-   Pricing, Gallery, etc.) are affected — they keep the original stacked-
-   section look untouched. Selectors are written to fully match/exceed the
-   specificity of "#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent
-   .tabsItem section" (mp_global/assets/mp_style/mpcrbm_global.css) so these
-   rules reliably win regardless of stylesheet load order.
+   Metabox tab content — every tab's fields grouped into .mpcrbm-info-card
+   blocks (icon+title header, white card body) instead of the original flat
+   "bg-light section header + stacked sections" look, per explicit request
+   that all tabs match the General Info tab's card design. Originally only
+   General Info used this pattern (see MPCRBM_General_Settings.php); it's
+   since been applied to every other tab's PHP (Date, Pricing, Extra
+   Service, Tax, Operation Area, Multi-Location, FAQ, Car Feature, Term &
+   Condition, Security Deposit, Branch Assignment) — these rules are scoped
+   generically to "#mpcrbm_meta_box_panel .mpcrbm_settings" (not to one
+   specific tab), so they apply uniformly wherever .mpcrbm-info-card markup
+   appears without needing per-tab CSS. Selectors are written to fully
+   match/exceed the specificity of "#mpcrbm_meta_box_panel .mpcrbm_settings
+   .tabsContent .tabsItem section" (mp_global/assets/mp_style/
+   mpcrbm_global.css) so these rules reliably win regardless of stylesheet
+   load order.
    ========================================================================== */
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-note {
