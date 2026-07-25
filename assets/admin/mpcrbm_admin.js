@@ -243,6 +243,14 @@
 		}
 	});
 
+	jQuery(document).on('change', '#mpcrbm_enable_gallery', function () {
+		if ($(this).is(':checked')) {
+			$("#mpcrbm_gallery_images_wrapper").fadeIn();
+		}else{
+			$("#mpcrbm_gallery_images_wrapper").fadeOut();
+		}
+	});
+
 	jQuery(document).on('change', '.mpcrbm_order_list__select', function () {
 		let status = jQuery(this).val();
 		let order_id = $(this).attr('data-order-id').trim();

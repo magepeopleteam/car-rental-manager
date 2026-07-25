@@ -1133,13 +1133,14 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists {
 	position: sticky;
 	top: var(--mpcrbm-shell-topbar-height, 64px);
-	z-index: 10;
+	z-index: 999;
 	flex-flow: row wrap;
 	min-width: 0;
 	max-width: none;
 	width: 100%;
-	background-color: #fafbfc;
-	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: 10px;
+	background-color: #E9EFF7;
+	border: 1px solid #d0d3d7;
 	padding: 10px 12px;
 	gap: 4px;
 }
@@ -1150,7 +1151,8 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	gap: 10px;
 	border: none;
 	border-left: 0;
-	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
 	padding: 10px 14px;
 	color: var(--mpcrbm-shell-text-faded, #788291);
 	background-color: transparent;
@@ -1167,24 +1169,32 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 }
 
 /* The vertical-list divider pseudo-element (a full-height bottom border per
-   stacked item) doesn't make sense once the tabs run horizontally, and the
-   chip-style redesign doesn't use an underline at all. */
+   stacked item) doesn't make sense once the tabs run horizontally. The
+   active tab's underline further below is a plain border-bottom on the <li>
+   itself, not this pseudo-element. */
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target]::after,
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active::after {
 	content: none;
 }
 
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target]:hover,
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active,
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active:hover {
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target]:hover {
 	background-color: var(--mpcrbm-shell-bg, #f5f6fa);
 	color: var(--mpcrbm-shell-text, #1f222b);
 	transform: none;
 	box-shadow: none;
 }
 
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active span {
+/* Active tab only — flat (no pill background, matching the tab bar's own
+   background) with bolder primary-blue text/icon and a bottom-border
+   underline as the sole "selected" indicator, per explicit request. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active:hover {
+	background-color: transparent;
 	color: var(--mpcrbm-shell-primary, #1d7bff);
+	font-weight: 600;
+	border-bottom-color: var(--mpcrbm-shell-primary, #1d7bff);
+	transform: none;
+	box-shadow: none;
 }
 
 /* Persistent right sidebar inside tabsContent — holds the native "Car Feature
@@ -1258,6 +1268,80 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	padding: 16px;
 }
 
+/* "Featured Image *" card contents (WP core's #postimagediv, text relabeled
+   by mpcrbm-shell.js — see the "Relabel the native postimagediv chrome"
+   comment there — to match the reference design's simplified wording). */
+.mpcrbm-required {
+	color: var(--mpcrbm-red);
+}
+
+#postimagediv .inside p.hide-if-no-js {
+	margin: 0;
+}
+
+#postimagediv #set-post-thumbnail img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+}
+
+/* Empty state (no featured image set yet) — same 4:3 footprint as the image
+   above so the card doesn't change height once one is set (mpcrbm-shell.js
+   adds this class + the icon/text markup, since WP core's default here is
+   just plain link text with no fixed size). */
+#postimagediv #set-post-thumbnail.mpcrbm-featured-image-placeholder {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	border: 1px dashed var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	font-size: 13px;
+	font-weight: 500;
+}
+
+#postimagediv #set-post-thumbnail.mpcrbm-featured-image-placeholder i {
+	font-size: 22px;
+}
+
+/* "Change image" / "Remove" row (wrapped together by mpcrbm-shell.js only
+   when a featured image is already set — the empty-state placeholder above
+   has no such row) — space-between so Remove sits right-aligned opposite
+   Change image instead of the two stacking as separate block-level <p>s. */
+#postimagediv .mpcrbm-featured-image-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 10px;
+}
+
+#postimagediv .mpcrbm-featured-image-actions p.hide-if-no-js {
+	margin: 0 !important;
+}
+
+#postimagediv #set-post-thumbnail-desc,
+#postimagediv #remove-post-thumbnail {
+	font-size: 13px;
+	font-weight: 500;
+}
+
+#postimagediv #set-post-thumbnail-desc.mpcrbm-change-image {
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	cursor: pointer;
+}
+
+#postimagediv #remove-post-thumbnail {
+	color: var(--mpcrbm-red);
+	cursor: pointer;
+}
+
 /* "Gallery Images" card (moved from its own tab, see mpcrbm-shell.js) — the
    grid/thumbnail/button styling below is scoped to .mpcrbm-gallery-sidebar-card
    specifically, not the bare .mpcrbm_gallery-image/-images-lists classes
@@ -1308,7 +1392,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	padding: 10px 16px;
+	padding: 0px;
 	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
 	font-size: 13px;
 	font-weight: 500;
@@ -1330,6 +1414,15 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	background: transparent;
 	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
 	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Hidden per the reference design (only "+ Add Image" is shown) — its click
+   handler (MPCRBM_Gallery_Imges_Settings.php) targets a ".gallery-image"
+   class that doesn't exist on any element here (actual thumbnails use
+   "mpcrbm_gallery-image"), so it was already inert; hiding it visually
+   rather than removing the markup/handler. */
+.mpcrbm-gallery-sidebar-card .button.clear {
+	display: none;
 }
 
 /* "Enable/Disable Gallery" toggle row (top of the card) and the "Gallery
@@ -1408,6 +1501,164 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 		width: 100%;
 		margin-top: 16px;
 	}
+}
+
+/* ==========================================================================
+   "Extra Service Options" repeater table (Car edit screen's Extra Service
+   Options card — MPCRBM_Extra_Service::ex_service_table()/extra_service_item()).
+   Each row is built from mp_global's shared MPCRBM_Custom_Layout helpers and
+   utility classes (_mpBtn_xs, buttonGroup, allCenter, add_icon_image_area,
+   etc.), which are reused across many other settings screens in this plugin —
+   so everything below is scoped to .mpcrbm_extra_service_area specifically
+   (only this card, only the Car edit screen), never the bare utility classes.
+   ========================================================================== */
+
+.mpcrbm_extra_service_area table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 14px);
+	overflow: hidden;
+}
+
+.mpcrbm_extra_service_area thead th {
+	padding: 10px 14px;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	text-align: left;
+}
+
+.mpcrbm_extra_service_area thead th span {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	text-transform: uppercase;
+	letter-spacing: .02em;
+}
+
+.mpcrbm_extra_service_area tbody tr.remove_area {
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm_extra_service_area tbody tr.remove_area:last-child {
+	border-bottom: none;
+}
+
+.mpcrbm_extra_service_area tbody tr.remove_area:hover {
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+}
+
+.mpcrbm_extra_service_area td {
+	padding: 10px 14px;
+	vertical-align: middle;
+}
+
+/* Text/number/textarea/select fields — the same rounded/bordered
+   .formControl look used for every other field in this redesign. */
+.mpcrbm_extra_service_area input[type="text"],
+.mpcrbm_extra_service_area input[type="number"],
+.mpcrbm_extra_service_area textarea,
+.mpcrbm_extra_service_area select {
+	width: 100%;
+	min-width: 100px;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	padding: 8px 10px;
+	font-size: var(--fs, 14px);
+	color: var(--mpcrbm-shell-text, #1f222b);
+	background: #fff;
+}
+
+.mpcrbm_extra_service_area textarea {
+	resize: vertical;
+}
+
+/* Icon/image picker (mp_global's MPCRBM_Select_Icon_image) */
+.mpcrbm_extra_service_area .add_icon_image_area {
+	border: 1px dashed var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	padding: 8px;
+	max-width: 130px;
+}
+
+.mpcrbm_extra_service_area .add_icon_image_area .icon_item,
+.mpcrbm_extra_service_area .add_icon_image_area .image_item {
+	border-radius: var(--mpcrbm-shell-radius-xs, 6px);
+}
+
+.mpcrbm_extra_service_area .add_icon_image_button_area ._mpBtn_xs {
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 6px);
+	background: #fff;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	font-size: 12px;
+}
+
+.mpcrbm_extra_service_area .add_icon_image_button_area ._mpBtn_xs:hover {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+/* Action column — icon-only rounded buttons instead of the default chunky
+   button/pink drag-handle look. */
+.mpcrbm_extra_service_area .buttonGroup {
+	gap: 6px;
+}
+
+.mpcrbm_extra_service_area ._whiteButton_xs.item_remove,
+.mpcrbm_extra_service_area ._mpBtn_themeButton_xs.sortable_button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	background: #fff;
+}
+
+.mpcrbm_extra_service_area ._whiteButton_xs.item_remove {
+	color: var(--mpcrbm-red, #d91e1e);
+}
+
+.mpcrbm_extra_service_area ._whiteButton_xs.item_remove:hover {
+	background: var(--mpcrbm-red-light, #f6dada);
+	border-color: var(--mpcrbm-red, #d91e1e);
+}
+
+.mpcrbm_extra_service_area ._mpBtn_themeButton_xs.sortable_button {
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	cursor: grab;
+}
+
+.mpcrbm_extra_service_area ._mpBtn_themeButton_xs.sortable_button:hover {
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+/* "Add Extra New Service" button — same full-width dashed "add row" pattern
+   as the Gallery Images card's "+ Add Image" button. */
+.mpcrbm_extra_service_area ._themeButton_xs_mT_xs.add_item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	margin-top: 12px;
+	padding: 10px 16px;
+	border: 1px dashed var(--mpcrbm-shell-primary, #1d7bff);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	background: #fff;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.mpcrbm_extra_service_area ._themeButton_xs_mT_xs.add_item:hover {
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
 }
 
 /* ==========================================================================
@@ -1558,6 +1809,102 @@ body.mpcrbm-admin.post-new-php.post-type-mpcrbm_rent #wpcontent {
 	color: var(--mpcrbm-shell-text, #1f222b);
 }
 
+/* Split "Update" button + "Save Draft" dropdown — matches tour-booking-
+   manager's .ttbm-split-publish component/behavior. Only proxy-clicks the
+   real WP controls (#publish/#save-post), same approach as the plain
+   Update/Preview buttons above — see mpcrbm-shell.js. */
+.mpcrbm-split-publish {
+	position: relative;
+	display: inline-flex;
+	align-items: stretch;
+}
+
+.mpcrbm-split-publish__main,
+.mpcrbm-split-publish__toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid transparent;
+	background-color: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+	cursor: pointer;
+}
+
+.mpcrbm-split-publish__main {
+	gap: 6px;
+	padding: 6px 14px;
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px) 0 0 var(--mpcrbm-shell-radius-xs, 8px);
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+}
+
+.mpcrbm-split-publish__main:hover {
+	opacity: .9;
+}
+
+.mpcrbm-split-publish__toggle {
+	padding: 6px 8px;
+	border-radius: 0 var(--mpcrbm-shell-radius-xs, 8px) var(--mpcrbm-shell-radius-xs, 8px) 0;
+	border-left: 1px solid rgba(255, 255, 255, .3);
+}
+
+.mpcrbm-split-publish__toggle:hover {
+	opacity: .9;
+}
+
+.mpcrbm-split-publish__toggle svg {
+	transition: transform .15s ease;
+}
+
+.mpcrbm-split-publish.is-open .mpcrbm-split-publish__toggle svg {
+	transform: rotate(180deg);
+}
+
+.mpcrbm-split-publish__menu {
+	display: none;
+	position: absolute;
+	top: calc(100% + 6px);
+	right: 0;
+	z-index: 10;
+	min-width: 160px;
+	padding: 6px;
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	box-shadow: var(--mpcrbm-shell-shadow, 0 5px 15px -5px rgba(115, 125, 146, .11));
+}
+
+.mpcrbm-split-publish.is-open .mpcrbm-split-publish__menu {
+	display: block;
+}
+
+.mpcrbm-split-publish__item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	padding: 8px 10px;
+	border: none;
+	border-radius: var(--mpcrbm-shell-radius-xs, 6px);
+	background: transparent;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	font-size: 13px;
+	font-weight: 500;
+	text-align: left;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.mpcrbm-split-publish__item:hover {
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+}
+
+.mpcrbm-split-publish__item svg {
+	flex: 0 0 auto;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
 /* ==========================================================================
    Add/Edit Car screen — visual polish for the native WP postboxes (Publish,
    Featured Image, Information Settings) and title field. This is CSS-only:
@@ -1664,7 +2011,7 @@ body.mpcrbm-admin.post-new-php #titlediv #edit-slug-box {
 
 body.mpcrbm-admin.post-php .postbox,
 body.mpcrbm-admin.post-new-php .postbox {
-	border: 1px solid var(--mpcrbm-shell-border);
+	border: none;
 	border-radius: var(--mpcrbm-shell-radius);
 	box-shadow: var(--mpcrbm-shell-shadow);
 	background: #fff;
@@ -1708,6 +2055,10 @@ body.mpcrbm-admin.post-new-php #postdivrich .wp-editor-area {
 	min-height: 200px;
 }
 
+.wp-editor-expand div.mce-toolbar-grp {
+	z-index: 10;
+}
+
 /* Title field + content editor are relocated into the "General Info" tab by
    mpcrbm-shell.js; this just adds the spacing they'd normally get from
    #post-body-content, since they now sit directly above the "General
@@ -1745,6 +2096,11 @@ body.mpcrbm-admin.post-new-php #postdivrich .wp-editor-area {
    a separate gray band. */
 #wp-content-editor-tools {
 	background-color: transparent;
+}
+
+.wp-editor-expand #wp-content-editor-tools {
+	z-index: 10;
+	border-bottom: none;
 }
 
 [data-tabs="#mpcrbm_general_info"] #post-status-info {
@@ -1803,6 +2159,10 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
    load order.
    ========================================================================== */
 
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section {
+	border: none;
+}
+
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-note {
 	background-color: #eff6ff;
 	border: 1px solid #dbeafe;
@@ -1838,7 +2198,7 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	gap: 10px;
 	padding: 16px 20px;
 	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
-	background: #fafbfc;
+	background: #f2f4f7;
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header i {

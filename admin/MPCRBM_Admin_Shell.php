@@ -183,9 +183,31 @@
 						<button type="button" class="mpcrbm-btn mpcrbm-btn-outline mpcrbm-btn-sm" id="mpcrbm-edit-topbar-preview">
 							<i class="far fa-eye"></i> <?php esc_html_e( 'Preview', 'car-rental-manager' ); ?>
 						</button>
-						<button type="button" class="mpcrbm-btn mpcrbm-btn-sm" id="mpcrbm-edit-topbar-update">
-							<?php esc_html_e( 'Update', 'car-rental-manager' ); ?>
-						</button>
+						<?php
+						// Split "Update" button + "Save Draft" dropdown, matching
+						// tour-booking-manager's .ttbm-split-publish component. Buttons
+						// stay type="button" (not type="submit") since this whole top
+						// bar is injected outside <form id="post"> — see the proxy-click
+						// note in mpcrbm-shell.js. Always rendered as the full split
+						// button — the dropdown's "Save Draft" item also doubles as the
+						// way to change an already-published car back to a draft (WP
+						// itself has no single native control for that; see the click
+						// handler in mpcrbm-shell.js for how it's done).
+						?>
+						<div class="mpcrbm-split-publish" id="mpcrbm-edit-topbar-publish">
+							<button type="button" class="mpcrbm-split-publish__main" id="mpcrbm-edit-topbar-update">
+								<?php esc_html_e( 'Update', 'car-rental-manager' ); ?>
+							</button>
+							<button type="button" class="mpcrbm-split-publish__toggle" id="mpcrbm-edit-topbar-publish-toggle" aria-expanded="false" aria-haspopup="true" aria-label="<?php esc_attr_e( 'Toggle publish options', 'car-rental-manager' ); ?>">
+								<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+							</button>
+							<div class="mpcrbm-split-publish__menu" role="menu" id="mpcrbm-edit-topbar-publish-menu">
+								<button type="button" class="mpcrbm-split-publish__item mpcrbm-split-publish__draft" id="mpcrbm-edit-topbar-save-draft" role="menuitem">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+									<?php esc_html_e( 'Save Draft', 'car-rental-manager' ); ?>
+								</button>
+							</div>
+						</div>
 					</div>
 				</div>
 				<?php

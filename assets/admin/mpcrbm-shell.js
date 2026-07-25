@@ -96,12 +96,57 @@
 
 		if ($featuredImageBox.length) {
 			$sidebar.append($featuredImageBox);
+
+			// Relabel the native postimagediv chrome to the simplified
+			// "Featured Image *" / "Change image" / "Remove" wording from the
+			// reference design, instead of this CPT's verbose "Set/Remove Car
+			// featured image" labels (built by string concatenation in
+			// MPCRBM_CPT.php's featured_image/set_featured_image/
+			// remove_featured_image labels — left alone there since those
+			// labels are shared by every CPT this plugin registers, not just
+			// Car, so relabeling only makes sense scoped to this screen).
+			$featuredImageBox.find('.hndle').html('Featured Image <span class="mpcrbm-required">*</span>');
+
+			var $thumbLink = $featuredImageBox.find('#set-post-thumbnail');
+			var $howto = $featuredImageBox.find('#set-post-thumbnail-desc');
+			var $removeP = $featuredImageBox.find('#remove-post-thumbnail').text('Remove').closest('p');
+			if ($thumbLink.find('img').length) {
+				// A featured image is already set: turn the descriptive
+				// "Click the image to edit or update" text into a "Change
+				// image" link that proxy-clicks the same thickbox trigger
+				// (same proxy-click pattern used for the Update/Preview
+				// top-bar buttons below) rather than rewriting the thickbox
+				// link itself.
+				$howto.text('Change image').addClass('mpcrbm-change-image').on('click', function () {
+					$thumbLink[0].click();
+				});
+				// Group "Change image" + "Remove" into one flex row (mpcrbm-
+				// shell.css) so Remove sits right-aligned opposite Change
+				// image, instead of stacking as two separate block-level <p>
+				// elements the way WP core prints them.
+				$howto.add($removeP).wrapAll('<div class="mpcrbm-featured-image-actions"></div>');
+			} else {
+				// No featured image set yet: WP core's link is plain text
+				// with no fixed size, so the card would be visibly shorter
+				// than the "has image" state and jump in height once one is
+				// set. Style it as a fixed-aspect-ratio placeholder instead
+				// (same 4:3 ratio the Gallery Images tooltip asks for — see
+				// MPCRBM_Gallery_Imges_Settings.php) so the card holds its
+				// position either way.
+				$thumbLink.addClass('mpcrbm-featured-image-placeholder')
+					.html('<i class="fas fa-image"></i><span>Upload image</span>');
+			}
 		}
 
 		if ($galleryTabItem.length) {
+			// No icon+title card header here (unlike the other sidebar/tab
+			// cards) — the reference design's card starts directly with the
+			// "Enable/Disable Gallery" toggle row, which already reads as
+			// the card's top edge; a second "Gallery Images" header above it
+			// would just duplicate the label lower down (.mpcrbm-gallery-
+			// images-label, next to the info icon).
 			var $galleryCard = $(
 				'<div class="mpcrbm-info-card mpcrbm-gallery-sidebar-card">' +
-					'<div class="mpcrbm-info-card-header"><i class="fas fa-images"></i><h3>Gallery Images</h3></div>' +
 					'<div class="mpcrbm-info-card-body"></div>' +
 				'</div>'
 			);
@@ -146,6 +191,66 @@ jQuery(function ($) {
 		$topbarUpdate.on('click', function (e) {
 			e.preventDefault();
 			$realPublish[0].click();
+		});
+	}
+
+	// Split-button "Save Draft" dropdown (tour-booking-manager's .ttbm-split-
+	// publish component) — always available, on both unpublished AND already-
+	// published cars (per explicit request, so a published car can be taken
+	// back to Draft from here too, same as the reference plugin).
+	var $splitPublish = $('#mpcrbm-edit-topbar-publish');
+	var $publishToggle = $('#mpcrbm-edit-topbar-publish-toggle');
+	if ($splitPublish.length) {
+		$('#mpcrbm-edit-topbar-save-draft').on('click', function (e) {
+			e.preventDefault();
+			var $realSaveDraft = $('#save-post');
+			if ($realSaveDraft.length) {
+				// Post is already unpublished (draft/pending/etc.) — WP's own
+				// "Save Draft"/"Save as Pending" control already does the
+				// right thing, same proxy-click approach as Update/Preview.
+				$realSaveDraft[0].click();
+			} else {
+				// Post is currently published — WP has no native "Save
+				// Draft" control to proxy in this state (post_submit_meta_box(),
+				// wp-admin/includes/meta-boxes.php only renders #save-post
+				// while a post is unpublished). Instead: set the real status
+				// <select> (CSS-hidden in #submitdiv but still a functional
+				// part of <form id="post">, always with a "draft" <option>
+				// regardless of current status) to "draft", then submit via
+				// the hidden early "press Enter to save" button — id="save",
+				// unconditionally present for every post, publish or not
+				// (post_submit_meta_box()'s very first line). NOT via
+				// #publish: _wp_translate_postdata() (wp-admin/includes/
+				// post.php) forces post_status back to "publish" whenever
+				// $_POST['publish'] is set, which would silently undo this.
+				$('#post_status').val('draft');
+				$('#hidden_post_status').val('draft');
+				$('#save')[0].click();
+			}
+		});
+
+		$publishToggle.on('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var isOpen = $splitPublish.toggleClass('is-open').hasClass('is-open');
+			$publishToggle.attr('aria-expanded', isOpen ? 'true' : 'false');
+		});
+
+		// Click-outside and Escape both close the menu, standard dropdown
+		// behavior — bound on document since the menu itself sits outside
+		// the click target when either happens.
+		$(document).on('click', function (e) {
+			if ($splitPublish.hasClass('is-open') && !$splitPublish.is(e.target) && $splitPublish.has(e.target).length === 0) {
+				$splitPublish.removeClass('is-open');
+				$publishToggle.attr('aria-expanded', 'false');
+			}
+		});
+
+		$(document).on('keydown', function (e) {
+			if (e.key === 'Escape' && $splitPublish.hasClass('is-open')) {
+				$splitPublish.removeClass('is-open');
+				$publishToggle.attr('aria-expanded', 'false');
+			}
 		});
 	}
 
