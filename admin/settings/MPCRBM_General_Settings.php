@@ -51,11 +51,6 @@
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_general_info">
                     <div class="settings_area mpcrbm-info-cards">
-                        <div class="mpcrbm-info-note">
-                            <h6><?php esc_html_e( 'Feature Configuration', 'car-rental-manager' ); ?></h6>
-                            <span><?php esc_html_e( 'Here you can On/Off feature list and create new feature.', 'car-rental-manager' ); ?></span>
-                        </div>
-
                         <div class="mpcrbm-info-card">
                             <div class="mpcrbm-info-card-header">
                                 <i class="fas fa-car-side"></i>
@@ -67,7 +62,6 @@
 									<label class="label">
 										<div>
 											<h6><?php esc_html_e('Car Type', 'car-rental-manager'); ?></h6>
-											<span class="desc"><?php MPCRBM_Settings::info_text('display_mpcrbm_features'); ?></span>
 										</div>
 										<select name="tax_input[mpcrbm_car_type][]" class="formControl">
 											<option value=""><?php esc_html_e('— Select Car Type —','car-rental-manager'); ?></option>
@@ -85,7 +79,6 @@
 									<label class="label">
 										<div>
 											<h6><?php esc_html_e('Fuel Type', 'car-rental-manager'); ?></h6>
-											<span class="desc"><?php MPCRBM_Settings::info_text('display_mpcrbm_features'); ?></span>
 										</div>
 										<select name="tax_input[mpcrbm_fuel_type][]" class="formControl">
 											<option value=""><?php esc_html_e('— Select Fuel Type —','car-rental-manager'); ?></option>
@@ -161,7 +154,6 @@
                                     <label class="label">
                                         <div>
                                             <h6><?php esc_html_e( 'Maximum Passenger', 'car-rental-manager' ); ?></h6>
-                                            <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_maximum_passenger' ); ?></span>
                                         </div>
                                         <input class="formControl price_validation" name="mpcrbm_maximum_passenger" value="<?php echo esc_attr( $max_passenger ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                                     </label>
@@ -170,7 +162,6 @@
                                     <label class="label">
                                         <div>
                                             <h6><?php esc_html_e( 'Maximum Bag', 'car-rental-manager' ); ?></h6>
-                                            <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_maximum_bag' ); ?></span>
                                         </div>
                                         <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                                     </label>
@@ -179,7 +170,6 @@
                                     <label class="label">
                                         <div>
                                             <h6><?php esc_html_e( 'Car Stock', 'car-rental-manager' ); ?></h6>
-                                            <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_car_stock' ); ?></span>
                                         </div>
                                         <input class="formControl price_validation" name="mpcrbm_car_stock" value="<?php echo esc_attr( $stock_car ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
                                     </label>
@@ -197,7 +187,6 @@
                                     <label class="label">
                                         <div>
                                             <h6><?php esc_html_e( 'Set Pickup Location ', 'car-rental-manager' ); ?></h6>
-                                            <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_car_stock' ); ?></span>
                                         </div>
 
                                         <div class="formControl mpcrbm_suggested_text_container">

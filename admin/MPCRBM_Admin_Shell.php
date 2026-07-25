@@ -25,6 +25,35 @@
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_shell_assets' ] );
 				add_action( 'wp_ajax_mpcrbm_set_menu_layout_style', [ $this, 'ajax_set_menu_layout_style' ] );
 				add_action( 'in_admin_header', [ $this, 'render_edit_screen_chrome' ] );
+				add_filter( 'wp_editor_settings', [ $this, 'simplify_content_editor_toolbar' ], 10, 2 );
+			}
+
+			// Reduces the native content editor (the "Vehicle Description" field inside the
+			// Basic Information card) down to a minimal toolbar per explicit request — no
+			// paragraph/format dropdown, no kitchen-sink second row, no Add Media button.
+			// wp_editor() merges the 'tinymce' array over its own defaults (doesn't replace
+			// them), so plugins/valid_elements/etc. from WP core are left untouched — only
+			// toolbar1/toolbar2/height are overridden here.
+			// IMPORTANT: quicktags is deliberately left enabled (WP's default) rather than
+			// disabled — it's the only fallback if TinyMCE ever fails to initialize (slow
+			// script load, a conflicting plugin, a disabled-visual-editor user preference,
+			// etc.), and turning it off left editors with a content box that accepted no
+			// input at all when that happened. The Visual/Text tab switcher is hidden with
+			// CSS instead (see mpcrbm-shell.css), which gets the same clean look without
+			// removing the fallback.
+			public function simplify_content_editor_toolbar( $settings, $editor_id ) {
+				if ( 'content' !== $editor_id || ! self::is_metabox_screen() ) {
+					return $settings;
+				}
+
+				$settings['media_buttons'] = false;
+				$settings['tinymce']       = is_array( $settings['tinymce'] ?? null ) ? $settings['tinymce'] : [];
+				$settings['tinymce']['toolbar1'] = 'bold,italic,bullist,link,alignleft,aligncenter,alignright,alignjustify';
+				$settings['tinymce']['toolbar2'] = '';
+				$settings['tinymce']['height']   = 200;
+				$settings['tinymce']['wp_autoresize_on'] = false;
+
+				return $settings;
 			}
 
 			// Detects whether the current wp-admin screen is one of this plugin's own dashboard-style pages.

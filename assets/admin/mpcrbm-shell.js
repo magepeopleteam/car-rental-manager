@@ -1,5 +1,30 @@
-jQuery(function ($) {
+(function ($) {
 	'use strict';
+
+	// Add/Edit Car screen only — DOM relocation, run SYNCHRONOUSLY (not inside
+	// jQuery(document).ready()) rather than deferred to DOMContentLoaded.
+	//
+	// Why: WordPress's own TinyMCE bootstrap for the content editor is an inline
+	// <script> placed later in the page (near the closing </body>) that checks
+	// document.readyState directly and calls tinymce.init() IMMEDIATELY if the
+	// document is already 'interactive' — it does not wait for a DOMContentLoaded
+	// event listener. Since this file (mpcrbm-shell.js) is enqueued as a plain,
+	// non-deferred <script src>, it is fetched and executed in document order,
+	// BEFORE that later inline script runs. But jQuery(document).ready() queues
+	// its callback for the DOMContentLoaded event, which fires AFTER this script
+	// finishes executing — meaning WP's inline TinyMCE bootstrap can (and does)
+	// run first regardless, initializing the "content" editor's iframe in its
+	// ORIGINAL DOM position. If this file's relocation code then runs afterwards
+	// and moves #postdivrich (which by then contains that live iframe) into the
+	// new card, the browser reloads the iframe as a side effect of relocating it
+	// in the DOM — silently wiping the just-initialized editable body, so typing
+	// into the "Vehicle Description" field does nothing.
+	// Running this block synchronously, at parse time, avoids the race entirely:
+	// by this script's position in the page (after #postdivrich, the metabox
+	// panel, and every tab already exist further up the document, but before
+	// WP's own TinyMCE bootstrap script further down), the move completes before
+	// TinyMCE ever touches the textarea — so TinyMCE initializes directly in the
+	// new location instead of being relocated after the fact.
 
 	// Add/Edit Car screen only: force WordPress's own single-column post-edit
 	// layout instead of the default 2-column one. WP's "#post-body.columns-2
@@ -15,9 +40,6 @@ jQuery(function ($) {
 	// read as part of that tab instead of sitting above the tabbed panel.
 	// Only the DOM position changes — name="post_title"/name="content" stay
 	// inside the same <form id="post">, so saving/autosave is unaffected.
-	// This must run independent of the .mpcrbm-shell check below: the edit
-	// screen never gets that wrapper (its sidebar/topbar are a fixed overlay,
-	// not the flex shell used on the plugin's own 7 pages).
 	// NOTE: the tab panel has no id="mpcrbm_general_info" — that string only
 	// appears as the value of a data-tabs="" attribute (the tab-switching JS
 	// in mpcrbm_global.js matches on it as a plain string, not a DOM id), so
@@ -34,7 +56,18 @@ jQuery(function ($) {
 				'<div class="mpcrbm-info-card-body"></div>' +
 			'</div>'
 		);
-		$basicInfoCard.find('.mpcrbm-info-card-body').append($titlediv, $('#postdivrich'), $('#post-status-info'));
+		// Label for the content editor, matching the reference design's
+		// "Vehicle Description" heading — inserted right above #postdivrich
+		// rather than baked into the card header, since the card header
+		// already labels the whole card ("Basic Information").
+		// h6 (not p) so these inherit the exact same "div.mpcrbm h6" framework
+		// style the Vehicle Details section's field labels (Car Type, Fuel
+		// Type, etc.) use, per explicit request to match that design.
+		var $descriptionLabel = $('<h6 class="mpcrbm-content-editor-label">Vehicle Description</h6>');
+		// Label for the title field, matching the same pattern as the
+		// description label above — inserted right before #titlediv.
+		var $titleLabel = $('<h6 class="mpcrbm-content-editor-label">Vehicle Title</h6>');
+		$basicInfoCard.find('.mpcrbm-info-card-body').append($titleLabel, $titlediv, $descriptionLabel, $('#postdivrich'), $('#post-status-info'));
 		$generalInfoTab.prepend($basicInfoCard);
 	}
 
@@ -85,6 +118,10 @@ jQuery(function ($) {
 
 		$tabsContent.append($sidebar);
 	}
+}(jQuery));
+
+jQuery(function ($) {
+	'use strict';
 
 	// Edit-screen top bar: Update/Preview proxy-click the real native controls
 	// (WP's #publish submit input and #post-preview link) rather than moving

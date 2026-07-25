@@ -1053,6 +1053,44 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	--mpcrbm-shell-radius-xs: 6px;          /* was 8px → --ttbm-a-radius-sm */
 	--mpcrbm-shell-radius: 14px;            /* was 16px → --ttbm-a-radius-lg (card radius) */
 	--mpcrbm-shell-shadow: 0 1px 2px rgba(15, 23, 42, .05); /* was LatePoint's dual-layer shadow → --ttbm-a-shadow-sm */
+
+	/* The plugin's actual brand-color variables — NOT --mpcrbm-shell-*, a
+	   completely separate namespace introduced only for the ~40-odd rules
+	   written by hand in this section. These are injected globally as
+	   :root { --color_theme: #F12971; ... } by mp_global/class/
+	   MPCRBM_Global_Style.php (wp_add_inline_style on the 'mpcrbm_global'
+	   handle), and read with NO fallback by ~100 rules in mp_global/assets/
+	   mp_style/mpcrbm_global.css — the shared tabsItem/tabLists/label/
+	   roundSwitch framework markup that drives every OTHER (non-redesigned)
+	   tab panel in this metabox (Pricing, Extra Options, FAQ, Terms, etc.).
+	   Redefining --color_theme here cascades into all of it automatically,
+	   same mechanism as the --mpcrbm-shell-* block above, without needing to
+	   touch mpcrbm_global.css or duplicate its ~100 rules. The _ee/_cc/_aa/
+	   _88/_77 suffixes are literal hex-alpha strings the PHP builds by string
+	   concatenation ($theme_color . 'ee', etc.), so they're redefined here as
+	   the same blue with the same suffixes to keep tints/shades consistent.
+	   --color_theme_alter (text-on-theme-color) stays the plugin's default
+	   white — white text reads fine on this blue too, so it's left alone. */
+	--color_theme: #2271b1;
+	--color_theme_ee: #2271b1ee;
+	--color_theme_cc: #2271b1cc;
+	--color_theme_aa: #2271b1aa;
+	--color_theme_88: #2271b188;
+	--color_theme_77: #2271b177;
+
+	/* A THIRD, separate brand-color namespace: :root { --mpcrbm-primary:
+	   #F12971; ... } is hardcoded (not PHP-injected) in this file's own
+	   assets/admin/mpcrbm_admin.css. It drives the form-builder tabs (Manage
+	   FAQ / Manage Term & Condition, ".form-wrap.form-builder"), the
+	   .roundSwitchLabel toggle, and a few other not-yet-redesigned corners of
+	   this same metabox. --mpcrbm-sky/-sky-light are its light tint pair
+	   (checked custom-checkbox fill, form-builder hover backgrounds) —
+	   redefined here as light-blue tints of the same primary instead of pink
+	   tints, so they still read as "the accent color, lightened" rather than
+	   a mismatched pink smudge next to the new blue. */
+	--mpcrbm-primary: #2271b1;
+	--mpcrbm-sky: #6fa8dc;
+	--mpcrbm-sky-light: #eaf3fb;
 }
 
 /* Header bar (title, version badge, drag/collapse handles) removed per
@@ -1589,6 +1627,14 @@ body.mpcrbm-admin.post-new-php #titlediv #title {
 	background: #fff;
 }
 
+/* Permalink/slug editor (WP core's #edit-slug-box, nested in #titlediv's
+   .inside) removed per explicit request — the car's slug isn't something
+   editors need to manage from this card. */
+body.mpcrbm-admin.post-php #titlediv #edit-slug-box,
+body.mpcrbm-admin.post-new-php #titlediv #edit-slug-box {
+	display: none;
+}
+
 body.mpcrbm-admin.post-php .postbox,
 body.mpcrbm-admin.post-new-php .postbox {
 	border: 1px solid var(--mpcrbm-shell-border);
@@ -1621,6 +1667,20 @@ body.mpcrbm-admin.post-new-php #postdivrich {
 	overflow: hidden;
 }
 
+/* Content editor min-height, per explicit request. The 'tinymce' => ['height'
+   => 200] setting in MPCRBM_Admin_Shell::simplify_content_editor_toolbar()
+   covers the TinyMCE iframe on first load, but WordPress persists a
+   per-user resize preference (from dragging #content-resize-handle) that can
+   override it on later visits — these rules enforce the floor regardless of
+   that stored preference, for both the rich-text iframe and the plain
+   textarea (shown when quicktags/rich-editing is unavailable). */
+body.mpcrbm-admin.post-php #postdivrich .mce-edit-area iframe,
+body.mpcrbm-admin.post-new-php #postdivrich .mce-edit-area iframe,
+body.mpcrbm-admin.post-php #postdivrich .wp-editor-area,
+body.mpcrbm-admin.post-new-php #postdivrich .wp-editor-area {
+	min-height: 200px;
+}
+
 /* Title field + content editor are relocated into the "General Info" tab by
    mpcrbm-shell.js; this just adds the spacing they'd normally get from
    #post-body-content, since they now sit directly above the "General
@@ -1631,8 +1691,33 @@ body.mpcrbm-admin.post-new-php #postdivrich {
 	margin-bottom: 16px;
 }
 
+/* Labels above the title field and content editor (inserted by
+   mpcrbm-shell.js as <h6 class="mpcrbm-content-editor-label">) — only
+   spacing is set here, deliberately no font-size/weight/color of its own,
+   so it inherits the same "div.mpcrbm h6" framework style (mp_global/assets/
+   mp_style/mpcrbm_global.css) as the Vehicle Details section's field labels
+   (Car Type, Fuel Type, etc.), per explicit request to match that design. */
+[data-tabs="#mpcrbm_general_info"] .mpcrbm-content-editor-label {
+	margin: 0 0 8px;
+}
+
 [data-tabs="#mpcrbm_general_info"] #postdivrich {
 	margin-bottom: 12px;
+}
+
+/* Visual/Text tab switcher hidden visually only — quicktags itself is left
+   enabled (see MPCRBM_Admin_Shell::simplify_content_editor_toolbar()) as a
+   working fallback if TinyMCE ever fails to load, this just hides the UI for
+   switching modes, matching the reference design's tab-less look. */
+[data-tabs="#mpcrbm_general_info"] #postdivrich .wp-editor-tabs {
+	display: none;
+}
+
+/* WP core's default gray fill (wp-admin/css/edit.css) removed per explicit
+   request, so the toolbar strip blends into the card instead of showing as
+   a separate gray band. */
+#wp-content-editor-tools {
+	background-color: transparent;
 }
 
 [data-tabs="#mpcrbm_general_info"] #post-status-info {
