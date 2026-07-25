@@ -600,10 +600,49 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 	box-shadow: var(--mpcrbm-shell-shadow);
 	border-color: var(--mpcrbm-shell-border);
 	padding: 18px;
+	align-items: center;
+	flex-wrap: nowrap;
+}
+
+/* mpcrbm_manage_taxonomy.css positions .mpcrbm_stat-change with
+   position:absolute; right:15px — pulled out of the flex row entirely, which
+   combined with the card's own align-items:end is why it sits at the
+   bottom-right instead of level with the icon/label/value. Putting it back
+   into normal flex flow (and .mpcrbm_stat-left's own bottom padding, no
+   longer needed once everything's vertically centered) puts everything on
+   one line. */
+.mpcrbm-shell-body .mpcrbm_stat-change {
+	position: static;
+	margin-left: auto;
+	white-space: nowrap;
+	flex: 0 0 auto;
+}
+
+.mpcrbm-shell-body .mpcrbm_stat-left {
+	padding-bottom: 0;
+}
+
+/* .mpcrbm_stat-left is already a flex row (icon + the label/value wrapper
+   div), but that inner wrapper div itself isn't flex, so the label stacks
+   above the value by default. Making it a row too puts icon/label/value all
+   on one line: "🚗  Total Cars  7". */
+.mpcrbm-shell-body .mpcrbm_stat-left > div {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.mpcrbm-shell-body .mpcrbm_stat-value {
+	margin: 0;
 }
 
 .mpcrbm-shell-body .mpcrbm_stat-card i {
 	color: var(--mpcrbm-shell-primary);
+}
+
+.mpcrbm-shell-body .mpcrbm_stat-left i {
+	padding: 0;
+	background-color: transparent;
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_control_btn.btn-primary {
