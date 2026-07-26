@@ -95,7 +95,13 @@
 				<?php
 			}
 
-			public function extra_service_item( $field = array() ) {
+			// Public static (doesn't touch $this): reused by
+			// MPCRBM_Extra_Services_Manager's in-shell group editor for the
+			// same repeatable service-row markup/field names, so both surfaces
+			// stay in sync and share the existing add-row/remove-row JS in
+			// mp_global/assets/admin/mpcrbm_admin_settings.js (delegated on
+			// "div.mpcrbm .add_item" / ".item_remove", not tied to this class).
+			public static function extra_service_item( $field = array() ) {
 				$field         = $field ?: array();
 				$service_icon  = array_key_exists( 'service_icon', $field ) ? $field['service_icon'] : '';
 				$service_name  = array_key_exists( 'service_name', $field ) ? $field['service_name'] : '';

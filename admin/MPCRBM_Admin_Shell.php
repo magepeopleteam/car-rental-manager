@@ -18,6 +18,8 @@
 				'mpcrbm_rent_page_mpcrbm_branch_managers',
 				'mpcrbm_rent_page_mpcrbm_my_branch',
 				'mpcrbm_rent_page_mpcrbm_bm_bookings',
+				'mpcrbm_rent_page_mpcrbm_locations_manager',
+				'mpcrbm_rent_page_mpcrbm_ex_services_manager',
 			];
 
 			public function __construct() {
@@ -149,6 +151,9 @@
 								<a href="<?php echo esc_url( $item['link'] ); ?>">
 									<i class="<?php echo esc_attr( $item['icon'] ); ?>"></i>
 									<span><?php echo esc_html( $item['label'] ); ?></span>
+									<?php if ( 'mpcrbm_car_rental' === $item['slug'] ) : ?>
+										<i class="fas fa-chevron-down mpcrbm-shell-menu-arrow"></i>
+									<?php endif; ?>
 								</a>
 								<?php if ( $is_active ) : ?>
 									<ul class="mpcrbm-shell-submenu">
@@ -257,6 +262,22 @@
 				];
 
 				if ( current_user_can( 'manage_options' ) ) {
+					// Both render inside this shell (MPCRBM_Locations_Manager /
+					// MPCRBM_Extra_Services_Manager) rather than linking out to their
+					// native WP screens, so they get the same chrome as Branch
+					// Managers / Global Settings below.
+					$items[] = [
+						'slug'  => 'mpcrbm_locations_manager',
+						'label' => esc_html__( 'Locations', 'car-rental-manager' ),
+						'icon'  => 'fas fa-map-marker-alt',
+						'link'  => $base_url . '&page=mpcrbm_locations_manager',
+					];
+					$items[] = [
+						'slug'  => 'mpcrbm_ex_services_manager',
+						'label' => esc_html__( 'Extra Services', 'car-rental-manager' ),
+						'icon'  => 'fas fa-concierge-bell',
+						'link'  => $base_url . '&page=mpcrbm_ex_services_manager',
+					];
 					$items[] = [
 						'slug'  => 'mpcrbm_branch_managers',
 						'label' => esc_html__( 'Branch Managers', 'car-rental-manager' ),
@@ -355,6 +376,9 @@
 										<a href="<?php echo esc_url( $item['link'] ); ?>">
 											<i class="<?php echo esc_attr( $item['icon'] ); ?>"></i>
 											<span><?php echo esc_html( $item['label'] ); ?></span>
+											<?php if ( 'mpcrbm_car_rental' === $item['slug'] ) : ?>
+												<i class="fas fa-chevron-down mpcrbm-shell-menu-arrow"></i>
+											<?php endif; ?>
 										</a>
 										<?php if ( $has_submenu ) : ?>
 											<ul class="mpcrbm-shell-submenu">

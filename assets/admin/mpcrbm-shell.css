@@ -234,6 +234,24 @@ body.mpcrbm-admin *:after {
 	font-size: 15px;
 }
 
+/* Chevron for the one sidebar item that actually expands (Car Rental) — margin-left:
+   auto pushes just this icon to the far right without disturbing the icon/label
+   gap:12px grouping on the left (see note above on the ">" combinator). */
+.mpcrbm-shell-menu li > a .mpcrbm-shell-menu-arrow {
+	width: auto;
+	margin-left: auto;
+	font-size: 11px;
+	transition: transform .15s ease;
+}
+
+.mpcrbm-shell-menu li.is-active > a .mpcrbm-shell-menu-arrow {
+	transform: rotate(180deg);
+}
+
+.mpcrbm-shell.side-menu-compact .mpcrbm-shell-menu li > a .mpcrbm-shell-menu-arrow {
+	display: none;
+}
+
 .mpcrbm-shell.side-menu-compact .mpcrbm-shell-menu li > a span {
 	display: none;
 }

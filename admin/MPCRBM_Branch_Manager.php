@@ -123,7 +123,9 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			<?php
 		}
 
-		private function render_hours_fields( array $hours ) {
+		// Public static (was private): reused by MPCRBM_Locations_Manager's
+		// in-shell add/edit form for the same mpcrbm_branch_hours field.
+		public static function render_hours_fields( array $hours ) {
 			?>
 			<table class="mpcrbm-hours-table widefat">
 				<thead>

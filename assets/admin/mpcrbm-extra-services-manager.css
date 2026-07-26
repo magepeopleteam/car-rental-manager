@@ -1,0 +1,322 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Extra Services Manager — Admin Styles
+   The repeater table itself (MPCRBM_Extra_Service::extra_service_item() rows)
+   is intentionally NOT restyled here — it already gets its look from the
+   existing global mp_global/assets/mp_style/mpcrbm_global.css and
+   mp_global/assets/admin/mpcrbm_admin_settings.css, the same styles the
+   native mpcrbm_ex_services edit screen uses. Only this page's own chrome
+   (header banner, list cards, form wrapper) is styled here.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── Header banner — matches .mpcrbm_car_list_controls ──────────────────── */
+.mpcrbm-ex-services-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 20px;
+	padding: 20px 24px;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+}
+
+.mpcrbm-ex-services-head-text {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	max-width: 80%;
+}
+
+.mpcrbm-ex-services-head-text h2 {
+	margin: 0;
+	font-size: 20px !important;
+	font-weight: 700 !important;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-ex-services-head-subtitle {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-ex-services-add-btn,
+.mpcrbm-ex-services-back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	border: none;
+	padding: 10px 18px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none !important;
+	transition: background .15s ease, transform .15s ease;
+}
+
+.mpcrbm-ex-services-add-btn {
+	background: #667eea;
+	color: #fff !important;
+}
+
+.mpcrbm-ex-services-add-btn:hover {
+	background: #5568d3;
+	transform: translateY(-1px);
+}
+
+.mpcrbm-ex-services-back-btn {
+	background: #fff;
+	color: var(--mpcrbm-shell-text, #374151) !important;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+}
+
+.mpcrbm-ex-services-back-btn:hover {
+	background: #f3f4f6;
+}
+
+/* ── Save/update notice ──────────────────────────────────────────────── */
+.mpcrbm-ex-services-notice {
+	margin-bottom: 16px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.mpcrbm-ex-services-notice-created,
+.mpcrbm-ex-services-notice-updated {
+	background: #e6f7ee;
+	color: #1c9d5b;
+}
+
+.mpcrbm-ex-services-notice-error {
+	background: var(--mpcrbm-red-light, #f6dada);
+	color: var(--mpcrbm-red, #d91e1e);
+}
+
+/* ── Card grid (list view) ───────────────────────────────────────────── */
+.mpcrbm-ex-services-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 16px;
+}
+
+.mpcrbm-ex-service-card {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 16px;
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-sm, 12px);
+	transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+
+.mpcrbm-ex-service-card:hover {
+	box-shadow: 0 6px 16px rgba(17, 24, 39, .08);
+	border-color: #c7cbf5;
+	transform: translateY(-2px);
+}
+
+.mpcrbm-ex-service-card-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 6px;
+}
+
+.mpcrbm-ex-service-avatar {
+	width: 36px;
+	height: 36px;
+	border-radius: 9px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 15px;
+	color: #667eea;
+	background: #f0f1ff;
+}
+
+.mpcrbm-ex-service-count-badge {
+	background: #f3f4f6;
+	color: #6b7280;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .02em;
+	padding: 3px 9px;
+	border-radius: 20px;
+}
+
+.mpcrbm-ex-service-name {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-ex-service-desc {
+	font-size: 12.5px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.mpcrbm-ex-service-actions {
+	display: flex;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.mpcrbm-ex-service-edit-btn,
+.mpcrbm-ex-service-delete-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	padding: 7px 10px;
+	border-radius: 7px;
+	font-size: 12.5px;
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none !important;
+	transition: background .15s ease, border-color .15s ease;
+}
+
+.mpcrbm-ex-service-edit-btn {
+	flex: 1;
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	color: var(--mpcrbm-shell-text, #374151) !important;
+}
+
+.mpcrbm-ex-service-edit-btn:hover {
+	background: #f3f4f6;
+	border-color: #d1d5db;
+}
+
+.mpcrbm-ex-service-delete-btn {
+	flex: 0 0 auto;
+	width: 34px;
+	background: #fff;
+	border: 1px solid #fecaca;
+	color: #ef4444;
+}
+
+.mpcrbm-ex-service-delete-btn:hover {
+	background: #fef2f2;
+	border-color: #fca5a5;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.mpcrbm-ex-services-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 50px 20px;
+	color: #6b7280;
+	border: 1px dashed var(--mpcrbm-shell-border, #e5e7eb);
+	border-radius: var(--mpcrbm-shell-radius-sm, 12px);
+}
+
+.mpcrbm-ex-services-empty i {
+	font-size: 26px;
+	color: #c7cbf5;
+	margin-bottom: 10px;
+}
+
+.mpcrbm-ex-services-empty p {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #374151;
+}
+
+.mpcrbm-ex-services-empty span {
+	margin-top: 4px;
+	font-size: 13px;
+}
+
+/* ── Group editor form ───────────────────────────────────────────────── */
+.mpcrbm-ex-service-form {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+	padding: 24px;
+}
+
+.mpcrbm-ex-service-card-form {
+	max-width: 420px;
+	margin-bottom: 20px;
+}
+
+.mpcrbm-ex-service-card-form label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #374151);
+}
+
+.mpcrbm-ex-service-card-form input[type="text"] {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	border-radius: 8px;
+	font-size: 14px;
+	box-sizing: border-box;
+	outline: none;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mpcrbm-ex-service-card-form input[type="text"]:focus {
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-ex-service-form-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+}
+
+.mpcrbm-ex-service-save-btn {
+	background: #667eea;
+	color: #fff;
+	border: none;
+	padding: 10px 22px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .15s ease;
+}
+
+.mpcrbm-ex-service-save-btn:hover {
+	background: #5568d3;
+}
+
+.mpcrbm-ex-service-cancel-btn {
+	display: inline-flex;
+	align-items: center;
+	background: #fff;
+	color: var(--mpcrbm-shell-text, #374151) !important;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	padding: 10px 22px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none !important;
+}
+
+.mpcrbm-ex-service-cancel-btn:hover {
+	background: #f3f4f6;
+}
