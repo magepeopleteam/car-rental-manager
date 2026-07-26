@@ -2,12 +2,25 @@
    MPCRBM Admin Shell — LatePoint-style custom app shell
    Scoped entirely under body.mpcrbm-admin. Only enqueued on this plugin's
    own dashboard-style admin pages (see MPCRBM_Admin_Shell::SCREEN_IDS).
-   Accent color matches LatePoint's own palette (#1d7bff) rather than the
-   plugin's existing --mpcrbm-primary, per explicit design request.
+   Accent color: #667eea per explicit request — applied here across all
+   three of the plugin's brand-color namespaces (--mpcrbm-shell-*,
+   --color_theme*, --mpcrbm-primary/-sky/-sky-light) so every button/tab/
+   badge on these dashboard pages picks it up, same mechanism already used
+   for the per-car metabox further down this file (#mpcrbm_meta_box_panel).
    ========================================================================== */
 
+/* This plugin's admin pages sit inside an iframe-free wp-admin, so the
+   default 32px html.wp-toolbar padding (reserved for the WP admin bar)
+   leaves an oversized gap above this shell's own fixed topbar. Scoped to
+   just this file, which is only enqueued on the car rental admin screens
+   (dashboard pages + the car edit screen) — not applied anywhere else in
+   wp-admin. */
+html.wp-toolbar {
+	padding-top: 10px;
+}
+
 body.mpcrbm-admin {
-	--mpcrbm-shell-primary: #1d7bff;
+	--mpcrbm-shell-primary: #667eea;
 	--mpcrbm-shell-radius-xs: 8px;
 	--mpcrbm-shell-radius-sm: 12px;
 	--mpcrbm-shell-radius: 16px;
@@ -20,6 +33,30 @@ body.mpcrbm-admin {
 	--mpcrbm-shell-sidebar-width: 240px;
 	--mpcrbm-shell-sidebar-width-compact: 76px;
 	--mpcrbm-shell-topbar-height: 64px;
+
+	/* --color_theme* — normally injected globally as :root custom properties
+	   by mp_global/class/MPCRBM_Global_Style.php from a saved option, read
+	   with no fallback by ~100 rules in mp_global/assets/mp_style/
+	   mpcrbm_global.css (tabsItem/tabLists/roundSwitch framework — drives the
+	   taxonomies dashboard's own left-side tab list, among other things).
+	   Redefining it here overrides that global setting ONLY within
+	   body.mpcrbm-admin (this plugin's own dashboard pages), leaving the
+	   site-wide setting — and anything on the frontend that reads it —
+	   untouched. */
+	--color_theme: #667eea;
+	--color_theme_ee: #667eeaee;
+	--color_theme_cc: #667eeacc;
+	--color_theme_aa: #667eeaaa;
+	--color_theme_88: #667eea88;
+	--color_theme_77: #667eea77;
+
+	/* --mpcrbm-primary — this plugin's own separate brand-color namespace
+	   (assets/admin/mpcrbm_admin.css :root), driving .navy_blueButton,
+	   .settings_panel nav-tabs, .roundSwitchLabel, and similar not-yet-
+	   redesigned corners of the Settings/Status/Guideline dashboard pages. */
+	--mpcrbm-primary: #667eea;
+	--mpcrbm-sky: #a5b4fc;
+	--mpcrbm-sky-light: #eef0ff;
 }
 
 /* --------------------------------------------------------------------
