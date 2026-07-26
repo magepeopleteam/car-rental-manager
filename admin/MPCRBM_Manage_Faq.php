@@ -50,7 +50,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             ?>
             <div class="mpcrbm_faq_container">
                 <div class="mpcrbm-faq-container-header">
-                    <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
+                    <div class="mpcrbm-faq-container-header-text">
+                        <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
+                        <p class="mpcrbm-faq-container-header-subtitle"><?php esc_attr_e( 'Set the rental terms and conditions customers must agree to before completing a booking.', 'car-rental-manager' );?></p>
+                    </div>
                     <button id="mpcrbm_add_term_condition_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Term & Condition', 'car-rental-manager' );?></button>
                 </div>
 
@@ -145,7 +148,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
             <div class="mpcrbm_faq_container">
                 <div class="mpcrbm-faq-container-header">
-                    <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
+                    <div class="mpcrbm-faq-container-header-text">
+                        <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
+                        <p class="mpcrbm-faq-container-header-subtitle"><?php esc_attr_e( 'Answer the questions customers ask most before booking. These appear in the FAQ section on the frontend.', 'car-rental-manager' );?></p>
+                    </div>
                     <button id="mpcrbm_add_faq_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add FAQ', 'car-rental-manager' );?></button>
                 </div>
 

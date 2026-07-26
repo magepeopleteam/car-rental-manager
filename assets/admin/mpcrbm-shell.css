@@ -720,14 +720,14 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_control_btn.btn-primary {
-	background: #0f172a;
+	background: #667eea;
 	border-radius: 8px;
 	font-weight: 600;
 	transition: background .15s ease, transform .15s ease;
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_control_btn.btn-primary:hover {
-	background: #1e293b;
+	background: #5568d3;
 	transform: translateY(-1px);
 }
 
@@ -1185,7 +1185,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    equivalent in tour-booking-manager's design (it reuses WP's native
    post-edit screen instead of a persistent icon sidebar). */
 #mpcrbm_meta_box_panel {
-	--mpcrbm-shell-primary: #2271b1;       /* was #1d7bff (LatePoint blue) → ttbm's --ttbm-a-primary (WP admin blue) */
+	--mpcrbm-shell-primary: #667eea;       /* was #2271b1 (WP admin blue) → #667eea per explicit request */
 	--mpcrbm-shell-text: #0f172a;           /* was #1f222b → --ttbm-a-text */
 	--mpcrbm-shell-text-faded: #64748b;     /* was #788291 → --ttbm-a-muted */
 	--mpcrbm-shell-border: #e2e8f0;         /* was #e7e7ea → --ttbm-a-border */
@@ -1211,12 +1211,12 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	   the same blue with the same suffixes to keep tints/shades consistent.
 	   --color_theme_alter (text-on-theme-color) stays the plugin's default
 	   white — white text reads fine on this blue too, so it's left alone. */
-	--color_theme: #2271b1;
-	--color_theme_ee: #2271b1ee;
-	--color_theme_cc: #2271b1cc;
-	--color_theme_aa: #2271b1aa;
-	--color_theme_88: #2271b188;
-	--color_theme_77: #2271b177;
+	--color_theme: #667eea;
+	--color_theme_ee: #667eeaee;
+	--color_theme_cc: #667eeacc;
+	--color_theme_aa: #667eeaaa;
+	--color_theme_88: #667eea88;
+	--color_theme_77: #667eea77;
 
 	/* A THIRD, separate brand-color namespace: :root { --mpcrbm-primary:
 	   #F12971; ... } is hardcoded (not PHP-injected) in this file's own
@@ -1228,9 +1228,9 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	   redefined here as light-blue tints of the same primary instead of pink
 	   tints, so they still read as "the accent color, lightened" rather than
 	   a mismatched pink smudge next to the new blue. */
-	--mpcrbm-primary: #2271b1;
-	--mpcrbm-sky: #6fa8dc;
-	--mpcrbm-sky-light: #eaf3fb;
+	--mpcrbm-primary: #667eea;
+	--mpcrbm-sky: #a5b4fc;
+	--mpcrbm-sky-light: #eef0ff;
 }
 
 /* Header bar (title, version badge, drag/collapse handles) removed per
@@ -2818,11 +2818,18 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
    also contains the table and modal, so it couldn't just be flexed itself). */
 .mpcrbm-shell-body .mpcrbm-faq-container-header {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	flex-wrap: wrap;
 	gap: 12px;
 	padding: 20px 22px 16px;
+}
+
+.mpcrbm-shell-body .mpcrbm-faq-container-header-text {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-width: 80%;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_container h2 {
@@ -2830,6 +2837,13 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	font-size: 18px;
 	font-weight: 700;
 	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm-faq-container-header-subtitle {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--mpcrbm-shell-text-faded);
 }
 
 .mpcrbm-shell-body .btn-primary {

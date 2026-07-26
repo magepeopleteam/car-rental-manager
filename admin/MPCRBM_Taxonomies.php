@@ -198,8 +198,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             <strong class="mpcrbm_taxonomy_name"><?php echo esc_html($term->name); ?></strong>
                             <?php if ( ! empty( $description ) ) : ?>
                                 <small class="mpcrbm_taxonomy_desc"><?php echo esc_html( $description ); ?></small>
-                            <?php else : ?>
-                                <small class="mpcrbm_taxonomy_desc is-empty"><?php esc_html_e( 'No description available', 'car-rental-manager' );?></small>
                             <?php endif; ?>
 
                             <div class="mpcrbm_taxonomy_actions">
@@ -321,8 +319,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                             <strong class="mpcrbm_taxonomy_name"><?php echo esc_html($term->name); ?></strong>
                             <?php if ( ! empty( $description ) ) : ?>
                                 <small class="mpcrbm_taxonomy_desc"><?php echo esc_html( $description ); ?></small>
-                            <?php else : ?>
-                                <small class="mpcrbm_taxonomy_desc is-empty"><?php esc_html_e( 'No description available', 'car-rental-manager' );?></small>
                             <?php endif; ?>
 
                             <div class="mpcrbm_taxonomy_actions">

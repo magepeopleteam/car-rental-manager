@@ -4,9 +4,9 @@
 
 /* ── Design Tokens ───────────────────────────────────────────────────── */
 .mpcrbm-branch-dashboard {
-    --bm-primary:       #2563eb;
-    --bm-primary-dark:  #1d4ed8;
-    --bm-primary-light: #dbeafe;
+    --bm-primary:       #667eea;
+    --bm-primary-dark:  #5568d3;
+    --bm-primary-light: #eef0ff;
     --bm-success:       #10b981;
     --bm-surface:       #ffffff;
     --bm-bg:            #f8fafc;
@@ -119,7 +119,7 @@
 
 .mpcrbm-branch-card.is-active {
     border-color: var(--bm-primary);
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.12), 0 6px 18px rgba(37,99,235,0.12);
+    box-shadow: 0 0 0 2px rgba(102,126,234,0.12), 0 6px 18px rgba(102,126,234,0.12);
     transform: translateY(-2px);
 }
 
@@ -250,7 +250,7 @@
     align-items: center;
     justify-content: center;
     gap: 7px;
-    background: #0f172a;
+    background: #667eea;
     color: #fff;
     border: none;
     font-size: 13px;
@@ -267,7 +267,7 @@
 }
 
 .mpcrbm-view-branch-cars:hover {
-    background: #1e293b;
+    background: #5568d3;
 }
 
 .mpcrbm-branch-edit-btn {
@@ -341,7 +341,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 2px 8px rgba(37,99,235,0.2);
+    box-shadow: 0 2px 8px rgba(102,126,234,0.2);
     flex-shrink: 0;
 }
 
@@ -509,7 +509,7 @@
 .mpcrbm-transfer-target:focus,
 .mpcrbm-transfer-reason:focus {
     border-color: var(--bm-primary);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
 }
 
 .mpcrbm-car-transfer-form .button {
@@ -611,7 +611,7 @@
 
 .mpcrbm-hours-table input[type="time"]:focus {
     border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+    box-shadow: 0 0 0 2px rgba(102,126,234,0.1);
 }
 
 .mpcrbm-hours-table input[type="time"]:disabled {
@@ -845,7 +845,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #667eea, #5568d3);
     color: #fff !important;
     font-size: 14px;
     font-weight: 700;
@@ -853,13 +853,13 @@
     border-radius: 8px;
     text-decoration: none !important;
     width: 100%;
-    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    box-shadow: 0 4px 14px rgba(102,126,234,0.35);
     transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .mpcrbm-pro-buy-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37,99,235,0.45);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.45);
 }
 
 .mpcrbm-pro-buy-btn i {
@@ -1176,19 +1176,19 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    background: linear-gradient(135deg, #667eea, #5568d3);
     color: #fff !important;
     font-size: 14px;
     font-weight: 700;
     padding: 13px 32px;
     border-radius: 8px;
     text-decoration: none !important;
-    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    box-shadow: 0 4px 14px rgba(102,126,234,0.35);
     transition: transform 0.15s, box-shadow 0.15s;
     margin-top: 4px;
 }
 
 .mpcrbm-pro-lock-buy-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(37,99,235,0.45);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.45);
 }

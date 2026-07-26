@@ -104,7 +104,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    max-width: 560px;
+    max-width: 80%;
 }
 
 .mpcrbm_taxonomies_head_title_row {
@@ -262,7 +262,7 @@
 }
 
 .mpcrbm_taxonomies_save_btn {
-    background: #0073aa;
+    background: #667eea;
     color: white;
     padding: 6px 14px;
     border: none;
@@ -271,7 +271,7 @@
 }
 
 .mpcrbm_taxonomies_cancel_btn {
-    background: #aaa;
+    background: #667eea;
     color: white;
     padding: 6px 14px;
     border: none;
@@ -487,11 +487,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.mpcrbm_taxonomy_desc.is-empty {
-    color: #c1c5cd;
-    font-style: italic;
 }
 
 
@@ -955,7 +950,7 @@ input[type="text"], select {
     display: flex;
     position: relative;
     padding: 10px 20px;
-    background-color: var(--mpcrbm-primary);
+    background-color: var(--mpcrbm-red, #d91e1e);
     color: var(--mpcrbm-white);
     border-radius: 5px;
     cursor: pointer;
