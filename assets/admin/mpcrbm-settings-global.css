@@ -1,9 +1,9 @@
 /* ─────────────────────────────────────────────────────────────────────────
    Global Settings — Admin Styles
-   Restyles the Global Settings screen (MPCRBM_Settings_Global) to match the
-   LatePoint "settings__general" layout: a white "card" per section holding
-   its fields, each field row split into a label column and a content
-   column, plus a page header banner.
+   Restyles the Global Settings screen (MPCRBM_Settings_Global) into a
+   modern layout: a white "card" per section holding its fields, each field
+   row split into a label column and a content column, plus a page header
+   banner.
 
    The shared .leftTabs/.tabLists/.tabsContent sidebar shell itself (also
    reused by the per-car metabox screen) is restyled in
@@ -19,7 +19,7 @@
    [data-tabs-target] / .tabsContent[data-tabs] tab set (shared, global JS in
    mp_global/assets/mp_style/mpcrbm_global.js). Each tab is still its own
    separate WP Settings API <form> (one options-group per section), so
-   unlike LatePoint's single continuously-scrolling form, sections here are
+   rather than one single continuously-scrolling form, sections here are
    switched by click, not scroll-anchored.
    ───────────────────────────────────────────────────────────────────────── */
 
@@ -76,8 +76,8 @@
 	margin: 0 4px;
 }
 
-/* ── Content — each section's <form> becomes a white "card", matching
-   LatePoint's .white-box (rounded 20px, subtle border/shadow). ─────────── */
+/* ── Content — each section's <form> becomes a white "card": rounded 20px,
+   subtle border/shadow. ──────────────────────────────────────────────────── */
 .mpcrbm-card.global_settings .tabsContent [data-tabs] {
 	background: #fff;
 	border: 1px solid #d3d5daab;
@@ -170,9 +170,8 @@
 }
 
 /* ── Save button footer — bordered top divider, right-aligned pill button
-   in the shell's own primary accent, matching .os-form-buttons/.latepoint-
-   btn's shape but the plugin's own color (not LatePoint's blue), for
-   consistency with the top tab bar's active-state color. ──────────────── */
+   in the shell's own primary accent, for consistency with the top tab bar's
+   active-state color. ───────────────────────────────────────────────────── */
 .mpcrbm-card.global_settings .tabsContent form .justifyBetween {
 	display: flex;
 	justify-content: flex-end;

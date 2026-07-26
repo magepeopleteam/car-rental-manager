@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MPCRBM Admin Shell — LatePoint-style custom app shell
+   MPCRBM Admin Shell — custom app shell
    Scoped entirely under body.mpcrbm-admin. Only enqueued on this plugin's
    own dashboard-style admin pages (see MPCRBM_Admin_Shell::SCREEN_IDS).
    Accent color: #667eea per explicit request — applied here across all
@@ -1194,7 +1194,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    assets/admin/ttbm_admin_modern.css's --ttbm-a-* custom properties),
    applied ONLY within #mpcrbm_meta_box_panel per explicit request — the rest
    of the shell (sidebar, topbar, Car Rental dashboard, etc.) keeps its
-   original LatePoint-blue palette untouched.
+   original blue palette untouched.
    Every rule in this whole "Per-car metabox" section already reads its
    colors/radii/shadows through var(--mpcrbm-shell-*, fallback) rather than
    hardcoded values, so redefining those custom properties here is enough to
@@ -1211,7 +1211,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	--mpcrbm-shell-bg: #f8fafc;             /* was #f5f6fa → --ttbm-a-bg */
 	--mpcrbm-shell-radius-xs: 6px;          /* was 8px → --ttbm-a-radius-sm */
 	--mpcrbm-shell-radius: 14px;            /* was 16px → --ttbm-a-radius-lg (card radius) */
-	--mpcrbm-shell-shadow: 0 1px 2px rgba(15, 23, 42, .05); /* was LatePoint's dual-layer shadow → --ttbm-a-shadow-sm */
+	--mpcrbm-shell-shadow: 0 1px 2px rgba(15, 23, 42, .05); /* was the previous dual-layer shadow → --ttbm-a-shadow-sm */
 
 	/* The plugin's actual brand-color variables — NOT --mpcrbm-shell-*, a
 	   completely separate namespace introduced only for the ~40-odd rules
