@@ -244,7 +244,12 @@ body.mpcrbm-admin *:after {
 	transition: transform .15s ease;
 }
 
-.mpcrbm-shell-menu li.is-active > a .mpcrbm-shell-menu-arrow {
+/* .has-children (not .is-active): the Car Rental sub-menu now stays expanded
+   on every shell page, not just while Car Rental is the current page, so the
+   arrow should reflect "this item has an expanded sub-menu" rather than
+   "this is the current page" — those are two different, now-independent
+   states for this item. */
+.mpcrbm-shell-menu li.has-children > a .mpcrbm-shell-menu-arrow {
 	transform: rotate(180deg);
 }
 
@@ -361,7 +366,7 @@ body.mpcrbm-admin *:after {
    used to provide the top spacing on its own; without it .mpcrbm-shell-body's
    default 24px top padding left too big a gap under the topbar. */
 .mpcrbm-shell-body.mpcrbm {
-	padding-top: 20px;
+	padding: 20px;
 }
 
 /* --------------------------------------------------------------------
@@ -925,54 +930,89 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    tabsContent component (also used by the per-car metabox, restyled there
    separately). Only visuals are touched; data-tabs-target click handling
    lives in mp_global/assets/mp_style/mpcrbm_global.js, untouched.
+
+   Tabs run across the top as a flat, plain-text strip with an underline on
+   the active item (no pill/box background) — per screenshot reference —
+   then the active section's content fills the full width below. The
+   .leftTabs/.tabLists class names are unchanged (still what mp_global's
+   click-to-switch JS targets); only the visuals differ. Each section is
+   still its own separate WP Settings API <form> (MPCRBM_Setting_API::
+   show_forms() posts one options-group per section to options.php), so
+   section-switching stays click-based, not scroll-anchored. The rest of
+   this component's card-content styling (page header, white-box, form-
+   table rows, submit button) lives in assets/admin/mpcrbm-settings-
+   global.css, scoped under .global_settings.
+
+   Selectors below are prefixed ".mpcrbm-card.global_settings" (that wrapper
+   div carries both classes at once, so this is 3 classes' worth of
+   specificity on one compound segment) rather than just ".mpcrbm-shell-body"
+   (2 classes) — needed to reliably beat mp_global/assets/mp_style/
+   mpcrbm_global.css's ".leftTabs > .tabLists {flex-flow:column; min-width:
+   250px; max-width:283px}" / ".mpcrbm .leftTabs {display:flex}", which are
+   also 2-class selectors enqueued at admin_enqueue_scripts priority 80 (vs.
+   this file's priority 10) and so print later in <head> — on a specificity
+   tie the later stylesheet wins, which was silently collapsing this tab bar
+   back to mp_global's narrow vertical column.
    ========================================================================== */
 
-.mpcrbm-shell-body .leftTabs {
+.mpcrbm-card.global_settings .leftTabs {
 	display: flex;
-	align-items: flex-start;
+	flex-direction: column;
+	gap: 0;
 }
 
-.mpcrbm-shell-body .tabLists {
-	flex: 0 0 230px;
+.mpcrbm-card.global_settings .tabLists {
+	display: flex;
+	flex-flow: row wrap;
 	list-style: none;
-	margin: 0;
-	padding: 16px;
-	border-right: 1px solid var(--mpcrbm-shell-border);
+	margin: 0 0 24px;
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+	padding: 10px 24px;
+	gap: 28px;
+	background-color: #fff;
+	border: none;
+	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	border-radius: 0;
 }
 
-.mpcrbm-shell-body .tabLists li {
+.mpcrbm-card.global_settings .tabLists li {
 	display: flex;
 	align-items: center;
-	gap: 10px;
-	padding: 10px 12px;
-	margin-bottom: 2px;
-	border-radius: var(--mpcrbm-shell-radius-xs);
+	gap: 6px;
+	padding: 0 0 14px;
+	margin: 0 0 -1px;
+	border-radius: 0;
+	border-bottom: 2px solid transparent;
 	color: var(--mpcrbm-shell-text-faded);
-	font-size: 14px;
+	background-color: transparent;
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
 	cursor: pointer;
 }
 
-.mpcrbm-shell-body .tabLists li span {
-	width: 18px;
-	text-align: center;
-	flex: 0 0 auto;
+.mpcrbm-card.global_settings .tabLists li span {
+	display: none;
 }
 
-.mpcrbm-shell-body .tabLists li:hover {
-	background-color: var(--mpcrbm-shell-bg);
+.mpcrbm-card.global_settings .tabLists li:hover {
 	color: var(--mpcrbm-shell-text);
 }
 
-.mpcrbm-shell-body .tabLists li.active {
-	background-color: var(--mpcrbm-shell-bg);
+.mpcrbm-card.global_settings .tabLists li.active,
+.mpcrbm-card.global_settings .tabLists li.active:hover {
 	color: var(--mpcrbm-shell-primary);
-	font-weight: 600;
+	border-bottom-color: var(--mpcrbm-shell-primary);
 }
 
-.mpcrbm-shell-body .tabsContent {
+.mpcrbm-card.global_settings .tabsContent {
 	flex: 1;
 	min-width: 0;
-	padding: 24px 30px;
+	width: 100%;
+	padding: 0;
 }
 
 .mpcrbm-shell-body .tabsContent table.form-table th,

@@ -39,6 +39,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 			add_action( 'admin_menu', [ $this, 'register_menu' ] );
 			add_action( 'admin_post_mpcrbm_save_ex_service_group', [ $this, 'handle_save' ] );
 			add_action( 'wp_ajax_mpcrbm_delete_ex_service_group', [ $this, 'ajax_delete' ] );
+			add_action( 'admin_post_mpcrbm_export_ex_services', [ $this, 'handle_export' ] );
 		}
 
 		public function register_menu() {
@@ -91,6 +92,62 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 			}
 		}
 
+		/**
+		 * Only counts rows that actually have a name — matches the guard
+		 * MPCRBM_Extra_Service::ex_service_data() already applies on save
+		 * (empty-named rows are dropped there), so a stray blank row left in
+		 * older data doesn't inflate the "Items" counts shown here.
+		 */
+		private function named_rows( int $group_id ): array {
+			$rows = get_post_meta( $group_id, 'mpcrbm_extra_service_infos', true );
+			$rows = is_array( $rows ) ? $rows : [];
+			return array_values( array_filter( $rows, static function ( $row ) {
+				return ! empty( $row['service_name'] );
+			} ) );
+		}
+
+		/**
+		 * "Utilization" reads mpcrbm_extra_services_id on the vehicle CPT —
+		 * the same meta MPCRBM_Extra_Service_Settings/ex_service_settings()
+		 * save from the vehicle's own "Select extra option" dropdown — so it
+		 * reflects the share of the published fleet that actually has an
+		 * extra-service group assigned, not just how many groups exist.
+		 */
+		private function compute_stats( array $groups ): array {
+			$active = 0;
+			$items  = 0;
+
+			foreach ( $groups as $group ) {
+				if ( 'publish' === $group->post_status ) {
+					$active++;
+				}
+				$items += count( $this->named_rows( $group->ID ) );
+			}
+
+			$car_cpt        = MPCRBM_Function::get_cpt();
+			$total_vehicles = (int) ( wp_count_posts( $car_cpt )->publish ?? 0 );
+			$enabled_count  = 0;
+
+			if ( $total_vehicles > 0 ) {
+				$enabled_ids   = get_posts( [
+					'post_type'      => $car_cpt,
+					'post_status'    => 'publish',
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- small admin-only fleet count, not a frontend query.
+						[ 'key' => 'mpcrbm_extra_services_id', 'value' => '', 'compare' => '!=' ],
+					],
+				] );
+				$enabled_count = count( $enabled_ids );
+			}
+
+			return [
+				'active'      => $active,
+				'items'       => $items,
+				'utilization' => $total_vehicles > 0 ? (int) round( $enabled_count / $total_vehicles * 100 ) : 0,
+			];
+		}
+
 		private function render_list() {
 			$groups = get_posts( [
 				'post_type'      => self::POST_TYPE,
@@ -102,6 +159,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only redirect flag, not a state-changing request.
 			$notice = isset( $_GET['mpcrbm_notice'] ) ? sanitize_key( wp_unslash( $_GET['mpcrbm_notice'] ) ) : '';
+			$stats  = $this->compute_stats( $groups );
 			?>
 			<div class="mpcrbm-ex-services-manager">
 
@@ -111,13 +169,54 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 
 				<div class="mpcrbm-ex-services-head">
 					<div class="mpcrbm-ex-services-head-text">
+						<span class="mpcrbm-ex-services-head-eyebrow"><?php esc_html_e( 'Configuration', 'car-rental-manager' ); ?></span>
 						<h2><?php esc_html_e( 'Extra Services', 'car-rental-manager' ); ?></h2>
-						<p class="mpcrbm-ex-services-head-subtitle"><?php esc_html_e( 'Define add-on services — GPS, child seat, insurance, and more — grouped into sets you can attach to any vehicle.', 'car-rental-manager' ); ?></p>
+						<p class="mpcrbm-ex-services-head-subtitle"><?php esc_html_e( 'Manage premium add-ons and complimentary offerings for your fleet. Define GPS units, seasonal equipment, and hospitality items to enhance the rental experience.', 'car-rental-manager' ); ?></p>
 					</div>
-					<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-services-add-btn">
-						<i class="mi mi-plus"></i> <?php esc_html_e( 'Add Service Group', 'car-rental-manager' ); ?>
-					</a>
+					<div class="mpcrbm-ex-services-head-actions">
+						<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=mpcrbm_export_ex_services' ), 'mpcrbm_export_ex_services' ) ); ?>" class="mpcrbm-ex-services-export-btn">
+							<i class="mi mi-download"></i> <?php esc_html_e( 'Export List', 'car-rental-manager' ); ?>
+						</a>
+						<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-services-add-btn">
+							<i class="mi mi-plus"></i> <?php esc_html_e( 'Add Service Group', 'car-rental-manager' ); ?>
+						</a>
+					</div>
 				</div>
+
+				<?php if ( ! empty( $groups ) ) : ?>
+					<div class="mpcrbm_analytics">
+						<div class="mpcrbm_stat-card groups">
+							<div class="mpcrbm_stat-left">
+								<i class="mi mi-archive"></i>
+								<div>
+									<div class="mpcrbm_stat-label"><?php esc_html_e( 'Active Groups', 'car-rental-manager' ); ?></div>
+									<div class="mpcrbm_stat-value"><?php echo esc_html( $stats['active'] ); ?></div>
+								</div>
+							</div>
+						</div>
+
+						<div class="mpcrbm_stat-card items">
+							<div class="mpcrbm_stat-left">
+								<i class="mi mi-check-circle"></i>
+								<div>
+									<div class="mpcrbm_stat-label"><?php esc_html_e( 'Total Items', 'car-rental-manager' ); ?></div>
+									<div class="mpcrbm_stat-value"><?php echo esc_html( $stats['items'] ); ?></div>
+								</div>
+							</div>
+						</div>
+
+						<div class="mpcrbm_stat-card utilization">
+							<div class="mpcrbm_stat-left">
+								<i class="mi mi-chart-pie"></i>
+								<div>
+									<div class="mpcrbm_stat-label"><?php esc_html_e( 'Utilization', 'car-rental-manager' ); ?></div>
+									<div class="mpcrbm_stat-value"><?php echo esc_html( $stats['utilization'] ); ?>%</div>
+								</div>
+							</div>
+							<span class="mpcrbm_stat-change mpcrbm-ex-stat-ring" style="--pct: <?php echo (int) $stats['utilization']; ?>;" title="<?php esc_attr_e( 'Share of published vehicles with an extra-service group assigned', 'car-rental-manager' ); ?>"></span>
+						</div>
+					</div>
+				<?php endif; ?>
 
 				<?php if ( empty( $groups ) ) : ?>
 					<div class="mpcrbm-ex-services-empty">
@@ -128,25 +227,48 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 				<?php else : ?>
 					<div class="mpcrbm-ex-services-grid">
 						<?php foreach ( $groups as $group ) :
-							$rows = get_post_meta( $group->ID, 'mpcrbm_extra_service_infos', true );
-							$rows = is_array( $rows ) ? $rows : [];
+							$rows          = $this->named_rows( $group->ID );
 							$preview_names = wp_list_pluck( array_slice( $rows, 0, 3 ), 'service_name' );
+							$extra_count   = max( 0, count( $rows ) - 3 );
+							$is_publish    = 'publish' === $group->post_status;
 							?>
 							<div class="mpcrbm-ex-service-card" data-post-id="<?php echo esc_attr( $group->ID ); ?>">
 								<div class="mpcrbm-ex-service-card-top">
-									<span class="mpcrbm-ex-service-avatar"><i class="mi mi-list-timeline"></i></span>
+									<span class="mpcrbm-ex-service-avatar">
+										<i class="mi mi-list-timeline"></i>
+										<span class="mpcrbm-ex-service-status-dot <?php echo $is_publish ? 'is-active' : 'is-draft'; ?>" title="<?php echo esc_attr( $is_publish ? __( 'Published', 'car-rental-manager' ) : __( 'Draft', 'car-rental-manager' ) ); ?>"></span>
+									</span>
 									<span class="mpcrbm-ex-service-count-badge"><?php echo esc_html( count( $rows ) ); ?> <?php esc_html_e( 'Items', 'car-rental-manager' ); ?></span>
 								</div>
 								<strong class="mpcrbm-ex-service-name"><?php echo esc_html( get_the_title( $group ) ); ?></strong>
 								<?php if ( ! empty( $preview_names ) ) : ?>
-									<small class="mpcrbm-ex-service-desc"><?php echo esc_html( implode( ', ', $preview_names ) ); ?></small>
+									<small class="mpcrbm-ex-service-desc"><?php
+										/* translators: %s: comma-separated list of item names in this group */
+										printf( esc_html__( 'Includes %s', 'car-rental-manager' ), esc_html( implode( ', ', $preview_names ) ) );
+									?></small>
+									<div class="mpcrbm-ex-service-tags">
+										<?php foreach ( $rows as $i => $row ) : ?>
+											<span class="mpcrbm-ex-service-tag<?php echo $i >= 3 ? ' mpcrbm-ex-service-tag--extra' : ''; ?>"><?php echo esc_html( $row['service_name'] ); ?></span>
+										<?php endforeach; ?>
+										<?php if ( $extra_count > 0 ) : ?>
+											<span class="mpcrbm-ex-service-tag mpcrbm-ex-service-tag--more">+<?php echo esc_html( $extra_count ); ?> <?php esc_html_e( 'more', 'car-rental-manager' ); ?></span>
+										<?php endif; ?>
+									</div>
 								<?php endif; ?>
 								<div class="mpcrbm-ex-service-actions">
-									<a href="<?php echo esc_url( $this->edit_url( $group->ID ) ); ?>" class="mpcrbm-ex-service-edit-btn"><i class="mi mi-pencil"></i> <?php esc_html_e( 'Edit', 'car-rental-manager' ); ?></a>
+									<?php if ( $extra_count > 0 ) : ?>
+										<button type="button" class="mpcrbm-ex-service-view-btn" title="<?php esc_attr_e( 'Show all items', 'car-rental-manager' ); ?>"><i class="mi mi-eye"></i></button>
+									<?php endif; ?>
+									<a href="<?php echo esc_url( $this->edit_url( $group->ID ) ); ?>" class="mpcrbm-ex-service-edit-btn"><i class="mi mi-pencil"></i> <?php esc_html_e( 'Edit Group', 'car-rental-manager' ); ?></a>
 									<button type="button" class="mpcrbm-ex-service-delete-btn" data-post-id="<?php echo esc_attr( $group->ID ); ?>"><i class="mi mi-trash"></i></button>
 								</div>
 							</div>
 						<?php endforeach; ?>
+
+						<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-service-card-add">
+							<span class="mpcrbm-ex-service-card-add-icon"><i class="mi mi-plus"></i></span>
+							<?php esc_html_e( 'Create New Category', 'car-rental-manager' ); ?>
+						</a>
 					</div>
 				<?php endif; ?>
 			</div>
@@ -267,6 +389,53 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 			$redirect_args['mpcrbm_notice'] = is_wp_error( $result_id ) ? 'error' : ( $is_update ? 'updated' : 'created' );
 
 			wp_safe_redirect( add_query_arg( $redirect_args, admin_url( 'edit.php' ) ) );
+			exit;
+		}
+
+		public function handle_export() {
+			check_admin_referer( 'mpcrbm_export_ex_services' );
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'You do not have permission to do this.', 'car-rental-manager' ) );
+			}
+
+			$groups = get_posts( [
+				'post_type'      => self::POST_TYPE,
+				'post_status'    => [ 'publish', 'draft' ],
+				'posts_per_page' => -1,
+				'orderby'        => 'title',
+				'order'          => 'ASC',
+			] );
+
+			nocache_headers();
+			header( 'Content-Type: text/csv; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename="extra-services-' . gmdate( 'Y-m-d' ) . '.csv"' );
+
+			$out = fopen( 'php://output', 'w' );
+			fputcsv( $out, [ 'Service Group', 'Status', 'Item Name', 'Description', 'Price', 'Pricing Type', 'Qty Control' ] );
+
+			foreach ( $groups as $group ) {
+				$rows = $this->named_rows( $group->ID );
+
+				if ( empty( $rows ) ) {
+					fputcsv( $out, [ $group->post_title, $group->post_status, '', '', '', '', '' ] );
+					continue;
+				}
+
+				foreach ( $rows as $row ) {
+					fputcsv( $out, [
+						$group->post_title,
+						$group->post_status,
+						$row['service_name'] ?? '',
+						$row['extra_service_description'] ?? '',
+						$row['service_price'] ?? '',
+						$row['service_price_type'] ?? '',
+						$row['service_qty_type'] ?? '',
+					] );
+				}
+			}
+
+			fclose( $out );
 			exit;
 		}
 

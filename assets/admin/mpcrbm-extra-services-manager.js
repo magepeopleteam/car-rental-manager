@@ -34,4 +34,13 @@ jQuery(document).ready(function ($) {
 		});
 	});
 
+	$(document).on('click', '.mpcrbm-ex-service-view-btn', function () {
+		var $btn  = $(this);
+		var $card = $btn.closest('.mpcrbm-ex-service-card');
+		var expanded = $card.toggleClass('is-expanded').hasClass('is-expanded');
+
+		$btn.find('i').toggleClass('mi-eye', !expanded).toggleClass('mi-eye-crossed', expanded);
+		$btn.attr('title', expanded ? 'Hide extra items' : 'Show all items');
+	});
+
 });

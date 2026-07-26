@@ -56,6 +56,7 @@
 				wp_enqueue_style( 'mpcrbm_branch_manager', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm-branch-manager.css', array(), time() );
 				wp_enqueue_style( 'mpcrbm_locations_manager', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm-locations-manager.css', array(), time() );
 				wp_enqueue_style( 'mpcrbm_ex_services_manager', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm-extra-services-manager.css', array(), time() );
+				wp_enqueue_style( 'mpcrbm_settings_global', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm-settings-global.css', array(), time() );
 				wp_enqueue_script( 'mpcrbm_admin', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_admin.js', array( 'jquery' ), time(), true );
 				wp_enqueue_script( 'mpcrbm_order_lists', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_order_lists.js', array( 'jquery' ), time(), true );
 				wp_enqueue_script( 'mpcrbm_manage_taxonomy', MPCRBM_PLUGIN_URL . '/assets/admin/mpcrbm_manage_taxonomy.js', array( 'jquery' ), time(), true );

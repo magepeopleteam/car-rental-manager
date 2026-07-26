@@ -9,7 +9,12 @@
    untouched.
    ───────────────────────────────────────────────────────────────────────── */
 
-/* ── Header banner — matches .mpcrbm_car_list_controls ──────────────────── */
+.mpcrbm-ex-services-manager {
+	padding: 20px;
+}
+
+/* ── Header banner — plain (box-free) banner: eyebrow + title + subtitle on
+   the left, action buttons on the right, matching the mockup. ─────────────── */
 .mpcrbm-ex-services-head {
 	display: flex;
 	align-items: flex-start;
@@ -17,10 +22,9 @@
 	flex-wrap: wrap;
 	gap: 12px;
 	margin-bottom: 20px;
-	padding: 20px 24px;
-	background: var(--mpcrbm-shell-bg, #f5f6fa);
-	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
-	border-radius: var(--mpcrbm-shell-radius, 16px);
+	padding: 4px 4px 20px;
+	background: transparent;
+	border: none;
 }
 
 .mpcrbm-ex-services-head-text {
@@ -30,9 +34,30 @@
 	max-width: 80%;
 }
 
+.mpcrbm-ex-services-head-eyebrow {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .1em;
+	color: #667eea;
+	padding-left: 12px;
+	position: relative;
+}
+
+.mpcrbm-ex-services-head-eyebrow::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 1px;
+	bottom: 1px;
+	width: 3px;
+	border-radius: 2px;
+	background: #667eea;
+}
+
 .mpcrbm-ex-services-head-text h2 {
 	margin: 0;
-	font-size: 20px !important;
+	font-size: 22px !important;
 	font-weight: 700 !important;
 	color: var(--mpcrbm-shell-text, #1f222b);
 }
@@ -42,6 +67,13 @@
 	font-size: 13px;
 	line-height: 1.5;
 	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-ex-services-head-actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
 }
 
 /* Editor screen ("Edit/Add Service Group") uses a plain, box-free header —
@@ -64,7 +96,8 @@
 }
 
 .mpcrbm-ex-services-add-btn,
-.mpcrbm-ex-services-back-btn {
+.mpcrbm-ex-services-back-btn,
+.mpcrbm-ex-services-export-btn {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
@@ -86,6 +119,16 @@
 .mpcrbm-ex-services-add-btn:hover {
 	background: #5568d3;
 	transform: translateY(-1px);
+}
+
+.mpcrbm-ex-services-export-btn {
+	background: #fff;
+	color: var(--mpcrbm-shell-text, #374151) !important;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb) !important;
+}
+
+.mpcrbm-ex-services-export-btn:hover {
+	background: #f3f4f6;
 }
 
 .mpcrbm-ex-services-back-btn {
@@ -116,6 +159,36 @@
 .mpcrbm-ex-services-notice-error {
 	background: var(--mpcrbm-red-light, #f6dada);
 	color: var(--mpcrbm-red, #d91e1e);
+}
+
+/* ── Stat row (Active Groups / Total Items / Utilization) — reuses the
+   shared .mpcrbm_analytics/.mpcrbm_stat-card markup from mpcrbm_manage_
+   taxonomy.css/mpcrbm-shell.css (same widgets as the Car List page's
+   analytics row) so it stays visually consistent for free; only the
+   Utilization ring itself is new here. ─────────────────────────────────── */
+/* Extra specificity (3 classes) so this reliably wins over mpcrbm-shell.css's
+   ".mpcrbm-shell-body .mpcrbm_analytics" margin (also 2 classes) regardless
+   of which stylesheet happens to print second — this page has no other
+   horizontal gutter to match, unlike the Car List page that rule targets. */
+.mpcrbm-shell-body .mpcrbm-ex-services-manager .mpcrbm_analytics {
+	margin: 0 0 20px;
+}
+
+.mpcrbm-ex-stat-ring {
+	position: relative;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	flex: 0 0 auto;
+	background: conic-gradient(#667eea calc(var(--pct, 0) * 1%), #eef0f6 0);
+}
+
+.mpcrbm-ex-stat-ring::after {
+	content: "";
+	position: absolute;
+	inset: 6px;
+	border-radius: 50%;
+	background: #fff;
 }
 
 /* ── Card grid (list view) ───────────────────────────────────────────── */
@@ -150,6 +223,7 @@
 }
 
 .mpcrbm-ex-service-avatar {
+	position: relative;
 	width: 36px;
 	height: 36px;
 	border-radius: 9px;
@@ -159,6 +233,32 @@
 	font-size: 15px;
 	color: #667eea;
 	background: #f0f1ff;
+}
+
+/* Cycles the same accent palette used on the group editor's repeater-row
+   icons (see the nth-child rules near the bottom of this file), so a card's
+   avatar tint stays consistent with that screen's color language. */
+.mpcrbm-ex-services-grid .mpcrbm-ex-service-card:nth-of-type(5n+2) .mpcrbm-ex-service-avatar { color: #10b981; background: #e6f9f1; }
+.mpcrbm-ex-services-grid .mpcrbm-ex-service-card:nth-of-type(5n+3) .mpcrbm-ex-service-avatar { color: #64748b; background: #eef1f5; }
+.mpcrbm-ex-services-grid .mpcrbm-ex-service-card:nth-of-type(5n+4) .mpcrbm-ex-service-avatar { color: #374151; background: #eef0f6; }
+.mpcrbm-ex-services-grid .mpcrbm-ex-service-card:nth-of-type(5n+5) .mpcrbm-ex-service-avatar { color: #111827; background: #eceef2; }
+
+.mpcrbm-ex-service-status-dot {
+	position: absolute;
+	right: -2px;
+	bottom: -2px;
+	width: 11px;
+	height: 11px;
+	border-radius: 50%;
+	border: 2px solid #fff;
+}
+
+.mpcrbm-ex-service-status-dot.is-active {
+	background: #10b981;
+}
+
+.mpcrbm-ex-service-status-dot.is-draft {
+	background: #cbd5e1;
 }
 
 .mpcrbm-ex-service-count-badge {
@@ -179,16 +279,78 @@
 
 .mpcrbm-ex-service-desc {
 	font-size: 12.5px;
+	line-height: 1.5;
 	color: var(--mpcrbm-shell-text-faded, #788291);
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
 	overflow: hidden;
-	text-overflow: ellipsis;
+}
+
+.mpcrbm-ex-service-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 10px;
+}
+
+.mpcrbm-ex-service-tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 10px;
+	border-radius: 20px;
+	background: #f3f4f6;
+	color: #4b5563;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.6;
 	white-space: nowrap;
+}
+
+.mpcrbm-ex-service-tag--extra {
+	display: none;
+}
+
+.mpcrbm-ex-service-card.is-expanded .mpcrbm-ex-service-tag--extra {
+	display: inline-flex;
+}
+
+.mpcrbm-ex-service-card.is-expanded .mpcrbm-ex-service-tag--more {
+	display: none;
+}
+
+.mpcrbm-ex-service-tag--more {
+	background: #eef0ff;
+	color: #667eea;
+	border: none;
+	cursor: pointer;
 }
 
 .mpcrbm-ex-service-actions {
 	display: flex;
 	gap: 8px;
 	margin-top: 12px;
+}
+
+.mpcrbm-ex-service-view-btn {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	padding: 7px 10px;
+	border-radius: 7px;
+	font-size: 13px;
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	color: var(--mpcrbm-shell-text-faded, #6b7280);
+	cursor: pointer;
+	transition: background .15s ease, border-color .15s ease;
+}
+
+.mpcrbm-ex-service-view-btn:hover {
+	background: #f3f4f6;
+	border-color: #d1d5db;
 }
 
 .mpcrbm-ex-service-edit-btn,
@@ -229,6 +391,46 @@
 .mpcrbm-ex-service-delete-btn:hover {
 	background: #fef2f2;
 	border-color: #fca5a5;
+}
+
+/* ── "Create New Category" dashed tile — trailing grid cell, same
+   dashed-tile pattern as the "Add Additional Service Row" affordance
+   further down this file. ────────────────────────────────────────────── */
+.mpcrbm-ex-service-card-add {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	min-height: 150px;
+	padding: 16px;
+	background: transparent;
+	border: 1px dashed #c7cbf5;
+	border-radius: var(--mpcrbm-shell-radius-sm, 12px);
+	color: #667eea;
+	font-size: 12.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	text-decoration: none !important;
+	transition: background .15s ease, border-color .15s ease;
+}
+
+.mpcrbm-ex-service-card-add:hover {
+	background: #f5f6ff;
+	border-color: #667eea;
+	color: #667eea !important;
+}
+
+.mpcrbm-ex-service-card-add-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: #eef0ff;
+	font-size: 15px;
 }
 
 /* ── Empty state ─────────────────────────────────────────────────────── */

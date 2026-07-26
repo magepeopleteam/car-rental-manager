@@ -368,21 +368,39 @@
 							</div>
 							<ul class="mpcrbm-shell-menu">
 								<?php foreach ( $menu_items as $item ) :
-									$is_active   = ( $current_page === $item['slug'] );
-									$has_submenu = ( $is_active && ! empty( $sidebar_submenu_html ) );
+									$is_active     = ( $current_page === $item['slug'] );
+									$is_car_rental = ( 'mpcrbm_car_rental' === $item['slug'] );
+									// The Car List/Car Type/.../Branch Manager sub-menu now stays
+									// visible under "Car Rental" on every shell page (Locations,
+									// Extra Services, Branch Managers, Global Settings, Status,
+									// Guideline, ...), not just while actually on the Car Rental
+									// page — same always-there navigation the Add/Edit Car screen's
+									// render_edit_screen_chrome() already gives this same item.
+									$has_submenu = $is_car_rental || ( $is_active && ! empty( $sidebar_submenu_html ) );
 									$li_class    = trim( ( $is_active ? 'is-active' : '' ) . ( $has_submenu ? ' has-children' : '' ) );
 									?>
 									<li class="<?php echo esc_attr( $li_class ); ?>">
 										<a href="<?php echo esc_url( $item['link'] ); ?>">
 											<i class="<?php echo esc_attr( $item['icon'] ); ?>"></i>
 											<span><?php echo esc_html( $item['label'] ); ?></span>
-											<?php if ( 'mpcrbm_car_rental' === $item['slug'] ) : ?>
+											<?php if ( $is_car_rental ) : ?>
 												<i class="fas fa-chevron-down mpcrbm-shell-menu-arrow"></i>
 											<?php endif; ?>
 										</a>
 										<?php if ( $has_submenu ) : ?>
 											<ul class="mpcrbm-shell-submenu">
-												<?php echo $sidebar_submenu_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-built, already-escaped markup from the calling page. ?>
+												<?php if ( $is_active && ! empty( $sidebar_submenu_html ) ) : ?>
+													<?php echo $sidebar_submenu_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- pre-built, already-escaped markup from the calling page. ?>
+												<?php else : ?>
+													<?php foreach ( self::get_car_rental_taxonomy_tabs() as $tab ) : ?>
+														<li>
+															<a href="<?php echo esc_url( $item['link'] ); ?>">
+																<i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i>
+																<span><?php echo esc_html( $tab['label'] ); ?></span>
+															</a>
+														</li>
+													<?php endforeach; ?>
+												<?php endif; ?>
 											</ul>
 										<?php endif; ?>
 									</li>

@@ -7,7 +7,7 @@
 	div.global_settings .tabLists {border-right: 1px solid var(--color_border);}
 	div.global_settings form > h2 {display: none;}
 	div.global_settings table {table-layout: fixed;margin: 0;}
-	div.global_settings table tr:nth-child(even) { background-color: var(--color_light);}
+	div.global_settings table tr:nth-child(even) { background-color: #fbfbfb;}
 	div.global_settings table tr:nth-child(odd) { background-color: #FFF;}
 	div.global_settings table th {width: 40%;min-width: 300px;}
 	div.global_settings th label {-webkit-flex-wrap: wrap;flex-wrap: wrap;}

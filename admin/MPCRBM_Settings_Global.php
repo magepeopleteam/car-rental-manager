@@ -23,6 +23,11 @@
 			public function settings_page() {
 				MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Global Settings', 'car-rental-manager' ) );
 				?>
+				<div class="mpcrbm-settings-head">
+					<span class="mpcrbm-settings-head-eyebrow"><?php esc_html_e( 'Configuration', 'car-rental-manager' ); ?></span>
+					<h2><?php esc_html_e( 'Global Settings', 'car-rental-manager' ); ?></h2>
+					<p class="mpcrbm-settings-head-subtitle"><?php esc_html_e( 'Configure booking behavior, formatting, appearance, and licensing for your rental fleet.', 'car-rental-manager' ); ?></p>
+				</div>
                 <div class="mpcrbm-card global_settings">
                     <div class="mpcrbm_tabs leftTabs">
 						<?php $this->settings_api->show_navigation(); ?>
@@ -51,6 +56,7 @@
 					),
 					array(
 						'id' => 'mpcrbm_global_settings',
+						'icon' => 'fas fa-globe',
 						'title' => esc_html__('Global Settings', 'car-rental-manager')
 					),
 				);
@@ -60,10 +66,12 @@
 				$sections = array(
 					array(
 						'id' => 'mpcrbm_style_settings',
+						'icon' => 'fas fa-palette',
 						'title' => esc_html__('Style Settings', 'car-rental-manager')
 					),
 					array(
 						'id' => 'mpcrbm_license_settings',
+						'icon' => 'fas fa-key',
 						'title' => esc_html__('Mage-People License', 'car-rental-manager'),
 						'callback' => array($this, 'license_settings')
 					)

@@ -2409,7 +2409,7 @@
 	}
 	.mpcrbm table th,
 	.mpcrbm table td {
-		border: 1px solid var(--color_border);
+		border: none;
 		padding: var(--dmp_xs);
 	}
 	.mpcrbm table thead th {
@@ -2479,7 +2479,7 @@
 	.mpcrbm [data-tabs-target].active {
 		background-color: var(--color_theme_alter);
 		color: var(--d_color);
-		border-left: 2px solid var(--color_theme);
+		border-left: none;
 	}
 	.topTabs [data-tabs-target] {
 		border-right: 1px solid var(--color_border);
