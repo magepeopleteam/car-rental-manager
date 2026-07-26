@@ -1,11 +1,12 @@
 /* ─────────────────────────────────────────────────────────────────────────
    Extra Services Manager — Admin Styles
-   The repeater table itself (MPCRBM_Extra_Service::extra_service_item() rows)
-   is intentionally NOT restyled here — it already gets its look from the
-   existing global mp_global/assets/mp_style/mpcrbm_global.css and
-   mp_global/assets/admin/mpcrbm_admin_settings.css, the same styles the
-   native mpcrbm_ex_services edit screen uses. Only this page's own chrome
-   (header banner, list cards, form wrapper) is styled here.
+   Page chrome (header banner, list cards, form wrapper) plus a full
+   restyle of the shared repeater table (MPCRBM_Extra_Service::
+   extra_service_item() rows) for the "Edit/Add Service Group" screen only —
+   everything below is scoped under .mpcrbm-ex-services-manager so the
+   native mpcrbm_ex_services post-edit screen (which reuses the same rows/
+   classes but WITHOUT this wrapper) keeps its existing mp_global look
+   untouched.
    ───────────────────────────────────────────────────────────────────────── */
 
 /* ── Header banner — matches .mpcrbm_car_list_controls ──────────────────── */
@@ -41,6 +42,25 @@
 	font-size: 13px;
 	line-height: 1.5;
 	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Editor screen ("Edit/Add Service Group") uses a plain, box-free header —
+   a left accent bar + title + longer descriptive copy — instead of the
+   bordered banner used on the list screen, matching the mockup exactly. */
+.mpcrbm-ex-services-head--editor {
+	padding: 0 0 22px 16px;
+	background: transparent;
+	border: none;
+	border-left: 4px solid #667eea;
+	border-radius: 0;
+}
+
+.mpcrbm-ex-services-head--editor .mpcrbm-ex-services-head-text h2 {
+	font-size: 22px !important;
+}
+
+.mpcrbm-ex-services-head--editor .mpcrbm-ex-services-head-subtitle {
+	max-width: 560px;
 }
 
 .mpcrbm-ex-services-add-btn,
@@ -251,24 +271,32 @@
 }
 
 .mpcrbm-ex-service-card-form {
-	max-width: 420px;
+	max-width: none;
 	margin-bottom: 20px;
+	padding: 18px 20px;
+	background: var(--mpcrbm-shell-bg, #f3f4f8);
+	border-radius: var(--mpcrbm-shell-radius-sm, 12px);
 }
 
 .mpcrbm-ex-service-card-form label {
 	display: block;
-	margin-bottom: 6px;
-	font-size: 13px;
-	font-weight: 600;
-	color: var(--mpcrbm-shell-text, #374151);
+	margin-bottom: 8px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: var(--mpcrbm-shell-text-faded, #788291);
 }
 
 .mpcrbm-ex-service-card-form input[type="text"] {
 	width: 100%;
-	padding: 10px 12px;
-	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
-	border-radius: 8px;
-	font-size: 14px;
+	padding: 12px 14px;
+	border: 1px solid var(--mpcrbm-shell-border, #dfe1e8);
+	border-radius: 9px;
+	background: #fff;
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text, #1f222b);
 	box-sizing: border-box;
 	outline: none;
 	transition: border-color .15s ease, box-shadow .15s ease;
@@ -319,4 +347,241 @@
 
 .mpcrbm-ex-service-cancel-btn:hover {
 	background: #f3f4f6;
+}
+
+/* ── Repeater table restyle ──────────────────────────────────────────────
+   Overrides MPCRBM_Extra_Service::extra_service_item()'s markup, which is
+   shared with the native mpcrbm_ex_services post-edit screen and otherwise
+   only styled by generic mp_global rules (bordered icon box, plain table,
+   unstyled <select class="mideum">, etc). Scoped under
+   .mpcrbm-ex-services-manager so that native screen is unaffected. ───────── */
+.mpcrbm-ex-services-manager .settings_area {
+	padding: 0;
+}
+
+.mpcrbm-ex-services-manager ._ovAuto_mT_xs {
+	overflow-x: auto;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table.widefat {
+	border: none;
+	border-collapse: collapse;
+	background: transparent;
+	margin: 0;
+	min-width: 760px;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table thead th {
+	border: none;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	padding: 0 10px 12px;
+	background: transparent;
+	text-align: left;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table thead th span {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+	color: var(--mpcrbm-shell-text-faded, #94a0b4);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table tbody td {
+	border: none;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #eef0f3);
+	padding: 14px 10px;
+	vertical-align: middle;
+	background: transparent;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table tbody tr:hover td {
+	background: #fafbff;
+}
+
+/* Icon avatar — the picker itself (.add_icon_image_area) loses its default
+   dashed/bordered box; .icon_item becomes the colored rounded-square glyph
+   holder. The X-to-remove badge (.remove_icon) keeps mp_global's existing
+   absolute-position/opacity-on-hover behavior untouched. */
+.mpcrbm-ex-services-manager .add_icon_image_area {
+	border: none;
+	max-width: none;
+	background: transparent;
+	padding: 0;
+}
+
+.mpcrbm-ex-services-manager .icon_item {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	padding: 0;
+	border-radius: 10px;
+	background: #667eea;
+}
+
+.mpcrbm-ex-services-manager .icon_item .mi,
+.mpcrbm-ex-services-manager .icon_item [data-add-icon] {
+	color: #fff;
+	font-size: 16px;
+}
+
+/* Cycles a small accent palette across rows so each service reads as
+   visually distinct, matching the mockup — purely decorative, not tied to
+   any per-service data. */
+.mpcrbm-ex-services-manager tbody tr.remove_area:nth-child(5n+1) .icon_item { background: #667eea; }
+.mpcrbm-ex-services-manager tbody tr.remove_area:nth-child(5n+2) .icon_item { background: #10b981; }
+.mpcrbm-ex-services-manager tbody tr.remove_area:nth-child(5n+3) .icon_item { background: #64748b; }
+.mpcrbm-ex-services-manager tbody tr.remove_area:nth-child(5n+4) .icon_item { background: #374151; }
+.mpcrbm-ex-services-manager tbody tr.remove_area:nth-child(5n+5) .icon_item { background: #111827; }
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table input.name_validation {
+	width: 100%;
+	max-width: 160px;
+	padding: 8px 10px;
+	border: 1px solid transparent;
+	background: transparent;
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table input.name_validation:focus {
+	outline: none;
+	background: #fff;
+	border-color: #667eea;
+	border-radius: 7px;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table textarea[name="extra_service_description[]"] {
+	width: 100%;
+	min-width: 160px;
+	max-width: 220px;
+	padding: 6px 8px;
+	border: 1px solid transparent;
+	background: transparent;
+	resize: none;
+	font-size: 12.5px;
+	line-height: 1.5;
+	font-family: inherit;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table textarea[name="extra_service_description[]"]:focus {
+	outline: none;
+	background: #fff;
+	border-color: #667eea;
+	border-radius: 7px;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table input.price_validation {
+	width: 80px;
+	max-width: 100%;
+	padding: 8px 10px;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	border-radius: 8px;
+	background: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	text-align: center;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table input.price_validation:focus {
+	outline: none;
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table select.mideum {
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	width: auto;
+	min-width: 108px;
+	padding: 7px 28px 7px 12px;
+	border: none;
+	border-radius: 20px;
+	background-color: #f3f4f6;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23788291' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: var(--mpcrbm-shell-text, #4b5563);
+	cursor: pointer;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table select.mideum:focus {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table .buttonGroup {
+	gap: 4px;
+	justify-content: flex-end;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table ._whiteButton_xs.item_remove,
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table ._mpBtn_themeButton_xs.sortable_button {
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	margin: 0;
+	border: none;
+	border-radius: 7px;
+	background: transparent;
+	color: #9aa3b2;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table ._whiteButton_xs.item_remove .fas,
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table ._mpBtn_themeButton_xs.sortable_button .fas {
+	font-size: 13px;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table ._whiteButton_xs.item_remove:hover {
+	background: var(--mpcrbm-red-light, #f6dada);
+	color: var(--mpcrbm-red, #d91e1e);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-service-table ._mpBtn_themeButton_xs.sortable_button:hover {
+	background: #eef0ff;
+	color: #667eea;
+}
+
+/* "Add Additional Service Row" — dashed pill, matches the "Add New" dashed-
+   tile pattern used elsewhere in this plugin (e.g. Vehicle Features). */
+.mpcrbm-ex-services-manager ._themeButton_xs_mT_xs.add_item {
+	display: flex;
+	width: 100%;
+	margin-top: 16px;
+	padding: 12px 16px;
+	background: transparent;
+	border: 1px dashed #c7cbf5;
+	border-radius: 10px;
+	color: #667eea;
+	font-size: 12.5px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	transition: background .15s ease, border-color .15s ease;
+}
+
+.mpcrbm-ex-services-manager ._themeButton_xs_mT_xs.add_item:hover {
+	background: #f5f6ff;
+	border-color: #667eea;
+}
+
+.mpcrbm-ex-services-manager ._themeButton_xs_mT_xs.add_item .fas {
+	font-size: 13px;
 }
