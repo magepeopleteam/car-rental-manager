@@ -132,6 +132,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             ?>
             <div class="mpcrbm_taxonomoy_data_holder">
                 <?php  if ( $type !== 'mpcrbm_car_list' ) {
+                    $type_subtitle  = '';
+                    $type_add_label = __( 'Add New', 'car-rental-manager' );
                     if( $type === 'mpcrbm_car_type' ){
                         $type_title = 'Car Types';
                     }elseif( $type === 'mpcrbm_fuel_type' ){
@@ -142,6 +144,10 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         $type_title = 'Car Brand';
                     }else if( $type === 'mpcrbm_make_year' ){
                         $type_title = 'Make Year';
+                    }else if( $type === 'mpcrbm_car_feature' ){
+                        $type_title    = 'Vehicle Features';
+                        $type_subtitle = __( 'Standard and optional equipment configured for this vehicle model. Manage availability and deployment across the fleet.', 'car-rental-manager' );
+                        $type_add_label = __( 'Add Feature', 'car-rental-manager' );
                     }else{
                         $type_title = 'Car List';
                     }
@@ -149,15 +155,20 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ?>
                     <div class="mpcrbm_taxonomies_head">
                         <div class="mpcrbm_taxonomies_head_title">
-                            <h2><?php echo esc_html( $type_title );?></h2>
-                            <span class="mpcrbm_taxonomies_count_pill"><?php echo esc_html( $term_count );?> <?php esc_html_e( 'items', 'car-rental-manager' );?></span>
+                            <div class="mpcrbm_taxonomies_head_title_row">
+                                <h2><?php echo esc_html( $type_title );?></h2>
+                                <span class="mpcrbm_taxonomies_count_pill"><?php echo esc_html( $term_count );?> <?php esc_html_e( 'Total', 'car-rental-manager' );?></span>
+                            </div>
+                            <?php if ( $type_subtitle ) : ?>
+                                <p class="mpcrbm_taxonomies_head_subtitle"><?php echo esc_html( $type_subtitle );?></p>
+                            <?php endif; ?>
                         </div>
                         <div class="mpcrbm_taxonomies_toolbar">
                             <div class="mpcrbm_taxonomies_search_wrap">
                                 <i class="mi mi-search"></i>
                                 <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
                             </div>
-                            <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_html_e( 'Add New', 'car-rental-manager' );?></button>
+                            <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php echo esc_html( $type_add_label );?></button>
                         </div>
                     </div>
                 <?php }?>
@@ -244,6 +255,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             ?>
             <div class="mpcrbm_taxonomoy_data_holder">
                 <?php  if ( $type !== 'mpcrbm_car_list' ) {
+                    $type_subtitle  = '';
+                    $type_add_label = __( 'Add New', 'car-rental-manager' );
                     if( $type === 'mpcrbm_car_type' ){
                         $type_title = 'Car Types';
                     }elseif( $type === 'mpcrbm_fuel_type' ){
@@ -255,7 +268,9 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     }else if( $type === 'mpcrbm_make_year' ){
                         $type_title = 'Make Year';
                     }else if( $type === 'mpcrbm_car_feature' ){
-                        $type_title = 'Car Feature';
+                        $type_title    = 'Vehicle Features';
+                        $type_subtitle = __( 'Standard and optional equipment configured for this vehicle model. Manage availability and deployment across the fleet.', 'car-rental-manager' );
+                        $type_add_label = __( 'Add Feature', 'car-rental-manager' );
                     }else{
                         $type_title = 'Car List';
                     }
@@ -263,15 +278,20 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     ?>
                     <div class="mpcrbm_taxonomies_head">
                         <div class="mpcrbm_taxonomies_head_title">
-                            <h2><?php echo esc_html( $type_title );?></h2>
-                            <span class="mpcrbm_taxonomies_count_pill"><?php echo esc_html( $term_count );?> <?php esc_html_e( 'items', 'car-rental-manager' );?></span>
+                            <div class="mpcrbm_taxonomies_head_title_row">
+                                <h2><?php echo esc_html( $type_title );?></h2>
+                                <span class="mpcrbm_taxonomies_count_pill"><?php echo esc_html( $term_count );?> <?php esc_html_e( 'Total', 'car-rental-manager' );?></span>
+                            </div>
+                            <?php if ( $type_subtitle ) : ?>
+                                <p class="mpcrbm_taxonomies_head_subtitle"><?php echo esc_html( $type_subtitle );?></p>
+                            <?php endif; ?>
                         </div>
                         <div class="mpcrbm_taxonomies_toolbar">
                             <div class="mpcrbm_taxonomies_search_wrap">
                                 <i class="mi mi-search"></i>
                                 <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
                             </div>
-                            <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_html_e( 'Add New', 'car-rental-manager' );?></button>
+                            <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php echo esc_html( $type_add_label );?></button>
                         </div>
                     </div>
                 <?php }?>

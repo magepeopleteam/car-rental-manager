@@ -710,19 +710,16 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_car_table th {
-	padding: 12px 16px;
+	padding: 14px 18px;
+	border: 1px solid #fff9f9;
 	color: var(--mpcrbm-shell-text-faded);
 	font-size: 11px;
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_car_table td {
-	padding: 14px 16px;
-	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	padding: 16px 18px;
+	border: 1px solid #fff9f9;
 	color: var(--mpcrbm-shell-text);
-}
-
-.mpcrbm-shell-body .mpcrbm_car_list_car_table tbody tr:last-child td {
-	border-bottom: none;
 }
 
 /* Flat rows instead of zebra striping — hover highlight only. */
@@ -736,6 +733,36 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 
 .mpcrbm-shell-body .mpcrbm_car_list_car_table .car-title {
 	font-size: 14px;
+}
+
+/* Vehicle thumbnail added to the Title cell — actual featured image when set,
+   a car icon placeholder otherwise. Every other column stays as-is. */
+.mpcrbm-shell-body .mpcrbm_car_title_cell {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_thumb {
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	background: var(--mpcrbm-shell-bg);
+	border: 1px solid var(--mpcrbm-shell-border);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	color: var(--mpcrbm-shell-text-faded);
+	font-size: 15px;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_thumb_img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_car_table input[type="checkbox"].checkbox {
@@ -755,6 +782,46 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 	border-radius: 100px;
 	font-weight: 600;
 	letter-spacing: .2px;
+}
+
+/* Load More — always visible (car_lists.php no longer hides the container
+   under 10 items) so the control is discoverable regardless of list length;
+   it's rendered with the "disabled" attribute instead when there's nothing
+   left to reveal, styled here as a muted, non-interactive state. */
+.mpcrbm-shell-body .mpcrbm_loadMoreContainer {
+	padding: 18px 0 4px;
+}
+
+.mpcrbm-shell-body .mpcrbm_btn_load_more {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 22px;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius-xs);
+	background: #fff;
+	color: var(--mpcrbm-shell-text);
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color .15s, border-color .15s, color .15s;
+}
+
+.mpcrbm-shell-body .mpcrbm_btn_load_more:hover:not(:disabled) {
+	background: var(--mpcrbm-shell-bg);
+	border-color: var(--mpcrbm-shell-primary);
+	color: var(--mpcrbm-shell-primary);
+}
+
+.mpcrbm-shell-body .mpcrbm_btn_load_more:disabled {
+	opacity: .55;
+	cursor: not-allowed;
+	background: var(--mpcrbm-shell-bg);
+}
+
+.mpcrbm-shell-body .mpcrbm_remaining_count {
+	color: var(--mpcrbm-shell-text-faded);
+	font-weight: 500;
 }
 
 /* Search/filter row — a plain unscoped "input[type=text], select {...}" rule
@@ -2701,7 +2768,7 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 .mpcrbm-shell-body .mpcrbm_faq_container {
 	background: #fff;
-	border: 1px solid var(--mpcrbm-shell-border);
+	border: none;
 	border-radius: var(--mpcrbm-shell-radius);
 	box-shadow: var(--mpcrbm-shell-shadow);
 	overflow: hidden;
@@ -2761,7 +2828,7 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 .mpcrbm-shell-body .mpcrbm_faq_table th {
 	padding: 12px 22px;
-	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	border: 1px solid #fff9f9;
 	color: var(--mpcrbm-shell-text-faded);
 	font-size: 11px;
 	font-weight: 700;
@@ -2786,7 +2853,7 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 .mpcrbm-shell-body .mpcrbm_faq_table td {
 	padding: 14px 22px;
-	border-bottom: 1px solid var(--mpcrbm-shell-border);
+	border: 1px solid #fff9f9;
 	color: var(--mpcrbm-shell-text-faded);
 	font-size: 13.5px;
 	vertical-align: top;
@@ -2795,10 +2862,6 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 .mpcrbm-shell-body .mpcrbm_faq_table td:nth-child(3) {
 	white-space: nowrap;
-}
-
-.mpcrbm-shell-body .mpcrbm_faq_table tbody tr:last-child td {
-	border-bottom: none;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table tbody tr:hover {

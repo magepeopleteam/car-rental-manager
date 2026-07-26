@@ -9,15 +9,15 @@ $mpcrbm_car_data = isset( $car_result_data['cars'] ) && !empty( $car_result_data
     ? $car_result_data['cars'] : [] ;
 
 $mpcrbm_car_count = count( $mpcrbm_car_data );
-$mpcrbm_load_more_display = 'flex';
-if( $mpcrbm_car_count < $mpcrbm_display_limit  ){
-    $mpcrbm_load_more_display = 'none';
-}
 
 $mpcrbm_remaining = 0;
 if( $mpcrbm_car_count > $mpcrbm_display_limit ){
     $mpcrbm_remaining = $mpcrbm_car_count - $mpcrbm_display_limit;
 }
+
+// Load More is always visible so the control is discoverable even with a
+// short list — it's just disabled when there's nothing left to reveal.
+$mpcrbm_has_more = $mpcrbm_remaining > 0;
 
 
 $mpcrbm_car_taxonomy_data = isset( $car_result_data['meta'] ) && !empty( $car_result_data['meta'] )
@@ -113,6 +113,8 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                                 ? implode( ', ', $mpcrbm_car['brand'] ) : '';
                             $mpcrbm_make_year = isset( $mpcrbm_car['year'] ) && !empty($mpcrbm_car['year'])
                                 ? implode( ', ', $mpcrbm_car['year'] ) : '';
+
+                            $mpcrbm_thumb = get_the_post_thumbnail( $mpcrbm_car_id, 'thumbnail', [ 'class' => 'mpcrbm_car_thumb_img' ] );
                             ?>
                             <tr
                             data-title-filter="<?php echo esc_html( $mpcrbm_car['title'] );?>"
@@ -124,7 +126,18 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                             style="display: <?php echo esc_attr( $mpcrbm_display_car );?>"
                             >
                                 <td><input type="checkbox" class="checkbox"></td>
-                                <td><a class="car-title" href="<?php echo esc_url( get_edit_post_link( $mpcrbm_car_id ) ); ?>"><?php echo esc_html( $mpcrbm_car['title'] );?></a></td>
+                                <td>
+                                    <div class="mpcrbm_car_title_cell">
+                                        <div class="mpcrbm_car_thumb">
+                                            <?php if ( $mpcrbm_thumb ) : ?>
+                                                <?php echo wp_kses_post( $mpcrbm_thumb ); ?>
+                                            <?php else : ?>
+                                                <i class="mi mi-car"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <a class="car-title" href="<?php echo esc_url( get_edit_post_link( $mpcrbm_car_id ) ); ?>"><?php echo esc_html( $mpcrbm_car['title'] );?></a>
+                                    </div>
+                                </td>
                                 <td><?php echo esc_attr( $mpcrbm_cart_type );?></td>
                                 <td><span class="badge badge-petrol"><?php echo esc_attr( $mpcrbm_fuel_type );?></span></td>
                                 <td><?php echo esc_attr( $mpcrbm_seat_capacity );?></td>
@@ -177,10 +190,10 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                 <span class="mpcrbm_multiple_delete"><?php esc_html_e( 'Delete', 'car-rental-manager' );?></span>
             </div>
 
-            <div class="mpcrbm_loadMoreContainer" id="mpcrbm_loadMoreContainer" style="display: <?php echo esc_attr( $mpcrbm_load_more_display );?>">
+            <div class="mpcrbm_loadMoreContainer" id="mpcrbm_loadMoreContainer">
                 <input id="mpcrbm_number_of_car_load"  type="hidden" value="<?php echo esc_attr( $mpcrbm_display_limit );?>">
                 <input id="mpcrbm_number_load"  type="hidden" value="<?php echo esc_attr( $mpcrbm_display_limit );?>">
-                <button class="mpcrbm_btn_load_more">
+                <button class="mpcrbm_btn_load_more" <?php disabled( ! $mpcrbm_has_more ); ?>>
                     <span class="mpcrbm_loadmore_text" id="mpcrbm_loadmore_text"><?php esc_html_e( 'Load More', 'car-rental-manager' );?> </span>
                     <span class="mpcrbm_remaining_count" id="mpcrbm_remaining_count"> (<?php echo esc_attr( $mpcrbm_remaining );?>)</span>
                 </button>
