@@ -132,24 +132,29 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             ?>
             <div class="mpcrbm_taxonomoy_data_holder">
                 <?php  if ( $type !== 'mpcrbm_car_list' ) {
-                    $type_subtitle  = '';
                     $type_add_label = __( 'Add New', 'car-rental-manager' );
                     if( $type === 'mpcrbm_car_type' ){
-                        $type_title = 'Car Types';
+                        $type_title    = 'Car Types';
+                        $type_subtitle = __( 'Categorize your fleet by body style — sedan, SUV, hatchback, and more.', 'car-rental-manager' );
                     }elseif( $type === 'mpcrbm_fuel_type' ){
-                        $type_title = 'Fuel Types';
+                        $type_title    = 'Fuel Types';
+                        $type_subtitle = __( 'Manage the fuel types available across your vehicle fleet.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_seating_capacity' ){
-                        $type_title = 'Seating Capacity';
+                        $type_title    = 'Seating Capacity';
+                        $type_subtitle = __( 'Define seating capacity options customers can filter and book by.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_car_brand' ){
-                        $type_title = 'Car Brand';
+                        $type_title    = 'Car Brand';
+                        $type_subtitle = __( 'Manage the vehicle brands available in your inventory.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_make_year' ){
-                        $type_title = 'Make Year';
+                        $type_title    = 'Make Year';
+                        $type_subtitle = __( 'Configure the manufacturing years available across your fleet.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_car_feature' ){
                         $type_title    = 'Vehicle Features';
                         $type_subtitle = __( 'Standard and optional equipment configured for this vehicle model. Manage availability and deployment across the fleet.', 'car-rental-manager' );
                         $type_add_label = __( 'Add Feature', 'car-rental-manager' );
                     }else{
-                        $type_title = 'Car List';
+                        $type_title    = 'Car List';
+                        $type_subtitle = '';
                     }
                     $term_count = is_array( $terms ) ? count( $terms ) : 0;
                     ?>
@@ -253,24 +258,29 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             ?>
             <div class="mpcrbm_taxonomoy_data_holder">
                 <?php  if ( $type !== 'mpcrbm_car_list' ) {
-                    $type_subtitle  = '';
                     $type_add_label = __( 'Add New', 'car-rental-manager' );
                     if( $type === 'mpcrbm_car_type' ){
-                        $type_title = 'Car Types';
+                        $type_title    = 'Car Types';
+                        $type_subtitle = __( 'Categorize your fleet by body style — sedan, SUV, hatchback, and more.', 'car-rental-manager' );
                     }elseif( $type === 'mpcrbm_fuel_type' ){
-                        $type_title = 'Fuel Types';
+                        $type_title    = 'Fuel Types';
+                        $type_subtitle = __( 'Manage the fuel types available across your vehicle fleet.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_seating_capacity' ){
-                        $type_title = 'Seating Capacity';
+                        $type_title    = 'Seating Capacity';
+                        $type_subtitle = __( 'Define seating capacity options customers can filter and book by.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_car_brand' ){
-                        $type_title = 'Car Brand';
+                        $type_title    = 'Car Brand';
+                        $type_subtitle = __( 'Manage the vehicle brands available in your inventory.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_make_year' ){
-                        $type_title = 'Make Year';
+                        $type_title    = 'Make Year';
+                        $type_subtitle = __( 'Configure the manufacturing years available across your fleet.', 'car-rental-manager' );
                     }else if( $type === 'mpcrbm_car_feature' ){
                         $type_title    = 'Vehicle Features';
                         $type_subtitle = __( 'Standard and optional equipment configured for this vehicle model. Manage availability and deployment across the fleet.', 'car-rental-manager' );
                         $type_add_label = __( 'Add Feature', 'car-rental-manager' );
                     }else{
-                        $type_title = 'Car List';
+                        $type_title    = 'Car List';
+                        $type_subtitle = '';
                     }
                     $term_count = is_array( $terms ) ? count( $terms ) : 0;
                     ?>
@@ -511,7 +521,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Car Rental', 'car-rental-manager' ), null, $sidebar_submenu_html );
             ?>
-                <div class="mpcrbm_analytics">
+                <div class="mpcrbm_analytics" id="mpcrbm_analytics_holder">
                         <div class="mpcrbm_stat-card total">
                             <div class="mpcrbm_stat-left">
                                 <i class="mi mi-cars"></i>

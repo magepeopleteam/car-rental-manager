@@ -12,6 +12,9 @@
             var content_holder_id = currentType + '_holder';
             $('#' + content_holder_id).fadeIn();
 
+            // Fleet stat cards only make sense on the Car List tab.
+            $('#mpcrbm_analytics_holder').toggle( currentType === 'mpcrbm_car_list' );
+
             // Pro gate: show upgrade popup if tab requires pro and pro is not active
             var isProRequired = $(this).data('pro-required') == 1;
             var isPro = (typeof mpcrbmBranchAdmin !== 'undefined') && !!mpcrbmBranchAdmin.isPro;

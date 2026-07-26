@@ -20,6 +20,51 @@
     --bm-shadow-lg:     0 8px 32px rgba(15,23,42,0.14);
 }
 
+/* ── Header banner ───────────────────────────────────────────────────────
+   Styled to match the Car List page's header banner
+   (.mpcrbm_car_list_controls in assets/admin/mpcrbm-shell.css) — same
+   tokens (falling back to this file's own --bm-* values, since this CSS
+   also has to work if mpcrbm-shell.css's body.mpcrbm-admin scope isn't in
+   the ancestor chain for some reason), same padding, same title/subtitle
+   treatment, for a consistent look across every dashboard tab. */
+.mpcrbm-branch-manager-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 20px 24px;
+    background: var(--mpcrbm-shell-bg, #f5f6fa);
+    border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+    border-radius: var(--mpcrbm-shell-radius, 16px);
+}
+
+.mpcrbm-branch-manager-head-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 80%;
+}
+
+.mpcrbm-branch-manager-head-text h2 {
+    margin: 0;
+    /* !important: same mp_global "div.mpcrbm h2" specificity issue as
+       assets/admin/mpcrbm_manage_taxonomy.css .mpcrbm_taxonomies_head_title h2 —
+       this selector's one class + one element loses to that rule's two
+       elements on specificity regardless of load order. */
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: var(--mpcrbm-shell-text, #0f172a);
+}
+
+.mpcrbm-branch-manager-head-subtitle {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--mpcrbm-shell-text-faded, #64748b);
+}
+
 /* ── Dashboard Layout ────────────────────────────────────────────────── */
 .mpcrbm-branch-dashboard {
     display: flex;

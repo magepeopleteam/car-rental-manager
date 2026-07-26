@@ -380,27 +380,6 @@
 									<div class="mpcrbm-shell-user-avatar" style="background-image:url('<?php echo esc_url( get_avatar_url( get_current_user_id() ) ); ?>')"></div>
 								</div>
 							</div>
-							<?php if ( ! empty( $page_title ) ) : ?>
-								<div class="mpcrbm-shell-page-header">
-									<h1 class="mpcrbm-shell-page-title"><?php echo esc_html( $page_title ); ?></h1>
-									<?php if ( ! empty( $tabs ) ) : ?>
-										<div class="mpcrbm-shell-page-tabs-w">
-											<ul class="mpcrbm-shell-page-tabs">
-												<?php foreach ( $tabs as $tab ) :
-													$href = ! empty( $tab['target'] ) ? '#' : ( $tab['link'] ?? '#' );
-													?>
-													<li class="<?php echo ! empty( $tab['active'] ) ? 'is-active' : ''; ?>">
-														<a href="<?php echo esc_attr( $href ); ?>" <?php echo ! empty( $tab['target'] ) ? 'data-target="' . esc_attr( $tab['target'] ) . '"' : ''; ?> class="mpcrbm-shell-page-tab">
-															<?php if ( ! empty( $tab['icon'] ) ) : ?><i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i><?php endif; ?>
-															<span><?php echo esc_html( $tab['label'] ); ?></span>
-														</a>
-													</li>
-												<?php endforeach; ?>
-											</ul>
-										</div>
-									<?php endif; ?>
-								</div>
-							<?php endif; ?>
 							<div class="mpcrbm-shell-body mpcrbm">
 				<?php
 			}

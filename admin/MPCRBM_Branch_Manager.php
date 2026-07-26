@@ -720,6 +720,13 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				? self::get_branch_car_counts( $cpt )
 				: [];
 			?>
+			<div class="mpcrbm-branch-manager-head">
+				<div class="mpcrbm-branch-manager-head-text">
+					<h2><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
+					<p class="mpcrbm-branch-manager-head-subtitle"><?php esc_html_e( 'Manage your rental locations, assign vehicles to branches, and track transfers across your fleet.', 'car-rental-manager' ); ?></p>
+				</div>
+			</div>
+
 			<div class="mpcrbm-branch-dashboard" data-nonce="<?php echo esc_attr( $nonce ); ?>"
 				 data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
 

@@ -96,8 +96,10 @@
     flex-wrap: wrap;
     gap: 15px;
     margin-bottom: 22px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid #eef0f3;
+    padding: 20px 24px;
+    background: var(--mpcrbm-shell-bg, #f5f6fa);
+    border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+    border-radius: var(--mpcrbm-shell-radius, 16px);
 }
 
 .mpcrbm_taxonomies_head_title {
@@ -115,18 +117,20 @@
 
 .mpcrbm_taxonomies_head_title h2 {
     margin: 0;
-    font-size: 19px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: #1f2937;
+    /* !important: mp_global/assets/mp_style/mpcrbm_global.css has a global
+       "div.mpcrbm h2 { font-size: var(--fs_h2); font-weight: var(--fw-bold); }"
+       rule — two element selectors (div + h2) outweigh this rule's one class
+       + one element, so it wins on specificity regardless of load order. */
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: var(--mpcrbm-shell-text, #1f2937);
 }
 
 .mpcrbm_taxonomies_head_subtitle {
     margin: 0;
     font-size: 13px;
     line-height: 1.5;
-    color: #6b7280;
+    color: var(--mpcrbm-shell-text-faded, #6b7280);
 }
 
 .mpcrbm_taxonomies_count_pill {
@@ -167,6 +171,10 @@
 .mpcrbm_taxonomies_add_btn:hover {
     background: #5568d3;
     transform: translateY(-1px);
+}
+
+.mpcrbm .mpcrbm_taxonomies_add_btn span {
+    display: flex !important;
 }
 
 .mpcrbm_taxonomies_search_wrap {
