@@ -38,9 +38,12 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
         <!-- Car List Tab Content -->
         <div class="mpcrbm_list_tab_content" id="mpcrbm_carListTab">
             <div class="mpcrbm_car_list_controls">
-                <h2><?php esc_attr_e( 'Car Inventory', 'car-rental-manager' );?></h2>
+                <div class="mpcrbm_car_list_controls_text">
+                    <h2><?php esc_attr_e( 'Vehicle Management', 'car-rental-manager' );?></h2>
+                    <p class="mpcrbm_car_list_controls_subtitle"><?php esc_attr_e( 'Manage your fleet, track status, and update pricing.', 'car-rental-manager' );?></p>
+                </div>
                 <div class="mpcrbm_car_list_control_buttons">
-                    <a href="<?php echo esc_url( $mpcrbm_add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Car', 'car-rental-manager' );?></button></a>
+                    <a href="<?php echo esc_url( $mpcrbm_add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Vehicle', 'car-rental-manager' );?></button></a>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Export', 'car-rental-manager' );?></button>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Bulk Actions', 'car-rental-manager' );?></button>
                 </div>

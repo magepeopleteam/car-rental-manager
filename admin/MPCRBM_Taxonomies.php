@@ -131,7 +131,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             ob_start();
             ?>
             <div class="mpcrbm_taxonomoy_data_holder">
-                <?php  if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
+                <?php  if ( $type !== 'mpcrbm_car_list' ) {
                     if( $type === 'mpcrbm_car_type' ){
                         $type_title = 'Car Types';
                     }elseif( $type === 'mpcrbm_fuel_type' ){
@@ -145,13 +145,21 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     }else{
                         $type_title = 'Car List';
                     }
+                    $term_count = is_array( $terms ) ? count( $terms ) : 0;
                     ?>
-                    <h2><?php echo esc_html( $type_title );?></h2>
-                    <div class="mpcrbm_taxonomies_toolbar">
-                        <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
-                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
+                    <div class="mpcrbm_taxonomies_head">
+                        <div class="mpcrbm_taxonomies_head_title">
+                            <h2><?php echo esc_html( $type_title );?></h2>
+                            <span class="mpcrbm_taxonomies_count_pill"><?php echo esc_html( $term_count );?> <?php esc_html_e( 'items', 'car-rental-manager' );?></span>
+                        </div>
+                        <div class="mpcrbm_taxonomies_toolbar">
+                            <div class="mpcrbm_taxonomies_search_wrap">
+                                <i class="mi mi-search"></i>
+                                <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
+                            </div>
+                            <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_html_e( 'Add New', 'car-rental-manager' );?></button>
+                        </div>
                     </div>
-                <?php }else{?>
                 <?php }?>
                 <?php
                 if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
@@ -169,10 +177,19 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                              data-term-slug="<?php echo esc_attr($term->slug); ?>"
                              data-term-desc="<?php echo esc_attr($term->description); ?>"
                         >
-                            <div class="mpcrbm_taxonomy_content">
-                                <strong><?php echo esc_html($term->name); ?> (<?php echo esc_html($term->count); ?>) </strong><br>
-                                <small><?php echo esc_html( $description ); ?></small>
+                            <div class="mpcrbm_taxonomy_card_top">
+                                <div class="mpcrbm_taxonomy_avatar"><?php echo esc_html( mb_strtoupper( mb_substr( $term->name, 0, 1 ) ) ); ?></div>
+                                <div class="mpcrbm_taxonomy_count_wrap">
+                                    <span class="mpcrbm_taxonomy_count"><?php echo esc_html($term->count); ?></span>
+                                    <span class="mpcrbm_taxonomy_count_label"><?php esc_html_e( 'Count', 'car-rental-manager' );?></span>
+                                </div>
                             </div>
+                            <strong class="mpcrbm_taxonomy_name"><?php echo esc_html($term->name); ?></strong>
+                            <?php if ( ! empty( $description ) ) : ?>
+                                <small class="mpcrbm_taxonomy_desc"><?php echo esc_html( $description ); ?></small>
+                            <?php else : ?>
+                                <small class="mpcrbm_taxonomy_desc is-empty"><?php esc_html_e( 'No description available', 'car-rental-manager' );?></small>
+                            <?php endif; ?>
 
                             <div class="mpcrbm_taxonomy_actions">
                                 <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></button>
@@ -182,12 +199,24 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         </div>
                         <?php
                     }
+                    ?>
+                    <div class="mpcrbm_taxonomy_add_tile mpcrbm_taxonomies_add_btn">
+                        <span class="mpcrbm_taxonomy_add_icon"><i class="mi mi-plus"></i></span>
+                        <span class="mpcrbm_taxonomy_add_label"><?php esc_html_e( 'Add New', 'car-rental-manager' );?></span>
+                    </div>
+                    <?php
                     echo '</div>';
                 }else if ( empty( $terms ) && $type === 'mpcrbm_car_list'){
                     include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
                 }
                 else {
-                    echo '<p> '.esc_attr_e( 'Search taxonomy...', 'car-rental-manager' ) .' '. esc_html($type) . '</p>';
+                    ?>
+                    <div class="mpcrbm_taxonomies_empty">
+                        <i class="mi mi-tags"></i>
+                        <p><?php esc_html_e( 'No terms yet', 'car-rental-manager' );?></p>
+                        <span><?php esc_html_e( 'Click "Add New" to create your first term.', 'car-rental-manager' );?></span>
+                    </div>
+                    <?php
                 }
                 ?>
             </div>
@@ -230,13 +259,21 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     }else{
                         $type_title = 'Car List';
                     }
+                    $term_count = is_array( $terms ) ? count( $terms ) : 0;
                     ?>
-                    <h2><?php echo esc_html( $type_title );?></h2>
-                    <div class="mpcrbm_taxonomies_toolbar">
-                        <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New', 'car-rental-manager' );?></button>
-                        <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
+                    <div class="mpcrbm_taxonomies_head">
+                        <div class="mpcrbm_taxonomies_head_title">
+                            <h2><?php echo esc_html( $type_title );?></h2>
+                            <span class="mpcrbm_taxonomies_count_pill"><?php echo esc_html( $term_count );?> <?php esc_html_e( 'items', 'car-rental-manager' );?></span>
+                        </div>
+                        <div class="mpcrbm_taxonomies_toolbar">
+                            <div class="mpcrbm_taxonomies_search_wrap">
+                                <i class="mi mi-search"></i>
+                                <input type="text" class="mpcrbm_taxonomies_search" placeholder="<?php esc_attr_e( 'Search taxonomy...', 'car-rental-manager' );?>">
+                            </div>
+                            <button class="mpcrbm_taxonomies_add_btn"><i class="mi mi-plus"></i> <?php esc_html_e( 'Add New', 'car-rental-manager' );?></button>
+                        </div>
                     </div>
-                <?php }else{?>
                 <?php }?>
                 <?php
                 if ( !empty( $terms ) && $type !== 'mpcrbm_car_list' ) {
@@ -254,10 +291,19 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                              data-term-slug="<?php echo esc_attr($term->slug); ?>"
                              data-term-desc="<?php echo esc_attr($term->description); ?>"
                         >
-                            <div class="mpcrbm_taxonomy_content">
-                                <strong><?php echo esc_html($term->name); ?> (<?php echo esc_html($term->count); ?>) </strong><br>
-                                <small><?php echo esc_html( $description ); ?></small>
+                            <div class="mpcrbm_taxonomy_card_top">
+                                <div class="mpcrbm_taxonomy_avatar"><?php echo esc_html( mb_strtoupper( mb_substr( $term->name, 0, 1 ) ) ); ?></div>
+                                <div class="mpcrbm_taxonomy_count_wrap">
+                                    <span class="mpcrbm_taxonomy_count"><?php echo esc_html($term->count); ?></span>
+                                    <span class="mpcrbm_taxonomy_count_label"><?php esc_html_e( 'Count', 'car-rental-manager' );?></span>
+                                </div>
                             </div>
+                            <strong class="mpcrbm_taxonomy_name"><?php echo esc_html($term->name); ?></strong>
+                            <?php if ( ! empty( $description ) ) : ?>
+                                <small class="mpcrbm_taxonomy_desc"><?php echo esc_html( $description ); ?></small>
+                            <?php else : ?>
+                                <small class="mpcrbm_taxonomy_desc is-empty"><?php esc_html_e( 'No description available', 'car-rental-manager' );?></small>
+                            <?php endif; ?>
 
                             <div class="mpcrbm_taxonomy_actions">
                                 <button class="mpcrbm_action_btn view mpcrbm_edit_taxonomy" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></button>
@@ -267,12 +313,24 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         </div>
                         <?php
                     }
+                    ?>
+                    <div class="mpcrbm_taxonomy_add_tile mpcrbm_taxonomies_add_btn">
+                        <span class="mpcrbm_taxonomy_add_icon"><i class="mi mi-plus"></i></span>
+                        <span class="mpcrbm_taxonomy_add_label"><?php esc_html_e( 'Add New', 'car-rental-manager' );?></span>
+                    </div>
+                    <?php
                     echo '</div>';
                 }else if ( empty( $terms ) && $type === 'mpcrbm_car_list'){
                     include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
                 }
                 else {
-                    echo '<p> '.esc_attr_e( 'Search taxonomy...', 'car-rental-manager' ) .' '. esc_html($type) . '</p>';
+                    ?>
+                    <div class="mpcrbm_taxonomies_empty">
+                        <i class="mi mi-tags"></i>
+                        <p><?php esc_html_e( 'No terms yet', 'car-rental-manager' );?></p>
+                        <span><?php esc_html_e( 'Click "Add New" to create your first term.', 'car-rental-manager' );?></span>
+                    </div>
+                    <?php
                 }
                 ?>
             </div>

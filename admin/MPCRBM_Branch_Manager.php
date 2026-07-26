@@ -752,9 +752,10 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 							?>
 							<div class="mpcrbm-branch-card" data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>">
 								<div class="mpcrbm-branch-card-header">
-									<span class="mpcrbm-branch-name"><?php echo esc_html( $branch->name ); ?></span>
+									<span class="mpcrbm-branch-eyebrow"><?php esc_html_e( 'Branch', 'car-rental-manager' ); ?></span>
 									<span class="mpcrbm-car-count-badge"><?php echo esc_html( $car_count ); ?></span>
 								</div>
+								<span class="mpcrbm-branch-name"><?php echo esc_html( $branch->name ); ?></span>
 								<?php if ( $address ) : ?>
 									<div class="mpcrbm-branch-meta-row">
 										<i class="mi mi-map-marker"></i>
@@ -769,16 +770,15 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								<?php endif; ?>
 								<div class="mpcrbm-branch-badges"></div>
 								<div class="mpcrbm-branch-card-actions">
-									<button class="button button-primary mpcrbm-view-branch-cars"
+									<button class="mpcrbm-view-branch-cars"
 											data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"
 											data-branch-name="<?php echo esc_attr( $branch->name ); ?>">
 										<i class="mi mi-car"></i>
 										<?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?>
 									</button>
 									<?php if ( $edit_url ) : ?>
-										<a href="<?php echo esc_url( $edit_url ); ?>" class="button">
+										<a href="<?php echo esc_url( $edit_url ); ?>" class="mpcrbm-branch-edit-btn" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">
 											<i class="mi mi-edit"></i>
-											<?php esc_html_e( 'Edit', 'car-rental-manager' ); ?>
 										</a>
 									<?php endif; ?>
 								</div>

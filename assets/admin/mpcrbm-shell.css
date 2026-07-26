@@ -654,8 +654,44 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 	background-color: transparent;
 }
 
+/* Car Inventory header — light banner bar with a title/subtitle pair on the
+   left and a dark "Add New Vehicle" button on the right, replacing the bare
+   h2 + buttons row from assets/admin/mpcrbm_manage_taxonomy.css. */
+.mpcrbm-shell-body .mpcrbm_car_list_controls {
+	background: var(--mpcrbm-shell-bg);
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius);
+	padding: 20px 24px;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_controls_text {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_controls h2 {
+	font-size: 19px;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_controls_subtitle {
+	margin: 0;
+	font-size: 13px;
+	color: var(--mpcrbm-shell-text-faded);
+}
+
 .mpcrbm-shell-body .mpcrbm_car_list_control_btn.btn-primary {
-	background: var(--mpcrbm-shell-primary);
+	background: #0f172a;
+	border-radius: 8px;
+	font-weight: 600;
+	transition: background .15s ease, transform .15s ease;
+}
+
+.mpcrbm-shell-body .mpcrbm_car_list_control_btn.btn-primary:hover {
+	background: #1e293b;
+	transform: translateY(-1px);
 }
 
 /* Car Inventory table — modernized: rounded card container instead of a bare
@@ -2667,7 +2703,9 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	background: #fff;
 	border: 1px solid var(--mpcrbm-shell-border);
 	border-radius: var(--mpcrbm-shell-radius);
-	padding: 20px 24px;
+	box-shadow: var(--mpcrbm-shell-shadow);
+	overflow: hidden;
+	padding: 0;
 }
 
 /* .mpcrbm-faq-container-header wraps the <h2> + "Add" button (MPCRBM_Manage_Faq.php)
@@ -2680,12 +2718,13 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	justify-content: space-between;
 	flex-wrap: wrap;
 	gap: 12px;
+	padding: 20px 22px 16px;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_container h2 {
 	margin: 0;
-	font-size: 16px;
-	font-weight: 600;
+	font-size: 18px;
+	font-weight: 700;
 	color: var(--mpcrbm-shell-text);
 }
 
@@ -2694,23 +2733,26 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	align-items: center;
 	gap: 6px;
 	background: var(--mpcrbm-shell-primary);
-	border-radius: 100px;
-	padding: 8px 16px;
+	border-radius: 8px;
+	padding: 10px 18px;
 	font-size: 13px;
 	font-weight: 600;
+	transition: opacity .15s ease, transform .15s ease;
 }
 
 .mpcrbm-shell-body .btn-primary:hover {
 	opacity: .9;
+	transform: translateY(-1px);
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table.widefat {
-	margin-top: 18px;
-	border: 1px solid var(--mpcrbm-shell-border);
-	border-radius: var(--mpcrbm-shell-radius);
+	margin: 0;
+	border: none;
+	border-top: 1px solid var(--mpcrbm-shell-border);
 	border-collapse: separate;
 	border-spacing: 0;
-	overflow: hidden;
+	table-layout: fixed;
+	width: 100%;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_container .widefat thead {
@@ -2718,21 +2760,41 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table th {
-	padding: 12px 16px;
+	padding: 12px 22px;
 	border-bottom: 1px solid var(--mpcrbm-shell-border);
 	color: var(--mpcrbm-shell-text-faded);
 	font-size: 11px;
-	font-weight: 600;
+	font-weight: 700;
 	text-transform: uppercase;
-	letter-spacing: .5px;
+	letter-spacing: .06em;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table th:nth-child(1),
+.mpcrbm-shell-body .mpcrbm_faq_table td:nth-child(1) {
+	width: 26%;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table th:nth-child(2),
+.mpcrbm-shell-body .mpcrbm_faq_table td:nth-child(2) {
+	width: 52%;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table th:nth-child(3),
+.mpcrbm-shell-body .mpcrbm_faq_table td:nth-child(3) {
+	width: 160px;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table td {
-	padding: 14px 16px;
+	padding: 14px 22px;
 	border-bottom: 1px solid var(--mpcrbm-shell-border);
-	color: var(--mpcrbm-shell-text);
-	font-size: 13px;
-	vertical-align: middle;
+	color: var(--mpcrbm-shell-text-faded);
+	font-size: 13.5px;
+	vertical-align: top;
+	overflow-wrap: break-word;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table td:nth-child(3) {
+	white-space: nowrap;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table tbody tr:last-child td {
@@ -2745,23 +2807,38 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 .mpcrbm-shell-body .mpcrbm_faq_table td.faq-title {
 	font-weight: 600;
+	color: var(--mpcrbm-shell-text);
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_row_actions {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 8px;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table .button {
-	border-radius: 100px;
-	font-size: 12px;
-	font-weight: 600;
-	padding: 4px 14px;
+	border-radius: 7px;
+	font-size: 13px;
+	font-weight: 500;
+	padding: 7px 14px;
 	box-shadow: none;
 	text-shadow: none;
-	margin-right: 4px;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_edit_term,
 .mpcrbm-shell-body .mpcrbm_faq_table .edit-faq {
 	background: #fff;
-	border-color: var(--mpcrbm-shell-border);
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: 7px;
+	font-size: 13px;
+	font-weight: 500;
+	padding: 7px 14px;
 	color: var(--mpcrbm-shell-text);
+	cursor: pointer;
+	white-space: nowrap;
+	flex: 0 0 auto;
+	transition: border-color .15s ease, color .15s ease;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_edit_term:hover,
@@ -2772,14 +2849,61 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 .mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_delete_term,
 .mpcrbm-shell-body .mpcrbm_faq_table .delete-faq {
-	background: transparent;
-	border-color: var(--mpcrbm-red);
+	background: #fff;
+	border: 1px solid var(--mpcrbm-red);
+	border-radius: 7px;
+	font-size: 13px;
+	font-weight: 500;
+	padding: 7px 14px;
 	color: var(--mpcrbm-red);
+	cursor: pointer;
+	white-space: nowrap;
+	flex: 0 0 auto;
+	transition: background .15s ease;
 }
 
 .mpcrbm-shell-body .mpcrbm_faq_table .mpcrbm_delete_term:hover,
 .mpcrbm-shell-body .mpcrbm_faq_table .delete-faq:hover {
 	background: var(--mpcrbm-red-light);
+}
+
+/* Footer bar: "Showing N entries" + Prev/Next (MPCRBM_Manage_Faq.php) */
+.mpcrbm-shell-body .mpcrbm_faq_table_footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 14px 22px;
+	background: var(--mpcrbm-shell-bg);
+	border-top: 1px solid var(--mpcrbm-shell-border);
+	font-size: 12.5px;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table_count {
+	color: var(--mpcrbm-shell-text-faded);
+	font-weight: 500;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_table_pagination {
+	display: flex;
+	gap: 8px;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_page_btn {
+	padding: 6px 14px;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: 6px;
+	background: #fff;
+	color: var(--mpcrbm-shell-text);
+	font-size: 12.5px;
+	cursor: pointer;
+}
+
+.mpcrbm-shell-body .mpcrbm_faq_page_btn:disabled {
+	opacity: .6;
+	background: var(--mpcrbm-shell-bg);
+	color: var(--mpcrbm-shell-text-faded);
+	cursor: not-allowed;
 }
 
 /* Add/Edit popup */

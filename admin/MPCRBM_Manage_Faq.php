@@ -82,8 +82,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 								</td>
 
                                 <td>
-                                    <button class="button mpcrbm_edit_term"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
-                                    <button class="button mpcrbm_delete_term"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    <div class="mpcrbm_faq_row_actions">
+                                        <button class="mpcrbm_edit_term"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
+                                        <button class="mpcrbm_delete_term"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -92,6 +94,19 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     <?php endif; ?>
                     </tbody>
                 </table>
+
+                <div class="mpcrbm_faq_table_footer">
+                    <span class="mpcrbm_faq_table_count">
+                        <?php
+                        // translators: %d is the number of term & condition entries.
+                        echo esc_html( sprintf( _n( 'Showing %d entry', 'Showing %d entries', count( $term_and_conditions ), 'car-rental-manager' ), count( $term_and_conditions ) ) );
+                        ?>
+                    </span>
+                    <div class="mpcrbm_faq_table_pagination">
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Prev', 'car-rental-manager' );?></button>
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Next', 'car-rental-manager' );?></button>
+                    </div>
+                </div>
 
                 <!-- Popup Modal -->
                 <div id="mpcrbm_term_condition_modal" class="mpcrbm_faq_modal">
@@ -152,8 +167,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                                 <td class="faq-title"><?php echo esc_html( $faq['title'] ); ?></td>
                                 <td class="faq-answer"><?php echo wp_kses_post( wp_trim_words( $faq['answer'], 15 ) ); ?></td>
                                 <td>
-                                    <button class="button edit-faq"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
-                                    <button class="button delete-faq"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    <div class="mpcrbm_faq_row_actions">
+                                        <button class="edit-faq"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
+                                        <button class="delete-faq"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -162,6 +179,19 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     <?php endif; ?>
                     </tbody>
                 </table>
+
+                <div class="mpcrbm_faq_table_footer">
+                    <span class="mpcrbm_faq_table_count">
+                        <?php
+                        // translators: %d is the number of FAQ entries.
+                        echo esc_html( sprintf( _n( 'Showing %d entry', 'Showing %d entries', count( $faqs ), 'car-rental-manager' ), count( $faqs ) ) );
+                        ?>
+                    </span>
+                    <div class="mpcrbm_faq_table_pagination">
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Prev', 'car-rental-manager' );?></button>
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Next', 'car-rental-manager' );?></button>
+                    </div>
+                </div>
 
                 <!-- Popup Modal -->
                 <div id="mpcrbm_faq_modal" class="mpcrbm_faq_modal">
