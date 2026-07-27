@@ -339,6 +339,12 @@ jQuery(document).ready(function($) {
             .val();
 
         let target = parent.find(".tabsContentNext");
+        // .tabsContentNext also carries its own padding (--dmp) around the visible
+        // search-area card, so a loader on it overlaid a plain rectangle past the
+        // card's rounded corners/shadow — used for the loader only, .append(data)
+        // calls below still target .tabsContentNext (the actual step-2/3 content
+        // needs to land there, not inside the card).
+        let loaderTarget = parent.find(".mpcrbm_search_area");
         let target_date = parent.find("#mpcrbm_map_start_date");
         let return_target_date = parent.find("#mpcrbm_map_return_date");
         let target_time = parent.find("#mpcrbm_map_start_time");
@@ -353,7 +359,6 @@ jQuery(document).ready(function($) {
 
 
         let progress_bar = $("#mpcrbm_progress_bar_display").val();
-        let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
 
         let mpcrbm_enable_view_search_result_page = parent
             .find('[name="mpcrbm_enable_view_search_result_page"]')
@@ -411,7 +416,7 @@ jQuery(document).ready(function($) {
         } else if (!end_place.value) {
             end_place.focus();
         } else {
-            mpcrbm_loader(parent.find(".tabsContentNext"));
+            mpcrbm_loader(loaderTarget);
             mpcrbm_content_refresh(parent);
             if (price_based !== "manual") {
                 mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
@@ -485,7 +490,7 @@ jQuery(document).ready(function($) {
                                         .append(data)
                                         .promise()
                                         .done(function () {
-                                            mpcrbm_loader_remove(parent.find(".tabsContentNext"));
+                                            mpcrbm_loader_remove(loaderTarget);
 
                                             if( ajax_search !== 'yes' ) {
                                                 parent.find(".nextTab_next").trigger("click");
@@ -524,7 +529,7 @@ jQuery(document).ready(function($) {
                                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                                 },
                                 beforeSend: function () {
-                                    mpcrbm_loader(target);
+                                    mpcrbm_loader(loaderTarget);
                                 },
                                 success: function (data) {
                                     // Check if response is an error object
@@ -548,9 +553,10 @@ jQuery(document).ready(function($) {
                                         console.error('Invalid response format:', data);
                                     }
 
-                                    if( progress_bar === 'yes' && redirect_another === 'no' ) {
-                                        $('#mpcrbm_progress_bar_holder').css('display', 'flex');
-                                    }
+                                    // No progress-bar reveal here: this branch always navigates away via
+                                    // window.location.href above, so showing it just flashes the step
+                                    // indicator on the page for a moment before the browser leaves it —
+                                    // setting display:flex here has no effect on the destination page.
                                 },
                                 error: function (response) {
                                     console.log(response);
@@ -603,7 +609,7 @@ jQuery(document).ready(function($) {
                                     .append(data)
                                     .promise()
                                     .done(function () {
-                                        mpcrbm_loader_remove(parent.find(".tabsContentNext"));
+                                        mpcrbm_loader_remove(loaderTarget);
                                         if( ajax_search !== 'yes' ) {
                                             parent.find(".nextTab_next").trigger("click");
                                         }
@@ -638,7 +644,7 @@ jQuery(document).ready(function($) {
                                 mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
                             beforeSend: function (xhr, settings) {
-                                mpcrbm_loader(target);
+                                mpcrbm_loader(loaderTarget);
                             },
                             success: function (data) {
                                 // Check if response is an error object
@@ -661,9 +667,10 @@ jQuery(document).ready(function($) {
                                     console.error('Invalid response format:', data);
                                 }
 
-                                if( progress_bar === 'yes' && redirect_another === 'no' ) {
-                                    $('#mpcrbm_progress_bar_holder').css('display', 'flex');
-                                }
+                                // No progress-bar reveal here: this branch always navigates away via
+                                // window.location.href above, so showing it just flashes the step
+                                // indicator on the page for a moment before the browser leaves it —
+                                // setting display:flex here has no effect on the destination page.
                             },
                             error: function (response) {
                                 console.log(response);

@@ -176,7 +176,16 @@ if (sizeof($mpcrbm_all_dates) > 0) {
     $mpcrbm_waiting_time_check = MPCRBM_Function::get_general_settings('taxi_waiting_time', 'enable');
     ?>
     <div class="<?php echo esc_attr($mpcrbm_area_class); ?> ">
-        <div class=" mpcrbm_search_area <?php echo esc_attr($mpcrbm_form_style_class); ?> <?php echo esc_attr($mpcrbm_price_based == 'manual' ? 'mAuto' : ''); ?>">
+        <?php
+        // mpcrbm-search-widget-modern only appears here — single_car_search_details.php
+        // (the near-identical car-details page template) renders the same
+        // .mpcrbm_search_area/.mpForm/.input_select/.mpcrbm_search-button markup for its
+        // own booking widget, and those classes are shared, site-wide-loaded CSS
+        // (mpcrbm_search_shortcode.css). This class scopes the modern redesign below to
+        // this standalone search-widget page only, so the car-details price box keeps
+        // its own separately-designed look untouched.
+        ?>
+        <div class="mpcrbm_search_area mpcrbm-search-widget-modern <?php echo esc_attr($mpcrbm_form_style_class); ?> <?php echo esc_attr($mpcrbm_price_based == 'manual' ? 'mAuto' : ''); ?>">
             <?php if( $is_title === 'yes'){?>
                 <div class="booking-header">
                     <div class="header-content">

@@ -194,3 +194,184 @@ div.header-text h2 {
     }
 
 }
+
+/* ==========================================================================
+   Modern redesign — standalone search-widget page only.
+   .mpcrbm-search-widget-modern is set only in templates/registration/
+   get_details_new.php. single_car_search_details.php (the car-details page's
+   own booking widget) renders this same .mpForm/.input_select/.mpcrbm_search-
+   button markup from this same site-wide-loaded file, so every rule below is
+   scoped under that class — none of it touches the car-details price box.
+   ========================================================================== */
+.mpcrbm-search-widget-modern {
+    --mpcrbm-sw-radius: 16px;
+    --mpcrbm-sw-radius-sm: 10px;
+    --mpcrbm-sw-border: #e5e7eb;
+    --mpcrbm-sw-text: #1f2937;
+    --mpcrbm-sw-text-faded: #6b7280;
+    --mpcrbm-sw-bg: #f8fafc;
+
+    background: #fff;
+    border-radius: var(--mpcrbm-sw-radius);
+    border: 1px solid var(--mpcrbm-sw-border);
+    box-shadow: 0 10px 40px rgba(15, 23, 42, .08);
+    /* No overflow:hidden here: .input_select_list (the time/location dropdowns,
+       mp_global/assets/mp_style/mpcrbm_global.css) is position:absolute and pops
+       out below its field — clipping the card would cut those off. The header
+       below already has its own matching top corner radius, so it doesn't need
+       the outer clip either. */
+}
+
+/* ===== Header ===== */
+.mpcrbm-search-widget-modern .booking-header {
+    background: #764ba2; /* fallback for browsers without color-mix() */
+    background: linear-gradient(135deg, var(--color_theme, #F12971) 0%, color-mix(in srgb, var(--color_theme, #F12971) 55%, #1e1b4b) 100%);
+    padding: 22px 24px;
+    border-top-left-radius: var(--mpcrbm-sw-radius);
+    border-top-right-radius: var(--mpcrbm-sw-radius);
+}
+
+.mpcrbm-search-widget-modern .header-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 0;
+}
+
+.mpcrbm-search-widget-modern div.header-text h2 {
+    font-size: 21px;
+    margin: 0 0 2px;
+}
+
+.mpcrbm-search-widget-modern .booking-header div.header-text p {
+    opacity: .85;
+    margin: 0;
+}
+
+.mpcrbm-search-widget-modern .header-badge {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ===== Form body ===== */
+.mpcrbm-search-widget-modern .mpcrbm_search_holder {
+    background: var(--mpcrbm-sw-bg);
+    padding: 20px;
+    border-bottom-left-radius: var(--mpcrbm-sw-radius);
+    border-bottom-right-radius: var(--mpcrbm-sw-radius);
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_horizontal_search_form {
+    gap: 12px;
+}
+
+/* ===== Field groups (location / date / time) ===== */
+.mpcrbm-search-widget-modern .mpcrbm_horizontal_date_time_input {
+    background: #fff;
+    border: 1px solid var(--mpcrbm-sw-border);
+    border-radius: var(--mpcrbm-sw-radius-sm);
+    padding: 2px 8px;
+    gap: 0;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_horizontal_date_time_input:focus-within {
+    border-color: #d9dce1;
+    box-shadow: 0 0 0 3px rgba(241, 41, 113, .12); /* fallback for browsers without color-mix() */
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color_theme, #F12971) 12%, transparent);
+}
+
+.mpcrbm-search-widget-modern .input_select {
+    padding: 6px 10px;
+}
+
+.mpcrbm-search-widget-modern .mpcrbm-vertical-divider {
+    background-color: var(--mpcrbm-sw-border);
+    width: 1px;
+    margin: 4px;
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_search_title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--mpcrbm-sw-text-faded);
+    padding: 4px 0 2px;
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_search_title i {
+    color: var(--color_theme, #F12971);
+    font-size: 15px;
+}
+
+.mpcrbm-search-widget-modern .formControl {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--mpcrbm-sw-text);
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+/* "Return" section — a divider-with-label instead of plain uppercase text
+   floating between the pick-up and return field rows. */
+.mpcrbm-search-widget-modern .mpcrbm_horizontal_section_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--mpcrbm-sw-text-faded);
+    margin: 4px 0;
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_horizontal_section_label::before,
+.mpcrbm-search-widget-modern .mpcrbm_horizontal_section_label::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: var(--mpcrbm-sw-border);
+}
+
+/* ===== Checkbox + search row ===== */
+.mpcrbm-search-widget-modern .mprcbm_checkbox_search_btn_holder {
+    align-items: center;
+    margin-top: 14px;
+}
+
+.mpcrbm-search-widget-modern .mprcbm_checkbox_group_new {
+    background: #fff;
+    border: 1px solid var(--mpcrbm-sw-border);
+    padding: 10px 14px;
+    margin: 0;
+    flex: 1 1 auto;
+}
+
+.mpcrbm-search-widget-modern .mprcbm_search_button_holder {
+    width: auto;
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_search-button {
+    padding: 13px 26px;
+    border-radius: 999px;
+    font-size: 15px;
+    max-width: none;
+    box-shadow: 0 6px 16px rgba(241, 41, 113, .35); /* fallback for browsers without color-mix() */
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--color_theme, #F12971) 35%, transparent);
+}
+
+.mpcrbm-search-widget-modern .mpcrbm_search-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(241, 41, 113, .45); /* fallback for browsers without color-mix() */
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--color_theme, #F12971) 45%, transparent);
+}
+
+@media (max-width: 600px) {
+    .mpcrbm-search-widget-modern .mprcbm_checkbox_search_btn_holder {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
