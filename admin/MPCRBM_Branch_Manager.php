@@ -302,7 +302,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				<div class="mpcrbm-info-card">
 					<div class="mpcrbm-info-card-header">
 						<i class="fas fa-clock-rotate-left"></i>
-						<h3><?php esc_html_e( 'Transfer History', 'car-rental-manager' ); ?></h3>
+						<h3><?php esc_html_e( 'Car Branch Ownership Transfer History', 'car-rental-manager' ); ?></h3>
 					</div>
 					<div class="mpcrbm-info-card-body">
 				<section>

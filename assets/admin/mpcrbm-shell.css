@@ -3268,15 +3268,18 @@ input.formControl.mpcrbm-list-search {
 	font-weight: 600;
 }
 
-.mpcrbm-faq-list {
+.mpcrbm-faq-list,
+.mpcrbm-term-list {
 	padding-right: 4px;
 }
 
-.mpcrbm-faq-toggle-item {
+.mpcrbm-faq-toggle-item,
+.mpcrbm-term-toggle-item {
 	cursor: pointer;
 	user-select: none;
 }
-.mpcrbm-faq-toggle-item.is-saving {
+.mpcrbm-faq-toggle-item.is-saving,
+.mpcrbm-term-toggle-item.is-saving {
 	opacity: .6;
 	pointer-events: none;
 }
@@ -3311,22 +3314,27 @@ input.formControl.mpcrbm-list-search {
 	transition: opacity .15s ease;
 }
 
-.mpcrbm-faq-toggle-item.is-selected {
+.mpcrbm-faq-toggle-item.is-selected,
+.mpcrbm-term-toggle-item.is-selected {
 	background: #eff6ff;
 	border-color: var(--mpcrbm-shell-primary, #1d7bff);
 }
-.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-check {
+.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-check,
+.mpcrbm-term-toggle-item.is-selected .mpcrbm-faq-toggle-check {
 	background: var(--mpcrbm-shell-primary, #1d7bff);
 	border-color: var(--mpcrbm-shell-primary, #1d7bff);
 }
-.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-check i {
+.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-check i,
+.mpcrbm-term-toggle-item.is-selected .mpcrbm-faq-toggle-check i {
 	opacity: 1;
 }
-.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-status {
+.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-status,
+.mpcrbm-term-toggle-item.is-selected .mpcrbm-faq-toggle-status {
 	opacity: 1;
 }
 
-.mpcrbm-faq-list span {
+.mpcrbm-faq-list span,
+.mpcrbm-term-list span {
 	display: flex !important;
 }
 

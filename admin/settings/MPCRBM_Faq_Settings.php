@@ -127,7 +127,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                                 >
                                     <span class="mpcrbm-faq-toggle-check"><i class="fas fa-check"></i></span>
                                     <div class="mpcrbm_faq_title"><?php echo esc_html( $faq['title'] ); ?></div>
-                                    <span class="mpcrbm-faq-toggle-status"><?php esc_html_e( 'Added', 'car-rental-manager' ); ?></span>
+                                    <span class="mpcrbm-faq-toggle-status"><?php esc_html_e( 'Selected', 'car-rental-manager' ); ?></span>
                                 </div>
                             <?php endforeach; ?>
                         <?php else : ?>

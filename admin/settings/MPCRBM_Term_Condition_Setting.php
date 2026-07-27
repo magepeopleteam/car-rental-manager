@@ -35,53 +35,83 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
             <div class="tabsItem" data-tabs="#mpcrbm_term_and_condition">
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>
                 <div class="mpcrbm-info-card">
-                    <div class="mpcrbm-info-card-header">
-                        <i class="fas fa-file-contract"></i>
-                        <h3><?php esc_html_e( 'Manage Term Condition', 'car-rental-manager' ); ?></h3>
-                    </div>
                     <div class="mpcrbm-info-card-body">
-                <section class="mpcrbm_faq_question_holder">
-                    <div class="mpcrbm_all_term_condition">
-                        <h3><?php esc_html_e( 'Available Term & Condition', 'car-rental-manager' ); ?></h3>
-                        <div class="mpcrbm_faq_all_question">
-                            <?php if (!empty($terms)) : ?>
-                                <?php foreach ($terms as $key => $faq) :
-                                    if ( isset( $selected_terms_data[$key] ) ) continue;
-                                    ?>
-                                    <div class="mpcrbm_faq_item"
-                                         data-key="<?php echo esc_attr($key); ?>"
-                                         data-title="<?php echo esc_attr( $faq['title'] ); ?>"
-                                    >
-                                        <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_add_term_condition"><?php esc_html_e( 'Add', 'car-rental-manager' ); ?></button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <p><?php esc_html_e( 'No Term & Condition available.', 'car-rental-manager' ); ?></p>
+                <section class="mpcrbm-faq-single-list">
+                    <div class="mpcrbm-faq-toolbar">
+                        <div class="mpcrbm-faq-toolbar-text">
+                            <div class="mpcrbm-faq-eyebrow">
+                                <span class="mpcrbm-faq-eyebrow-dot"></span>
+                                <?php esc_html_e( 'Legal & Policies', 'car-rental-manager' ); ?>
+                            </div>
+                            <h3><?php esc_html_e( 'Manage Terms & Conditions', 'car-rental-manager' ); ?></h3>
+                            <span class="desc"><?php esc_html_e( 'Choose the terms and conditions to appear during the booking journey. Only the selected terms from the list below will be displayed on the frontend.', 'car-rental-manager' ); ?></span>
+                        </div>
+                        <div class="mpcrbm-faq-toolbar-actions">
+                            <?php if ( ! empty( $terms ) ) : ?>
+                                <div class="mpcrbm-faq-live-pill">
+                                    <span class="mpcrbm-faq-live-switch"></span>
+                                    <span>
+                                        <span id="mpcrbm_term_selected_count"><?php echo esc_html( count( $selected_terms_data ) ); ?></span>
+                                        <?php esc_html_e( 'of', 'car-rental-manager' ); ?>
+                                        <span id="mpcrbm_term_total_count"><?php echo esc_html( count( $terms ) ); ?></span>
+                                        <?php esc_html_e( 'Added to Live Site', 'car-rental-manager' ); ?>
+                                    </span>
+                                </div>
                             <?php endif; ?>
+                            <button type="button" class="mpcrbm-faq-add-new-toggle" id="mpcrbm_toggle_new_term">
+                                <i class="mi mi-plus"></i> <?php esc_html_e( 'Add New Term & Condition', 'car-rental-manager' ); ?>
+                            </button>
                         </div>
                     </div>
 
-                    <div class="mpcrbm_selected_faq_question_box">
-                        <h3><?php esc_html_e( 'Added Term & Condition', 'car-rental-manager' ); ?></h3>
-                        <div class="mpcrbm_selected_term_condition">
-                            <?php if (!empty($selected_terms_data)) : ?>
-                                <?php foreach ($selected_terms_data as $key => $faq) : ?>
-                                    <div class="mpcrbm_selected_item"
-                                         data-key="<?php echo esc_attr($key); ?>"
-                                         data-title="<?php echo esc_attr( $faq['title'] ); ?>"
-                                    >
-                                        <div class="mpcrbm_faq_title"><?php echo esc_html($faq['title']); ?></div>
-                                        <button type="button" class="button button-small mpcrbm_remove_term_condition"><?php esc_html_e( 'Remove', 'car-rental-manager' ); ?></button>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <p><?php esc_html_e( 'No Term & Condition added yet.', 'car-rental-manager' ); ?></p>
-                            <?php endif; ?>
+                    <div class="mpcrbm_faq_modal mpcrbm-faq-add-new-modal" id="mpcrbm_new_term_panel">
+                        <div class="mpcrbm_modal_content">
+                            <h3><?php esc_html_e( 'Add New Term & Condition', 'car-rental-manager' ); ?></h3>
+                            <label class="mpcrbm-faq-add-new-field">
+                                <span><?php esc_html_e( 'Title', 'car-rental-manager' ); ?></span>
+                                <input type="text" id="mpcrbm_new_term_title" class="formControl" placeholder="<?php esc_attr_e( 'e.g. Cancellation Policy', 'car-rental-manager' ); ?>">
+                            </label>
+                            <label class="mpcrbm-faq-add-new-field">
+                                <span><?php esc_html_e( 'Description', 'car-rental-manager' ); ?></span>
+                                <?php
+                                wp_editor( '', 'mpcrbm_new_term_answer_editor', [
+                                    'textarea_name' => 'mpcrbm_new_term_answer',
+                                    'textarea_rows' => 6,
+                                    'media_buttons' => false,
+                                    'editor_height' => 180,
+                                    'tinymce'       => [
+                                        'toolbar1' => 'bold italic underline | bullist numlist | link unlink | undo redo',
+                                    ],
+                                ] );
+                                ?>
+                            </label>
+                            <div class="mpcrbm-faq-add-new-actions">
+                                <button type="button" class="_themeButton_xs_mT_xs mpcrbm-price-add-btn" id="mpcrbm_save_new_term_btn"><?php esc_html_e( 'Save Term & Condition', 'car-rental-manager' ); ?></button>
+                                <button type="button" class="button" id="mpcrbm_cancel_new_term_btn"><?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?></button>
+                            </div>
                         </div>
                     </div>
 
-                    <input type="hidden" id="mpcrbm_added_term_condition_input" name="mpcrbm_added_term_condition" value="<?php echo esc_attr(json_encode($selected_terms_data)); ?>">
+                    <div class="mpcrbm-term-list">
+                        <?php if ( ! empty( $terms ) ) : ?>
+                            <?php foreach ( $terms as $key => $term ) :
+                                $is_selected = isset( $selected_terms_data[ $key ] );
+                                ?>
+                                <div class="mpcrbm_faq_item mpcrbm-term-toggle-item<?php echo $is_selected ? ' is-selected' : ''; ?>"
+                                     data-key="<?php echo esc_attr( $key ); ?>"
+                                     data-title="<?php echo esc_attr( $term['title'] ); ?>"
+                                >
+                                    <span class="mpcrbm-faq-toggle-check"><i class="fas fa-check"></i></span>
+                                    <div class="mpcrbm_faq_title"><?php echo esc_html( $term['title'] ); ?></div>
+                                    <span class="mpcrbm-faq-toggle-status"><?php esc_html_e( 'Selected', 'car-rental-manager' ); ?></span>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <p><?php esc_html_e( 'No terms available yet — add some from the global list first.', 'car-rental-manager' ); ?></p>
+                        <?php endif; ?>
+                    </div>
+
+                    <input type="hidden" id="mpcrbm_added_term_condition_input" name="mpcrbm_added_term_condition" value="<?php echo esc_attr( wp_json_encode( array_keys( $selected_terms_data ) ) ); ?>">
                 </section>
                     </div>
                 </div>

@@ -641,7 +641,7 @@
                     '<div class="mpcrbm_faq_item mpcrbm-faq-toggle-item" data-key="' + key + '">' +
                     '<span class="mpcrbm-faq-toggle-check"><i class="fas fa-check"></i></span>' +
                     '<div class="mpcrbm_faq_title"></div>' +
-                    '<span class="mpcrbm-faq-toggle-status">Added</span>' +
+                    '<span class="mpcrbm-faq-toggle-status">Selected</span>' +
                     '</div>'
                 );
                 $newItem.attr('data-title', savedTitle);
@@ -668,71 +668,24 @@
             });
         });
 
-        // ===== ADD TERM =====
-        $(document).on('click', '.mpcrbm_add_term_condition', function() {
-            let item = $(this).closest('.mpcrbm_faq_item');
-            let $this = $(this);
-            $this.text( 'adding...');
-            let key = item.data('key');
-            let title = item.data('title');
+        // ===== TOGGLE TERM & CONDITION (single-list: clicking an item adds/removes it in place) =====
+        $(document).on('click', '.mpcrbm-term-toggle-item', function() {
+            let $item = $(this);
+            if ($item.hasClass('is-saving')) return;
 
-            let html = `
-            <div class="mpcrbm_selected_item" 
-            data-key="${key}"
-            data-key="${title}"
-            >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
-            </div>`;
-
-            updateTermMeta( $this, item, 'add', 'mpcrbm_selected_term_condition', html );
-
-        });
-        // ===== REMOVE FAQ =====
-        $(document).on('click', '.mpcrbm_remove_term_condition', function() {
-            let $this = $(this);
-            $this.text( 'removing...');
-            let item = $(this).closest('.mpcrbm_selected_item');
-            let key = item.data('key');
-            let title = item.data('title');
-
-            let html = `
-            <div class="mpcrbm_faq_item" 
-            data-key="${key}"
-            data-key="${title}"
-            >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
-            </div>`;
-
-            updateTermMeta( $this, item, 'remove', 'mpcrbm_all_term_condition', html  );
-
-        });
-
-        function updateTermMeta( clickBtn, item, action, append_section, html ) {
-
+            let willBeSelected = !$item.hasClass('is-selected');
             let post_id = $('[name="mpcrbm_post_id"]').val();
+
+            $item.toggleClass('is-selected', willBeSelected).addClass('is-saving');
+
             let data = [];
-
-            $('.mpcrbm_selected_item').each(function() {
-                let key = $(this).data('key');
-                data.push(key);
+            $('.mpcrbm-term-toggle-item.is-selected').each(function() {
+                data.push($(this).data('key'));
             });
-            let key = $(item).data('key');
+            let term_keys = JSON.stringify(data);
 
-            if ( action === 'add' ) {
-                if (!data.includes(key)) {
-                    data.push(key);
-                }
-            } else if (action === 'remove') {
-                let index = data.indexOf(key);
-                if (index !== -1) {
-                    data.splice(index, 1);
-                }
-            }
-
-            let faq_keys = JSON.stringify(data);
-            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+            $('#mpcrbm_added_term_condition_input').val(term_keys);
+            $('#mpcrbm_term_selected_count').text(data.length);
 
             $.ajax({
                 url: ajaxurl,
@@ -740,23 +693,104 @@
                 data: {
                     action: 'mpcrbm_save_added_term_condition',
                     post_id: post_id,
-                    mpcrbm_added_term: faq_keys,
+                    mpcrbm_added_term: term_keys,
                     nonce: mpcrbm_admin_nonce.nonce
                 },
-                success: function (response) {
-                    if (response.success) {
-                        // alert('✅ FAQs saved successfully');
-
-                        console.log(append_section);
-                        clickBtn.text( action );
-                        $('.'+append_section).append(html);
-                        item.remove();
-                    } else {
-                        alert('❌ Error saving FAQs:', response.data.message);
+                success: function(response) {
+                    $item.removeClass('is-saving');
+                    if (!response.success) {
+                        $item.toggleClass('is-selected', !willBeSelected);
+                        $('#mpcrbm_term_selected_count').text($('.mpcrbm-term-toggle-item.is-selected').length);
+                        alert('Error saving Terms & Conditions' + (response.data && response.data.message ? ': ' + response.data.message : ''));
                     }
+                },
+                error: function() {
+                    $item.removeClass('is-saving').toggleClass('is-selected', !willBeSelected);
+                    $('#mpcrbm_term_selected_count').text($('.mpcrbm-term-toggle-item.is-selected').length);
                 }
             });
-        }
+        });
+
+        // ===== "Add New Term & Condition" modal (per-car Term & Condition tab) =====
+        $(document).on('click', '#mpcrbm_toggle_new_term', function() {
+            $('#mpcrbm_new_term_panel').show();
+        });
+
+        $(document).on('click', '#mpcrbm_cancel_new_term_btn', function() {
+            $('#mpcrbm_new_term_title').val('');
+            if (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_term_answer_editor')) {
+                tinymce.get('mpcrbm_new_term_answer_editor').setContent('');
+            } else {
+                $('#mpcrbm_new_term_answer_editor').val('');
+            }
+            $('#mpcrbm_new_term_panel').hide();
+        });
+
+        $(document).on('click', '#mpcrbm_save_new_term_btn', function(e) {
+            e.preventDefault();
+            let $btn = $(this);
+            let title = $.trim($('#mpcrbm_new_term_title').val());
+            let answer = (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_term_answer_editor'))
+                ? tinymce.get('mpcrbm_new_term_answer_editor').getContent()
+                : $('#mpcrbm_new_term_answer_editor').val();
+
+            if (title === '' || answer === '') {
+                alert('Please fill in both the title and the description.');
+                return;
+            }
+
+            let originalText = $btn.text();
+            $btn.prop('disabled', true).text('Saving...');
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_term_and_condition',
+                title: title,
+                answer: answer,
+                key: '',
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response) {
+                $btn.prop('disabled', false).text(originalText);
+
+                if (!response.success) {
+                    alert(typeof response.data === 'string' ? response.data : 'Could not save the Term & Condition.');
+                    return;
+                }
+
+                let key = response.data.key;
+                let savedTitle = response.data.title;
+
+                // Drop the "no terms available yet" placeholder, if this was the first one.
+                $('.mpcrbm-term-list p').remove();
+
+                let $newItem = $(
+                    '<div class="mpcrbm_faq_item mpcrbm-term-toggle-item" data-key="' + key + '">' +
+                    '<span class="mpcrbm-faq-toggle-check"><i class="fas fa-check"></i></span>' +
+                    '<div class="mpcrbm_faq_title"></div>' +
+                    '<span class="mpcrbm-faq-toggle-status">Selected</span>' +
+                    '</div>'
+                );
+                $newItem.attr('data-title', savedTitle);
+                $newItem.find('.mpcrbm_faq_title').text(savedTitle);
+                $newItem.prependTo('.mpcrbm-term-list');
+
+                let $totalCount = $('#mpcrbm_term_total_count');
+                if ($totalCount.length) {
+                    $totalCount.text(parseInt($totalCount.text(), 10) + 1);
+                }
+
+                // Also mark it "added" to this car — reuses the toggle handler
+                // above rather than duplicating its save-to-car AJAX logic.
+                $newItem.trigger('click');
+
+                $('#mpcrbm_new_term_title').val('');
+                if (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_term_answer_editor')) {
+                    tinymce.get('mpcrbm_new_term_answer_editor').setContent('');
+                } else {
+                    $('#mpcrbm_new_term_answer_editor').val('');
+                }
+                $('#mpcrbm_new_term_panel').hide();
+            });
+        });
 
         function updateFeatureMeta( actionType, termId, featureType) {
             let post_id = $('[name="mpcrbm_post_id"]').val();
