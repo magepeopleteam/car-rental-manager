@@ -785,13 +785,70 @@ jQuery(document).ready(function($) {
         $('#mpcrbm_map_start_time').val(selectedValue).trigger('change');
 
         mpcrbm_get_selected_days();
+
+        // #mpcrbm_map_start_time/#mpcrbm_map_return_time always carry a
+        // server-rendered default, so they're never actually *empty* — this
+        // flag marks a *real* user pick for mpcrbm_validate_date_time_fields()
+        // to check instead of a plain "is it blank" test.
+        $('#mpcrbm_map_start_time').attr('data-user-selected', '1');
+
+        // Clear the inline "required" notice (if shown) now that a time is picked.
+        $('#mpcrbm_pickup_time_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
+
+        // Guided single-date flow, car-details page only (single_car_search_details.php
+        // renders .mpcrbm-date-step-return only there — get_details_new.php, the main
+        // search widget on other pages, has no such element, so this is a no-op
+        // everywhere else). Once a pick-up time is chosen, reveal the Return step
+        // instead of showing both at once.
+        let $returnStep = $('#mpcrbm_date_step_return.mpcrbm-date-step-return');
+        if ($returnStep.length) {
+            $(this).closest('.mpcrbm-date-step-pickup').addClass('is-complete');
+            if ($returnStep.hasClass('is-locked')) {
+                $returnStep.removeClass('is-locked').hide().slideDown(300);
+            }
+        }
     });
 
     $(document).on("click", ".return_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
         $('#mpcrbm_map_return_time').val(selectedValue).trigger('change');
+        $('#mpcrbm_map_return_time').attr('data-user-selected', '1');
 
         mpcrbm_get_selected_days();
+
+        // Clear the inline "required" notice (if shown) now that a time is picked.
+        $('#mpcrbm_return_time_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
+
+        // Guided single-date flow, car-details page only (see note above).
+        let $returnStep = $(this).closest('.mpcrbm-date-step-return');
+        if ($returnStep.length) {
+            $returnStep.addClass('is-complete');
+
+            // Deferred to the next tick: this same click also matches the generic
+            // "div.mpcrbm .input_select .input_select_list li" handler
+            // (mp_global/assets/mp_style/mpcrbm_global.js), which is what actually
+            // writes the human-readable text (e.g. "12:00 am") into the visible
+            // date/time inputs this reads below — deferring avoids a registration-
+            // order race where this could read the value from *before* the click.
+            setTimeout(function () {
+                let $summary = $('#mpcrbm_date_range_summary');
+                if (!$summary.length) {
+                    return;
+                }
+                let pickupDate = $('#mpcrbm_start_date').val();
+                let returnDate = $('#mpcrbm_return_date').val();
+                let pickupTime = $('#mpcrbm_map_start_time').closest('.input_select').find('input.formControl').val();
+                let returnTime = $('#mpcrbm_map_return_time').closest('.input_select').find('input.formControl').val();
+
+                $('#mpcrbm_date_range_text').text(pickupDate + ' → ' + returnDate);
+                $('#mpcrbm_summary_pickup_time').text(pickupTime);
+                $('#mpcrbm_summary_return_time').text(returnTime);
+
+                if ($summary.is(':hidden')) {
+                    $summary.slideDown(300);
+                }
+            }, 0);
+        }
     });
 
     // Handle place changes
@@ -1161,10 +1218,58 @@ jQuery(document).ready(function($) {
             });
         }
     });
+    // #mpcrbm_start_date/#mpcrbm_return_date and the time fields are readonly
+    // AND always carry a server-rendered default (single_car_search_details.php:
+    // $mpcrbm_start_date = today, $mpcrbm_start_time = the car's default start
+    // time, etc.) so they are never actually *empty* — a plain "is it blank"
+    // check can never fail, and "required" has no effect on readonly fields
+    // anyway. Instead this checks the data-user-selected="1" flag that
+    // date-picker.js / the .start_time_list & .return_time_list click
+    // handlers below only set on a *real* pick, and shows/clears the inline
+    // ".mpcrbm_field_error" notice next to whichever field(s) are still
+    // unpicked (car-details page only — single_car_search_details.php only
+    // renders those spans there), scrolling to the first one.
+    function mpcrbm_validate_date_time_fields(parent) {
+        let fields = [
+            { input: parent.find('#mpcrbm_start_date'), error: parent.find('#mpcrbm_pickup_date_error') },
+            { input: parent.find('#mpcrbm_map_start_time'), error: parent.find('#mpcrbm_pickup_time_error') },
+            { input: parent.find('#mpcrbm_return_date'), error: parent.find('#mpcrbm_return_date_error') },
+            { input: parent.find('#mpcrbm_map_return_time'), error: parent.find('#mpcrbm_return_time_error') }
+        ];
+
+        let $firstInvalidWrap = null;
+
+        fields.forEach(function (field) {
+            let $wrap = field.error.closest('.input_select');
+            field.error.hide();
+            $wrap.removeClass('mpcrbm-field-invalid');
+
+            if (field.input.attr('data-user-selected') !== '1') {
+                field.error.show();
+                $wrap.addClass('mpcrbm-field-invalid');
+                if (!$firstInvalidWrap) {
+                    $firstInvalidWrap = $wrap;
+                }
+            }
+        });
+
+        if ($firstInvalidWrap && $firstInvalidWrap.length) {
+            $('html, body').animate({ scrollTop: $firstInvalidWrap.offset().top - 120 }, 300);
+            return false;
+        }
+
+        return true;
+    }
+
     // Handle Book Now button click
 
     $(document).on("click", ".mpcrbm_car_details_continue_btn", function() {
         let parent = $(this).closest('.mpcrbm_car_details_wrapper');
+
+        if (!mpcrbm_validate_date_time_fields(parent)) {
+            return;
+        }
+
         let start_place = parent.find('#mpcrbm_manual_start_place').val();
         let end_place   = parent.find('#mpcrbm_manual_end_place').val();
         let mpcrbm_waiting_time = '';
@@ -1468,6 +1573,15 @@ jQuery(document).ready(function($) {
 
         let start_time = parseFloat(parentClass.find("#mpcrbm_map_start_time").val() );
         let return_time = parseFloat(parentClass.find("#mpcrbm_map_return_time") .val() );
+
+        // Either time can still be unset mid-selection (guided single-date flow picks
+        // date and time separately) — bail out instead of letting NaN through, which
+        // "diffMs < 0" below does NOT catch (NaN < 0 is false), and previously ended up
+        // writing "NaN x days" / "$NaN" over the server-rendered defaults.
+        if (isNaN(start_time) || isNaN(return_time)) {
+            return;
+        }
+
         let start = new Date(startDate);
         let end = new Date(endDate);
 
@@ -1478,7 +1592,7 @@ jQuery(document).ready(function($) {
 
         let diffMs = endDateTime - startDateTime;
 
-        if (diffMs < 0) {
+        if (isNaN(diffMs) || diffMs < 0) {
             console.log("End date/time must be after start date/time");
             return;
         }
@@ -1492,6 +1606,15 @@ jQuery(document).ready(function($) {
         parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
 
 
+        // Loading state + "reveal" pulse on the summary once both pick-up and
+        // return are selected — reuses the existing mpcrbm_loader()/
+        // mpcrbm_loader_remove() pair (mp_global/assets/mp_style/mpcrbm_global.js)
+        // already used elsewhere in this file, and .mpcrbm_car_details_price_box
+        // (already scoped to this page — see mpcrbm_car_details.css) as the loader
+        // target since it wraps both the rate header and the "Details" summary
+        // card this AJAX call updates.
+        let $priceBox = parentClass.find('.mpcrbm_car_details_price_box');
+
         $.ajax({
             type: 'POST',
             url: mpcrbm_ajax.ajax_url,
@@ -1503,6 +1626,11 @@ jQuery(document).ready(function($) {
                 total_price: get_price,
                 total_days: totalDays,
                 _nonce: mpcrbm_ajax.nonce
+            },
+            beforeSend: function () {
+                if ($priceBox.length) {
+                    mpcrbm_loader($priceBox);
+                }
             },
             success: function (data) {
 
@@ -1519,10 +1647,21 @@ jQuery(document).ready(function($) {
                     let deposit = parseFloat(parentClass.find('#mpcrbm_security_deposit_value').val()) || 0;
                     let totalWithFee = data.data.calculated_price + (oneWayFee * carQty) + deposit;
                     parentClass.find("#mpcrbm_car_total_price").html(mpcrbm_price_format(totalWithFee));
+
+                    let $summary = parentClass.find('.mpcrbm_transport_summary');
+                    $summary.addClass('mpcrbm-summary-pulse');
+                    setTimeout(function () {
+                        $summary.removeClass('mpcrbm-summary-pulse');
+                    }, 900);
                 }
             },
             error: function(response) {
                 console.log(response);
+            },
+            complete: function () {
+                if ($priceBox.length) {
+                    mpcrbm_loader_remove($priceBox);
+                }
             }
         });
 

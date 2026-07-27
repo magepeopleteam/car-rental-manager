@@ -184,6 +184,15 @@ $mpcrbm_show_review_section            = MPCRBM_Global_Function::get_settings('m
 $mpcrbm_show_faq_section               = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_faq_section');
 $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'car_details_term_condition');
 
+// These 3 tabs no longer follow their admin on/off settings above — they
+// show purely based on whether this specific car actually has data
+// assigned for them. Reassigning the same 'yes'/'no' strings here (rather
+// than a boolean) keeps every existing "=== 'yes'" check below working
+// unchanged.
+$mpcrbm_show_feature_section = ( ! empty( $mpcrbm_include_feature_names ) || ! empty( $mpcrbm_exclude_feature_names ) ) ? 'yes' : 'no';
+$mpcrbm_show_faq_section     = ! empty( $mpcrbm_selected_faqs_data ) ? 'yes' : 'no';
+$mpcrbm_show_term_condition  = ! empty( $mpcrbm_selected_term_condition ) ? 'yes' : 'no';
+
 $booking_period = 0;
 if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) {
     $booking_period = (int)MPCRBM_Global_Function::get_post_info($mpcrbm_post_id, 'mpcrbm_minimum_booking_period');
@@ -214,7 +223,7 @@ if ( $deposit_enable === 'on' ) {
     <!--    <input type="hidden" name="mpcrbm_taxi_return" value="--><?php //echo esc_attr($mpcrbm_two_way); ?><!--" />-->
 
     <input type="hidden" id="mpcrbm_start_calendar_day" name="mpcrbm_start_calendar_day" value="<?php echo esc_attr($mpcrbm_start_day); ?>" />
-    <input type="hidden" name="mpcrbm_map_return_time" id="mpcrbm_map_return_time" value="<?php echo esc_attr($mpcrbm_return_time); ?>" />
+    <input type="hidden" name="mpcrbm_return_time" id="mpcrbm_return_time" value="<?php echo esc_attr($mpcrbm_return_time); ?>" />
 
     <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
     <input type="hidden" id="mpcrbm_security_deposit_value" name="mpcrbm_security_deposit_value" value="<?php echo esc_attr( $deposit_price ); ?>" />
@@ -627,7 +636,7 @@ if ( $deposit_enable === 'on' ) {
                                         </div>
                                     </div>
                                 <?php }?>
-                                <h3><?php esc_attr_e( 'Total', 'car-rental-manager' );?>:
+                                <h3><?php esc_attr_e( 'Price', 'car-rental-manager' );?>:
                                     <span id="mpcrbm_total_day_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?>
                                     <!--                                    <span id="mpcrbm_total_day_price">--><?php //echo wp_kses_post( wc_price( $mpcrbm_day_price + $deposit_price ) ); ?><!--</span> / --><?php //esc_attr_e( 'Day', 'car-rental-manager' );?>
                                 </h3>
@@ -672,7 +681,16 @@ if ( $deposit_enable === 'on' ) {
                                         <span class="textTheme mpcrbm_car_qty_display">x1</span>
 
                                     </p>
-                                    <p class="textTheme mpcrbm_car_day"><span id="mpcrbm_car_selected_day">1</span> x days</p>
+                                    <p class="textTheme mpcrbm_car_day">
+                                        <span class="mpcrbm_car_day_label">
+                                            <i class="fas fa-clock mpcrbm_car_day_icon"></i>
+                                            <?php esc_html_e( 'Total Rental Duration:', 'car-rental-manager' ); ?>
+                                        </span>
+                                        <span class="mpcrbm_car_day_badge">
+                                            <span class="mpcrbm_car_day_value" id="mpcrbm_car_selected_day">1</span>
+                                            <span class="mpcrbm_car_day_unit"><?php esc_html_e( 'Day', 'car-rental-manager' ); ?></span>
+                                        </span>
+                                    </p>
                                     <p class="mpcrbm_product_price _textTheme" id="mpcrbm_selected_car_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) );?></p>
                                 </div>
                                 <div class="mpcrbm_extra_service_summary"></div>

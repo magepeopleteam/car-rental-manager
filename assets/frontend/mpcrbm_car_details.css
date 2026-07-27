@@ -298,10 +298,6 @@ div.mpcrbm_car_details_right h4 {
     margin: 4px 0 !important;
 }
 
-.mpcrbm_car_details_price_box h3 span {
-    color: var(--color_theme_alter, #fff);
-}
-
 .mpcrbm-car-price-header p {
     margin: 0;
     font-size: 12.5px;
@@ -375,20 +371,26 @@ div.mpcrbm_car_details_right h4 {
     min-width: 0;
 }
 
-/* flex: 1 1 auto + min-width: 0 + ellipsis lets the title shrink/truncate
-   under pressure (a longer service name, or the qty stepper revealing on
-   Select) instead of the row being rigid end-to-end — that rigidity was the
-   real cause of the price box "jumping": with no give anywhere in this row,
-   its natural content width could exceed the column's 30% flex-basis, and
-   without min-width:0 on .mpcrbm_car_details_right (fixed separately, see
-   that rule) a flex item's default min-width:auto forces the *whole*
-   2-column container to wrap instead of clipping inside its own column —
-   dropping the price box onto its own line below the left column, which
-   reads as the sidebar suddenly jumping to the bottom of the page. */
+/* flex: 1 1 auto + ellipsis lets the title shrink/truncate under pressure
+   (a longer service name, or the qty stepper revealing on Select) instead
+   of the row being rigid end-to-end — that rigidity was the real cause of
+   the price box "jumping": with no give anywhere in this row, its natural
+   content width could exceed the column's 30% flex-basis, and without
+   min-width:0 on .mpcrbm_car_details_right (fixed separately, see that
+   rule) a flex item's default min-width:auto forces the *whole* 2-column
+   container to wrap instead of clipping inside its own column — dropping
+   the price box onto its own line below the left column, which reads as
+   the sidebar suddenly jumping to the bottom of the page.
+   min-width is a small positive floor (not 0): once the qty stepper reveals
+   on Select, .mpcrbm-ex-quantity-box's flex-shrink:0 siblings (price, qty
+   input, button) don't give an inch, so min-width:0 let the name get
+   squeezed all the way down to nothing — invisible, not just truncated.
+   The floor below plus the compacted price/qty/button sizes further down
+   keep every piece, including the name, visible on one line. */
 .mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm_search_title {
     margin: 0;
     flex: 1 1 auto;
-    min-width: 0;
+    min-width: 46px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -398,12 +400,203 @@ div.mpcrbm_car_details_right h4 {
     flex-shrink: 0;
 }
 
-/* Scoped to the price box specifically — .mpcrbm_transport_summary is also
-   the shared order-summary block reused on the checkout/search-results
-   pages (templates/registration/choose_vehicles.php, get_search_result.php,
-   summary.php), which this page's styling must not affect. */
+/* ===== "Details" order summary — sidebar price box only =====
+   .mpcrbm_transport_summary is also the shared order-summary block reused
+   on the checkout/search-results pages (templates/registration/
+   choose_vehicles.php, get_search_result.php, summary.php) — every rule
+   below is scoped under .mpcrbm_car_details_price_box so those pages keep
+   their existing look untouched. This card already sits inside
+   .mpcrbm_car_details_right's own bordered/shadowed card, so instead of
+   the shared base's second white+shadow card-in-card, it uses the same
+   soft tinted-panel language as the pick-up/return summary above it
+   (.mpcrbm-date-range-summary) for a consistent, lighter feel. */
 .mpcrbm_car_details_price_box .mpcrbm_transport_summary {
-    padding-top: 4px;
+    margin: 16px 0;
+    padding: 16px;
+    background: var(--mpcrbm-cd-bg, #f8fafc);
+    border: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+    border-radius: var(--mpcrbm-cd-radius-sm, 8px);
+    box-shadow: none;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary h3 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
+    margin: 0 0 12px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary h3::before {
+    content: "\f543";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: var(--color_theme, #F12971);
+    font-size: 12.5px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .divider {
+    margin: 0 0 12px;
+}
+
+/* Row rhythm: every direct summary row (main car line, extra services,
+   deposit, one-way fee) gets consistent spacing + a hairline separator
+   instead of each block bringing its own flat gray/box style. */
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_extra_service_summary > div,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_security_deposit_summary .justifyBetween,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_one_way_fee_summary .justifyBetween {
+    background: none;
+    padding: 0 0 12px;
+    margin: 0 0 12px;
+    border-bottom: 1px dashed var(--mpcrbm-cd-border, #e5e7eb);
+    border-radius: 0;
+    font-size: 13px;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_security_deposit_summary .divider,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_one_way_fee_summary .divider {
+    display: none;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_security_deposit_price,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_one_way_fee_price {
+    font-weight: 700;
+}
+
+/* .justifyBetween (shared utility, same element) makes .book-items a flex
+   row already — with 3 plain <p> children (name block, "x days", price) it
+   used to spread them across the row as 3 separate columns instead of
+   grouping name+price on one line with "x days" as a line underneath, which
+   read as scattered/misaligned. Reordered via flex so name+qty sit left,
+   price sits right, and "x days" wraps onto its own full-width line below. */
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items {
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items > ._dFlex_alignCenter {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items > .mpcrbm_product_price {
+    order: 2;
+    flex-shrink: 0;
+    margin-left: 10px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items > .mpcrbm_car_day {
+    order: 3;
+    flex: 1 1 100%;
+    margin-top: 4px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items ._dFlex_alignCenter,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_extra_service_summary ._dFlex_alignCenter {
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items .fa-check-square,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_extra_service_summary .fa-check-square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+    font-size: 10px;
+    margin-right: 0;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_product_name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_qty_display,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_extra_service_summary .ex_service_qty {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #fdf0f4;
+    background: color-mix(in srgb, var(--color_theme, #F12971) 12%, transparent);
+    color: var(--color_theme, #F12971);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_day {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color_theme, #F12971);
+    margin: 4px 0 0;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_day_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_day_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+    font-size: 9px;
+}
+
+/* Value + unit merged into one neutral pill on the right — kept visually
+   distinct (gray, not theme-tinted) from the theme-colored qty badge above
+   it and the theme-colored label beside it, so it reads as the "answer". */
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_day_badge {
+    display: inline-flex;
+    align-items: baseline;
+    flex-shrink: 0;
+    gap: 3px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--mpcrbm-cd-bg, #f1f5f9);
+    border: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_day_value {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_car_day_unit {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_product_price,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .mpcrbm_extra_service_summary p:last-child {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--mpcrbm-cd-text, #1f2937);
 }
 
 /* Extra service row ("Driver", etc.) — .price-quantity-box's shared base
@@ -430,6 +623,16 @@ div.mpcrbm_car_details_right h4 {
     width: auto;
     white-space: nowrap;
     text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .mpcrbm-price-per-day {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 400;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
 }
 
 .mpcrbm_car_details_price_box .price-quantity-box ._mR_min_100 {
@@ -437,8 +640,70 @@ div.mpcrbm_car_details_right h4 {
     margin-right: 0;
 }
 
+/* The shared "[class*='_min_100']" rule (mp_global/assets/mp_style/
+   mpcrbm_global.css) forces a 70px min-width onto anything whose class
+   contains that substring — including ._mR_min_100 here — reserving more
+   width than the compacted qty stepper above actually needs and working
+   against the space just freed up for the service name. Two extra classes
+   of specificity over that rule's "div.mpcrbm [class*=...]" is enough to
+   win without !important. */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item [class*="_min_100"] {
+    min-width: auto;
+}
+
+/* Qty stepper — default look (mp_global/assets/mp_style/mpcrbm_global.css)
+   is a flat, square-cornered, theme-colored bar with thin divider lines and
+   a max-width of 100px. Restyled into a small rounded pill (radius scale
+   matching the rest of this page) with light, borderless +/- segments —
+   overflow:hidden on the pill clips the flat children to its rounded shape
+   instead of needing to round each one individually. Narrowed at the same
+   time so it, the price, and the Select button leave the service name
+   (.mpcrbm_search_title, above) enough room to stay visible once revealed
+   on Select instead of squeezing it down to nothing. */
+.mpcrbm_car_details_price_box .price-quantity-box .qtyIncDec {
+    max-width: 74px;
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .groupContent > * {
+    border-left: none;
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .addonGroupContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    background: var(--mpcrbm-cd-bg, #f8fafc);
+    color: var(--color_theme, #F12971);
+    font-size: 9px;
+    transition: background .15s ease, color .15s ease;
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .addonGroupContent:hover {
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .inputIncDec {
+    padding: 0 2px;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-align: center;
+    background: #fff;
+}
+
 .mpcrbm_car_details_price_box .price-quantity-box .mpcrbm_price_calculation {
     flex-shrink: 0;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    white-space: nowrap;
 }
 
 /* Scoped to the price box specifically — .mpcrbm_car_quantity is also reused
@@ -456,15 +721,24 @@ div.mpcrbm_car_details_right h4 {
     color: var(--mpcrbm-cd-text, #1f2937);
 }
 
-.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items,
-.mpcrbm_car_details_price_box .mpcrbm_transport_summary .justifyBetween {
-    font-size: 13.5px;
-    color: var(--mpcrbm-cd-text-faded, #6b7280);
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total {
+    background: #fdf0f4;
+    background: color-mix(in srgb, var(--color_theme, #F12971) 8%, transparent);
+    border-radius: var(--mpcrbm-cd-radius-sm, 8px);
+    padding: 12px 14px;
+    margin: 4px 0 0;
+    justify-content: space-between;
 }
 
-.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total h6,
-.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total h3 {
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total h6 {
+    font-size: 13.5px;
+    font-weight: 600;
     color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total h3 {
+    font-size: 19px;
+    color: var(--color_theme, #F12971);
 }
 
 /* ===== BUTTON ===== */
@@ -499,6 +773,23 @@ div.mpcrbm_car_details_right h4 {
     border-radius: var(--mpcrbm-cd-radius-sm);
     color: #b91c1c;
     font-size: 13.5px;
+}
+
+/* Inline "required" notice next to the pick-up/return date & time fields
+   (mpcrbm_registration.js / date-picker.js toggle these instead of an
+   alert() popup) — same red palette as .mpcrbm_already_booked above, just
+   sized for a small per-field hint rather than a full banner. */
+.mpcrbm_field_error {
+    display: block;
+    margin-top: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #b91c1c;
+}
+
+.mpcrbm-field-invalid .formControl {
+    border-color: #fca5a5 !important;
+    box-shadow: 0 0 0 1px #fca5a5;
 }
 
 /* ===== DRIVER / RENTER INFO ===== */
@@ -999,5 +1290,134 @@ div.mpcrbm_car_details_right h4 {
 
     div.mpcrbm h1 {
         font-size: 24px;
+    }
+}
+
+/* ===== GUIDED SINGLE-DATE FLOW (car-details page only) =====
+   templates/registration/single_car_search_details.php wraps the Return
+   date/time block in #mpcrbm_date_step_return.mpcrbm-date-step-return,
+   starting with .is-locked so it's hidden on first paint (no JS-dependent
+   flash). assets/frontend/mpcrbm_registration.js removes .is-locked and
+   reveals it once pick-up date + time are both chosen, then marks each step
+   .is-complete as it's finished. */
+.mpcrbm-date-step-return.is-locked {
+    display: none;
+}
+
+.mpcrbm-date-step-pickup {
+    position: relative;
+    transition: box-shadow .2s ease;
+}
+
+/* .mpcrbm-date-step-return wraps both the "Return" section label and the
+   date/time fields, but the completion border should only outline the
+   fields — so it's applied to the inner .mpcrbm_horizontal_date_time_input,
+   not the step wrapper itself. */
+.mpcrbm-date-step-return .mpcrbm_horizontal_date_time_input {
+    position: relative;
+    transition: box-shadow .2s ease;
+}
+
+.mpcrbm-date-step-pickup.is-complete,
+.mpcrbm-date-step-return.is-complete .mpcrbm_horizontal_date_time_input {
+    box-shadow: inset 0 0 0 1px #bdb3b6;
+    border-radius: var(--mpcrbm-cd-radius-sm, 8px);
+}
+
+.mpcrbm-date-step-pickup.is-complete::after,
+.mpcrbm-date-step-return.is-complete .mpcrbm_horizontal_date_time_input::after {
+    content: "\f00c";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* Brief highlight when the "Details" summary updates after a full
+   pick-up + return selection — a visible cue that the total just changed,
+   not just a silent number swap. */
+@keyframes mpcrbmSummaryPulse {
+    0%   { background-color: transparent; }
+    30%  {
+        background-color: #fdf0f4; /* fallback for browsers without color-mix() */
+        background-color: color-mix(in srgb, var(--color_theme, #F12971) 10%, transparent);
+    }
+    100% { background-color: transparent; }
+}
+
+.mpcrbm_transport_summary.mpcrbm-summary-pulse {
+    animation: mpcrbmSummaryPulse .9s ease;
+    border-radius: var(--mpcrbm-cd-radius-sm, 8px);
+}
+
+/* Selected date-range + pick-up/return time summary — appears once both
+   steps are complete (JS: mpcrbm_registration.js's ".return_time_list li"
+   handler). Lives inside the booking form itself, so it shows right where
+   the customer just finished picking, before they even scroll to the
+   price/day total below. */
+.mpcrbm-date-range-summary {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--mpcrbm-cd-bg, #f8fafc);
+    border: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+    border-radius: var(--mpcrbm-cd-radius-sm, 8px);
+}
+
+.mpcrbm-date-range-summary-range {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--mpcrbm-cd-text, #1f2937);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+}
+
+.mpcrbm-date-range-summary-range i {
+    color: var(--color_theme, #F12971);
+}
+
+.mpcrbm-date-range-summary-times {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.mpcrbm-date-range-summary-time {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mpcrbm-date-range-summary-time-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
+}
+
+.mpcrbm-date-range-summary-time-value {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+@media (max-width: 480px) {
+    .mpcrbm-date-range-summary-times {
+        grid-template-columns: 1fr;
     }
 }
