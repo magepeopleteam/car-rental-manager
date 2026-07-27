@@ -253,6 +253,18 @@ body.mpcrbm-admin *:after {
 	transform: rotate(180deg);
 }
 
+/* Clicking a has-children item (mpcrbm-shell.js) toggles this class instead
+   of following its href — the item becomes a pure expand/collapse control,
+   since its sub-menu links already cover navigation individually. Defaults
+   to expanded (no class) to match the look before this toggle existed. */
+.mpcrbm-shell-menu li.has-children.mpcrbm-shell-submenu-collapsed > a .mpcrbm-shell-menu-arrow {
+	transform: rotate(0deg);
+}
+
+.mpcrbm-shell-menu li.has-children.mpcrbm-shell-submenu-collapsed > .mpcrbm-shell-submenu {
+	display: none;
+}
+
 .mpcrbm-shell.side-menu-compact .mpcrbm-shell-menu li > a .mpcrbm-shell-menu-arrow {
 	display: none;
 }

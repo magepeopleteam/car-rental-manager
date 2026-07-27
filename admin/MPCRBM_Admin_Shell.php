@@ -80,6 +80,14 @@
 				return $settings;
 			}
 
+			// SCREEN_IDS plus whatever add-on plugins (e.g. car-rental-manager-pro's
+			// Google Reviews / Calendar Settings / Analytics pages) register via this
+			// filter — same "apply_filters, add-on merges its own entries in" idiom as
+			// MPCRBM_Settings_Global's "mpcrbm_settings_sec_reg"/"mpcrbm_settings_sec_fields".
+			public static function get_screen_ids(): array {
+				return apply_filters( 'mpcrbm_shell_screen_ids', self::SCREEN_IDS );
+			}
+
 			// Detects whether the current wp-admin screen is one of this plugin's own dashboard-style pages.
 			public static function is_plugin_screen(): bool {
 				if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
@@ -87,7 +95,7 @@
 				}
 				$screen = get_current_screen();
 
-				return $screen && in_array( $screen->id, self::SCREEN_IDS, true );
+				return $screen && in_array( $screen->id, self::get_screen_ids(), true );
 			}
 
 			// The native Add/Edit Car screen (post.php/post-new.php for our CPT). WordPress
@@ -322,7 +330,10 @@
 					];
 				}
 
-				return $items;
+				// Add-on plugins (car-rental-manager-pro's Google Reviews / Calendar
+				// Settings / Analytics, etc.) inject their own ['slug','label','icon','link']
+				// entries here — same idiom as the "mpcrbm_settings_sec_reg" filter above.
+				return apply_filters( 'mpcrbm_shell_menu_items', $items );
 			}
 
 			// The Car Rental dashboard's own tabs (Car List, Car Type, ...) — kept in one

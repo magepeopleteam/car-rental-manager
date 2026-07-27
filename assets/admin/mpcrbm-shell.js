@@ -341,6 +341,19 @@ jQuery(function ($) {
 		});
 	}
 
+	// Sidebar items with a sub-menu (currently just "Car Rental" — see the
+	// has-children/is-active logic in MPCRBM_Admin_Shell::render_shell_open()/
+	// render_edit_screen_chrome()) toggle that sub-menu open/closed instead of
+	// navigating; its sub-menu items already link individually, so the parent
+	// link's only job here is expand/collapse. Delegated from document (not
+	// $shell below) so this also covers the Add/Edit Car screen's fixed
+	// sidebar, which renders the same .mpcrbm-shell-menu markup outside of
+	// any .mpcrbm-shell wrapper.
+	$(document).on('click', '.mpcrbm-shell-menu > li.has-children > a', function (e) {
+		e.preventDefault();
+		$(this).closest('li').toggleClass('mpcrbm-shell-submenu-collapsed');
+	});
+
 	var $shell = $('.mpcrbm-shell');
 
 	if (!$shell.length) {
