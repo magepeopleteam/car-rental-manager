@@ -298,7 +298,15 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
                 update_option( $this->term_option_key, $term_condition );
 
-                wp_send_json_success( 'Saved successfully.' );
+                // 'key'/'title' mirror ajax_save_faq()'s response shape — used by
+                // MPCRBM_Term_Condition_Setting.php's inline "Add New Term &
+                // Condition" toggle to add the new item straight to the current
+                // car without reloading the page.
+                wp_send_json_success( [
+                    'message' => 'Saved successfully.',
+                    'key'     => $key,
+                    'title'   => $title,
+                ] );
             }
 
             /**
