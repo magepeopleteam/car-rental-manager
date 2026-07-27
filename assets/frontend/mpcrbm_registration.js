@@ -264,6 +264,11 @@ jQuery(document).ready(function($) {
 
             target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(initial_total));
 
+            // "Total Rental Duration" row — mpcrbm_calculate_rental_days() (defined
+            // below, already used for day-wise extra-service pricing) reads the
+            // same start/return date+time fields this whole page shares.
+            target_summary.find('.mpcrbm_car_day_value').text(mpcrbm_calculate_rental_days(parent));
+
             $this.addClass('active_select');
             parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', base_price);
 
@@ -330,6 +335,20 @@ jQuery(document).ready(function($) {
             }
         }
     });
+
+    // Marks step 2 ("Choose a vehicle") active on the #mpcrbm_progress_bar_holder
+    // step indicator, cumulatively (step 1 stays active too) — without the rest
+    // of active_next_tab()'s panel-switching (mp_global/assets/mp_style/
+    // mpcrbm_global.js, triggered via ".nextTab_next" click). That function
+    // slides one [data-tabs-next] panel out and another in, which is right for
+    // the redirect/non-ajax flow (a new panel gets appended for step 2/3) but
+    // wrong for ajax_search='yes': results append inline into the *same*
+    // step-1 panel, so there's no separate panel to switch to.
+    function mpcrbm_advance_progress_bar_to_step(parent, stepIndex) {
+        parent.find('.tabListsNext:first').children('[data-tabs-target-next]').each(function (i) {
+            $(this).toggleClass('active', (i + 1) <= stepIndex);
+        });
+    }
 
     // Handle get vehicle button
     $(document).on("click", "#mpcrbm_get_vehicle", function() {
@@ -495,6 +514,14 @@ jQuery(document).ready(function($) {
                                             if( ajax_search !== 'yes' ) {
                                                 parent.find(".nextTab_next").trigger("click");
                                             }
+                                            // Always advance the step indicator itself, regardless of
+                                            // whether .nextTab_next's full panel-switch (active_next_tab(),
+                                            // mp_global/assets/mp_style/mpcrbm_global.js) ran above — that
+                                            // function only marks step 2 active as a side effect of finding
+                                            // and sliding in a [data-tabs-next="#mpcrbm_search_result"]
+                                            // panel, so anything that keeps it from matching (timing,
+                                            // markup variations) silently leaves the indicator on step 1.
+                                            mpcrbm_advance_progress_bar_to_step(parent, 2);
 
                                             if( progress_bar === 'yes' ) {
                                                 $('#mpcrbm_progress_bar_holder').css('display', 'flex');
@@ -613,6 +640,12 @@ jQuery(document).ready(function($) {
                                         if( ajax_search !== 'yes' ) {
                                             parent.find(".nextTab_next").trigger("click");
                                         }
+                                        // Always advance the step indicator itself, regardless of
+                                        // whether .nextTab_next's full panel-switch (active_next_tab(),
+                                        // mp_global/assets/mp_style/mpcrbm_global.js) ran above — see
+                                        // note in the other mpcrbm_get_map_search_result success handler
+                                        // above (same pattern, price_based !== 'manual' branch).
+                                        mpcrbm_advance_progress_bar_to_step(parent, 2);
                                         if( progress_bar === 'yes') {
                                             $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                         }

@@ -370,7 +370,21 @@ if ($post_id) {
                     ?>
                     <div class="mpcrbm_add_multiple_qty">
                         <div class=" mpcrbm_car_quantity" data-collapse="<?php echo esc_attr($post_id); ?>" style="display: none">
-                            <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $mpcrbm_raw_price, $mpcrbm_car_qty, 1, 0); ?>
+                            <?php if ( $mpcrbm_car_qty > 1 ) : ?>
+                                <?php MPCRBM_Custom_Layout::qty_input('mpcrbm_multiple_car_qty[]', $mpcrbm_raw_price, $mpcrbm_car_qty, 1, 0); ?>
+                            <?php else : ?>
+                                <?php
+                                // qty_input() renders nothing at all when only 1 unit is available
+                                // (its own internal "$available_seat > $min_qty" guard skips the +/-
+                                // stepper entirely) — but "Select Car" always slides this box open
+                                // regardless, via the generic [data-collapse] toggle
+                                // (mp_global/assets/mp_style/mpcrbm_global.js), so it revealed as an
+                                // empty box. Same name/classes as qty_input()'s own <input> so
+                                // anything reading mpcrbm_multiple_car_qty[] still gets a valid "1".
+                                ?>
+                                <span class="mpcrbm_car_quantity_title"><?php esc_html_e( 'Qty', 'car-rental-manager' ); ?></span>
+                                <input type="text" readonly class="formControl inputIncDec number_validation" data-price="<?php echo esc_attr( $mpcrbm_raw_price ); ?>" name="mpcrbm_multiple_car_qty[]" value="1" min="1" max="1" />
+                            <?php endif; ?>
                         </div>
                         <?php if ( $mpcrbm_in_cart ) : ?>
                             <a href="<?php echo esc_url( wc_get_checkout_url() ); ?>"

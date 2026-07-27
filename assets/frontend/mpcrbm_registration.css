@@ -56,16 +56,263 @@
 		margin: 0;
 	}
 
+	/* ===== "Details" order summary — Choose a vehicle step only
+	   (templates/registration/choose_vehicles.php, get_search_result.php) =====
+	   .mpcrbm_transport_summary is shared more broadly (summary.php has a
+	   different structure entirely; the car-details page has its own copy
+	   styled separately in assets/frontend/mpcrbm_car_details.css) — scoped
+	   under .mpcrbm_mainSection, the wrapper only these two templates use, so
+	   nothing else is affected. Same soft tinted-panel look, ported from the
+	   car-details page's version (minus its "Total Rental Duration" row,
+	   which doesn't exist in this template's markup). */
+	.mpcrbm_mainSection .mpcrbm_transport_summary {
+		--mpcrbm-ts-bg: #f8fafc;
+		--mpcrbm-ts-border: #e5e7eb;
+		--mpcrbm-ts-text: #1f2937;
+		--mpcrbm-ts-text-faded: #6b7280;
+		--mpcrbm-ts-radius: 8px;
+		margin: 16px 0;
+		padding: 16px;
+		background: var(--mpcrbm-ts-bg);
+		border: 1px solid var(--mpcrbm-ts-border);
+		border-radius: var(--mpcrbm-ts-radius);
+		box-shadow: none;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary h3 {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		font-size: 12.5px;
+		font-weight: 700;
+		letter-spacing: .04em;
+		text-transform: uppercase;
+		color: var(--mpcrbm-ts-text-faded);
+		margin: 0 0 12px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary h3::before {
+		content: "\f543";
+		font-family: "Font Awesome 5 Free";
+		font-weight: 900;
+		color: var(--color_theme, #F12971);
+		font-size: 12.5px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .divider {
+		margin: 0 0 12px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items,
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_extra_service_summary > div {
+		background: none;
+		color: var(--mpcrbm-ts-text-faded);
+		padding: 0 0 12px;
+		margin: 0 0 12px;
+		border-bottom: 1px dashed var(--mpcrbm-ts-border);
+		border-radius: 0;
+		font-size: 13px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items {
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+	}
+	/* 3 children now (name+qty, price, rental-duration) — order keeps
+	   name+qty left / price right on one line, duration full-width below. */
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items > ._dFlex_alignCenter {
+		order: 1;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items > .mpcrbm_product_price {
+		order: 2;
+		flex-shrink: 0;
+		margin-left: 10px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items > .mpcrbm_car_day {
+		order: 3;
+		flex: 1 1 100%;
+		margin-top: 4px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items ._dFlex_alignCenter,
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_extra_service_summary ._dFlex_alignCenter {
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .book-items .fa-check-square,
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_extra_service_summary .fa-check-square {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		background: var(--color_theme, #F12971);
+		color: var(--color_theme_alter, #fff);
+		font-size: 10px;
+		margin-right: 0;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_product_name {
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--mpcrbm-ts-text);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_qty_display,
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_extra_service_summary .ex_service_qty {
+		font-size: 11px;
+		font-weight: 700;
+		padding: 1px 7px;
+		border-radius: 999px;
+		background: #fdf0f4;
+		background: color-mix(in srgb, var(--color_theme, #F12971) 12%, transparent);
+		color: var(--color_theme, #F12971);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_product_price,
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_extra_service_summary p:last-child {
+		font-weight: 700;
+		font-size: 14px;
+		color: var(--mpcrbm-ts-text);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_day {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		font-size: 13.5px;
+		font-weight: 600;
+		color: var(--color_theme, #F12971);
+		margin: 4px 0 0;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_day_label {
+		display: inline-flex;
+		align-items: center;
+		gap: 7px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_day_icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background: var(--color_theme, #F12971);
+		color: var(--color_theme_alter, #fff);
+		font-size: 9px;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_day_badge {
+		display: inline-flex;
+		align-items: baseline;
+		flex-shrink: 0;
+		gap: 3px;
+		padding: 3px 10px;
+		border-radius: 999px;
+		background: var(--mpcrbm-ts-bg);
+		border: 1px solid var(--mpcrbm-ts-border);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_day_value {
+		font-weight: 700;
+		font-size: 13px;
+		color: var(--mpcrbm-ts-text);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .mpcrbm_car_day_unit {
+		font-weight: 400;
+		font-size: 12px;
+		color: var(--mpcrbm-ts-text-faded);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .total {
+		background: #fdf0f4;
+		background: color-mix(in srgb, var(--color_theme, #F12971) 8%, transparent);
+		border-radius: var(--mpcrbm-ts-radius);
+		padding: 12px 14px;
+		margin: 4px 0 0;
+		justify-content: space-between;
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .total h6 {
+		font-size: 13.5px;
+		font-weight: 600;
+		color: var(--mpcrbm-ts-text);
+	}
+	.mpcrbm_mainSection .mpcrbm_transport_summary .total h3 {
+		font-size: 19px;
+		color: var(--color_theme, #F12971);
+	}
+
 	div.mpcrbm_transport_search_area{
 		margin: auto;
 	}
-	div.mpcrbm_transport_search_area .mpcrbm_tab_next .tabItemNext {min-height: 135px;}
-	div.mpcrbm_transport_search_area .circleIcon {width: 62px;height: 62px;font-size: 27px;font-weight: 600;color: #666666;background-color: #EAECEE; }
-	div.mpcrbm_transport_search_area .tabItemNext.active [class*="circleIcon"] {background-color: var(--color_theme);color: #FFF;}
-	div.mpcrbm_transport_search_area .tabItemNext.active [class*="circleIcon"].success {background-color: var(--color_success);}
-	div.mpcrbm_transport_search_area .tabItemNext .circleTitle {font-weight: 400;color: #A9A9A9;margin: 0 !important;top: 80px;font-size: 22px;text-transform: capitalize;}
-	div.mpcrbm_transport_search_area .tabItemNext.active .circleTitle {font-weight: 600;color: #152C5B;}
-	div.mpcrbm_transport_search_area .tabItemNext [class*="circleIcon"]::after {top: 31px;border-color: #EAECEE;left: calc(50% + 31px);}
+	/* ===== Step progress indicator (Enter Ride Details / Choose a vehicle / Place
+	   Order) ===== #mpcrbm_progress_bar_holder only ever displays where
+	   progressbar='yes' is passed into registration_layout.php — the car-details
+	   page's own booking widget always passes progressbar='no' (stays
+	   display:none there via .dNone), so restyling it directly by ID is safe.
+	   Old design drew the connecting line off the *circle* with a fixed pixel
+	   offset (left: calc(50% + 31px), tied to one exact circle diameter, needing
+	   a second hand-tuned offset at the 600px breakpoint below). New line lives
+	   on the *step item* itself (left: -50%; width: 100%) so it always spans
+	   exactly the gap between two circle centers, at any --mpcrbm-step-size. */
+	#mpcrbm_progress_bar_holder {
+		--mpcrbm-step-size: 38px;
+		padding-bottom: 20px;
+	}
+	#mpcrbm_progress_bar_holder .tabItemNext {
+		min-height: auto;
+		gap: 8px;
+	}
+	#mpcrbm_progress_bar_holder [class*="circleIcon"] {
+		width: var(--mpcrbm-step-size);
+		height: var(--mpcrbm-step-size);
+		min-width: var(--mpcrbm-step-size);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		font-weight: 700;
+		background-color: #eef1f5;
+		color: #9aa3af;
+	}
+	#mpcrbm_progress_bar_holder [class*="circleIcon"]::after {
+		content: none;
+	}
+	#mpcrbm_progress_bar_holder .tabItemNext::before {
+		content: "";
+		position: absolute;
+		top: calc(var(--mpcrbm-step-size) / 2 - 1px);
+		left: -50%;
+		width: 100%;
+		height: 2px;
+		background: #eef1f5;
+	}
+	#mpcrbm_progress_bar_holder .tabItemNext:first-child::before {
+		display: none;
+	}
+	#mpcrbm_progress_bar_holder .tabItemNext.active::before,
+	#mpcrbm_progress_bar_holder .tabItemNext.active [class*="circleIcon"] {
+		background-color: var(--color_theme);
+	}
+	#mpcrbm_progress_bar_holder .tabItemNext.active [class*="circleIcon"] {
+		color: #FFF;
+	}
+	#mpcrbm_progress_bar_holder .tabItemNext.active [class*="circleIcon"].success {
+		background-color: var(--color_success);
+	}
+	#mpcrbm_progress_bar_holder .circleTitle {
+		position: static;
+		width: auto;
+		margin: 0 !important;
+		font-size: 12.5px;
+		font-weight: 600;
+		color: #9aa3af !important;
+		text-transform: none;
+	}
+	/* !important: the active theme can style h6 (this element's tag) with its
+	   own accent color at higher specificity than this plugin's own base
+	   rules (mp_global/assets/mp_style/mpcrbm_global.css) reach — without it,
+	   an in-progress step's label could render in the theme's link/heading
+	   color instead of this component's own palette. */
+	#mpcrbm_progress_bar_holder .tabItemNext.active .circleTitle {
+		font-weight: 700;
+		color: #152C5B !important;
+	}
 	/*********************/
 	div.mpcrbm_transport_search_area .mpcrbm_search_area {
 		border-radius: var(--dbrl);
@@ -122,8 +369,15 @@
 		background-color: var(--color_theme);
 		border: 1px solid var(--color_theme);
 		color: #fff;
-		padding: 10px;
+		padding: 10px 18px;
   		border-radius: 50px;
+		cursor: pointer;
+		transition: transform .15s ease, box-shadow .15s ease;
+	}
+	div.mpcrbm_transport_search_area button.mpcrbm_price_calculation:hover,
+	div.mpcrbm_transport_search_area button.mpcrbm_transport_select:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 6px 14px rgba(0, 0, 0, .15);
 	}
 
 	.div.mpcrbm_transport_search_area .mpcrbm_transport_select:hover span{
@@ -149,26 +403,33 @@
 	}
 	 .mpcrbm-image-box{
 		width:35%;
-		min-height:200px;
-		height:200px;
+		height: 200px;
+		/* align-items:stretch on .mpcrbm_booking_vehicle (below) is for the
+		   *details* column matching a shorter image, not the other way round —
+		   without this fixed height the image stretched to match whatever
+		   height the details column grew to (specs wrapping, badges, etc.),
+		   which could make it much taller than a normal thumbnail. */
+		align-self: flex-start;
 	}
 	 .mpcrbm-image-box .bg_image_area{
 		width: 100%;
-		border-radius: 18px;
+		height: 100%;
 	 }
 
 	div.mpcrbm_transport_search_area div.mpcrbm_list_details {
 		width: 65%;
-		padding:10px 20px;
+		padding: 16px 20px;
 	}
 	div.mpcrbm_list_details h2{
-		font-size: 20px;
+		font-size: 19px;
+		font-weight: 700;
+		color: #1f2937;
 		margin-bottom: 10px;
 	}
 	.mpcrbm-price{
-		font-size: 1.2em; 
-		font-weight: bold; 
-		color: #333; 
+		font-size: 1.3em;
+		font-weight: 800;
+		color: #111827;
 		text-align: end;
 	}
 	.mpcrbm_price-total{
@@ -187,15 +448,44 @@
 		position: relative;
 		flex-direction: column;
 		gap: 2px;
-		padding:10px;
+		padding: 12px 14px;
 		background-color: #fff;
-		border: 2px solid #f0f0f0;
-		justify-content: start;
-		border-radius: 8px;
+		border: 1px solid #e5e7eb;
+		justify-content: center;
+		border-radius: 12px;
 		font-weight: 600;
 	}
+	/* Icon as its own leading badge instead of sitting inline before the label
+	   text — previously the icon's width pushed "Pickup Location" to the right
+	   while the value <p> below it (no icon) started flush left, so label and
+	   value didn't line up. Label + value now share one column
+	   (.mpcrbm_summary_text) that starts at the same x position either way. */
+	.mpcrbm_summary_row{
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+	}
+	.mpcrbm_summary_icon{
+		flex-shrink: 0;
+		width: 32px;
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		background: #f1f5f9;
+		color: var(--color_theme, #F12971);
+		font-size: 14px;
+	}
+	.mpcrbm_summary_text{
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+	}
 
-	
+
 }
 /******************************************************************** Responsive ************************************************/
 
@@ -239,10 +529,15 @@
 	}
 }
 @media only screen and (max-width: 600px) {
-	div.mpcrbm_transport_search_area .mpcrbm_tab_next .tabItemNext { min-height: 60px; }
-	div.mpcrbm_transport_search_area .mpcrbm_tab_next .tabItemNext [class*="circleIcon"] {width: 30px;height: 30px;min-width: 30px;font-size: var(--fs);}
-	div.mpcrbm_transport_search_area .mpcrbm_tab_next .tabItemNext [class*="circleIcon"]::after {top: 15px;left: calc(50% + 15px);}
-	div.mpcrbm_transport_search_area .mpcrbm_tab_next .tabItemNext .circleTitle {font-size: 12px;top: 35px;}
+	/* Only --mpcrbm-step-size needs to change here — the connector line
+	   (.tabItemNext::before, defined above) recalculates its position from
+	   that variable automatically instead of needing its own pixel offset. */
+	#mpcrbm_progress_bar_holder {
+		--mpcrbm-step-size: 28px;
+	}
+	#mpcrbm_progress_bar_holder .circleTitle {
+		font-size: 10.5px;
+	}
 }
 .mpcrbm_transport_search_area{
 	margin: 0 auto;
@@ -250,12 +545,6 @@
 
 #ui-datepicker-div {
 	width:auto;
-}
-.mpcrbm_tab_next .tabItemNext.active [class*="circleIcon"]::after{
-	border-width: 5px;
-}
-.mpcrbm_tab_next .tabItemNext [class*="circleIcon"]::after{
-	border-width: 5px;
 }
 
 
@@ -291,16 +580,28 @@
  .mpcrbm_booking_vehicle {
 	 background: white;
 	 border: 1px solid #e5e7eb;
-	 border-radius: 18px;
-	 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-	 transition: all 0.3s ease;
+	 border-radius: 16px;
+	 box-shadow: 0 2px 10px rgba(15, 23, 42, .05);
+	 transition: box-shadow .25s ease, transform .25s ease, border-color .25s ease;
 	 display: flex;
 	 justify-content: space-between;
-	 align-items: start;
-	 margin-bottom:10px;
+	 align-items: stretch;
+	 margin-bottom: 14px;
+	 /* Clips .mpcrbm-image-box's flush left edge to this card's own rounded
+	    corner instead of needing radius+overflow on the image box itself
+	    (which previously had border-radius with no overflow:hidden, so it
+	    never actually clipped anything — the image always showed square
+	    corners regardless). */
+	 overflow: hidden;
+ }
+ .mpcrbm_booking_vehicle:hover {
+	 box-shadow: 0 14px 30px rgba(15, 23, 42, .1);
+	 transform: translateY(-2px);
+	 border-color: #d7dbe3;
  }
 
  .mpcrbm .mpcrbm-image-box img:not(.wp_editor img){
+	width: 100%;
 	height: 100%;
 	display: block;
 	object-fit: cover;
@@ -329,21 +630,29 @@ h2#mpcrbm_title_change{color:white;}
 	display: flex;
 	width: 70%;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: 10px 8px;
 	font-size: 16px;
-	
+
 }
 
 .mpcrbm_car_spec{
 	display: flex;
-	align-items: start;
-	gap:5px;
+	align-items: center;
+	gap: 8px;
 	width: 48%;
-	margin: 5px 0;
+	margin: 0;
 }
 .mpcrbm_car_spec i{
-	font-size:18px;
-	color: #64748b;
+	flex-shrink: 0;
+	width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: #f1f5f9;
+	color: var(--color_theme, #F12971);
+	font-size: 13px;
 }
 
 .mpcrbm_car_spec .spec-label{
@@ -351,9 +660,9 @@ h2#mpcrbm_title_change{color:white;}
 	color: #64748b;
 }
 .mpcrbm_car_spec .spec-value{
-	font-size: 12px;
-	font-weight: 400;
-	color: #64748b;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: #334155;
 }
 
 .mpcrbm_price-breakdown {
@@ -599,6 +908,114 @@ h2#mpcrbm_title_change{color:white;}
 		text-align: end;
 	}
 
+	/* ===== Extra Features row — single-line alignment (search-results/
+	   choose-vehicle step only) ===== .mpcrbm_extra_service_layout is this
+	   page's own wrapper class (templates/registration/extra_service.php sets
+	   $mpcrbm_extra_service_class to this — car_details.php uses
+	   'mpcrbm_extra_service_layout_details' instead, already styled
+	   separately in assets/frontend/mpcrbm_car_details.css). Ports that same
+	   "name / price-per-day / Select button all on one row" redesign here. */
+	.mpcrbm_extra_service_layout {
+		--mpcrbm-es-border: #e5e7eb;
+		--mpcrbm-es-text: #1f2937;
+		--mpcrbm-es-text-faded: #6b7280;
+		--mpcrbm-es-bg: #f8fafc;
+	}
+	.mpcrbm_extra_service_layout .mpcrbm_extra_service_item .fdColumn._fullWidth {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: nowrap;
+		gap: 12px;
+		min-width: 0;
+	}
+	.mpcrbm_extra_service_layout .mpcrbm_extra_service_item .mpcrbm_search_title {
+		margin: 0;
+		flex: 1 1 auto;
+		min-width: 46px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.mpcrbm_extra_service_layout .mpcrbm_extra_service_item .mpcrbm-ex-quantity-box {
+		flex-shrink: 0;
+		flex-wrap: nowrap;
+		gap: 10px;
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box {
+		flex-direction: row;
+		align-items: center;
+		justify-content: flex-end;
+		flex-wrap: nowrap;
+		gap: 10px;
+		color: var(--mpcrbm-es-text-faded);
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .mpcrbm-price {
+		width: auto;
+		white-space: nowrap;
+		text-align: left;
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--mpcrbm-es-text);
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .mpcrbm-price-per-day {
+		display: block;
+		font-size: 10.5px;
+		font-weight: 400;
+		color: var(--mpcrbm-es-text-faded);
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box ._mR_min_100 {
+		flex-shrink: 0;
+		margin-right: 0;
+	}
+	/* Overrides the shared 70px min-width floor (mp_global/assets/mp_style/
+	   mpcrbm_global.css, "[class*='_min_100']") the same way the car-details
+	   page's version does — two extra classes of specificity is enough to
+	   win without !important. */
+	.mpcrbm_extra_service_layout .mpcrbm_extra_service_item [class*="_min_100"] {
+		min-width: auto;
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .qtyIncDec {
+		max-width: 74px;
+		display: flex;
+		align-items: stretch;
+		background: #fff;
+		border: 1px solid var(--mpcrbm-es-border);
+		border-radius: 999px;
+		overflow: hidden;
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .groupContent > * {
+		border-left: none;
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .addonGroupContent {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 22px;
+		background: var(--mpcrbm-es-bg);
+		color: var(--color_theme, #F12971);
+		font-size: 9px;
+		transition: background .15s ease, color .15s ease;
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .addonGroupContent:hover {
+		background: var(--color_theme, #F12971);
+		color: var(--color_theme_alter, #fff);
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .inputIncDec {
+		padding: 0 2px;
+		font-size: 12.5px;
+		font-weight: 700;
+		text-align: center;
+		background: #fff;
+	}
+	.mpcrbm_extra_service_layout .price-quantity-box .mpcrbm_price_calculation {
+		flex-shrink: 0;
+		padding: 6px 12px;
+		border-radius: 999px;
+		font-size: 12px;
+		white-space: nowrap;
+	}
+
  .mpcrbm_discount_booking{
 	 display: flex;
 	 flex-direction: column;
@@ -611,14 +1028,65 @@ h2#mpcrbm_title_change{color:white;}
  .mpcrbm_car_quantity{
 	 display: flex;
 	 justify-content: space-between;
-	 background-color: #ecf1f5;
-	 padding: 5px;
-	 border-radius: 5px;
+	 align-items: center;
+	 background-color: #f8fafc;
+	 border: 1px solid #e5e7eb;
+	 padding: 8px 10px;
+	 border-radius: 10px;
  }
 
  .mpcrbm_car_quantity_title{
 	 padding: 5px;
 	 margin-top: 2px;
+ }
+
+ /* Single-unit fallback (templates/registration/vehicle_item.php,
+    vehicle_item_search_form.php) — the real qty stepper wraps its input in
+    .groupContent.qtyIncDec, which sizes it via flex; this direct child has no
+    such wrapper, so the shared .formControl width:100% (mp_global/assets/
+    mp_style/mpcrbm_global.css) would otherwise stretch it to fill the row. */
+ .mpcrbm_car_quantity > input.inputIncDec{
+	 width: 44px;
+	 flex: 0 0 auto;
+	 text-align: center;
+	 border-radius: 6px;
+ }
+
+ /* Qty stepper — default look (mp_global/assets/mp_style/mpcrbm_global.css) is a
+    flat, square-cornered, theme-colored bar with thin divider lines. Restyled
+    into the same small rounded pill used on the car-details page's price box
+    (assets/frontend/mpcrbm_car_details.css) for a consistent look across the
+    plugin, scoped to this vehicle card only. */
+ .mpcrbm_booking_vehicle .qtyIncDec {
+	 display: flex;
+	 align-items: stretch;
+	 max-width: 110px;
+	 background: #fff;
+	 border: 1px solid #e5e7eb;
+	 border-radius: 999px;
+	 overflow: hidden;
+ }
+ .mpcrbm_booking_vehicle .groupContent > * {
+	 border-left: none;
+ }
+ .mpcrbm_booking_vehicle .addonGroupContent {
+	 display: flex;
+	 align-items: center;
+	 justify-content: center;
+	 min-width: 28px;
+	 background: #f8fafc;
+	 color: var(--color_theme, #F12971);
+	 font-size: 11px;
+ }
+ .mpcrbm_booking_vehicle .addonGroupContent:hover {
+	 background: var(--color_theme, #F12971);
+	 color: #fff;
+ }
+ .mpcrbm_booking_vehicle .inputIncDec {
+	 text-align: center;
+	 font-weight: 700;
+	 border: none;
+	 background: #fff;
  }
 
  .mpcrbm_price_holder{
@@ -635,18 +1103,21 @@ h2#mpcrbm_title_change{color:white;}
  }
 
  .mpcrbm_summary_show span{
-	color: #333;
-	font-weight: 300;
-	font-size: 14px;
+	color: #64748b;
+	font-weight: 600;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: .02em;
 }
 .mpcrbm_summary_show i{
 	color: var(--color_theme);
 }
 
 .mpcrbm_summary_show p:not(.wp_editor p){
-	font-weight: bold;
-	color: #333;
-	font-size: 12px;
+	font-weight: 700;
+	color: #1f2937;
+	font-size: 13.5px;
+	margin: 0;
  }
 
  .mpcrbm_location_icon_margin{

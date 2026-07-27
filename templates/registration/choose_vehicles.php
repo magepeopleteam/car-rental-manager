@@ -378,6 +378,16 @@ if( $is_redirect === 'yes' ){
                         <span class="textTheme mpcrbm_car_qty_display">x1</span>
                     </p>
                     <p class="mpcrbm_product_price _textTheme"></p>
+                    <p class="textTheme mpcrbm_car_day">
+                        <span class="mpcrbm_car_day_label">
+                            <i class="fas fa-clock mpcrbm_car_day_icon"></i>
+                            <?php esc_html_e( 'Total Rental Duration:', 'car-rental-manager' ); ?>
+                        </span>
+                        <span class="mpcrbm_car_day_badge">
+                            <span class="mpcrbm_car_day_value">1</span>
+                            <span class="mpcrbm_car_day_unit"><?php esc_html_e( 'Day', 'car-rental-manager' ); ?></span>
+                        </span>
+                    </p>
                 </div>
                 <div class="mpcrbm_extra_service_summary"></div>
                 <div class="justifyBetween total">

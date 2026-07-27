@@ -26,17 +26,27 @@ $mpcrbm_price_based = $mpcrbm_price_based ?? '';
                     <div class="mpcrbm_booking_summary_description">
 
                         <div class="mpcrbm_summary_show">
-                            <span class=""><i class="mi mi-marker"></i> <?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
-                            <?php if($mpcrbm_price_based == 'manual'){ ?>
-                                <p class="_textLight_1 mpcrbm_manual_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place,'mpcrbm_locations' )); ?></p>
-                            <?php }else{ ?>
-                                <p class="_textLight_1 mpcrbm_map_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_place, 'mpcrbm_locations')); ?></p>
-                            <?php } ?>
+                            <div class="mpcrbm_summary_row">
+                                <div class="mpcrbm_summary_icon"><i class="mi mi-marker"></i></div>
+                                <div class="mpcrbm_summary_text">
+                                    <span><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
+                                    <?php if($mpcrbm_price_based == 'manual'){ ?>
+                                        <p class="_textLight_1 mpcrbm_manual_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place,'mpcrbm_locations' )); ?></p>
+                                    <?php }else{ ?>
+                                        <p class="_textLight_1 mpcrbm_map_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_place, 'mpcrbm_locations')); ?></p>
+                                    <?php } ?>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mpcrbm_summary_show">
-                            <span><i class="mi mi-calendar"></i> <?php esc_html_e('Pickup Date & Time', 'car-rental-manager'); ?></span>
-                            <p><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_date,'date')) .'. '. esc_html(MPCRBM_Global_Function::date_format($mpcrbm_date, 'time')); ?></p>
+                            <div class="mpcrbm_summary_row">
+                                <div class="mpcrbm_summary_icon"><i class="mi mi-calendar"></i></div>
+                                <div class="mpcrbm_summary_text">
+                                    <span><?php esc_html_e('Pickup Date & Time', 'car-rental-manager'); ?></span>
+                                    <p><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_date,'date')) .'. '. esc_html(MPCRBM_Global_Function::date_format($mpcrbm_date, 'time')); ?></p>
+                                </div>
+                            </div>
                         </div>
 
 
@@ -53,8 +63,13 @@ $mpcrbm_price_based = $mpcrbm_price_based ?? '';
                             ?>
                             <?php if(!empty($mpcrbm_return_date_time)){ ?>
                                 <div class="mpcrbm_summary_show">
-                                    <span><i class="mi mi-calendar"></i> <?php esc_html_e('Return Date & Time', 'car-rental-manager'); ?></span>
-                                    <p><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time)) .'. '.esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time,'time')) ?></p>
+                                    <div class="mpcrbm_summary_row">
+                                        <div class="mpcrbm_summary_icon"><i class="mi mi-calendar"></i></div>
+                                        <div class="mpcrbm_summary_text">
+                                            <span><?php esc_html_e('Return Date & Time', 'car-rental-manager'); ?></span>
+                                            <p><?php echo esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time)) .'. '.esc_html(MPCRBM_Global_Function::date_format($mpcrbm_return_date_time,'time')) ?></p>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php } ?>
                         <?php } ?>
