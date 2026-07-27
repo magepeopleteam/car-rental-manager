@@ -711,12 +711,13 @@
 	}
 	.mpcrbm .successButton:hover,
 	.mpcrbm [class*="_successButton"]:hover {
-		background-color: var(--color_light);
-		color: var(--color_success);
+		opacity: 0.9;
+		color: #fff;
+		background: var(--color_success);
 	}
 	.mpcrbm .successButton:hover span,
 	.mpcrbm [class*="_successButton"]:hover span {
-		color: var(--color_success);
+		color: #fff;
 	}
 	/*********/
 	.mpcrbm .navy_blueButton,

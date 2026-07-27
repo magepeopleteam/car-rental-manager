@@ -214,12 +214,22 @@ jQuery(document).ready(function($) {
         if ($this.hasClass('active_select')) {
             // Deselect vehicle
             $this.removeClass('active_select');
-            target_summary.slideUp(400);
+            // The "Details" card (templates/registration/choose_vehicles.php,
+            // get_search_result.php) is now visible from page load instead of only
+            // appearing once a car is picked, so it no longer slides away on deselect
+            // either — it resets back to a neutral $0.00 state instead, same idea as
+            // the persistent Book Now button going back to disabled rather than
+            // disappearing.
+            target_summary.find('.mpcrbm_product_name').html('');
+            target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(0));
+            target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(0));
+            target_summary.find('#mpcrbm_selected_vehicle_row').hide();
             target_extra_service.slideUp(400);
             target_extra_service_summary.slideUp(400);
             parent.find('[name="mpcrbm_post_id"]').val('');
             parent.find('[name="mpcrbm_security_deposit_value"]').val(0);
             target_summary.find('.mpcrbm_security_deposit_summary').remove();
+            checkAndToggleBookNowButton(parent);
         } else {
             // Select new vehicle
             parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
@@ -253,6 +263,7 @@ jQuery(document).ready(function($) {
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
             target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(transport_price));
+            target_summary.find('#mpcrbm_selected_vehicle_row').show();
 
             // Show or update deposit row in summary
             target_summary.find('.mpcrbm_security_deposit_summary').remove();
@@ -271,6 +282,7 @@ jQuery(document).ready(function($) {
 
             $this.addClass('active_select');
             parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', base_price);
+            checkAndToggleBookNowButton(parent);
 
             // Show summary sections
             target_summary.slideDown(400);
@@ -1720,16 +1732,23 @@ function mpcrbm_content_refresh(parent) {
     }
 }
 
+// Book Now (templates/registration/summary_new.php) is now a single button
+// that's always present on the search-results page, rather than only
+// existing in the DOM once the per-car extra-services AJAX response
+// (templates/registration/extra_service.php) had loaded. So instead of
+// show()/hide(), this enables/disables it and syncs data-wc_link_id from
+// whichever vehicle's Select Car button is currently active — the existing
+// ".mpcrbm_book_now[type='button']" click handler already reads that
+// attribute plus the #mpcrbm_post_id hidden field at click time, so it needs
+// no changes to work with either the old or new button.
 function checkAndToggleBookNowButton(parent) {
     var $parent = jQuery(parent);
-    var hasSelectedVehicle = $parent.find('.mpcrbm_transport_select.active_select').length > 0;
+    var $activeSelect = $parent.find('.mpcrbm_transport_select.active_select');
+    var hasSelectedVehicle = $activeSelect.length > 0;
     var $bookNowButton = $parent.find('.mpcrbm_book_now[type="button"]');
 
-    if (hasSelectedVehicle) {
-        $bookNowButton.show();
-    } else {
-        $bookNowButton.hide();
-    }
+    $bookNowButton.prop('disabled', !hasSelectedVehicle);
+    $bookNowButton.attr('data-wc_link_id', hasSelectedVehicle ? ($activeSelect.attr('data-wc_link_id') || '') : '');
 }
 
 function gm_authFailure() {

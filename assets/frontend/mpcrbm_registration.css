@@ -43,7 +43,7 @@
 		margin: 10px 0;
 	}
 	.mpcrbm_transport_summary .total{
-		background-color: #ced1d2;
+		background-color: #fdf0f4;
         color: #000000;
         padding: 10px;
         border-radius: 5px;
@@ -424,13 +424,126 @@
 		font-size: 19px;
 		font-weight: 700;
 		color: #1f2937;
+		margin-bottom: 0;
+	}
+	/* Car name + Early Bird badge on one line — the badge (templates/
+	   registration/vehicle_item.php, vehicle_item_search_form.php) moved
+	   here from the price column below, where it used to be a full-width
+	   banner; .mpcrbm_early_bird_promotion_badge's width/justify-content
+	   are overridden further down to fit this compact, title-row context
+	   instead. */
+	.mpcrbm_title_row{
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
 		margin-bottom: 10px;
+	}
+	.mpcrbm_title_row h2{
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+	.mpcrbm_title_row .mpcrbm_early_bird_promotion_badge{
+		width: auto;
+		flex-shrink: 0;
+		margin: 0 !important;
+		padding: 5px 10px;
+	}
+	/* 9.5px was too small for bold white-on-gradient text — legible but reads
+	   as fuzzy/blurred at that size due to anti-aliasing on thin strokes.
+	   -webkit-font-smoothing/-moz-osx-font-smoothing crisp up light text on a
+	   saturated background specifically (browsers default to a heavier,
+	   softer smoothing pass there otherwise). */
+	.mpcrbm_title_row .mpcrbm_early_bird_promotion_badge .early_bird_text strong,
+	.mpcrbm_title_row .mpcrbm_early_bird_promotion_badge .early_bird_text span{
+		font-size: 10.5px;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
 	}
 	.mpcrbm-price{
 		font-size: 1.3em;
 		font-weight: 800;
 		color: #111827;
 		text-align: end;
+	}
+	/* Early Bird pricing (templates/registration/vehicle_item.php,
+	   vehicle_item_search_form.php) — previously styled entirely with inline
+	   style="" attributes in the template, so it didn't match the rest of the
+	   redesigned price block at all (plain browser-default sizing/spacing).
+	   .mpcrbm-discounted-price plays the same role .mpcrbm-price does when
+	   there's no discount, so it gets the identical treatment for
+	   consistency; .mpcrbm-original-price is its struck-through companion. */
+	/* Both plain <div>s inside a plain block .mpcrbm-price-container, so they
+	   stacked on separate lines by default — inline-block puts the struck
+	   original price and the final price on one line, "$10.00 $9.00", instead. */
+	.mpcrbm-price-container{
+		text-align: right;
+	}
+	.mpcrbm-original-price{
+		display: inline-block;
+		text-decoration: line-through;
+		color: #94a3b8;
+		font-size: 12px;
+		margin-right: 6px;
+		vertical-align: baseline;
+	}
+	/* WooCommerce's own price markup — a <span class="woocommerce-Price-amount">
+	   nested inside — evidently sets its own text-decoration (likely "none"
+	   from WooCommerce core or the active theme's price styling), which wins
+	   over the line-through set on this wrapping div above: a descendant that
+	   sets its own text-decoration value doesn't inherit the ancestor's line,
+	   even through plain inline text. Targeting the WooCommerce span directly
+	   with !important forces the strike to actually render. */
+	.mpcrbm-original-price .woocommerce-Price-amount{
+		text-decoration: line-through !important;
+	}
+	.mpcrbm-discounted-price{
+		display: inline-block;
+		font-size: 1.3em;
+		font-weight: 800;
+		color: #111827;
+		vertical-align: baseline;
+	}
+	/* Wide centered banner pill, sitting above the price (moved there in the
+	   template — templates/registration/vehicle_item.php,
+	   vehicle_item_search_form.php) instead of a corner tag or an inline row
+	   below the price. */
+	.mpcrbm_early_bird_promotion_badge{
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		width: 100%;
+		margin: 0 0 8px !important;
+		padding: 7px 14px;
+		background: #22c55e;
+		background: linear-gradient(135deg, #4ade80, #16a34a);
+		border-radius: 999px;
+		box-shadow: 0 4px 10px rgba(22, 163, 74, .3);
+		text-align: center;
+	}
+	.mpcrbm_early_bird_promotion_badge .fa-clock{
+		flex-shrink: 0;
+		font-size: 11px;
+		color: #fff;
+	}
+	.mpcrbm_early_bird_promotion_badge .early_bird_text{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		line-height: 1.3;
+	}
+	.mpcrbm_early_bird_promotion_badge .early_bird_text strong{
+		font-size: 11px;
+		font-weight: 800;
+		color: #fff;
+		text-transform: uppercase;
+		letter-spacing: .02em;
+	}
+	.mpcrbm_early_bird_promotion_badge .early_bird_text span{
+		font-size: 11px;
+		font-weight: 600;
+		color: #fff;
 	}
 	.mpcrbm_price-total{
 		margin-top: 2px; 
@@ -554,6 +667,34 @@
 	 max-width: 90% !important;
 	 padding: 12px !important;
 	 margin: 10px !important;
+ }
+
+ /* Persistent Book Now — last section of the search-results page
+    (templates/registration/choose_vehicles.php, get_search_result.php).
+    .mpcrbm_next_button (above) forces width:90%!important for its original
+    use (the sidebar "Previous" button, templates/registration/
+    summary_new.php) — overridden here to a natural content width so
+    right-aligning it via the flex holder below is actually visible instead
+    of it still spanning almost the full row regardless of alignment. */
+ .mpcrbm_book_now_holder{
+	 display: flex;
+	 justify-content: flex-end;
+ }
+ .mpcrbm_book_now_holder .mpcrbm_book_now{
+	 width: auto !important;
+	 max-width: none !important;
+	 margin: 10px 0 !important;
+ }
+
+ /* Starts disabled until a vehicle is selected — native [disabled] blocks
+    the click, but the shared "_successButton" green fill (mp_global/assets/
+    mp_style/mpcrbm_global.css) doesn't change on its own, so it'd otherwise
+    look identically clickable either way. */
+ .mpcrbm_book_now:disabled{
+	 opacity: .5;
+	 cursor: not-allowed;
+	 background-color: #9aa3af !important;
+	 border-color: #9aa3af !important;
  }
 
  .mpcrbm_dFlex_fdColumn_btLight{

@@ -26,6 +26,12 @@ $post_id = $mpcrbm_post_id ?? '';
 $mpcrbm_original_price_based = $mpcrbm_price_based ?? '';
 
 
+// Exposed as data-wc_link_id on the Select Car button below so the persistent
+// Book Now button (templates/registration/summary_new.php) can pick it up
+// directly on selection, instead of waiting on the extra-services AJAX
+// response that used to be the only place this value was rendered.
+$mpcrbm_link_wc_product = MPCRBM_Global_Function::get_post_info( $post_id, 'link_wc_product' );
+
 $mpcrbm_pricing_rule_data = MPCRBM_Function::display_pricing_rules( $post_id );
 $mpcrbm_is_discount = isset( $mpcrbm_pricing_rule_data['is_discount'] ) ? $mpcrbm_pricing_rule_data['is_discount'] : false;
 $mpcrbm_base_price = isset( $mpcrbm_pricing_rule_data['base_price'] ) ? $mpcrbm_pricing_rule_data['base_price'] : false;
@@ -175,6 +181,30 @@ if ($post_id) {
     $mpcrbm_brand_name      = !empty($mpcrbm_brand_terms)     ? esc_html($mpcrbm_brand_terms[0]->name)      : '—';
     $mpcrbm_year_name       = !empty($mpcrbm_year_terms)      ? esc_html($mpcrbm_year_terms[0]->name)       : '—';
     $mpcrbm_bag_count       = !empty($mpcrbm_maximum_bag)     ? esc_html($mpcrbm_maximum_bag)               : '—';
+
+    // Moved up from beside .mpcrbm-price-container below so $mpcrbm_discounted_price
+    // (the actual final price shown to the customer) is available earlier, to decide
+    // whether the "/ Day" breakdown line further up would just repeat it.
+    $mpcrbm_early_bird_discount = 0;
+    $mpcrbm_early_bird_info = null;
+    $mpcrbm_discounted_price = $mpcrbm_raw_price;
+
+    if (class_exists('MPCRBM_Frontend_Early_Bird')) {
+        $mpcrbm_early_bird_info = MPCRBM_Frontend_Early_Bird::get_early_bird_discount_info($post_id, $mpcrbm_start_date_time);
+        if ($mpcrbm_early_bird_info && $mpcrbm_early_bird_info['applicable']) {
+            $mpcrbm_early_bird_discount = MPCRBM_Frontend_Early_Bird::calculate_discount_amount($post_id, $mpcrbm_start_date_time, $mpcrbm_raw_price);
+            $mpcrbm_discounted_price = $mpcrbm_raw_price - $mpcrbm_early_bird_discount;
+        }
+    }
+
+    // True when the "/ Day" breakdown rate actually differs from what's already
+    // shown lower down — compared against the *raw* (pre-early-bird) price, not
+    // the discounted one: when an early-bird discount applies, that raw price is
+    // what .mpcrbm-original-price displays (struck through), so for a plain
+    // 1-day stay it's the same number as the breakdown either way. Comparing
+    // against the discounted price instead would leave both the breakdown *and*
+    // the original price showing "$10.00" side by side — redundant twice over.
+    $mpcrbm_price_breakdown_differs = round( (float) $mpcrbm_price_per_day, 2 ) !== round( (float) $mpcrbm_raw_price, 2 );
     ?>
     <div class="mpcrbm_booking_vehicle mpcrbm_booking_item <?php echo esc_attr('mpcrbm_booking_item_' . $post_id); ?> <?php echo esc_attr($mpcrbm_hidden_class); ?> <?php echo esc_attr($mpcrbm_feature_class); ?>" data-placeholder
          data-car-type="<?php echo esc_attr( $mpcrbm_all_car_type_str)?>"
@@ -198,7 +228,33 @@ if ($post_id) {
             </div>
         </div>
         <div class="mpcrbm_list_details">
-            <h2><?php echo esc_html(get_the_title($post_id)); ?></h2>
+            <div class="mpcrbm_title_row">
+                <h2><?php echo esc_html(get_the_title($post_id)); ?></h2>
+                <?php if ($mpcrbm_early_bird_discount > 0): ?>
+                    <div class="mpcrbm_early_bird_promotion_badge">
+                        <span class="fas fa-clock"></span>
+                        <div class="early_bird_text">
+                            <strong><?php esc_html_e('Early Bird Special!', 'car-rental-manager'); ?></strong>
+                            <?php
+                            // "Early Bird" already appears right above in the bold label —
+                            // repeating "(Early Bird)" here too just says it twice in a row.
+                            ?>
+                            <span>
+                        <?php
+                        $mpcrbm_discount_text = $mpcrbm_early_bird_info['discount_type'] === 'percentage'
+                            ? $mpcrbm_early_bird_info['discount_value'] . '%'
+                            : wc_price($mpcrbm_early_bird_info['discount_value']);
+                        echo esc_html(sprintf(
+                        // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
+                            __('Save %s', 'car-rental-manager'),
+                            $mpcrbm_discount_text
+                        ));
+                        ?>
+                    </span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
             <div class=" mpcrbm_list">
                 <div class="mpcrbm_car_specs_lists">
                     <div class="mpcrbm_car_spec">
@@ -268,7 +324,16 @@ if ($post_id) {
                     <div class="mpcrbm_price_holder">
                         <div class="mpcrbm_discount_info <?php echo esc_attr(( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ) ? 'mpcrbm-discount-seasonal':''); ?>">
                             <div class="" style="display: flex;justify-content: space-between">
-                                <div class="mpcrbm_price-breakdown <?php echo esc_attr( $mpcrbm_line_through );?>"><?php echo wp_kses_post( wc_price($mpcrbm_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                <?php
+                                // Skip the "/ Day" rate when it's the exact same number as the total
+                                // below (a plain 1-day booking, no discount) — showing "$10.00 / Day"
+                                // right above "$10.00 · 1-day total" is just the same price twice. A
+                                // genuine seasonal discount (the info icon just below) still always
+                                // shows regardless, since that's explaining a *different* number
+                                // (the original rate vs. the discounted one), not repeating this one.
+                                if ( $mpcrbm_price_breakdown_differs || ( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ) ) : ?>
+                                    <div class="mpcrbm_price-breakdown <?php echo esc_attr( $mpcrbm_line_through );?>"><?php echo wp_kses_post( wc_price($mpcrbm_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                <?php endif; ?>
                                 <?php if( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ){
                                     $mpcrbm_pricing_rules = isset( $mpcrbm_pricing_rule_data['pricing_rules'] ) ? $mpcrbm_pricing_rule_data['pricing_rules'] : '';
                                     ?>
@@ -289,46 +354,16 @@ if ($post_id) {
                             <?php } ?>
                         </div>
                         <div class="mpcrbm_booking_items">
-                            <?php
-                            // Calculate Early Bird Discount and apply to price
-                            $mpcrbm_early_bird_discount = 0;
-                            $mpcrbm_early_bird_info = null;
-                            $mpcrbm_discounted_price = $mpcrbm_raw_price;
-
-                            if (class_exists('MPCRBM_Frontend_Early_Bird')) {
-                                $mpcrbm_early_bird_info = MPCRBM_Frontend_Early_Bird::get_early_bird_discount_info($post_id, $mpcrbm_start_date_time);
-                                if ($mpcrbm_early_bird_info && $mpcrbm_early_bird_info['applicable']) {
-                                    $mpcrbm_early_bird_discount = MPCRBM_Frontend_Early_Bird::calculate_discount_amount($post_id, $mpcrbm_start_date_time, $mpcrbm_raw_price);
-                                    $mpcrbm_discounted_price = $mpcrbm_raw_price - $mpcrbm_early_bird_discount;
-                                }
-                            }
-                            ?>
+                            <?php // Early Bird Discount already calculated above ($mpcrbm_discounted_price etc.) ?>
 
                             <div class="mpcrbm-price-container">
                                 <?php if ($mpcrbm_early_bird_discount > 0): ?>
-                                    <div class="mpcrbm-original-price" style="text-decoration: line-through; color: #999; font-size: 0.9em; text-align: end">
-                                        <!--                                        --><?php //echo wp_kses_post(wc_price($mpcrbm_raw_price)); ?>
+                                    <?php // Was previously commented out, rendering an empty struck-through line with no "was $X" reference at all. ?>
+                                    <div class="mpcrbm-original-price">
+                                        <?php echo wp_kses_post(wc_price($mpcrbm_raw_price)); ?>
                                     </div>
-                                    <div class="mpcrbm-discounted-price" style="font-size: 1.2em; font-weight: bold; color: #2c3338;">
+                                    <div class="mpcrbm-discounted-price">
                                         <?php echo wp_kses_post(wc_price($mpcrbm_discounted_price)); ?>
-                                    </div>
-                                    <div class="mpcrbm_early_bird_promotion_badge" style="margin: 3px 0 0 0;">
-                                        <span class="fas fa-clock"></span>
-                                        <div class="early_bird_text">
-                                            <strong><?php esc_html_e('Early Bird Special!', 'car-rental-manager'); ?></strong>
-                                            <span>
-                                        <?php
-                                        $mpcrbm_discount_text = $mpcrbm_early_bird_info['discount_type'] === 'percentage'
-                                            ? $mpcrbm_early_bird_info['discount_value'] . '%'
-                                            : wc_price($mpcrbm_early_bird_info['discount_value']);
-                                        echo esc_html(sprintf(
-                                        // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-                                            __('Save %s (Early Bird)', 'car-rental-manager'),
-                                            $mpcrbm_discount_text
-                                        ));
-                                        ?>
-                                    </span>
-                                        </div>
                                     </div>
                                 <?php else: ?>
                                     <div class="mpcrbm-price">
@@ -336,13 +371,14 @@ if ($post_id) {
                                     </div>
                                 <?php endif; ?>
 
+                                <?php
+                                // The saved amount already appears in the Early Bird badge above
+                                // ("Save 10% (Early Bird)") — repeating it here too ("1-day total
+                                // ($1.00 saved)") was saying the same thing a third time alongside
+                                // the struck-through original price.
+                                ?>
                                 <div class="mpcrbm_price-total">
                                     <?php echo esc_attr($mpcrbm_minutes_to_day); ?>-day total
-                                    <?php if ($mpcrbm_early_bird_discount > 0): ?>
-                                        <span>
-                                    (<?php echo wp_kses_post(wc_price($mpcrbm_early_bird_discount)); ?> saved)
-                                </span>
-                                    <?php endif; ?>
                                 </div>
 
                                 <?php if ($mpcrbm_total_save > 0): ?>
@@ -400,6 +436,7 @@ if ($post_id) {
                                     data-base-price="<?php echo esc_attr($mpcrbm_discounted_price - $mpcrbm_branch_one_way_fee); ?>"
                                     data-security-deposit="<?php echo esc_attr($deposit_price); ?>"
                                     data-post-id="<?php echo esc_attr($post_id); ?>"
+                                    data-wc_link_id="<?php echo esc_attr($mpcrbm_link_wc_product); ?>"
                                     data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
                                     data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
                                     data-open-icon=""

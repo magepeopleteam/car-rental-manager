@@ -368,11 +368,26 @@ if( $is_redirect === 'yes' ){
                 </div>
             </div>
 
-            <div class="mpcrbm_transport_summary">
+            <?php
+            // Same override the car-details page already uses (templates/car-details/
+            // car_details.php) to bypass the shared "display:none" default (div.mpcrbm_
+            // transport_summary, assets/frontend/mpcrbm_registration.css) — so this card
+            // is visible from page load instead of only appearing once a car is selected
+            // and mpcrbm_transport_select's click handler (assets/frontend/
+            // mpcrbm_registration.js) slides it down.
+            ?>
+            <div class="mpcrbm_transport_summary" style="display: block">
                 <h3 ><?php esc_html_e(' Details', 'car-rental-manager') ?></h3>
                 <div class="divider"></div>
                 <div class="_textColor_4 justifyBetween book-items">
-                    <p class="_dFlex_alignCenter">
+                    <?php
+                    // Hidden until a car is picked — unlike the total price rows below
+                    // (which have a sensible "$0.00" default), a checkmark next to a blank
+                    // name and "x1" has no meaningful empty state. mpcrbm_transport_select's
+                    // click handler (assets/frontend/mpcrbm_registration.js) shows/hides
+                    // this on select/deselect.
+                    ?>
+                    <p class="_dFlex_alignCenter" id="mpcrbm_selected_vehicle_row" style="display: none">
                         <span class="fas fa-check-square _textTheme_mR_xs"></span>
                         <span class="mpcrbm_product_name"></span>&nbsp;
                         <span class="textTheme mpcrbm_car_qty_display">x1</span>
@@ -392,12 +407,38 @@ if( $is_redirect === 'yes' ){
                 <div class="mpcrbm_extra_service_summary"></div>
                 <div class="justifyBetween total">
                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
-                    <h3 class="mpcrbm_product_total_price"></h3>
+                    <?php
+                    // This card is now visible from page load (style="display: block" above),
+                    // before any vehicle is selected — an empty <h3> here would just show blank
+                    // instead of a sensible starting value. mpcrbm_transport_select's click
+                    // handler (assets/frontend/mpcrbm_registration.js) overwrites this the
+                    // moment a car is picked.
+                    ?>
+                    <h3 class="mpcrbm_product_total_price"><?php echo wp_kses_post( wc_price( 0 ) ); ?></h3>
                 </div>
             </div>
 
 
             <div class="mpcrbm_extra_service"></div>
+
+            <?php
+            // Persistent Book Now — last section of the search-results page, always
+            // present instead of only appearing after a car is selected once the
+            // extra-services AJAX response (templates/registration/extra_service.php)
+            // happened to load. Starts disabled; checkAndToggleBookNowButton()
+            // (assets/frontend/mpcrbm_registration.js) enables it and syncs
+            // data-wc_link_id from the selected vehicle's own Select Car button once
+            // one is chosen. Reuses the "mpcrbm_book_now" class so the existing click
+            // handler (same file) — which already reads data-wc_link_id + the
+            // #mpcrbm_post_id hidden field at click time — needs no changes to work
+            // with it.
+            ?>
+            <div class="mpcrbm_book_now_holder">
+                <button type="button" class="mpcrbm_next_button _successButton_min_200 mpcrbm_book_now" data-wc_link_id="" disabled>
+                    <span class="fas fa-cart-plus mR_xs"></span>
+                    <?php esc_html_e('Book Now', 'car-rental-manager'); ?>
+                </button>
+            </div>
         </div>
     </div>
 
