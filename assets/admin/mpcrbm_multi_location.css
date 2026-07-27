@@ -1,92 +1,43 @@
 /* Multi-Location Settings Styles - Transfer Fee Only */
 
-.mpcrbm-location-price-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    gap: 15px;
-    align-items: end;
-    margin-bottom: 15px;
-    padding: 15px;
-    background: #f9f9f9;
-    border-radius: 5px;
-    border: 1px solid #e1e1e1;
-}
-
-/* Transfer fee only layout - simplified 3-column grid */
+/* Row layout/badge/field-box/delete-button look is inherited from the shared
+   .mpcrbm-season-* classes (assets/admin/mpcrbm_price_set.css, Seasonal
+   Pricing/Tiered Discount) via MPCRBM_Multi_Location_Settings::
+   render_location_price_row() — only the grid's column count is specific to
+   this 3-field (Pickup/Drop-off/Transfer Fee) row. */
 .mpcrbm-location-price-grid.mpcrbm-transfer-fee-only {
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
-.mpcrbm-location-field {
+.mpcrbm-location-info-banner {
     display: flex;
-    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
 }
-
-.mpcrbm-location-field label {
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: #333;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.mpcrbm-location-info-banner > i {
+    color: #2563eb;
+    font-size: 18px;
+    margin-top: 2px;
 }
-
-.mpcrbm-location-field select,
-.mpcrbm-location-field input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+.mpcrbm-location-info-banner strong {
+    display: block;
+    color: #111827;
     font-size: 14px;
-    background: #fff;
+    margin-bottom: 6px;
 }
-
-.mpcrbm-location-field select:focus,
-.mpcrbm-location-field input:focus {
-    outline: none;
-    border-color: #0073aa;
-    box-shadow: 0 0 0 1px #0073aa;
+.mpcrbm-location-info-banner ul {
+    margin: 0;
+    padding-left: 18px;
 }
-
-.mpcrbm-remove-location-price {
-    background: #dc3545 !important;
-    color: white !important;
-    border: none !important;
-    padding: 8px 12px !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    font-size: 12px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-}
-
-.mpcrbm-remove-location-price:hover {
-    background: #c82333 !important;
-}
-
-.mpcrbm-info-box {
-    background: #f0f8ff;
-    border-left: 4px solid #0073aa;
-    padding: 15px;
-    border-radius: 4px;
-    margin-bottom: 20px; 
-}
-
-.mpcrbm-info-box h6 {
-    margin: 0 0 10px 0;
-    color: #0073aa;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.mpcrbm-info-box ul {
-    margin: 10px 0;
-    padding-left: 20px;
-}
-
-.mpcrbm-info-box li {
-    margin-bottom: 5px;
-    color: #555;
+.mpcrbm-location-info-banner li {
+    color: #4b5563;
     font-size: 13px;
+    line-height: 1.6;
 }
 
 /* Toggle switch styling */
@@ -134,9 +85,6 @@
     .mpcrbm-location-field {
         margin-bottom: 10px;
     }
-}
-.mpcrbm-location-field label{
-    margin-bottom: 10px;
 }
 /* Animation for adding/removing rows */
 .mpcrbm-location-price-row {

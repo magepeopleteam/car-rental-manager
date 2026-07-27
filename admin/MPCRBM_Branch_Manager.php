@@ -207,7 +207,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			?>
 			<li data-tabs-target="#mpcrbm_branch_assignment">
 				<span class="mi mi-map-location-track"></span>
-				<?php esc_html_e( 'Branch Assignment', 'car-rental-manager' ); ?>
+				<?php esc_html_e( 'Driver and Branch Assignment', 'car-rental-manager' ); ?>
 			</li>
 			<?php
 		}
@@ -229,6 +229,12 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			wp_nonce_field( 'mpcrbm_branch_nonce', 'mpcrbm_branch_nonce_field' );
 			$enabled_checked = $branch_enabled === '1' ? 'checked' : '';
 			$enabled_display = $branch_enabled === '1' ? 'block' : 'none';
+
+			// Moved here from MPCRBM_General_Settings::general_settings() — this
+			// tab is now "Driver and Branch Assignment" (see branch_tab_nav()).
+			$enable_driver_information = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
+			$is_driver_checked = $enable_driver_information === 'on' ? 'checked' : '';
+			$is_info_show      = $enable_driver_information === 'on' ? 'block' : 'none';
 			?>
 			<div class="tabsItem" data-tabs="#mpcrbm_branch_assignment">
 				<div class="mpcrbm-info-card">
@@ -296,7 +302,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				<div class="mpcrbm-info-card">
 					<div class="mpcrbm-info-card-header">
 						<i class="fas fa-clock-rotate-left"></i>
-						<h3><?php esc_html_e( 'Transfer History', 'car-rental-manager' ); ?></h3>
+						<h3><?php esc_html_e( 'Car Branch Ownership Transfer History', 'car-rental-manager' ); ?></h3>
 					</div>
 					<div class="mpcrbm-info-card-body">
 				<section>
@@ -331,6 +337,32 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				</div>
 
 				<?php endif; ?>
+
+				<div class="mpcrbm-info-card">
+					<div class="mpcrbm-info-card-header">
+						<i class="fas fa-id-card"></i>
+						<h3><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h3>
+					</div>
+					<div class="mpcrbm-info-card-body">
+						<div class="mpcrbm_driver_info_holder" id="mpcrbm_driver_info_holder">
+							<section class="bg-light">
+								<div class="label">
+									<div>
+										<h6><?php esc_html_e( 'Enable Driver Information', 'car-rental-manager' ); ?></h6>
+										<span class="desc"><?php esc_html_e( 'By default show driver information in car OFF but you can keep it on by switching this option', 'car-rental-manager' ); ?></span>
+									</div>
+									<label class="roundSwitchLabel">
+										<input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked ); ?>>
+										<span class="roundSwitch" data-collapse-target="#mpcrbm_enable_driver_information"></span>
+									</label>
+								</div>
+							</section>
+							<div class="mpcrbm_driver_info mpcrbm-info-grid" id="mpcrbm_get_driver_info" style="display: <?php echo esc_attr( $is_info_show ); ?>">
+								<?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id ); ?>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<?php
 		}

@@ -339,8 +339,8 @@
 					[ 'target' => 'mpcrbm_make_year', 'icon' => 'mi mi-time-quarter-to', 'label' => esc_html__( 'Make Year', 'car-rental-manager' ) ],
 					[ 'target' => 'mpcrbm_car_feature', 'icon' => 'mi mi-list-timeline', 'label' => esc_html__( 'Car Feature', 'car-rental-manager' ) ],
 					[ 'target' => 'mpcrbm_manage_faq', 'icon' => 'mi mi-messages-question', 'label' => esc_html__( 'Manage Faq', 'car-rental-manager' ) ],
-					[ 'target' => 'mpcrbm_manage_term_condition', 'icon' => 'mi mi-blog-text', 'label' => esc_html__( 'Manage Term & Condition', 'car-rental-manager' ) ],
-					[ 'target' => 'mpcrbm_branch_manager', 'icon' => 'mi mi-map-location-track', 'label' => esc_html__( 'Branch Manager', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_manage_term_condition', 'icon' => 'mi mi-blog-text', 'label' => esc_html__( 'Term & Condition', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_branch_manager', 'icon' => 'mi mi-map-location-track', 'label' => esc_html__( 'Branch List', 'car-rental-manager' ) ],
 				];
 			}
 

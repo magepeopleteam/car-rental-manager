@@ -17,7 +17,7 @@ if ( ! class_exists( 'MPCRBM_Gallery_Imges_Settings' ) ) {
 
         public function add_tabs_content( $post_id ) {
             wp_nonce_field( 'mpcrbm_save_gallery_image_nonce', 'mpcrbm_gallery_image_nonce' );
-            $enable_gallery = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_gallery', 'on' );
+            $enable_gallery = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_gallery', 'off' );
             $is_gallery_checked = ( $enable_gallery === 'on' ) ? 'checked' : '';
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_settings_gallery_images">

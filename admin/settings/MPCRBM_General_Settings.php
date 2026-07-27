@@ -39,14 +39,6 @@
 				$stock_car          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
                 $pickup_location          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_set_pickup_location', '' );
 				$booking_period          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_minimum_booking_period');
-                $enable_driver_information    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
-
-                $is_driver_checked = '';
-                $is_info_show = 'none';
-                if( $enable_driver_information === 'on' ){
-                    $is_driver_checked = 'checked';
-                    $is_info_show = 'block';
-                }
 
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_general_info">
@@ -177,7 +169,7 @@
                             </div>
                         </div>
 
-                        <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card pickup-booking">
                             <div class="mpcrbm-info-card-header">
                                 <i class="fas fa-location-dot"></i>
                                 <h3><?php esc_html_e( 'Pickup & Booking', 'car-rental-manager' ); ?></h3>
@@ -186,7 +178,7 @@
                                 <section>
                                     <label class="label">
                                         <div>
-                                            <h6><?php esc_html_e( 'Set Pickup Location ', 'car-rental-manager' ); ?></h6>
+                                            <h6><?php esc_html_e( 'Pickup Address Details', 'car-rental-manager' ); ?></h6>
                                         </div>
 
                                         <div class="formControl mpcrbm_suggested_text_container">
@@ -195,7 +187,7 @@
                                                     type="text"
                                                     id="mpcrbm_set_pickup_location"
                                                     value="<?php echo esc_attr( $pickup_location ); ?>"
-                                                    placeholder="<?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?>">
+                                                    placeholder="<?php esc_html_e( 'Enter the address where pickup will take place.', 'car-rental-manager' ); ?>">
 <!--                                    <div id="mpcrbm_text_suggestions" class="mpcrbm_text_suggestions"></div>-->
                                         </div>
                                     </label>
@@ -206,8 +198,7 @@
                                     <section>
                                         <label class="label">
                                             <div>
-                                                <h6><?php esc_html_e( 'Set Minimum Booking Date', 'car-rental-manager' ); ?></h6>
-                                                <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_minimum_rental_period' ); ?></span>
+                                                <h6><?php esc_html_e( 'Minimum Booking Day', 'car-rental-manager' ); ?></h6>
                                             </div>
                                             <input class="formControl price_validation" name="mpcrbm_minimum_booking_period" value="<?php echo esc_attr( $booking_period ); ?>" type="number" placeholder="<?php esc_html_e( 'EX:2', 'car-rental-manager' ); ?>"/>
                                         </label>
@@ -216,31 +207,6 @@
                             </div>
                         </div>
 
-                        <div class="mpcrbm-info-card">
-                            <div class="mpcrbm-info-card-header">
-                                <i class="fas fa-id-card"></i>
-                                <h3><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h3>
-                            </div>
-                            <div class="mpcrbm-info-card-body">
-                                <div class="mpcrbm_driver_info_holder" id="mpcrbm_driver_info_holder">
-                                    <section class="bg-light">
-                                        <div class="label">
-                                            <div>
-                                                <h6>Enable Driver Information</h6>
-                                                <span class="desc">By default show driver information in car OFF but you can keep it on by switching this option</span>
-                                            </div>
-                                            <label class="roundSwitchLabel">
-                                                <input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked );?> >
-                                                <span class="roundSwitch" data-collapse-target="#mpcrbm_enable_driver_information"></span>
-                                            </label>
-                                        </div>
-                                    </section>
-                                    <div class="mpcrbm_driver_info mpcrbm-info-grid" id="mpcrbm_get_driver_info" style="display: <?php echo esc_attr($is_info_show);?>">
-                                        <?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 				<?php

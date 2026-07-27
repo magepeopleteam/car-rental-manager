@@ -492,6 +492,27 @@ function mpcrbm_sticky_management() {
                     //mpcrbm_loader_remove(tabsContent);
                     mpcrbm_load_bg_image();
                     parent.height('auto');
+
+                    // A tab holding the native post-content editor (e.g. "Vehicle
+                    // Description"/#postdivrich in General Info) leaves TinyMCE's
+                    // toolbar broken — buttons stack into a vertical column instead
+                    // of a row — because it measured a hidden (display:none)
+                    // container back when it first initialized. Now that this tab
+                    // is actually visible, nudge every active TinyMCE instance to
+                    // recalculate its layout against the real (now-visible) width;
+                    // a plain window resize is the fallback for anything that only
+                    // listens for that instead (e.g. Quicktags).
+                    if (typeof tinymce !== 'undefined' && tinymce.editors) {
+                        tinymce.editors.forEach(function (editor) {
+                            if (!editor.isHidden()) {
+                                editor.execCommand('mceRepaint');
+                                if (editor.theme && typeof editor.theme.resizeTo === 'function') {
+                                    editor.theme.resizeTo('100%', 'auto');
+                                }
+                            }
+                        });
+                    }
+                    $(window).trigger('resize');
                 });
             });
         }

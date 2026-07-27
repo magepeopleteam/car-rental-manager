@@ -74,31 +74,83 @@
 				$end_name         = 'mpcrbm_' . $day . '_end_time';
 				$default_end_time = $day == 'default' ? 24 : '';
 				$end_time = MPCRBM_Global_Function::get_post_info( $post_id, $end_name, $default_end_time );
+
+				$off_days      = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_off_days' );
+				$off_day_array = $off_days ? explode( ',', $off_days ) : array();
+				$is_off        = in_array( $day, $off_day_array, true );
 				?>
-                <tr>
-                    <th style="text-transform: capitalize; vertical-align: middle;"><strong><?php echo esc_html( $day ); ?></strong></th>
+                <tr class="mpcrbm-schedule-row<?php echo $is_off ? ' is-off-day' : ''; ?>">
+                    <th class="mpcrbm-schedule-day">
+                        <span class="mpcrbm-schedule-day-dot"></span>
+                        <strong><?php echo esc_html( $day ); ?></strong>
+                    </th>
                     <td class="mpcrbm_start_time" data-day-name="<?php echo esc_attr( $day ); ?>">
                         <label>
-                            <select class="formControl" name="<?php echo esc_attr( $start_name ); ?>">
+                            <select class="formControl mpcrbm-schedule-select" name="<?php echo esc_attr( $start_name ); ?>">
                                 <option value="" <?php echo esc_attr( $start_time == '' ? 'selected' : '' ); ?>>
 									<?php $this->default_text( $day ); ?>
                                 </option>
 								<?php $this->time_slot( $start_time ); ?>
                             </select>
                         </label>
+                        <span class="mpcrbm-schedule-closed-text"><i class="mi mi-lock"></i> <?php esc_html_e( 'Closed', 'car-rental-manager' ); ?></span>
                     </td>
-                    <td class="textCenter" style="text-transform: capitalize; vertical-align: middle;">
-                        <strong><?php esc_html_e( 'To', 'car-rental-manager' ); ?></strong>
+                    <td class="mpcrbm-schedule-to">
+                        <?php esc_html_e( 'to', 'car-rental-manager' ); ?>
                     </td>
                     <td class="mpcrbm_end_time">
-                        <select class="formControl" name="<?php echo esc_attr( $end_name ); ?>">
+                        <select class="formControl mpcrbm-schedule-select" name="<?php echo esc_attr( $end_name ); ?>">
                             <option value="" <?php echo esc_attr( $end_time == '' ? 'selected' : '' ); ?>>
 								<?php $this->default_text( $day ); ?>
                             </option>
 							<?php $this->time_slot( $end_time ); ?>
                         </select>
+                        <span class="mpcrbm-schedule-closed-text"><i class="mi mi-lock"></i> <?php esc_html_e( 'Closed', 'car-rental-manager' ); ?></span>
+                    </td>
+                    <td class="mpcrbm-schedule-offday">
+                        <label class="customCheckboxLabel mpcrbm-schedule-offday-label">
+                            <input type="checkbox" class="mpcrbm-schedule-offday-checkbox" data-checked="<?php echo esc_attr( $day ); ?>" <?php echo esc_attr( $is_off ? 'checked' : '' ); ?>/>
+                            <span class="customCheckbox me-1"><?php esc_html_e( 'Off Day', 'car-rental-manager' ); ?></span>
+                        </label>
                     </td>
                 </tr>
+				<?php
+			}
+
+			/**
+			 * The "Default Schedule" master row — global start/end applied
+			 * to every day via #mpcrbm-apply-all-days (mpcrbm_admin.js),
+			 * rendered above the per-day table rather than as one of its rows.
+			 */
+			public function default_schedule_master( $post_id ) {
+				$start_time = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_default_start_time', 0.5 );
+				$end_time   = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_default_end_time', 24 );
+				?>
+                <div class="mpcrbm-schedule-master">
+                    <div class="mpcrbm-schedule-master-icon"><i class="fas fa-business-time"></i></div>
+                    <div class="mpcrbm-schedule-master-info">
+                        <span class="mpcrbm-schedule-master-eyebrow"><?php esc_html_e( 'Master', 'car-rental-manager' ); ?></span>
+                        <strong><?php esc_html_e( 'Default Schedule', 'car-rental-manager' ); ?></strong>
+                    </div>
+                    <div class="mpcrbm-schedule-master-field">
+                        <label><?php esc_html_e( 'Global Start', 'car-rental-manager' ); ?></label>
+                        <select class="formControl" id="mpcrbm_default_start_time" name="mpcrbm_default_start_time">
+                            <option value="" <?php echo esc_attr( $start_time == '' ? 'selected' : '' ); ?>><?php esc_html_e( 'Please select', 'car-rental-manager' ); ?></option>
+							<?php $this->time_slot( $start_time ); ?>
+                        </select>
+                    </div>
+                    <i class="fas fa-arrow-right mpcrbm-schedule-master-arrow"></i>
+                    <div class="mpcrbm-schedule-master-field">
+                        <label><?php esc_html_e( 'Global End', 'car-rental-manager' ); ?></label>
+                        <select class="formControl" id="mpcrbm_default_end_time" name="mpcrbm_default_end_time">
+                            <option value="" <?php echo esc_attr( $end_time == '' ? 'selected' : '' ); ?>><?php esc_html_e( 'Please select', 'car-rental-manager' ); ?></option>
+							<?php $this->time_slot( $end_time ); ?>
+                        </select>
+                    </div>
+                    <button type="button" id="mpcrbm-apply-all-days" class="mpcrbm-schedule-apply-btn">
+						<?php esc_html_e( 'Apply to All Days', 'car-rental-manager' ); ?> <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
 				<?php
 			}
 
@@ -208,31 +260,40 @@
                     </section>
                         </div>
                     </div>
-                    <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card mpcrbm-schedule-card">
                         <div class="mpcrbm-info-card-header">
                             <i class="fas fa-clock"></i>
-                            <h3><?php esc_html_e( 'Schedule Date Configuration', 'car-rental-manager' ); ?></h3>
+                            <div>
+                                <h3><?php esc_html_e( 'Operation Schedule', 'car-rental-manager' ); ?></h3>
+                                <span class="desc"><?php esc_html_e( "Configure your fleet's service availability. These hours define when vehicles are available for dispatch and branch pickup across all active regions.", 'car-rental-manager' ); ?></span>
+                            </div>
                         </div>
                         <div class="mpcrbm-info-card-body">
                     <section>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th><?php esc_html_e( 'Day', 'car-rental-manager' ); ?></th>
-                                <th><?php esc_html_e( 'Start Time', 'car-rental-manager' ); ?></th>
-                                <th><?php esc_html_e( 'To', 'car-rental-manager' ); ?></th>
-                                <th><?php esc_html_e( 'End Time', 'car-rental-manager' ); ?></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-							<?php $this->time_slot_tr( $post_id, 'default' );
-								$days = MPCRBM_Global_Function::week_day();
-								foreach ( $days as $key => $day ) {
-									$this->time_slot_tr( $post_id, $key );
-								}
-							?>
-                            </tbody>
-                        </table>
+						<?php $this->default_schedule_master( $post_id ); ?>
+						<?php $off_days_value = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_off_days' ); ?>
+                        <div class="groupCheckBox mpcrbm-schedule-offday-group">
+                            <input type="hidden" name="mpcrbm_off_days" value="<?php echo esc_attr( $off_days_value ); ?>"/>
+                            <table class="mpcrbm-schedule-table">
+                                <thead>
+                                <tr>
+                                    <th><?php esc_html_e( 'Day of Week', 'car-rental-manager' ); ?></th>
+                                    <th><?php esc_html_e( 'Shift Start', 'car-rental-manager' ); ?></th>
+                                    <th></th>
+                                    <th><?php esc_html_e( 'Shift End', 'car-rental-manager' ); ?></th>
+                                    <th><?php esc_html_e( 'Off Day', 'car-rental-manager' ); ?></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+								<?php
+									$days = MPCRBM_Global_Function::week_day();
+									foreach ( $days as $key => $day ) {
+										$this->time_slot_tr( $post_id, $key );
+									}
+								?>
+                                </tbody>
+                            </table>
+                        </div>
                     </section>
                     <!-- End Schedule date config -->
                         </div>
@@ -240,33 +301,9 @@
                     <div class="mpcrbm-info-card">
                         <div class="mpcrbm-info-card-header">
                             <i class="fas fa-calendar-xmark"></i>
-                            <h3><?php esc_html_e( 'Off Days & Dates Configuration', 'car-rental-manager' ); ?></h3>
+                            <h3><?php esc_html_e( 'Off Dates Configuration', 'car-rental-manager' ); ?></h3>
                         </div>
                         <div class="mpcrbm-info-card-body">
-                    <section data-collapse="#mp_repeated" class="<?php echo esc_attr( $date_type == 'repeated' ? 'mActive' : '' ); ?>">
-                        <label class="label">
-                            <div>
-                                <h6><?php esc_html_e( 'Off Day', 'car-rental-manager' ); ?></h6>
-                                <span class="desc"><?php esc_html_e( 'Select checkbox for off day', 'car-rental-manager' ); ?></span>
-                            </div>
-                            <div>
-								<?php
-									$off_days      = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_off_days' );
-									$days          = MPCRBM_Global_Function::week_day();
-									$off_day_array = explode( ',', $off_days );
-								?>
-                                <div class="groupCheckBox">
-                                    <input type="hidden" name="mpcrbm_off_days" value="<?php echo esc_attr( $off_days ); ?>"/>
-									<?php foreach ( $days as $key => $day ) { ?>
-                                        <label class="customCheckboxLabel">
-                                            <input type="checkbox" <?php echo esc_attr( in_array( $key, $off_day_array ) ? 'checked' : '' ); ?> data-checked="<?php echo esc_attr( $key ); ?>"/>
-                                            <span class="customCheckbox me-1"><?php echo esc_html( $day ); ?></span>
-                                        </label>
-									<?php } ?>
-                                </div>
-                            </div>
-                        </label>
-                    </section>
                     <section>
                         <label class="label" style="align-items: start;">
                             <div>

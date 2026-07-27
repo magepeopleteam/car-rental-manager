@@ -260,7 +260,16 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
                 update_option( $this->option_key, $faqs );
 
-                wp_send_json_success( 'Saved successfully.' );
+                // 'key'/'title' let callers that create a *new* FAQ (no incoming
+                // $_POST['key']) find out the generated key without guessing at
+                // uniqid()'s output — e.g. MPCRBM_Faq_Settings.php's inline
+                // "Add New FAQ" toggle uses this to add the new FAQ straight to
+                // the current car instead of reloading the page.
+                wp_send_json_success( [
+                    'message' => 'Saved successfully.',
+                    'key'     => $key,
+                    'title'   => $title,
+                ] );
             }
 
             public function mpcrbm_save_term_and_condition() {
@@ -289,7 +298,15 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
                 update_option( $this->term_option_key, $term_condition );
 
-                wp_send_json_success( 'Saved successfully.' );
+                // 'key'/'title' mirror ajax_save_faq()'s response shape — used by
+                // MPCRBM_Term_Condition_Setting.php's inline "Add New Term &
+                // Condition" toggle to add the new item straight to the current
+                // car without reloading the page.
+                wp_send_json_success( [
+                    'message' => 'Saved successfully.',
+                    'key'     => $key,
+                    'title'   => $title,
+                ] );
             }
 
             /**

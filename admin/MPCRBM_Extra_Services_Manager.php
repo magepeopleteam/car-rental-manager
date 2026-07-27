@@ -314,7 +314,6 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 								<tr>
 									<th><span><?php esc_html_e( 'Icon', 'car-rental-manager' ); ?></span></th>
 									<th><span><?php esc_html_e( 'Service Name', 'car-rental-manager' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Description', 'car-rental-manager' ); ?></span></th>
 									<th><span><?php esc_html_e( 'Price ($)', 'car-rental-manager' ); ?></span></th>
 									<th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
 									<th><span><?php esc_html_e( 'Qty Control', 'car-rental-manager' ); ?></span></th>

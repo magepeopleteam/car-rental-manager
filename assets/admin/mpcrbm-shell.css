@@ -462,7 +462,7 @@ body.mpcrbm-admin *:after {
 }
 
 .mpcrbm-shell-body .mpcrbm-card-content {
-	padding: 24px;
+	padding: 5px 24px;
 }
 
 .mpcrbm-shell-body table.mpcrbm-table {
@@ -1391,7 +1391,10 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
 	position: absolute;
 	top: 15px;
+	border-radius: 10px;
 	right: 0;
+	padding: 10px;
+	background: #fff;
 	width: 280px;
 }
 
@@ -2464,6 +2467,29 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	padding: 18px 20px;
 }
 
+/* Multi-Location Settings — same "padding lives on the collapsible child, not
+   the body" trick as Extra Service Options above, so the body collapses to
+   nothing (no empty padded box under the header) while the toggle is off,
+   instead of just hiding #mpcrbm-multi-location-config inside a still-padded
+   .mpcrbm-info-card-body. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-multi-location-body {
+	padding: 0;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-multi-location-body #mpcrbm-multi-location-config {
+	padding: 18px 20px;
+}
+
+/* Security Deposit — same trick again, so this card also collapses to
+   header-only while its toggle is off. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-security-deposit-body {
+	padding: 0;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-security-deposit-body #mpcrbm_security_deposit_enable_holder {
+	padding: 18px 20px;
+}
+
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-header i {
 	color: var(--mpcrbm-shell-primary, #1d7bff);
 	font-size: 15px;
@@ -2510,6 +2536,26 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	width: 100%;
 }
 
+@media only screen and (min-width: 10px) {
+	div.mpcrbm .pickup-booking .formControl {
+		border: none;
+		padding: 0px;
+	}
+}
+
+.pickup-booking input#mpcrbm_set_pickup_location {
+	width: 100%;
+}
+
+.pickup-booking .formControl {
+	border: 1px solid #ddd;
+}
+
+.pickup-booking input.formControl.price_validation {
+	border: 1px solid #ddd !important;
+	padding: 5px !important;
+}
+
 /* Driver-info card: the enable/disable toggle row keeps the original bg-light
    "section" styling (it isn't inside .mpcrbm-info-grid), only the 4 driver
    fields underneath (Name/Phone/Email/Age) go into the 2-column grid. */
@@ -2541,17 +2587,31 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	align-items: center;
 	gap: 8px;
 	padding: 10px 18px;
-	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border: 1px solid #dde1e7;
 	border-radius: 100px;
-	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	background: #fff;
 	color: var(--mpcrbm-shell-text, #1f222b);
 	font-size: 13px;
 	font-weight: 600;
 	cursor: pointer;
+	transition: border-color .2s, box-shadow .2s;
+}
+
+button.mpcrbm-city-pill {
+	border: 1px solid #ddd !important;
+}
+
+.mpcrbm-home-branch-pills .mpcrbm-city-pill {
+	border: 1px solid #ddd;
+}
+
+.mpcrbm-current-branch-pills .mpcrbm-city-pill {
+	border: 1px solid #ddd;
 }
 
 .mpcrbm-city-pill:hover {
 	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	box-shadow: 0 1px 4px rgba(0,0,0,.06);
 }
 
 .mpcrbm-city-pill i {
@@ -2570,6 +2630,238 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 }
 
 /* ==========================================================================
+   Operation Schedule (MPCRBM_Date_Settings.php) — "Default Schedule" master
+   row + per-day table, "Operation Area & Date Time" tab.
+   ========================================================================== */
+
+.mpcrbm-schedule-master {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex-wrap: wrap;
+	background: linear-gradient(135deg, #eef4ff, #f5f8ff);
+	border: 1px solid #d7e3fb;
+	border-radius: 12px;
+	padding: 16px 20px;
+	margin-bottom: 20px;
+}
+.mpcrbm-schedule-master-icon {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 16px;
+}
+.mpcrbm-schedule-master-info {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	margin-right: 8px;
+}
+.mpcrbm-schedule-master-eyebrow {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+.mpcrbm-schedule-master-info strong {
+	font-size: 14px;
+	font-weight: 700;
+	color: #111827;
+}
+.mpcrbm-schedule-master-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.mpcrbm-schedule-master-field label {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: #6b7280;
+}
+
+.mpcrbm-schedule-master label {
+	padding-bottom: 10px !important;
+}
+.mpcrbm-schedule-master-field select {
+	box-sizing: border-box;
+	height: 38px;
+	min-width: 130px;
+	padding: 0 10px;
+	font-size: 13px;
+	color: #111827;
+	background: #fff;
+	border: 1px solid #d7e3fb;
+	border-radius: 8px;
+}
+.mpcrbm-schedule-master-arrow {
+	color: #9ca3af;
+	font-size: 13px;
+	margin-top: 16px;
+}
+.mpcrbm-schedule-apply-btn {
+	margin-left: auto;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 11px 18px;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+	border: none;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background-color .2s;
+}
+.mpcrbm-schedule-apply-btn:hover {
+	background: var(--mpcrbm-shell-primary-dark, #1465d6);
+}
+
+.mpcrbm-schedule-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+.mpcrbm-schedule-table thead th {
+	text-align: left;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: #9ca3af;
+	padding: 0 0 10px;
+}
+.mpcrbm-schedule-row {
+	border-top: 1px solid #f1f2f4;
+}
+.mpcrbm-schedule-row td,
+.mpcrbm-schedule-row th {
+	padding: 12px 8px;
+	vertical-align: middle;
+}
+.mpcrbm-schedule-day {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	height: 42px;
+	white-space: nowrap;
+}
+.mpcrbm-schedule-day strong {
+	text-transform: capitalize;
+	font-size: 13px;
+	color: #111827;
+}
+.mpcrbm-schedule-day-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	flex-shrink: 0;
+}
+/* Flex-centered against the same 42px reference height as
+   .mpcrbm-schedule-select/.mpcrbm-schedule-day/.mpcrbm-schedule-offday-label,
+   rather than relying on table vertical-align — the "to" cell has no 42px
+   control of its own to size the row against. */
+.mpcrbm-schedule-to {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 42px;
+	text-align: center;
+	color: #9ca3af;
+	font-size: 12px;
+	width: 30px;
+}
+.mpcrbm-schedule-select {
+	box-sizing: border-box;
+	width: 100%;
+	height: 42px;
+	padding: 0 12px;
+	font-size: 13px;
+	color: #111827;
+	background: #f3f4f6;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+}
+
+/* ".mpcrbm span { display: inline-block; }" (mp_global/assets/mp_style/
+   mpcrbm_global.css) has higher specificity than a single class selector, so
+   it always wins over a plain ".mpcrbm-schedule-closed-text{display:none}"
+   rule regardless of source order — scoped under "#mpcrbm_meta_box_panel
+   .mpcrbm_settings" here (as this file already does elsewhere) to beat it. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-schedule-closed-text {
+	display: none;
+	align-items: center;
+	gap: 6px;
+	color: #9ca3af;
+	font-size: 13px;
+}
+
+.mpcrbm-schedule-offday {
+	white-space: nowrap;
+}
+.mpcrbm-schedule-offday-label {
+	display: flex !important;
+	align-items: center;
+	height: 42px;
+	padding: 0 !important;
+	margin: 0 !important;
+	font-size: 12px;
+	color: #6b7280;
+}
+
+.mpcrbm-schedule-row.is-off-day {
+	background: #f9fafb;
+}
+.mpcrbm-schedule-row.is-off-day .mpcrbm-schedule-day strong,
+.mpcrbm-schedule-row.is-off-day .mpcrbm-schedule-to {
+	color: #b0b6c0;
+}
+.mpcrbm-schedule-row.is-off-day .mpcrbm-schedule-day-dot {
+	background: #cbd5e1;
+}
+.mpcrbm-schedule-row.is-off-day .mpcrbm-schedule-select {
+	display: none;
+}
+.mpcrbm-schedule-row.is-off-day .mpcrbm-schedule-closed-text {
+	display: flex;
+}
+
+@media (max-width: 782px) {
+	.mpcrbm-schedule-apply-btn {
+		margin-left: 0;
+		width: 100%;
+		justify-content: center;
+	}
+	.mpcrbm-schedule-table,
+	.mpcrbm-schedule-table thead,
+	.mpcrbm-schedule-table tbody,
+	.mpcrbm-schedule-row,
+	.mpcrbm-schedule-row td,
+	.mpcrbm-schedule-row th {
+		display: block;
+		width: 100%;
+	}
+	.mpcrbm-schedule-table thead {
+		display: none;
+	}
+	.mpcrbm-schedule-to {
+		text-align: left;
+		padding: 4px 8px !important;
+	}
+}
+
+/* ==========================================================================
    "Manage Car Feature" tab (MPCRBM_Manage_Feature.php) — Include/Exclude
    Feature checkboxes redesigned as toggle chips, two-column card layout.
    Scoped via the [data-tabs="#mpcrbm_setting_feature"] ancestor rather than
@@ -2580,6 +2872,10 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
    .mpcrbm_include_feature/.mpcrbm_exclude_feature themselves are unique to
    this tab, so those rules aren't re-scoped, but kept consistent anyway.
    ========================================================================== */
+
+.mpcrbm_faq_question_holder h3 {
+	margin-top: 0px;
+}
 
 [data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
 	display: grid;
@@ -2708,6 +3004,16 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	color: var(--mpcrbm-shell-text, #1f222b);
 }
 
+.mpcrbm_all_term_condition h3 {
+	margin-top: 0px !important;
+	padding: 0;
+	color: #4c4b4b;
+	margin: 0px 0 12px 0;
+	font-size: 20px;
+	line-height: 20px;
+	font-weight: 500;
+}
+
 .mpcrbm_faq_all_question_box p,
 .mpcrbm_selected_faq_question_box p,
 .mpcrbm_all_term_condition p {
@@ -2721,7 +3027,11 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
    FAQ list from just growing the whole card taller and taller. */
 .mpcrbm-list-search {
 	width: 100%;
-	margin-bottom: 12px;
+	margin-bottom: 15px;
+}
+
+input.formControl.mpcrbm-list-search {
+	margin-bottom: 15px;
 }
 
 .mpcrbm_faq_all_question,
@@ -2810,6 +3120,245 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	background: var(--mpcrbm-red-light, #f6dada);
 	border-color: var(--mpcrbm-red, #d91e1e);
 	color: var(--mpcrbm-red, #d91e1e);
+}
+
+/* ==========================================================================
+   FAQ single-list redesign (MPCRBM_Faq_Settings.php) — the two-column
+   "Available"/"Added" boxes were replaced with one list where clicking a
+   question toggles it on/off in place, rather than moving it between two
+   boxes. Reuses .mpcrbm_faq_item/.mpcrbm_faq_title's base look above (still
+   shared with Term & Condition's two-box UI), adding only the toggle-specific
+   bits (checkmark, "Added" status, selected state) on top.
+   ========================================================================== */
+
+.mpcrbm-faq-toolbar {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+	padding-bottom: 18px;
+	margin-bottom: 18px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+}
+.mpcrbm-faq-toolbar-text {
+	min-width: 0;
+}
+.mpcrbm-faq-eyebrow {
+	display: flex !important;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 6px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+.mpcrbm-faq-eyebrow-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	flex-shrink: 0;
+}
+.mpcrbm-faq-toolbar h3 {
+	margin: 0 0 6px;
+	font-size: 22px;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+.mpcrbm-faq-toolbar .desc {
+	display: block !important;
+	max-width: 520px;
+	font-size: 13px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-faq-toolbar-actions {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex-shrink: 0;
+}
+
+.mpcrbm-faq-live-pill {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: 100px;
+	padding: 8px 16px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	white-space: nowrap;
+}
+.mpcrbm-faq-live-pill #mpcrbm_faq_selected_count {
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+/* Status indicator only — not an interactive control, so no input/click
+   handler behind it (nothing here maps to a single settable on/off state). */
+.mpcrbm-faq-live-switch {
+	position: relative;
+	flex-shrink: 0;
+	width: 28px;
+	height: 16px;
+	border-radius: 20px;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	pointer-events: none;
+}
+.mpcrbm-faq-live-switch::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #fff;
+}
+
+.mpcrbm-faq-add-new-toggle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	border: none;
+	border-radius: 8px;
+	padding: 11px 18px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #fff;
+	cursor: pointer;
+	transition: background-color .15s ease;
+}
+.mpcrbm-faq-add-new-toggle:hover {
+	background: var(--mpcrbm-shell-primary-dark, #1465d6);
+}
+
+.mpcrbm-faq-add-new-field {
+	display: block;
+	margin-bottom: 14px;
+}
+.mpcrbm-faq-add-new-field:last-of-type {
+	margin-bottom: 0;
+}
+.mpcrbm-faq-add-new-field > span {
+	display: block !important;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	margin-bottom: 6px;
+}
+.mpcrbm-faq-add-new-field input[type="text"] {
+	width: 100%;
+}
+
+.mpcrbm-faq-add-new-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 16px;
+}
+
+/* .mpcrbm_modal_content's own polish (h3/label/button styling) is only
+   defined scoped under ".mpcrbm-shell-body" (the Manage Taxonomies dashboard
+   wrapper) in this file — this modal lives on the plain car-edit screen
+   instead, so it needs its own heading/button styles here. */
+.mpcrbm-faq-add-new-modal .mpcrbm_modal_content {
+	min-height: auto;
+}
+.mpcrbm-faq-add-new-modal .mpcrbm_modal_content h3 {
+	margin: 0 0 18px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+.mpcrbm-faq-add-new-modal #mpcrbm_save_new_faq_btn {
+	border-radius: 100px;
+	padding: 8px 20px;
+}
+.mpcrbm-faq-add-new-modal #mpcrbm_cancel_new_faq_btn {
+	border-radius: 100px;
+	padding: 8px 20px;
+	font-weight: 600;
+}
+
+.mpcrbm-faq-list,
+.mpcrbm-term-list {
+	padding-right: 4px;
+}
+
+.mpcrbm-faq-toggle-item,
+.mpcrbm-term-toggle-item {
+	cursor: pointer;
+	user-select: none;
+}
+.mpcrbm-faq-toggle-item.is-saving,
+.mpcrbm-term-toggle-item.is-saving {
+	opacity: .6;
+	pointer-events: none;
+}
+
+.mpcrbm-faq-toggle-check {
+	flex: 0 0 auto;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2px solid var(--mpcrbm-shell-border, #e7e7ea);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #fff;
+	transition: background-color .15s ease, border-color .15s ease;
+}
+.mpcrbm-faq-toggle-check i {
+	font-size: 10px;
+	color: #fff;
+	opacity: 0;
+	transition: opacity .15s ease;
+}
+
+.mpcrbm-faq-toggle-status {
+	flex: 0 0 auto;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	opacity: 0;
+	transition: opacity .15s ease;
+}
+
+.mpcrbm-faq-toggle-item.is-selected,
+.mpcrbm-term-toggle-item.is-selected {
+	background: #eff6ff;
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-check,
+.mpcrbm-term-toggle-item.is-selected .mpcrbm-faq-toggle-check {
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-check i,
+.mpcrbm-term-toggle-item.is-selected .mpcrbm-faq-toggle-check i {
+	opacity: 1;
+}
+.mpcrbm-faq-toggle-item.is-selected .mpcrbm-faq-toggle-status,
+.mpcrbm-term-toggle-item.is-selected .mpcrbm-faq-toggle-status {
+	opacity: 1;
+}
+
+.mpcrbm-faq-list span,
+.mpcrbm-term-list span {
+	display: flex !important;
 }
 
 /* ==========================================================================
