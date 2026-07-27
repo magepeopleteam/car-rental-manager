@@ -167,7 +167,7 @@
 									<ul class="mpcrbm-shell-submenu">
 										<?php foreach ( self::get_car_rental_taxonomy_tabs() as $tab ) : ?>
 											<li>
-												<a href="<?php echo esc_url( $item['link'] ); ?>">
+												<a href="<?php echo esc_url( add_query_arg( 'mpcrbm_tab', $tab['target'], $item['link'] ) ); ?>">
 													<i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i>
 													<span><?php echo esc_html( $tab['label'] ); ?></span>
 												</a>
@@ -405,7 +405,7 @@
 												<?php else : ?>
 													<?php foreach ( self::get_car_rental_taxonomy_tabs() as $tab ) : ?>
 														<li>
-															<a href="<?php echo esc_url( $item['link'] ); ?>">
+															<a href="<?php echo esc_url( add_query_arg( 'mpcrbm_tab', $tab['target'], $item['link'] ) ); ?>">
 																<i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i>
 																<span><?php echo esc_html( $tab['label'] ); ?></span>
 															</a>

@@ -499,6 +499,18 @@ if (!class_exists('MPCRBM_Taxonomies')) {
         // Callback to render page content
         public function mpcrbm_taxonomies_setup() {
 
+            // Deep-link support: the sidebar's Car Rental sub-menu (Car Type,
+            // Fuel Type, ...) is shown on every other shell page too (see
+            // MPCRBM_Admin_Shell::render_shell_open()), and links here with a
+            // "?mpcrbm_tab=<target>" query arg identifying which tab to land
+            // on — otherwise every one of those links always opened this page
+            // on its default Car List tab. Validated against the same tab
+            // list the buttons themselves are built from below.
+            $requested_tab = isset( $_GET['mpcrbm_tab'] ) ? sanitize_key( wp_unslash( $_GET['mpcrbm_tab'] ) ) : '';
+            if ( ! in_array( $requested_tab, wp_list_pluck( MPCRBM_Admin_Shell::get_car_rental_taxonomy_tabs(), 'target' ), true ) ) {
+                $requested_tab = '';
+            }
+
             $car_result_data = MPCRBM_Global_Function::mpcrbm_get_car_data();
             $total_publish_car = count( $car_result_data['cars'] );
 
@@ -668,6 +680,28 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 </div>
 
             <?php
+            if ( $requested_tab ) :
+                // Reuses the existing click handler (mpcrbm_manage_taxonomy.js)
+                // instead of duplicating its hide/show logic here — every tab's
+                // content is already server-rendered into the DOM above, this
+                // just clicks the matching button once on load.
+                //
+                // Bound to window "load", not jQuery(document).ready()/jQuery(fn):
+                // mpcrbm_manage_taxonomy.js is footer-enqueued and ALSO binds its
+                // click delegation inside its own $(document).ready() — since this
+                // inline block sits earlier in the page than that footer script,
+                // a document-ready callback here would run BEFORE that handler is
+                // bound (ready callbacks run in registration order), so .trigger()
+                // would fire into a void and silently do nothing every time. "load"
+                // fires strictly after every ready() callback has already run.
+                ?>
+                <script>
+                jQuery(window).on('load', function () {
+                    jQuery('.mpcrbm_taxonomies_tab[data-target="<?php echo esc_js( $requested_tab ); ?>"]').trigger('click');
+                });
+                </script>
+                <?php
+            endif;
             MPCRBM_Admin_Shell::render_shell_close();
         }
 
