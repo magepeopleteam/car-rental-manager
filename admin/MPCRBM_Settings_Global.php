@@ -32,7 +32,7 @@
                     <div class="mpcrbm_tabs leftTabs">
 						<?php $this->settings_api->show_navigation(); ?>
                         <div class="tabsContent">
-							<?php $this->settings_api->show_forms(); ?>
+							<?php $this->settings_api->show_forms_grid(); ?>
                         </div>
                     </div>
                 </div>
@@ -571,16 +571,12 @@
 			}
 			public function license_settings() {
 				?>
-                <div class="mpcrbm_license_settings">
-                    <h3><?php esc_html_e('Mage-People License', 'car-rental-manager'); ?></h3>
-                    <div class="_dFlex">
-                        <span class="fas fa-info-circle _mR_xs"></span>
-                        <i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></i>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="dLayout basic_license_area">
-						<?php $this->licence_area(); ?>
-                    </div>
+                <div class="mpcrbm-license-intro">
+                    <span class="fas fa-info-circle"></span>
+                    <p><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></p>
+                </div>
+                <div class="mpcrbm-license-table-wrap">
+					<?php $this->licence_area(); ?>
                 </div>
 				<?php
 			}

@@ -955,17 +955,28 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    back to mp_global's narrow vertical column.
    ========================================================================== */
 
+/* Tab strip + active section render as one seamlessly attached unit (a
+   single white card with the tabs as its own top edge) rather than two
+   separate floating pieces — the border/radius/shadow that used to live on
+   each section's own .mpcrbm-info-card (assets/admin/mpcrbm-settings-
+   global.css) moves up onto this wrapper, and the .mpcrbm-info-card below
+   is flattened to a plain, borderless continuation of it. */
 .mpcrbm-card.global_settings .leftTabs {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
+	background-color: #fff;
+	border: 1px solid var(--mpcrbm-shell-border);
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+	box-shadow: var(--mpcrbm-shell-shadow, 0 5px 15px -5px rgba(115, 125, 146, .11));
+	overflow: hidden;
 }
 
 .mpcrbm-card.global_settings .tabLists {
 	display: flex;
 	flex-flow: row wrap;
 	list-style: none;
-	margin: 0 0 24px;
+	margin: 0;
 	width: 100%;
 	max-width: none;
 	min-width: 0;
