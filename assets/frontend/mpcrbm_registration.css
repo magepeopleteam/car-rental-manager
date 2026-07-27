@@ -966,17 +966,48 @@ h2#mpcrbm_title_change{color:white;}
 		padding: 10px;
 	}
    div.mpcrbm .mpcrbm-filter-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
 	font-size: 16px;
 	font-weight: 600;
 	color: #333;
 	border-bottom: 1px solid #eee;
 	padding-bottom: 4px !important;
+	cursor: pointer;
+	user-select: none;
+ }
+ .mpcrbm-filter-arrow {
+	flex-shrink: 0;
+	font-size: 12px;
+	color: #888;
+	transition: transform .25s ease;
+ }
+ /* Collapsed state toggled on .mpcrbm-filter-group by the click handler on
+    .mpcrbm-filter-title (assets/frontend/mpcrbm_registration.js) — the
+    arrow rotates to point right and the list collapses via max-height
+    (not display:none) so the height change can transition smoothly. */
+ .mpcrbm-filter-group.mpcrbm-filter-collapsed .mpcrbm-filter-arrow {
+	transform: rotate(-90deg);
+ }
+ .mpcrbm-filter-group.mpcrbm-filter-collapsed .mpcrbm-filter-title {
+	border-bottom: none;
  }
  .mpcrbm-filter-list {
 	list-style: none;
 	padding-left: 10px;
 	margin: 0;
 	padding-top: 8px !important;
+	max-height: 500px;
+	overflow: hidden;
+	opacity: 1;
+	transition: max-height .3s ease, opacity .2s ease, padding-top .2s ease;
+ }
+ .mpcrbm-filter-group.mpcrbm-filter-collapsed .mpcrbm-filter-list {
+	max-height: 0;
+	opacity: 0;
+	padding-top: 0 !important;
  }
  .mpcrbm-filter-list li {
 	 margin: 4px 0;

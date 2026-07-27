@@ -1467,6 +1467,10 @@ jQuery(document).ready(function($) {
         }
     });
 
+    $(document).on('click', '.mpcrbm-filter-title', function() {
+        $(this).closest('.mpcrbm-filter-group').toggleClass('mpcrbm-filter-collapsed');
+    });
+
     $(document).on('change', '.mpcrbm-filter-checkbox', function() {
 
         let parent = $(this).closest(".mpcrbm_transport_search_area");
