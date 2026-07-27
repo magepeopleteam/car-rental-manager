@@ -39,14 +39,6 @@
 				$stock_car          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
                 $pickup_location          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_set_pickup_location', '' );
 				$booking_period          = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_minimum_booking_period');
-                $enable_driver_information    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
-
-                $is_driver_checked = '';
-                $is_info_show = 'none';
-                if( $enable_driver_information === 'on' ){
-                    $is_driver_checked = 'checked';
-                    $is_info_show = 'block';
-                }
 
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_general_info">
@@ -215,31 +207,6 @@
                             </div>
                         </div>
 
-                        <div class="mpcrbm-info-card">
-                            <div class="mpcrbm-info-card-header">
-                                <i class="fas fa-id-card"></i>
-                                <h3><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h3>
-                            </div>
-                            <div class="mpcrbm-info-card-body">
-                                <div class="mpcrbm_driver_info_holder" id="mpcrbm_driver_info_holder">
-                                    <section class="bg-light">
-                                        <div class="label">
-                                            <div>
-                                                <h6>Enable Driver Information</h6>
-                                                <span class="desc">By default show driver information in car OFF but you can keep it on by switching this option</span>
-                                            </div>
-                                            <label class="roundSwitchLabel">
-                                                <input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked );?> >
-                                                <span class="roundSwitch" data-collapse-target="#mpcrbm_enable_driver_information"></span>
-                                            </label>
-                                        </div>
-                                    </section>
-                                    <div class="mpcrbm_driver_info mpcrbm-info-grid" id="mpcrbm_get_driver_info" style="display: <?php echo esc_attr($is_info_show);?>">
-                                        <?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id )?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 				<?php

@@ -48,7 +48,7 @@
                                 <span class="mi mi-map-marker"></span><?php esc_html_e( 'Fee & Deposit', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_manage_faq">
-                                <span class="mi mi-messages-question"></span><?php esc_html_e( 'Manage FAQ', 'car-rental-manager' ); ?>
+                                <span class="mi mi-messages-question"></span><?php esc_html_e( 'FAQ', 'car-rental-manager' ); ?>
                             </li>
                             <li data-tabs-target="#mpcrbm_setting_feature">
                                 <span class="mi mi-list-timeline"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>

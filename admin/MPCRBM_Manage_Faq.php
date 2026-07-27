@@ -260,7 +260,16 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
                 update_option( $this->option_key, $faqs );
 
-                wp_send_json_success( 'Saved successfully.' );
+                // 'key'/'title' let callers that create a *new* FAQ (no incoming
+                // $_POST['key']) find out the generated key without guessing at
+                // uniqid()'s output — e.g. MPCRBM_Faq_Settings.php's inline
+                // "Add New FAQ" toggle uses this to add the new FAQ straight to
+                // the current car instead of reloading the page.
+                wp_send_json_success( [
+                    'message' => 'Saved successfully.',
+                    'key'     => $key,
+                    'title'   => $title,
+                ] );
             }
 
             public function mpcrbm_save_term_and_condition() {
