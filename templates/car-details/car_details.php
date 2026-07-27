@@ -93,6 +93,28 @@ $mpcrbm_car_type = !empty($mpcrbm_car_type) ? $mpcrbm_car_type[0] : '';
 $mpcrbm_maximum_bag = get_post_meta( $mpcrbm_post_id, 'mpcrbm_maximum_bag', true );
 $mpcrbm_maximum_bag = !empty($mpcrbm_maximum_bag) ? $mpcrbm_maximum_bag : '';
 
+// "Similar Rentals" — cars hand-picked in the "Related Rental" card on the
+// Advanced tab (admin/settings/MPCRBM_Tax_Settings.php), post meta
+// mpcrbm_related_rentals. post__in + orderby post__in keeps the admin's own
+// selection order instead of falling back to a default query order.
+$mpcrbm_related_rental_ids = get_post_meta( $mpcrbm_post_id, 'mpcrbm_related_rentals', true );
+$mpcrbm_related_rental_ids = is_array( $mpcrbm_related_rental_ids ) ? array_map( 'absint', $mpcrbm_related_rental_ids ) : [];
+$mpcrbm_related_rentals = [];
+if ( ! empty( $mpcrbm_related_rental_ids ) ) {
+    $mpcrbm_related_rentals = get_posts( [
+        'post_type'      => MPCRBM_Function::get_cpt(),
+        'post_status'    => 'publish',
+        'post__in'       => $mpcrbm_related_rental_ids,
+        'orderby'        => 'post__in',
+        'posts_per_page' => -1,
+    ] );
+}
+// More than 3 related cars: show them in an Owl Carousel (already bundled
+// plugin-wide, mp_global/assets/owl_carousel — just never initialized
+// anywhere until now) instead of a plain grid, so the section doesn't grow
+// tall with a long list.
+$mpcrbm_similar_rentals_is_carousel = count( $mpcrbm_related_rentals ) > 3;
+
 
 $mpcrbm_off_dates = get_post_meta( $mpcrbm_post_id, 'mpcrbm_off_dates', true );
 if( !is_array( $mpcrbm_off_dates ) && empty( $mpcrbm_off_dates ) ){
@@ -269,6 +291,9 @@ if ( $deposit_enable === 'on' ) {
                             <div class="mpcrbm_car_details_tabs">
                                 <button class="active" data-tab="description"><?php esc_attr_e( 'Description', 'car-rental-manager' );?></button>
                                 <button data-tab="carinfo"><?php esc_attr_e( 'Car Info', 'car-rental-manager' );?></button>
+                                <?php if ( ! empty( $mpcrbm_related_rentals ) ) : ?>
+                                    <button data-tab="similar_rentals"><?php esc_attr_e( 'Similar Rentals', 'car-rental-manager' );?></button>
+                                <?php endif; ?>
                                 <button data-tab="benefits" style="display: none"><?php esc_attr_e( 'Benefits', 'car-rental-manager' );?></button>
                                 <?php if( $mpcrbm_show_feature_section === 'yes' ){?>
                                     <button data-tab="include"><?php esc_attr_e( 'Include/Exclude', 'car-rental-manager' );?></button>
@@ -304,6 +329,54 @@ if ( $deposit_enable === 'on' ) {
 
                                 </div>
                             </div>
+
+                            <?php if ( ! empty( $mpcrbm_related_rentals ) ) : ?>
+                                <div id="similar_rentals" class="mpcrbm_car_details_tab_content">
+                                    <h3><?php esc_attr_e( 'Similar Rentals', 'car-rental-manager' ); ?></h3>
+                                    <div class="divider"></div>
+                                    <div class="<?php echo esc_attr( $mpcrbm_similar_rentals_is_carousel ? 'mpcrbm_similar_rentals_carousel owl-carousel' : 'mpcrbm_similar_rentals_grid' ); ?>">
+                                        <?php foreach ( $mpcrbm_related_rentals as $mpcrbm_related_car ) :
+                                            $mpcrbm_related_thumb = get_the_post_thumbnail_url( $mpcrbm_related_car, 'medium' );
+                                            $mpcrbm_related_link  = get_permalink( $mpcrbm_related_car );
+                                            $mpcrbm_related_price = get_post_meta( $mpcrbm_related_car->ID, 'mpcrbm_day_price', true );
+                                            ?>
+                                            <div class="mpcrbm_similar_rental_item">
+                                                <a href="<?php echo esc_url( $mpcrbm_related_link ); ?>" class="mpcrbm_similar_rental_thumb">
+                                                    <?php if ( $mpcrbm_related_thumb ) : ?>
+                                                        <img src="<?php echo esc_url( $mpcrbm_related_thumb ); ?>" alt="<?php echo esc_attr( get_the_title( $mpcrbm_related_car ) ); ?>">
+                                                    <?php else : ?>
+                                                        <i class="fas fa-car-side"></i>
+                                                    <?php endif; ?>
+                                                </a>
+                                                <div class="mpcrbm_similar_rental_info">
+                                                    <h4><a href="<?php echo esc_url( $mpcrbm_related_link ); ?>"><?php echo esc_html( get_the_title( $mpcrbm_related_car ) ); ?></a></h4>
+                                                    <?php if ( $mpcrbm_related_price ) : ?>
+                                                        <div class="mpcrbm_similar_rental_price"><?php echo wp_kses_post( wc_price( $mpcrbm_related_price ) ); ?> / <?php esc_html_e( 'Day', 'car-rental-manager' ); ?></div>
+                                                    <?php endif; ?>
+                                                    <a href="<?php echo esc_url( $mpcrbm_related_link ); ?>" class="mpcrbm_similar_rental_btn"><?php esc_html_e( 'View Details', 'car-rental-manager' ); ?></a>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                <?php if ( $mpcrbm_similar_rentals_is_carousel ) : ?>
+                                    <script>
+                                    jQuery(function ($) {
+                                        $('.mpcrbm_similar_rentals_carousel').owlCarousel({
+                                            loop: false,
+                                            margin: 16,
+                                            nav: true,
+                                            dots: false,
+                                            responsive: {
+                                                0:   { items: 1 },
+                                                600: { items: 2 },
+                                                992: { items: 3 }
+                                            }
+                                        });
+                                    });
+                                    </script>
+                                <?php endif; ?>
+                            <?php endif; ?>
 
                             <div id="benefits" class="mpcrbm_car_details_tab_content" style="display: none">
                                 <ul class="mpcrbm_car_details_benefit_list">

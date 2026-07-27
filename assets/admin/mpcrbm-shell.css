@@ -3417,6 +3417,124 @@ input.formControl.mpcrbm-list-search {
 }
 
 /* ==========================================================================
+   "Related Rental" card (MPCRBM_Tax_Settings.php's "Advanced" tab) — a grid
+   of clickable vehicle-thumbnail cards instead of a plain <select multiple>,
+   for picking which other cars show as "Similar Rentals" on this car's
+   details page. Reuses .mpcrbm-faq-toolbar/-eyebrow/-live-pill/-live-switch
+   above as-is (purely generic toolbar/counter chrome, not FAQ-specific) —
+   only the card grid itself is new. The underlying <input type="checkbox">
+   is a real, natively-submitted form field (name="mpcrbm_related_rentals[]"),
+   just visually hidden in favor of the card look; the little inline script
+   next to this markup only toggles ".is-selected" and updates the counter,
+   it doesn't drive the actual save.
+   ========================================================================== */
+
+.mpcrbm-rr-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+	gap: 14px;
+}
+
+.mpcrbm-rr-item {
+	position: relative;
+	display: block;
+	cursor: pointer;
+	user-select: none;
+	background: #fff;
+	border: 2px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px);
+	overflow: hidden;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mpcrbm-rr-item:hover {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+.mpcrbm-rr-item.is-selected {
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+	box-shadow: 0 0 0 3px rgba(29, 123, 255, .12);
+}
+
+.mpcrbm-rr-check-input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.mpcrbm-rr-thumb {
+	position: relative;
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	overflow: hidden;
+}
+
+.mpcrbm-rr-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.mpcrbm-rr-thumb > i {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 26px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-rr-check-badge {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background: #fff;
+	border: 2px solid var(--mpcrbm-shell-border, #e7e7ea);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color .15s ease, border-color .15s ease;
+}
+
+.mpcrbm-rr-check-badge i {
+	font-size: 11px;
+	color: #fff;
+	opacity: 0;
+	transition: opacity .15s ease;
+}
+
+.mpcrbm-rr-item.is-selected .mpcrbm-rr-check-badge {
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	border-color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+.mpcrbm-rr-item.is-selected .mpcrbm-rr-check-badge i {
+	opacity: 1;
+}
+
+.mpcrbm-rr-title {
+	display: block;
+	padding: 10px 12px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mpcrbm-rr-item span {
+	display: flex !important;
+}
+
+/* ==========================================================================
    "Manage Taxonomies" dashboard page (MPCRBM_Taxonomies.php, wrapped by
    MPCRBM_Admin_Shell::render_shell_open()) — Manage FAQ / Manage Term &
    Condition tabs (MPCRBM_Manage_Faq.php). Scoped under .mpcrbm-shell-body,

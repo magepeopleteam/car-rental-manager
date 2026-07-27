@@ -1,299 +1,604 @@
+/* ==========================================================================
+   Car Details page — visual redesign.
+   Every selector below is unchanged from before (nothing here renames a
+   class/ID) — templates/car-details/car_details.php and
+   assets/frontend/mpcrbm_registration.js (tabs, gallery lightbox, FAQ
+   accordion, multi-step booking flow) keep working exactly as they did.
+   Local CSS variables scoped to the page wrapper (same pattern as the
+   admin side's --mpcrbm-shell-* vars) give the whole page one consistent
+   radius/shadow/color scale instead of the previous mix of ad-hoc values
+   and a mismatched purple/blue accent in the FAQ/Terms sections. Brand
+   color still comes from the site's real --color_theme/--color_theme_alter
+   custom properties (mp_global/class/MPCRBM_Global_Style.php), so this
+   still follows whatever color an admin has set — default pink #F12971.
+   ========================================================================== */
+
+.mpcrbm_car_details_wrapper {
+    --mpcrbm-cd-radius: 14px;
+    --mpcrbm-cd-radius-sm: 8px;
+    --mpcrbm-cd-shadow: 0 4px 24px rgba(15, 23, 42, .06);
+    --mpcrbm-cd-border: #e5e7eb;
+    --mpcrbm-cd-text: #1f2937;
+    --mpcrbm-cd-text-faded: #6b7280;
+    --mpcrbm-cd-bg: #f8fafc;
+}
+
+div.mpcrbm h1 {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--mpcrbm-cd-text);
+    margin: 24px 0 20px;
+}
+
 .mpcrbm_car_details_container {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    margin: 30px auto;
+    align-items: flex-start;
+    gap: 24px;
+    margin: 0 auto 40px;
+}
+
+.mpcrbm_car_details_left,
+.mpcrbm_car_details_right {
+    background-color: #fff;
+    border-radius: var(--mpcrbm-cd-radius);
+    border: 1px solid var(--mpcrbm-cd-border);
+    box-shadow: var(--mpcrbm-cd-shadow);
 }
 
 .mpcrbm_car_details_left {
-    background-color: #fff;
-    border-radius: 10px;
-    padding:10px;
     flex: 1 1 65%;
-    border: 1px solid #e3e3e3;
+    min-width: 0;
+    padding: 20px;
 }
 
 .mpcrbm_car_details_right {
     flex: 1 1 30%;
-    border: 1px solid #e3e3e3;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
-    background-color: #fff;
+    min-width: 0;
+    padding: 20px;
 }
-.mpcrbm-car-price-header{
-    background-color: var(--color_theme);
-    color: var(--color_theme_alter);
-    padding: 10px ;
-    border-radius: 10px;
+
+div.mpcrbm .mpcrbm_car_details_container h3,
+div.mpcrbm_car_details_container h3 {
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--mpcrbm-cd-text);
+    text-align: left;
+    margin: 0 0 10px;
 }
-  div.mpcrbm h1{
-    font-size:32px;
-    font-weight: normal;
-    margin-top: 30px;
-  }
+
+/* Every plain "<div class="divider">" in this page (Car specification, price
+   box's "Details" summary, driver box) had no CSS anywhere in the plugin at
+   all — it rendered as an invisible, zero-height div. Scoped to this page
+   only, so registration/checkout templates that reuse the same bare
+   ".divider" class elsewhere are unaffected. */
+.mpcrbm_car_details_wrapper .divider {
+    height: 1px;
+    background: var(--mpcrbm-cd-border);
+    border: none;
+    margin: 0 0 16px;
+}
+
 /* ===== FEATURE IMAGE ===== */
 .mpcrbm_car_details_feature_image img {
     width: 100%;
-    border-radius: 10px;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--mpcrbm-cd-radius-sm);
     object-fit: cover;
+    display: block;
 }
 
 /* ===== GALLERY ===== */
 .mpcrbm_car_details_gallery {
     display: flex;
-    justify-content: center;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 12px;
     flex-wrap: wrap;
 }
 
 .mpcrbm_car_details_gallery img {
-    width: 120px !important;
-    height: 80px !important;
-    border-radius: 8px;
+    width: 90px !important;
+    height: 64px !important;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    object-fit: cover;
     cursor: pointer;
 }
 
 .mpcrbm_car_details_view_more {
-    background: var(--color_theme);
-    color: white;
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
     border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 8px 16px;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
+    transition: opacity .15s ease;
 }
 
-/* ===== TABS ===== */
+.mpcrbm_car_details_view_more:hover {
+    opacity: .88;
+}
+
+/* ===== TABS — underline style instead of boxed buttons ===== */
 .mpcrbm_car_details_tabs {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin: 20px 0; 
-    border-bottom: 1px solid #ddd;
-    padding: 10px 0;
+    gap: 22px;
+    margin: 24px 0 16px;
+    border-bottom: 1px solid var(--mpcrbm-cd-border);
 }
 
 .mpcrbm_car_details .mpcrbm_car_details_tabs button {
-    background: #fff;
-    padding: 10px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 0 0 12px;
+    margin-bottom: -1px;
     cursor: pointer;
-    border: 1px solid #999;
-    color: #333;
+    color: var(--mpcrbm-cd-text-faded);
     font-size: 14px;
-    font-weight: 500;
-}
-div.mpcrbm .mpcrbm_car_details_container h3{
-    font-weight: normal;
-    font-size: 18px;
-    text-align: left;
- }
-.mpcrbm_car_details_tabs button.active {
-    background-color: var(--color_theme);
-    color: var(--color_theme_alter);
+    font-weight: 600;
+    transition: color .15s ease;
 }
 
-/* ===== TAB CONTENT ===== */
+.mpcrbm_car_details .mpcrbm_car_details_tabs button:hover {
+    color: var(--mpcrbm-cd-text);
+}
+
+.mpcrbm_car_details_tabs button.active {
+    background: none;
+    color: var(--color_theme, #F12971);
+    border-bottom-color: var(--color_theme, #F12971);
+}
+
+/* ===== TAB CONTENT =====
+   Not a show/hide tab switcher — every section renders at once and stacks
+   down the page; the buttons above just scroll to + briefly flash their
+   section (see the ".mpcrbm_car_details_tabs button" click handler in
+   mpcrbm_registration.js, which only scrolls and toggles ".focus-highlight"
+   — it never touches these content divs' visibility or ".active" class).
+   "Benefits" is the one exception, deliberately hidden via its own inline
+   style="display:none" in the template — that still wins over this rule
+   regardless, no special-casing needed here. */
 .mpcrbm_car_details_tab_content {
     display: block;
-    margin-top: 15px;
-}
-.mpcrbm_car_details_tab_content.active {
-    display: block;
+    padding: 16px 0 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--mpcrbm-cd-border);
 }
 
-/* ===== INFO GRID ===== */
+/* The tabs bar (.mpcrbm_car_details_tabs) is also a <div>, so a plain
+   ":first-of-type" here would match IT, not the first actual content
+   section — this adjacent-sibling selector targets the real first one. */
+.mpcrbm_car_details_tabs + .mpcrbm_car_details_tab_content {
+    margin-top: 0;
+    border-top: none;
+    padding-top: 0;
+}
+
+/* Brief highlight flash when a tab link scrolls to this section — the class
+   itself already existed in the JS with no CSS behind it at all. */
+.mpcrbm_car_details_tab_content.focus-highlight {
+    background-color: #fdf0f4; /* fallback for browsers without color-mix() */
+    background-color: color-mix(in srgb, var(--color_theme, #F12971) 8%, transparent);
+    transition: background-color .3s ease;
+}
+
+.mpcrbm_car_details_tab_content p {
+    color: var(--mpcrbm-cd-text-faded);
+    line-height: 1.7;
+    font-size: 14.5px;
+}
+
+/* ===== INFO GRID (Car Info tab) ===== */
 .mpcrbm_car_details_info_grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 10px;
 }
 
-.mpcrbm_car_details_benefit_list{
-    padding: 10px !important;
+.specification {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mpcrbm-cd-text);
+    background: var(--mpcrbm-cd-bg);
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 12px;
+}
+
+.specification i {
+    color: var(--color_theme, #F12971);
+    font-size: 15px;
+}
+
+.mpcrbm_car_details_benefit_list {
+    padding: 0 !important;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mpcrbm_car_details_benefit_list li {
+    font-size: 14px;
+    color: var(--mpcrbm-cd-text);
 }
 
 /* ===== INCLUDE/EXCLUDE ===== */
-.mpcrbm_car_details_tab_content{
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
-    padding: 10px;
-    border-radius: 12px;
-}
 .mpcrbm_car_details_include_exclude {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
 }
-.mpcrbm_car_details_include_exclude ul li{
-    margin: 10px 0;
-    font-size: 14px;
-}
-.mpcrbm_car_details_include, 
-.mpcrbm_car_details_exclude {
-    flex: 1 1 45%;
-    padding: 15px;
-    border-radius: 10px;
-}
-.mpcrbm_car_details_include i{
-    color: rgb(20, 198, 20);
-}
-.mpcrbm_car_details_exclude i{
-    color: rgb(198, 20, 20);
+
+.mpcrbm_car_details_include_exclude ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-div.mpcrbm_car_details_left h4{
-    margin-bottom: 10px;
-    font-size: 16px;
+.mpcrbm_car_details_include_exclude ul li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--mpcrbm-cd-text);
 }
+
+.mpcrbm_car_details_include,
+.mpcrbm_car_details_exclude {
+    flex: 1 1 45%;
+    padding: 16px;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    background: var(--mpcrbm-cd-bg);
+}
+
+div.mpcrbm_car_details_left h4,
+div.mpcrbm_car_details_right h4 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--mpcrbm-cd-text);
+}
+
+.mpcrbm_car_details_include i {
+    color: #16a34a;
+}
+
+.mpcrbm_car_details_exclude i {
+    color: #dc2626;
+}
+
 /* ===== MAP ===== */
 .mpcrbm_car_details_map_box iframe {
     width: 100%;
     height: 300px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--mpcrbm-cd-radius-sm);
 }
 
-/* ===== RIGHT BOX ===== */
-div.mpcrbm_car_details_container h3{
-    margin:10px 0;
-    margin-top: 0;
+/* ===== RIGHT BOX — PRICE ===== */
+.mpcrbm-car-price-header {
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+    padding: 16px;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    margin-bottom: 16px;
+}
+
+.mpcrbm-car-price-header h3 {
+    color: var(--color_theme_alter, #fff) !important;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 4px 0 !important;
 }
 
 .mpcrbm_car_details_price_box h3 span {
-    color: var(--color_theme_alter);
+    color: var(--color_theme_alter, #fff);
 }
-.mpcrbm_car_details_price_box  div.mpcrbm_transport_search_area{
-    margin:0;
-}
-.mpcrbm_car_details_price_box  div.mpcrbm_transport_search_area div.tabsContentNext{
+
+.mpcrbm-car-price-header p {
     margin: 0;
+    font-size: 12.5px;
+    opacity: .85;
 }
-.mpcrbm_car_details_price_box .mpcrbm_extra_service_layout_details {
-  max-width: 100%;
-  background: white;
-  border:0;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
-  margin-bottom: 10px;
+
+.mpcrbm-car-price-header .mpcrbm_minimum_booking {
+    opacity: .95;
+    font-size: 12.5px;
 }
-div.mpcrbm_car_details_right h4{
-    margin: 0;
-    font-size: 16px;
-}
-.mpcrbm_car_details_price_box .mpcrbm_extra_service_item button{
-    background: var(--color_theme);
-    color: var(--color_theme_alter);
-    padding: 5px;
-    font-size: 14px;
+
+/* Scoped — .mpcrbm_price-breakdown is also reused on car list/search-result
+   cards (templates/registration/vehicle_item*.php). */
+.mpcrbm-car-price-header .mpcrbm_price-breakdown {
+    font-size: 11px;
+    color: #ffffff;
     font-weight: 500;
 }
 
-.mpcrbm_car_details_driver_box{
-    margin: 10px 0;
+/* Scoped to inside the pink price header specifically — .mpcrbm_price_hover_wrap
+   /.mpcrbm_price_info are also reused on car list/search-result cards
+   (templates/registration/vehicle_item*.php), which don't have a colored
+   background behind them, so this must not apply there. */
+.mpcrbm-car-price-header .mpcrbm_price_hover_wrap .mpcrbm_price_info {
+    color: var(--color_theme_alter, #fff);
+    background: rgba(255, 255, 255, .18);
 }
 
-.mpcrbm_already_booked{
+.mpcrbm_car_details_price_box div.mpcrbm_transport_search_area {
+    margin: 0;
+}
+
+.mpcrbm_car_details_price_box div.mpcrbm_transport_search_area div.tabsContentNext {
+    margin: 0;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_layout_details {
+    max-width: 100%;
+    background: #fff;
+    border: 1px solid var(--mpcrbm-cd-border);
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    padding: 14px;
+    box-shadow: none;
+    margin-bottom: 12px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item button {
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+    border: none;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Puts the service name ("Driver"), price, and Select button all on one
+   row instead of the name stacked above them — .fdColumn is a shared
+   flex-direction:column utility (mp_global/assets/mp_style/
+   mpcrbm_global.css), overridden here only inside this page's extra-service
+   list, not globally. The quantity stepper itself stays hidden until
+   "Select" is clicked (div.mpcrbm [data-collapse]{display:none} — existing,
+   unrelated behavior), so only these 3 elements are visible at rest. */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .fdColumn._fullWidth {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 12px;
+    min-width: 0;
+}
+
+/* flex: 1 1 auto + min-width: 0 + ellipsis lets the title shrink/truncate
+   under pressure (a longer service name, or the qty stepper revealing on
+   Select) instead of the row being rigid end-to-end — that rigidity was the
+   real cause of the price box "jumping": with no give anywhere in this row,
+   its natural content width could exceed the column's 30% flex-basis, and
+   without min-width:0 on .mpcrbm_car_details_right (fixed separately, see
+   that rule) a flex item's default min-width:auto forces the *whole*
+   2-column container to wrap instead of clipping inside its own column —
+   dropping the price box onto its own line below the left column, which
+   reads as the sidebar suddenly jumping to the bottom of the page. */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm_search_title {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm-ex-quantity-box {
+    flex-shrink: 0;
+}
+
+/* Scoped to the price box specifically — .mpcrbm_transport_summary is also
+   the shared order-summary block reused on the checkout/search-results
+   pages (templates/registration/choose_vehicles.php, get_search_result.php,
+   summary.php), which this page's styling must not affect. */
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary {
+    padding-top: 4px;
+}
+
+/* Extra service row ("Driver", etc.) — .price-quantity-box's shared base
+   (assets/frontend/mpcrbm_registration.css, reused by the multi-step
+   booking flow's own Extra Services step too) stacks price/qty-stepper/
+   button in a column, which reads as jumbled/misaligned in this narrower
+   sidebar price box. Scoped override puts them in one row instead, without
+   touching the shared base other pages rely on. */
+.mpcrbm_car_details_price_box .mpcrbm-ex-quantity-box {
+    flex-wrap: nowrap;
+    gap: 10px;
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 10px;
+    color: var(--mpcrbm-cd-text-faded);
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .mpcrbm-price {
+    width: auto;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box ._mR_min_100 {
+    flex-shrink: 0;
+    margin-right: 0;
+}
+
+.mpcrbm_car_details_price_box .price-quantity-box .mpcrbm_price_calculation {
+    flex-shrink: 0;
+}
+
+/* Scoped to the price box specifically — .mpcrbm_car_quantity is also reused
+   on search-result cards (templates/registration/vehicle_item*.php), which
+   this page's styling must not affect. */
+.mpcrbm_car_details_price_box .mpcrbm_car_quantity {
+    padding: 10px 0;
+    border-top: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+    align-items: center;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_car_quantity_title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .book-items,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .justifyBetween {
+    font-size: 13.5px;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total h6,
+.mpcrbm_car_details_price_box .mpcrbm_transport_summary .total h3 {
+    color: var(--mpcrbm-cd-text, #1f2937);
+}
+
+/* ===== BUTTON ===== */
+.mpcrbm_car_details_continue_btn {
+    width: 100%;
+    background: var(--color_theme, #F12971);
+    color: var(--color_theme_alter, #fff);
+    border: none;
+    padding: 13px 14px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 12px 0 0;
+    transition: opacity .15s ease, transform .1s ease;
+}
+
+.mpcrbm_car_details_continue_btn:hover {
+    opacity: .9;
+}
+
+.mpcrbm_car_details_continue_btn:active {
+    transform: scale(.99);
+}
+
+.mpcrbm_already_booked {
     display: block;
-    padding: 6px;
-    border: 1px solid #990000;
-    border-radius: 5px;
-    color: #990000;
-    font-size: 16px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    color: #b91c1c;
+    font-size: 13.5px;
 }
 
-.mpcrbm_car_details_driver_box{
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
-    padding:10px;
-    border-radius: 12px;
+/* ===== DRIVER / RENTER INFO ===== */
+.mpcrbm_car_details_driver_box {
+    background: #fff;
+    border: 1px solid var(--mpcrbm-cd-border);
+    border-radius: var(--mpcrbm-cd-radius);
+    padding: 16px;
+    margin-top: 16px;
 }
-.mpcrbm_car_details_renter_box{
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
-    padding:10px;
-    border-radius: 12px;
-    margin-top: 20px;
+
+.mpcrbm_car_details_renter_box {
+    background: #fff;
+    border: 1px solid var(--mpcrbm-cd-border);
+    border-radius: var(--mpcrbm-cd-radius);
+    padding: 16px;
+    margin-top: 16px;
 }
-.mpcrbm_car_details_driver_box .driver-data{
+
+.mpcrbm_car_details_driver_box .driver-data {
     display: flex;
-    gap: 8px;
+    gap: 12px;
 }
-.driver-data .driver-picuture{
+
+.driver-data .driver-picuture {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width:30%;
-    gap: 5px;
+    width: 30%;
+    gap: 6px;
 }
 
-.driver-data .verified{
-    color: rgb(20, 198, 20);
+.driver-data .verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #16a34a;
+    font-size: 11.5px;
+    font-weight: 600;
 }
 
-.driver-data .driver-picuture img{
-    width: 100px;
-    height: 100px;
-    border-radius:12px;
-    border: 1px solid #e0e0e0;
-    
+.driver-data .driver-picuture img {
+    width: 88px;
+    height: 88px;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    border: 1px solid var(--mpcrbm-cd-border);
+    object-fit: cover;
 }
-.driver-data .driver-info{
+
+.driver-data .driver-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: 70%;
 }
-.driver-data .driver-info div{
+
+.driver-data .driver-info div {
     margin: 4px 0;
-    font-size: 14px;
-    color: #333;
+    padding-bottom: 4px;
+    font-size: 13.5px;
+    color: var(--mpcrbm-cd-text);
     border-bottom: 1px solid #f5f5f5;
 }
-.mpcrbm_car_details_price_box .price-quantity-box{
-    color: #999;
-}
-.mpcrbm_car_details_price_box .price-quantity-box .mpcrbm-price{
-    width: 80px;
-}
-/* ===== BUTTON ===== */
-.mpcrbm_car_details_continue_btn {
-    width: 100%;
-    background: var(--color_theme);
-    color: var(--color_theme_alter);
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    margin: 10px 0;
-}
 
-/* Smooth fade image animation */
+/* ===== GALLERY / LIGHTBOX ===== */
 .mpcrbm_gallery_image_fade_out {
     opacity: 0;
     transition: opacity 0.3s ease;
 }
-.mpcrbm_gallery_image_fade_in{
+
+.mpcrbm_gallery_image_fade_in {
     opacity: 1;
     transition: opacity 0.3s ease;
 }
+
 .mpcrbm_gallery_image {
     cursor: pointer;
-    border-radius: 6px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .mpcrbm_gallery_image:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transform: scale(1.04);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
 }
+
 .mpcrbm_gallery_image.active {
-    border: 2px solid #0073aa;
+    outline: 2px solid var(--color_theme, #F12971);
+    outline-offset: 1px;
+}
+
+.mpcrbm_car_image_details {
+    cursor: pointer;
 }
 
 .mpcrbm_gallery_image_popup_wrapper {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(15, 23, 42, 0.88);
     justify-content: center;
     align-items: center;
     z-index: 9999;
@@ -307,8 +612,8 @@ div.mpcrbm_car_details_right h4{
     margin: auto;
 }
 
-.mpcrbm_gallery_image_popup_prev_holder{
-    display: flex; 
+.mpcrbm_gallery_image_popup_prev_holder {
+    display: flex;
     justify-content: space-between;
     max-width: 150px;
     margin: 10px auto;
@@ -319,9 +624,15 @@ div.mpcrbm_car_details_right h4{
     width: 100%;
     max-height: 80vh;
     object-fit: contain;
-    border-radius: 8px;
-    animation: fadeIn 0.4s ease;
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    animation: mpcrbmCdFadeIn 0.3s ease;
 }
+
+@keyframes mpcrbmCdFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 .mpcrbm_gallery_image_popup_container img.active {
     display: block;
     opacity: 1;
@@ -331,11 +642,15 @@ div.mpcrbm_car_details_right h4{
     position: absolute;
     top: 15px;
     right: 15px;
-    background: #ff4444;
+    background: rgba(255, 255, 255, .9);
     border: none;
-    color: #fff;
-    font-size: 18px;
-    padding: 8px 10px;
+    color: #1f2937;
+    font-size: 16px;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    padding: 0;
     border-radius: 50%;
     cursor: pointer;
     z-index: 10;
@@ -346,18 +661,16 @@ div.mpcrbm_car_details_right h4{
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: #ffffff99;
+    background: rgba(255, 255, 255, .85);
     border: none;
-    color: #000;
-    font-size: 22px;
-    padding: 10px 15px;
+    color: #1f2937;
+    font-size: 20px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
     border-radius: 50%;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-.mpcrbm_car_image_details{
-    cursor: pointer;
+    transition: background .2s ease;
 }
 
 .mpcrbm_gallery_image_popup_prev:hover,
@@ -365,74 +678,67 @@ div.mpcrbm_car_details_right h4{
     background: #fff;
 }
 
-.mpcrbm_gallery_image_popup_prev { left: 10px; }
-.mpcrbm_gallery_image_popup_next { right: 10px; }
+.mpcrbm_gallery_image_popup_prev { left: 14px; }
+.mpcrbm_gallery_image_popup_next { right: 14px; }
 
-.specification{
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-    color: #566676;
-    font-size: 1rem;
-    font-weight: 400;
-    width: 24%;
-    padding: 5px;
-    position: relative;
-}
-
+/* Unused elsewhere in this template today, kept for compatibility with any
+   add-on that renders a plain data table into this class. */
 .mpcrbm_car_details_table {
-    border-left: 1px solid #c0ccd8;
-    border-top: 1px solid #c0ccd8;
-    margin: 0px;
-    border-radius: 16px;
+    border-left: 1px solid var(--mpcrbm-cd-border);
+    border-top: 1px solid var(--mpcrbm-cd-border);
+    margin: 0;
+    border-radius: var(--mpcrbm-cd-radius);
 }
 
-
-/* ===== Modern FAQ Section ===== */
+/* ===== FAQ SECTION ===== */
 .mpcrbm_car_details_faq_section {
-    background: linear-gradient(135deg, #f9fbff, #eef2ff);
-    border-radius: 5px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+    background: var(--mpcrbm-cd-bg);
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    box-shadow: none;
 }
 
 .mpcrbm_car_details_faq_section h3 {
-    font-size: 30px;
+    font-size: 20px;
     font-weight: 700;
-    color: #222;
-    margin-bottom: 15px;
+    color: var(--mpcrbm-cd-text);
+    margin-bottom: 6px;
     text-align: left;
 }
 
 .mpcrbm_car_details_divider {
-    width: 90px;
-    height: 4px;
-    margin: 0 auto 40px auto;
-    background: linear-gradient(90deg, #6a5af9, #00c6ff);
+    width: 48px;
+    height: 3px;
+    margin: 0 0 20px;
+    background: var(--color_theme, #F12971);
     border-radius: 50px;
 }
 
 .mpcrbm_car_details_faq_wrapper {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 10px;
 }
 
 .mpcrbm_car_details_faq_item {
-    background: #ffffff;
-    border-radius: 5px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    background: #fff;
+    border: 1px solid var(--mpcrbm-cd-border);
+    border-radius: var(--mpcrbm-cd-radius-sm);
     overflow: hidden;
-    transition: 0.3s ease;
+    transition: box-shadow .2s ease;
+}
+
+.mpcrbm_car_details_faq_item:hover {
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
 }
 
 .mpcrbm_car_details_faq_question {
     width: 100%;
-    padding: 22px 25px;
+    padding: 16px 18px;
     border: none;
     background: none;
-    font-size: 17px;
+    font-size: 14.5px;
     font-weight: 600;
-    color: #333;
+    color: var(--mpcrbm-cd-text);
     text-align: left;
     cursor: pointer;
     display: flex;
@@ -441,93 +747,75 @@ div.mpcrbm_car_details_right h4{
 }
 
 .mpcrbm_car_details_faq_icon {
-    font-size: 22px;
-    font-weight: bold;
-    color: #6a5af9;
-    transition: 0.3s ease;
-}
-
-.mpcrbm_car_details_faq_answer {
-    display: none;
-    padding: 15px 25px 20px;
-}
-
-.mpcrbm_car_details_faq_answer p {
-    padding-bottom: 20px;
-    font-size: 15px;
-    color: #555;
-    line-height: 1.7;
-}
-
-.mpcrbm_car_details_faq_item.active .mpcrbm_car_details_faq_answer {
-    max-height: 300px;
+    flex-shrink: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color_theme, #F12971);
+    transition: transform .2s ease;
 }
 
 .mpcrbm_car_details_faq_item.active .mpcrbm_car_details_faq_icon {
     transform: rotate(45deg);
 }
 
-.mpcrbm_car_details_faq_item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+.mpcrbm_car_details_faq_answer {
+    display: none;
+    padding: 0 18px 16px;
+}
+
+.mpcrbm_car_details_faq_answer p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--mpcrbm-cd-text-faded);
+    line-height: 1.7;
 }
 
 @media (max-width: 768px) {
-    .mpcrbm_car_details_faq_section {
-        /*padding: 30px 20px;*/
-    }
-
     .mpcrbm_car_details_faq_question {
-        font-size: 15px;
-        padding: 18px;
+        font-size: 14px;
+        padding: 14px;
     }
 
     .mpcrbm_car_details_faq_answer p {
-        font-size: 14px;
+        font-size: 13px;
     }
 }
 
-
-/* ===== Terms & Conditions Modern Layout ===== */
+/* ===== TERMS & CONDITIONS ===== */
 .mpcrbm_car_details_conditions_section {
     width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.08);
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    box-shadow: none;
 }
 
 .mpcrbm_car_details_conditions_section h3 {
-    text-align: center;
-    font-size: 30px;
+    text-align: left;
+    font-size: 20px;
     font-weight: 700;
-    color: #222;
-    margin-bottom: 15px;
+    color: var(--mpcrbm-cd-text);
+    margin-bottom: 6px;
 }
 
 .mpcrbm_car_details_conditions_section .divider {
-    height: 1px;
-    background: linear-gradient(90deg, #6a5af9, #00c6ff);
+    height: 3px;
+    width: 48px;
+    background: var(--color_theme, #F12971);
     border-radius: 50px;
+    margin-bottom: 20px;
 }
 
 .mpcrbm_car_details_tc_wrapper {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 }
 
 .mpcrbm_car_details_tc_item {
-    background: #ffffff;
-    padding: 15px 10px;
-    border-radius: 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
+    background: var(--mpcrbm-cd-bg);
+    padding: 14px 16px 14px 20px;
+    border-radius: var(--mpcrbm-cd-radius-sm);
     position: relative;
     overflow: hidden;
-}
-
-.mpcrbm_car_details_tc_item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
 .mpcrbm_car_details_tc_item::before {
@@ -537,51 +825,179 @@ div.mpcrbm_car_details_right h4{
     top: 0;
     width: 3px;
     height: 100%;
-    background: linear-gradient(to bottom, #6a5af9, #00c6ff);
-    border-radius: 12px 0 0 12px;
+    background: var(--color_theme, #F12971);
 }
 
 .mpcrbm_car_details_tc_title {
-    font-size: 18px;
+    font-size: 14.5px;
     font-weight: 600;
-    color: #6a5af9;
-    margin-bottom: 8px;
+    color: var(--mpcrbm-cd-text);
+    margin-bottom: 4px;
 }
 
 .mpcrbm_car_details_tc_description {
-    font-size: 15px;
-    color: #555;
-    line-height: 1.7;
+    font-size: 13.5px;
+    color: var(--mpcrbm-cd-text-faded);
+    line-height: 1.6;
 }
 
 @media (max-width: 768px) {
-    .mpcrbm_car_details_conditions_section {
-        /*padding: 30px 20px;*/
-    }
-
     .mpcrbm_car_details_tc_item {
-        padding: 20px;
+        padding: 14px;
     }
+}
 
-    .tc-title {
-        font-size: 16px;
-    }
+/* ===== SIMILAR RENTALS =====
+   "Related Rental" picks (admin/settings/MPCRBM_Tax_Settings.php's Advanced
+   tab) rendered as simple preview cards — not the search-flow's
+   vehicle_item.php card (that one requires a live date range + AJAX nonce
+   context and has its own "Select Car"/cart wiring, not appropriate for a
+   plain "here are some other cars" link-through). 3 or fewer: a static
+   grid. More than 3: an Owl Carousel (mp_global/assets/owl_carousel — bundled
+   and enqueued site-wide already, just never initialized until now; see the
+   inline <script> next to this markup in the template). ===== */
+.mpcrbm_similar_rentals_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
 
-    .tc-description {
-        font-size: 14px;
+.mpcrbm_similar_rentals_carousel {
+    position: relative;
+    padding: 0 6px;
+}
+
+.mpcrbm_similar_rental_item {
+    background: #fff;
+    border: 1px solid var(--mpcrbm-cd-border, #e5e7eb);
+    border-radius: var(--mpcrbm-cd-radius-sm, 8px);
+    overflow: hidden;
+    transition: box-shadow .2s ease;
+}
+
+.mpcrbm_similar_rentals_grid .mpcrbm_similar_rental_item:hover {
+    box-shadow: var(--mpcrbm-cd-shadow, 0 4px 24px rgba(15, 23, 42, .06));
+}
+
+.mpcrbm_similar_rental_thumb {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: var(--mpcrbm-cd-bg, #f8fafc);
+    overflow: hidden;
+}
+
+.mpcrbm_similar_rental_thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mpcrbm_similar_rental_item img {
+    height: 200px;
+}
+
+.mpcrbm_similar_rental_thumb i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 30px;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
+}
+
+.mpcrbm_similar_rental_info {
+    padding: 12px 14px;
+}
+
+.mpcrbm_similar_rental_info h4 {
+    margin: 0 0 6px;
+    font-size: 14.5px;
+    font-weight: 700;
+}
+
+.mpcrbm_similar_rental_info h4 a {
+    color: var(--mpcrbm-cd-text, #1f2937) !important;
+    text-decoration: none;
+}
+
+.mpcrbm_similar_rental_price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color_theme, #F12971);
+    margin-bottom: 10px;
+}
+
+.mpcrbm_similar_rental_btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: var(--color_theme, #F12971) !important;
+    color: var(--color_theme_alter, #fff) !important;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity .15s ease;
+}
+
+.mpcrbm_similar_rental_btn:hover {
+    opacity: .88;
+}
+
+.mpcrbm_similar_rentals_carousel .owl-nav button.owl-prev,
+.mpcrbm_similar_rentals_carousel .owl-nav button.owl-next {
+    position: absolute;
+    top: 35%;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #fff !important;
+    border: 1px solid var(--mpcrbm-cd-border, #e5e7eb) !important;
+    color: var(--mpcrbm-cd-text, #1f2937) !important;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
+
+.mpcrbm_similar_rentals_carousel .owl-nav button.owl-prev {
+    left: -14px;
+}
+
+.mpcrbm_similar_rentals_carousel .owl-nav button.owl-next {
+    right: -14px;
+}
+
+@media (max-width: 768px) {
+    .mpcrbm_similar_rentals_grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 12px;
     }
 }
 
 /* ===== RESPONSIVE ===== */
+
 @media (max-width: 768px) {
     .mpcrbm_car_details_container {
         flex-direction: column;
     }
+
     .mpcrbm_car_details_left,
     .mpcrbm_car_details_right {
         flex: 1 1 100%;
     }
+
     .mpcrbm_car_details_tabs {
         overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    div.mpcrbm h1 {
+        font-size: 24px;
     }
 }

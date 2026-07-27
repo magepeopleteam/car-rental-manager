@@ -38,9 +38,6 @@
                             <li data-tabs-target="#mpcrbm_settings_pricing">
                                 <span class="mi mi-coins"></span><?php esc_html_e( 'Pricing', 'car-rental-manager' ); ?>
                             </li>
-                            <li data-tabs-target="#wbtm_settings_tax">
-                                <span class="mi mi-calendar-event-tax"></span><?php esc_html_e( 'Tax Configure', 'car-rental-manager' ); ?>
-                            </li>
                             <li data-tabs-target="#mpcrbm_setting_operation_area">
                                 <span class="mi mi-map-location-track"></span><?php esc_html_e( 'Operation Area & Date Time', 'car-rental-manager' ); ?>
                             </li>
