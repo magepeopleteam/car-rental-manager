@@ -177,7 +177,7 @@
                             </div>
                         </div>
 
-                        <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card pickup-booking">
                             <div class="mpcrbm-info-card-header">
                                 <i class="fas fa-location-dot"></i>
                                 <h3><?php esc_html_e( 'Pickup & Booking', 'car-rental-manager' ); ?></h3>
@@ -186,7 +186,7 @@
                                 <section>
                                     <label class="label">
                                         <div>
-                                            <h6><?php esc_html_e( 'Set Pickup Location ', 'car-rental-manager' ); ?></h6>
+                                            <h6><?php esc_html_e( 'Pickup Address Details', 'car-rental-manager' ); ?></h6>
                                         </div>
 
                                         <div class="formControl mpcrbm_suggested_text_container">
@@ -195,7 +195,7 @@
                                                     type="text"
                                                     id="mpcrbm_set_pickup_location"
                                                     value="<?php echo esc_attr( $pickup_location ); ?>"
-                                                    placeholder="<?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?>">
+                                                    placeholder="<?php esc_html_e( 'Enter the address where pickup will take place.', 'car-rental-manager' ); ?>">
 <!--                                    <div id="mpcrbm_text_suggestions" class="mpcrbm_text_suggestions"></div>-->
                                         </div>
                                     </label>
@@ -206,8 +206,7 @@
                                     <section>
                                         <label class="label">
                                             <div>
-                                                <h6><?php esc_html_e( 'Set Minimum Booking Date', 'car-rental-manager' ); ?></h6>
-                                                <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_minimum_rental_period' ); ?></span>
+                                                <h6><?php esc_html_e( 'Minimum Booking Day', 'car-rental-manager' ); ?></h6>
                                             </div>
                                             <input class="formControl price_validation" name="mpcrbm_minimum_booking_period" value="<?php echo esc_attr( $booking_period ); ?>" type="number" placeholder="<?php esc_html_e( 'EX:2', 'car-rental-manager' ); ?>"/>
                                         </label>

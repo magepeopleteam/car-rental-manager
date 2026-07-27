@@ -2510,6 +2510,26 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 	width: 100%;
 }
 
+@media only screen and (min-width: 10px) {
+	div.mpcrbm .pickup-booking .formControl {
+		border: none;
+		padding: 0px;
+	}
+}
+
+.pickup-booking input#mpcrbm_set_pickup_location {
+	width: 100%;
+}
+
+.pickup-booking .formControl {
+	border: 1px solid #ddd;
+}
+
+.pickup-booking input.formControl.price_validation {
+	border: 1px solid #ddd !important;
+	padding: 5px !important;
+}
+
 /* Driver-info card: the enable/disable toggle row keeps the original bg-light
    "section" styling (it isn't inside .mpcrbm-info-grid), only the 4 driver
    fields underneath (Name/Phone/Email/Age) go into the 2-column grid. */
