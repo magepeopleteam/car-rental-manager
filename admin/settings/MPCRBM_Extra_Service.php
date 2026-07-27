@@ -108,7 +108,6 @@
 				$service_price = array_key_exists( 'service_price', $field ) ? $field['service_price'] : '';
 				$input_type    = array_key_exists( 'service_qty_type', $field ) ? $field['service_qty_type'] : 'inputbox';
 				$price_type    = array_key_exists( 'service_price_type', $field ) ? $field['service_price_type'] : 'flat';
-				$description   = array_key_exists( 'extra_service_description', $field ) ? $field['extra_service_description'] : '';
 				$icon          = $image = "";
 				if ( $service_icon ) {
 					if ( preg_match( '/\s/', $service_icon ) ) {
@@ -124,11 +123,6 @@
                     </td>
                     <td class="text-center">
                         <input type="text" class="small name_validation" name="service_name[]" placeholder="<?php esc_attr_e( 'EX: Driver', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_name ); ?>"/>
-                    </td>
-                    <td>
-                        <label>
-                            <textarea rows="1" cols="5" class="" name="extra_service_description[]" placeholder="<?php esc_attr_e( 'EX: Description', 'car-rental-manager' ); ?>"><?php echo esc_html( $description ); ?></textarea>
-                        </label>
                     </td>
                     <td class="text-center">
                         <input type="number" pattern="[0-9]*" step="0.01" class="small price_validation" name="service_price[]" placeholder="<?php esc_attr_e( 'EX: 10', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_price ); ?>"/>
@@ -249,7 +243,6 @@
                                 <tr>
                                     <th><span><?php esc_html_e( 'Icon', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Name', 'car-rental-manager' ); ?></span></th>
-                                    <th><span><?php esc_html_e( 'Description', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Price', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Qty Box Type', 'car-rental-manager' ); ?></span></th>

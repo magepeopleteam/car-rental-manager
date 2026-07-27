@@ -97,14 +97,203 @@
     border: 1px solid #e2e8f0;
 }
 .mpcrbm-season-row {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+
+.mpcrbm-season-badge {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+.mpcrbm-season-badge-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: #9ca3af;
+}
+.mpcrbm-season-badge-num {
+    font-size: 26px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.1;
+}
+
+.mpcrbm-season-fields {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1.2fr;
+    gap: 20px;
+    min-width: 0;
+}
+.mpcrbm-season-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin: 0 0 10px;
+}
+.mpcrbm-season-req {
+    color: #ef4444;
+}
+.mpcrbm-season-field small {
+    display: block;
+    margin-top: 6px;
+    color: #9ca3af;
+    font-size: 11px;
+}
+.mpcrbm-season-field input[type="text"],
+.mpcrbm-season-field > input[type="number"],
+.mpcrbm-season-field > select {
+    box-sizing: border-box;
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    font-size: 14px;
+    color: #111827;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.mpcrbm-tier-fields {
+    grid-template-columns: 1fr 1fr 1.3fr 1.3fr;
+}
+
+.mpcrbm-season-date-wrap {
+    box-sizing: border-box;
+    height: 42px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 15px;
-    background: #fffbeb;
+    gap: 8px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    margin-bottom: 12px;
-    border: 1px solid #fbbf24;
+    padding: 0 12px;
+}
+.mpcrbm-season-date-wrap i {
+    color: #9ca3af;
+    font-size: 13px;
+}
+.mpcrbm-season-date-wrap input[type="date"] {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: none !important;
+    background: transparent !important;
+    padding: 0;
+    font-size: 14px;
+    color: #111827;
+    box-shadow: none !important;
+}
+.mpcrbm-season-date-wrap input[type="date"]:focus {
+    outline: none;
+}
+
+.mpcrbm-season-adjustment {
+    box-sizing: border-box;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0 10px;
+}
+.mpcrbm-season-arrow {
+    font-size: 13px;
+}
+.mpcrbm-season-adjustment.is-increase .mpcrbm-season-arrow,
+.mpcrbm-season-adjustment.is-increase .mpcrbm-season-value {
+    color: #16a34a;
+}
+.mpcrbm-season-adjustment.is-decrease .mpcrbm-season-arrow,
+.mpcrbm-season-adjustment.is-decrease .mpcrbm-season-value {
+    color: #dc2626;
+}
+.mpcrbm-season-value {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: 100%;
+    border: none !important;
+    background: transparent !important;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: none !important;
+}
+.mpcrbm-season-unit {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+.mpcrbm-season-type {
+    height: 100%;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #6b7280;
+    font-size: 12px;
+    max-width: 90px;
+    padding: 0 0 0 4px !important;
+}
+
+.mpcrbm-season-remove {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    margin-top: 13px;
+    border-radius: 50%;
+    border: none;
+    background: #f3f4f6;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color .2s, color .2s;
+}
+.mpcrbm-season-remove:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+@media (max-width: 900px) {
+    .mpcrbm-season-fields {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 600px) {
+    .mpcrbm-season-row {
+        flex-direction: column;
+    }
+    .mpcrbm-season-fields {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+    .mpcrbm-season-remove {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        margin-top: 0;
+    }
 }
 .mpcrbm-discount-type{
     width: 135px !important;
