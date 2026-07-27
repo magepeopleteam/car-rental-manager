@@ -110,6 +110,38 @@ body.mpcrbm-admin {
 	background-color: var(--mpcrbm-shell-bg);
 }
 
+/* ==========================================================================
+   Top-of-page loading bar (mpcrbm-shell.js injects/drives the element
+   itself — nothing to add per page). Every navigation between this
+   plugin's pages is still a real full page load (deliberately not
+   AJAX/pushState — see the JS file's comment on why), so this exists just
+   to give instant feedback that a click registered and smooth the gap
+   before the next page starts painting, instead of a silent hang.
+   ========================================================================== */
+.mpcrbm-shell-loadbar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 3px;
+	width: 0;
+	background: var(--mpcrbm-shell-primary, #667eea);
+	z-index: 999999;
+	opacity: 0;
+	pointer-events: none;
+	transition: width .4s ease, opacity .3s ease .1s;
+}
+
+.mpcrbm-shell-loadbar.is-active {
+	opacity: 1;
+	transition: width .4s ease, opacity .15s ease;
+}
+
+.mpcrbm-shell-loadbar.is-done {
+	width: 100% !important;
+	opacity: 0;
+	transition: width .2s ease, opacity .4s ease .2s;
+}
+
 body.mpcrbm-admin *,
 body.mpcrbm-admin *:before,
 body.mpcrbm-admin *:after {

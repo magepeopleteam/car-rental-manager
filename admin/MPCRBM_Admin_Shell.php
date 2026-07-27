@@ -309,6 +309,15 @@
 					];
 				}
 
+				// Add-on plugins (car-rental-manager-pro's Google Reviews / Calendar
+				// Settings / Analytics, etc.) inject their own ['slug','label','icon','link']
+				// entries here — same idiom as the "mpcrbm_settings_sec_reg" filter above.
+				// Applied here (before Global Settings/Status/Guideline below), not at
+				// the very end, so those add-on items land right after Branch
+				// Managers/Bookings and before this plugin's own settings/status/docs
+				// items, per explicit request.
+				$items = apply_filters( 'mpcrbm_shell_menu_items', $items );
+
 				if ( current_user_can( 'manage_options' ) ) {
 					$items[] = [
 						'slug'  => 'mpcrbm_settings_page',
@@ -330,10 +339,7 @@
 					];
 				}
 
-				// Add-on plugins (car-rental-manager-pro's Google Reviews / Calendar
-				// Settings / Analytics, etc.) inject their own ['slug','label','icon','link']
-				// entries here — same idiom as the "mpcrbm_settings_sec_reg" filter above.
-				return apply_filters( 'mpcrbm_shell_menu_items', $items );
+				return $items;
 			}
 
 			// The Car Rental dashboard's own tabs (Car List, Car Type, ...) — kept in one

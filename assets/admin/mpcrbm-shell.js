@@ -1,6 +1,63 @@
 (function ($) {
 	'use strict';
 
+	// Top-of-page loading bar. Deliberately NOT a switch to AJAX/pushState
+	// navigation (every link here still causes a real full page load) — that
+	// was considered and rejected: every page in this shell (color pickers,
+	// Chart.js, select2, file uploads, the WP Settings API's POST-to-
+	// options.php-then-redirect save flow) assumes a fresh page load, so
+	// AJAX-swapping content in would mean re-auditing all of that for
+	// comparatively little UX gain. This is the cheap version of the same
+	// win: instant feedback that a click registered (bar grows toward 90%
+	// immediately), and a smoothed arrival on the next page (finishes to
+	// 100%, then fades) instead of a silent hang in between. Self-contained
+	// — injects its own element — so it applies to every page this script is
+	// enqueued on with no per-page template changes. Runs as its own IIFE,
+	// at the very top of this file, so it's unaffected by the early
+	// "if (!$shell.length) return;" further down (this needs to run on the
+	// Add/Edit Car screen too, not just the 7 dashboard-style pages).
+	(function () {
+		// enqueue_shell_assets() only prints this script on this plugin's own
+		// screens (MPCRBM_Admin_Shell::is_plugin_screen()/is_metabox_screen()),
+		// with in_footer=true — so document.body already exists here.
+		var bar = document.createElement('div');
+		bar.className = 'mpcrbm-shell-loadbar';
+		document.body.appendChild(bar);
+
+		// rAF so the browser paints the width:0 starting state first — without
+		// this the width:0 → 30% change would happen in the same frame and the
+		// CSS transition would have nothing to animate from.
+		window.requestAnimationFrame(function () {
+			bar.classList.add('is-active');
+			bar.style.width = '30%';
+			setTimeout(function () {
+				bar.classList.add('is-done');
+			}, 250);
+		});
+
+		document.addEventListener('click', function (e) {
+			var link = e.target.closest && e.target.closest('a[href]');
+			if (!link || link.target === '_blank' || link.hasAttribute('download') ||
+				e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+				return;
+			}
+			var href = link.getAttribute('href') || '';
+			if (!href || href.charAt(0) === '#' || href.toLowerCase().indexOf('javascript:') === 0) {
+				return;
+			}
+			try {
+				if (new URL(link.href, window.location.href).origin !== window.location.origin) {
+					return;
+				}
+			} catch (err) {
+				return;
+			}
+			bar.classList.remove('is-done');
+			bar.classList.add('is-active');
+			bar.style.width = '90%';
+		});
+	})();
+
 	// Add/Edit Car screen only — DOM relocation, run SYNCHRONOUSLY (not inside
 	// jQuery(document).ready()) rather than deferred to DOMContentLoaded.
 	//
