@@ -42,7 +42,7 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             .mpcrbm-sd-type-label:hover{border-color:#93c5fd;background:#eff6ff;}
             .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label{border-color:#2563eb;background:#eff6ff;}
             .mpcrbm-sd-type-dot{width:18px;height:18px;border-radius:50%;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
-            .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot{border-color:#2563eb;background:#2563eb;}
+            .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot{border-color:#2563eb;background:#2563eb;display:flex;}
             .mpcrbm-sd-type-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;display:none;}
             .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot::after{display:block;}
             .mpcrbm-sd-type-text strong{display:block;font-size:13px;font-weight:600;color:#111827;}
@@ -64,30 +64,16 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-header">
                         <i class="fas fa-shield-halved"></i>
-                        <h3><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></h3>
-                    </div>
-                    <div class="mpcrbm-info-card-body">
-
-                <!-- Enable toggle -->
-                <section>
-                    <div class="label">
                         <div>
-                            <h6><?php esc_html_e( 'Enable Security Deposit', 'car-rental-manager' ); ?></h6>
+                            <h3><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></h3>
                             <span class="desc"><?php esc_html_e( 'Require a refundable deposit at the time of booking.', 'car-rental-manager' ); ?></span>
                         </div>
-                        <label class="roundSwitchLabel">
-                            <input type="checkbox"
-                                   class="mpcrbm_switch_checkbox"
-                                   id="mpcrbm_security_deposit_enable"
-                                   name="mpcrbm_security_deposit_enable"
-                                <?php echo esc_attr( $is_checked ); ?>>
-                            <span class="roundSwitch" data-collapse-target="#mpcrbm_security_deposit_enable"></span>
-                        </label>
+                        <?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_security_deposit_enable', $is_checked ); ?>
                     </div>
-                </section>
+                    <div class="mpcrbm-info-card-body mpcrbm-security-deposit-body">
 
                 <!-- Configuration (shown when enabled) -->
-                <section id="mpcrbm_security_deposit_enable_holder" style="display:<?php echo esc_attr( $section_display ); ?>">
+                <section id="mpcrbm_security_deposit_enable_holder" style="display:<?php echo esc_attr( $section_display ); ?>" data-collapse="#mpcrbm_security_deposit_enable">
 
                     <!-- Deposit type -->
                     <label class="label" style="align-items: start; margin-bottom: 12px;">
@@ -128,7 +114,7 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
                             <span id="mpcrbm_deposit_desc_percentage" style="display:<?php echo $type === 'percentage' ? 'inline' : 'none'; ?>"><?php esc_html_e( 'Deposit Percentage', 'car-rental-manager' ); ?></span>
                         </label>
                         <div class="mpcrbm-sd-amount-wrap">
-                            <span class="mpcrbm-sd-amount-prefix" id="mpcrbm_deposit_unit"><?php echo esc_html( $unit ); ?></span>
+                            <span class="mpcrbm-sd-amount-prefix" id="mpcrbm_deposit_unit"><?php echo wp_kses_post( $unit ); ?></span>
                             <input type="number"
                                    id="mpcrbm_security_deposit"
                                    name="mpcrbm_security_deposit"

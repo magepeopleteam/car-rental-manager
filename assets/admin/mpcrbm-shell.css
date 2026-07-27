@@ -462,7 +462,7 @@ body.mpcrbm-admin *:after {
 }
 
 .mpcrbm-shell-body .mpcrbm-card-content {
-	padding: 24px;
+	padding: 5px 24px;
 }
 
 .mpcrbm-shell-body table.mpcrbm-table {
@@ -2464,6 +2464,29 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm_extra_services_setting .mpcrbm-info-card-body .settings_area {
+	padding: 18px 20px;
+}
+
+/* Multi-Location Settings — same "padding lives on the collapsible child, not
+   the body" trick as Extra Service Options above, so the body collapses to
+   nothing (no empty padded box under the header) while the toggle is off,
+   instead of just hiding #mpcrbm-multi-location-config inside a still-padded
+   .mpcrbm-info-card-body. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-multi-location-body {
+	padding: 0;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-multi-location-body #mpcrbm-multi-location-config {
+	padding: 18px 20px;
+}
+
+/* Security Deposit — same trick again, so this card also collapses to
+   header-only while its toggle is off. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-security-deposit-body {
+	padding: 0;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-security-deposit-body #mpcrbm_security_deposit_enable_holder {
 	padding: 18px 20px;
 }
 

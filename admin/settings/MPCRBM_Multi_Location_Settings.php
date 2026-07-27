@@ -28,42 +28,29 @@
 				?>
 				
 				<div class="tabsItem" data-tabs="#mpcrbm_setting_multi_location">
-					<!-- Enable Multi-Location -->
 					<div class="mpcrbm-info-card">
 						<div class="mpcrbm-info-card-header">
 							<i class="fas fa-map-pin"></i>
-							<h3><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h3>
-						</div>
-						<div class="mpcrbm-info-card-body">
-					<section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e( 'Enable Multi-Location Support', 'car-rental-manager' ); ?></h6>
-                                <span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
-                            </div>
+							<div>
+								<h3><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h3>
+								<span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
+							</div>
 							<?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_multi_location_enabled', $enabled_checked ); ?>
-                        </div>
-                    </section>
 						</div>
-					</div>
-
-					<!-- Multi-Location Configuration -->
-					<div class="mpcrbm-info-card" id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_multi_location_enabled">
-						<div class="mpcrbm-info-card-header">
-							<i class="fas fa-tags"></i>
-							<h3><?php esc_html_e( 'Location-Based Pricing', 'car-rental-manager' ); ?></h3>
-						</div>
-						<div class="mpcrbm-info-card-body">
-						<section>
+						<div class="mpcrbm-info-card-body mpcrbm-multi-location-body">
+						<section id="mpcrbm-multi-location-config" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_multi_location_enabled">
 							<!-- Location Management Info -->
-							<div class="mpcrbm-info-box">
-								<h6><?php esc_html_e( 'How Multi-Location Works:', 'car-rental-manager' ); ?></h6>
-								<ul style="margin: 10px 0; padding-left: 20px;">
-									<li><?php esc_html_e( 'Daily rates are taken from the main pricing settings - no need to set them here', 'car-rental-manager' ); ?></li>
-									<li><?php esc_html_e( 'Configure transfer fees for rentals between different pickup/dropoff locations', 'car-rental-manager' ); ?></li>
-									<li><?php esc_html_e( 'Customers can select their preferred pickup and dropoff locations', 'car-rental-manager' ); ?></li>
-									<li><?php esc_html_e( 'Pricing automatically adjusts based on selected locations', 'car-rental-manager' ); ?></li>
-								</ul>
+							<div class="mpcrbm-location-info-banner">
+								<i class="mi mi-info"></i>
+								<div>
+									<strong><?php esc_html_e( 'How Multi-Location Works', 'car-rental-manager' ); ?></strong>
+									<ul>
+										<li><?php esc_html_e( 'Daily rates are taken from the main pricing settings - no need to set them here', 'car-rental-manager' ); ?></li>
+										<li><?php esc_html_e( 'Configure transfer fees for rentals between different pickup/dropoff locations', 'car-rental-manager' ); ?></li>
+										<li><?php esc_html_e( 'Customers can select their preferred pickup and dropoff locations', 'car-rental-manager' ); ?></li>
+										<li><?php esc_html_e( 'Pricing automatically adjusts based on selected locations', 'car-rental-manager' ); ?></li>
+									</ul>
+								</div>
 							</div>
 
 							<div id="mpcrbm-location-prices-container">
@@ -78,7 +65,7 @@
 								}
 								?>
 							</div>
-							<button type="button" id="mpcrbm-add-location-price" class="_themeButton_xs_mT_xs ">
+							<button type="button" id="mpcrbm-add-location-price" class="_themeButton_xs_mT_xs mpcrbm-price-add-btn">
 								<i class="mi mi-plus"></i> <?php esc_html_e( 'Add Location Price', 'car-rental-manager' ); ?>
 							</button>
 						</section>
@@ -101,12 +88,17 @@
 				$dropoff_location = isset( $price_data['dropoff_location'] ) ? $price_data['dropoff_location'] : '';
 				// Removed daily_price - using base pricing from main settings instead
 				$transfer_fee = isset( $price_data['transfer_fee'] ) ? $price_data['transfer_fee'] : '';
+				$currency = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
 				?>
-				
-				<div class="mpcrbm-location-price-row" data-index="<?php echo esc_attr( $index ); ?>">
-					<div class="mpcrbm-location-price-grid mpcrbm-transfer-fee-only">
-						<div class="mpcrbm-location-field">
-							<label><?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?></label>
+
+				<div class="mpcrbm-location-price-row mpcrbm-season-row" data-index="<?php echo esc_attr( $index ); ?>">
+					<div class="mpcrbm-season-badge">
+						<span class="mpcrbm-season-badge-label"><?php esc_html_e( 'Route', 'car-rental-manager' ); ?></span>
+						<span class="mpcrbm-season-badge-num mpcrbm-location-badge-num"><?php echo esc_html( str_pad( $index + 1, 2, '0', STR_PAD_LEFT ) ); ?></span>
+					</div>
+					<div class="mpcrbm-season-fields mpcrbm-location-price-grid mpcrbm-transfer-fee-only">
+						<div class="mpcrbm-season-field mpcrbm-location-field">
+							<label title="<?php esc_attr_e( 'Select the location where customers will pick up the vehicle', 'car-rental-manager' ); ?>"><?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?></label>
 							<select name="mpcrbm_location_prices[<?php echo esc_attr( $index ); ?>][pickup_location]" class="mpcrbm-location-select">
 								<option value=""><?php esc_html_e( 'Select Location', 'car-rental-manager' ); ?></option>
 								<?php foreach ( $location_terms as $term ) : ?>
@@ -116,9 +108,9 @@
 								<?php endforeach; ?>
 							</select>
 						</div>
-						
-						<div class="mpcrbm-location-field">
-							<label><?php esc_html_e( 'Drop-off Location', 'car-rental-manager' ); ?></label>
+
+						<div class="mpcrbm-season-field mpcrbm-location-field">
+							<label title="<?php esc_attr_e( 'Select the location where customers will return the vehicle', 'car-rental-manager' ); ?>"><?php esc_html_e( 'Drop-off Location', 'car-rental-manager' ); ?></label>
 							<select name="mpcrbm_location_prices[<?php echo esc_attr( $index ); ?>][dropoff_location]" class="mpcrbm-location-select">
 								<option value=""><?php esc_html_e( 'Select Location', 'car-rental-manager' ); ?></option>
 								<?php foreach ( $location_terms as $term ) : ?>
@@ -128,24 +120,25 @@
 								<?php endforeach; ?>
 							</select>
 						</div>
-						
+
 						<!-- Daily Price field removed - using base pricing from main settings -->
-						
-						<div class="mpcrbm-location-field">
-							<label><?php esc_html_e( 'Transfer Fee', 'car-rental-manager' ); ?></label>
-							<input type="number" name="mpcrbm_location_prices[<?php echo esc_attr( $index ); ?>][transfer_fee]" 
-								   value="<?php echo esc_attr( $transfer_fee ); ?>" step="0.01" min="0" 
-								   placeholder="<?php esc_html_e( 'One-way Fee', 'car-rental-manager' ); ?>" />
-						</div>
-						
-						<div class="mpcrbm-location-field">
-							<label>&nbsp;</label>
-							<button type="button" class="button button-small mpcrbm-remove-location-price" 
-									data-index="<?php echo esc_attr( $index ); ?>">
-								<?php esc_html_e( 'Remove', 'car-rental-manager' ); ?>
-							</button>
+
+						<div class="mpcrbm-season-field mpcrbm-location-field">
+							<label title="<?php esc_attr_e( 'Additional fee for rentals with different pickup and dropoff locations', 'car-rental-manager' ); ?>"><?php esc_html_e( 'Transfer Fee', 'car-rental-manager' ); ?></label>
+							<div class="mpcrbm-season-adjustment">
+								<input type="number" name="mpcrbm_location_prices[<?php echo esc_attr( $index ); ?>][transfer_fee]"
+									   value="<?php echo esc_attr( $transfer_fee ); ?>" step="0.01" min="0"
+									   class="mpcrbm-season-value"
+									   placeholder="<?php esc_attr_e( 'One-way Fee', 'car-rental-manager' ); ?>">
+								<span class="mpcrbm-season-unit"><?php echo esc_html( $currency ); ?></span>
+							</div>
 						</div>
 					</div>
+					<button type="button" class="mpcrbm-remove-location-price mpcrbm-season-remove"
+							data-index="<?php echo esc_attr( $index ); ?>"
+							title="<?php esc_attr_e( 'Remove', 'car-rental-manager' ); ?>">
+						<i class="mi mi-trash"></i>
+					</button>
 				</div>
 				<?php
 			}
