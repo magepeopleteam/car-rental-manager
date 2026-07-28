@@ -344,60 +344,146 @@ div.mpcrbm_car_details_right h4 {
     margin-bottom: 12px;
 }
 
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_layout_details > h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_layout_details > h3::before {
+    content: "\f055";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: var(--color_theme, #F12971);
+    font-size: 14px;
+}
+
+/* Each item is now its own bordered card (see .mpcrbm_extra_service_item
+   below), so the plain "<div class="divider">" the template renders between
+   items would just double up as a redundant second line — hidden here.
+   The one divider right after the heading isn't preceded by an item, so
+   this adjacent-sibling selector leaves that one alone. */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_layout_details .mpcrbm_extra_service_item + .divider {
+    display: none;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item {
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--mpcrbm-cd-border);
+    border-radius: var(--mpcrbm-cd-radius-sm);
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item:hover {
+    border-color: color-mix(in srgb, var(--color_theme, #F12971) 35%, var(--mpcrbm-cd-border));
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .05);
+}
+
+/* Whole card picks up the theme color once its Select button flips to
+   "Selected" (.mActive — added/removed entirely by the existing toggle in
+   mpcrbm_registration.js) so a chosen extra reads as clearly "in your
+   booking" at a glance, without any JS changes: :has() just watches a class
+   that's already there. */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item:has(button.mActive) {
+    border-color: #16a34a;
+    background: color-mix(in srgb, #16a34a 4%, #fff);
+}
+
 .mpcrbm_car_details_price_box .mpcrbm_extra_service_item button {
     background: var(--color_theme, #F12971);
     color: var(--color_theme_alter, #fff);
-    border: none;
+    border: 1px solid var(--color_theme, #F12971);
     border-radius: 999px;
-    padding: 5px 12px;
-    font-size: 13px;
+    padding: 5px 14px;
+    font-size: 12.5px;
     font-weight: 600;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity .15s ease, background .15s ease, color .15s ease;
 }
 
-/* Puts the service name ("Driver"), price, and Select button all on one
-   row instead of the name stacked above them — .fdColumn is a shared
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item button:hover {
+    opacity: .88;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item button.mActive {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #fff;
+}
+
+/* Each service row stacks as 3 lines (name / description / price+button)
+   instead of cramming name + description + price + qty-stepper + Select
+   button onto one line — this sidebar column is too narrow for that: with
+   no width limit on the description text and flex-wrap:nowrap, the row's
+   natural content width blew past the card's edge, which both squeezed the
+   name down to its shrink floor (showing 1-2 letters) and pushed price/
+   button off past the card's right edge. .fdColumn is a shared
    flex-direction:column utility (mp_global/assets/mp_style/
-   mpcrbm_global.css), overridden here only inside this page's extra-service
-   list, not globally. The quantity stepper itself stays hidden until
-   "Select" is clicked (div.mpcrbm [data-collapse]{display:none} — existing,
-   unrelated behavior), so only these 3 elements are visible at rest. */
+   mpcrbm_global.css); this scope just confirms that column stacking rather
+   than fighting it with row+nowrap. */
 .mpcrbm_car_details_price_box .mpcrbm_extra_service_item .fdColumn._fullWidth {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
     min-width: 0;
 }
 
-/* flex: 1 1 auto + ellipsis lets the title shrink/truncate under pressure
-   (a longer service name, or the qty stepper revealing on Select) instead
-   of the row being rigid end-to-end — that rigidity was the real cause of
-   the price box "jumping": with no give anywhere in this row, its natural
-   content width could exceed the column's 30% flex-basis, and without
-   min-width:0 on .mpcrbm_car_details_right (fixed separately, see that
-   rule) a flex item's default min-width:auto forces the *whole* 2-column
-   container to wrap instead of clipping inside its own column — dropping
-   the price box onto its own line below the left column, which reads as
-   the sidebar suddenly jumping to the bottom of the page.
-   min-width is a small positive floor (not 0): once the qty stepper reveals
-   on Select, .mpcrbm-ex-quantity-box's flex-shrink:0 siblings (price, qty
-   input, button) don't give an inch, so min-width:0 let the name get
-   squeezed all the way down to nothing — invisible, not just truncated.
-   The floor below plus the compacted price/qty/button sizes further down
-   keep every piece, including the name, visible on one line. */
 .mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm_search_title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin: 0;
-    flex: 1 1 auto;
-    min-width: 46px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--mpcrbm-cd-text);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
 }
 
-.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm-ex-quantity-box {
+/* The service icon is an arbitrary Font Awesome class picked per-service in
+   admin, so it can't be targeted by its own class name — ":not(.mprcbm_text)"
+   selects it by elimination instead, since the name span right next to it
+   always carries .mprcbm_text (see templates/registration/
+   extra_service_display.php). Turns a bare glyph into a small tinted circle
+   badge matching the icon-badge language used elsewhere on this page
+   (.specification i, .mpcrbm_car_day_icon). */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm_search_title > span:not(.mprcbm_text) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color_theme, #F12971) 12%, transparent);
+    color: var(--color_theme, #F12971);
+    font-size: 12px;
+}
+
+/* Description (._mR_xs) gets its own full-width line and wraps normally;
+   price-quantity-box (price / qty-stepper / Select button) gets a second
+   line below it, right-aligned via its own justify-content:flex-end. Both
+   are direct children of .mpcrbm-ex-quantity-box, so stacking that
+   container is what actually stops the row from overflowing. */
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm-ex-quantity-box {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.mpcrbm_car_details_price_box .mpcrbm_extra_service_item .mpcrbm-ex-quantity-box > ._mR_xs {
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--mpcrbm-cd-text-faded, #6b7280);
 }
 
 /* ===== "Details" order summary — sidebar price box only =====
