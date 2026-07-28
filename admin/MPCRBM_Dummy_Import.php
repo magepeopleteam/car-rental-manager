@@ -543,11 +543,11 @@
 			
 			public static function dummy_images() {
 				$urls = array(
-					'https://img.freepik.com/free-photo/vintage-sedan-car-driving-sunlight-road_114579-5066.jpg',
-					'https://img.freepik.com/premium-photo/dirty-bmw-with-hood-up-hood-up-is-dirty_1194579-15023.jpg',
-					'https://img.freepik.com/premium-photo/predatory-car-headlight-with-blue-lights-hood-powerful-grey-blue-car-sports-car-with-matte-grey-paint-wheel-with-blue-disc_308547-3156.jpg',
-					'https://img.freepik.com/premium-photo/photo-pickup-off-road-landscape_7023-176355.jpg',
-					'https://img.freepik.com/premium-photo/rainbow-colored-bmw-car-with-lights_1194579-14229.jpg',
+					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-1.jpg',
+					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-2.jpg',
+					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-3.jpg',
+					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-4.jpg',
+					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-5.jpg',
 				);
 				unset($image_ids);
 				$image_ids = array();
