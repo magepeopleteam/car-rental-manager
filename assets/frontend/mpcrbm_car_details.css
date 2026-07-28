@@ -1108,7 +1108,16 @@ div.mpcrbm_car_details_right h4 {
     box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
 }
 
-.mpcrbm_car_details_faq_question {
+/* ".mpcrbm" prefix isn't decorative here — mp_global/assets/mp_style/
+   mpcrbm_global.css has a blanket ".mpcrbm button { display:flex;
+   justify-content:center; align-items:center; }" reset, and a class+element
+   selector like that actually out-specifies a single class selector (its
+   specificity is 1 class + 1 element vs. this rule's 1 class alone). Without
+   the extra ".mpcrbm" ancestor class here, that reset silently won and
+   centered the whole question+icon together instead of spreading them
+   edge-to-edge — the icon ended up glued right against the question text
+   instead of pinned to the far right. */
+.mpcrbm .mpcrbm_car_details_faq_question {
     width: 100%;
     padding: 16px 18px;
     border: none;
@@ -1121,6 +1130,30 @@ div.mpcrbm_car_details_right h4 {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+/* Small "Q" badge in front of every question — same tinted-circle language
+   used for the extra-services icon and Car Info spec chips, so the FAQ list
+   reads as part of the same design system instead of plain bolded text. */
+.mpcrbm_car_details_faq_question span:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mpcrbm_car_details_faq_question span:first-child::before {
+    content: "?";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color_theme, #F12971) 12%, transparent);
+    color: var(--color_theme, #F12971);
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .mpcrbm_car_details_faq_icon {
@@ -1185,14 +1218,16 @@ div.mpcrbm_car_details_right h4 {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    counter-reset: mpcrbm-tc-counter;
 }
 
 .mpcrbm_car_details_tc_item {
     background: var(--mpcrbm-cd-bg);
-    padding: 14px 16px 14px 20px;
+    padding: 14px 16px 14px 52px;
     border-radius: var(--mpcrbm-cd-radius-sm);
     position: relative;
     overflow: hidden;
+    counter-increment: mpcrbm-tc-counter;
 }
 
 .mpcrbm_car_details_tc_item::before {
@@ -1203,6 +1238,25 @@ div.mpcrbm_car_details_right h4 {
     width: 3px;
     height: 100%;
     background: var(--color_theme, #F12971);
+}
+
+/* Numbered circle badge, layered on top of the existing accent bar — turns
+   a plain stacked list into a "classic" numbered terms checklist. */
+.mpcrbm_car_details_tc_item::after {
+    content: counter(mpcrbm-tc-counter);
+    position: absolute;
+    left: 16px;
+    top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color_theme, #F12971) 12%, transparent);
+    color: var(--color_theme, #F12971);
+    font-size: 11px;
+    font-weight: 700;
 }
 
 .mpcrbm_car_details_tc_title {
@@ -1384,8 +1438,10 @@ div.mpcrbm_car_details_right h4 {
    date/time block in #mpcrbm_date_step_return.mpcrbm-date-step-return,
    starting with .is-locked so it's hidden on first paint (no JS-dependent
    flash). assets/frontend/mpcrbm_registration.js removes .is-locked and
-   reveals it once pick-up date + time are both chosen, then marks each step
-   .is-complete as it's finished. */
+   reveals it as soon as the pick-up date is chosen (not waiting for the
+   pick-up time too), then marks each step .is-complete once it's actually
+   finished — pick-up needs its time picked as well before it gets the
+   checkmark. */
 .mpcrbm-date-step-return.is-locked {
     display: none;
 }

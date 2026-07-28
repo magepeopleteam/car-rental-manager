@@ -784,6 +784,16 @@ jQuery(document).ready(function($) {
             $('#mpcrbm_return_date').datepicker('option', 'minDate', formattedDate);
         }
 
+        // Guided single-date flow, car-details page only (see the matching note
+        // in the ".start_time_list li" handler below). Reveal the Return step as
+        // soon as a pick-up date is picked instead of waiting for the pick-up
+        // time too — the pickup step itself only gets marked ".is-complete"
+        // (checkmark) once its time is also chosen, in that later handler.
+        let $returnStep = $('#mpcrbm_date_step_return.mpcrbm-date-step-return');
+        if ($returnStep.length && $returnStep.hasClass('is-locked')) {
+            $returnStep.removeClass('is-locked').hide().slideDown(300);
+        }
+
         let parent = $(this).closest(".mpcrbm_transport_search_area");
         mpcrbm_content_refresh(parent);
         parent
@@ -850,8 +860,11 @@ jQuery(document).ready(function($) {
         // Guided single-date flow, car-details page only (single_car_search_details.php
         // renders .mpcrbm-date-step-return only there — get_details_new.php, the main
         // search widget on other pages, has no such element, so this is a no-op
-        // everywhere else). Once a pick-up time is chosen, reveal the Return step
-        // instead of showing both at once.
+        // everywhere else). The Return step is already revealed as soon as the
+        // pick-up date was chosen (see the "#mpcrbm_map_start_date" change handler
+        // above) — picking the pick-up time here just marks the pick-up step
+        // ".is-complete" (checkmark). The "is-locked" check still guards the
+        // reveal itself in case this ever fires before that handler does.
         let $returnStep = $('#mpcrbm_date_step_return.mpcrbm-date-step-return');
         if ($returnStep.length) {
             $(this).closest('.mpcrbm-date-step-pickup').addClass('is-complete');

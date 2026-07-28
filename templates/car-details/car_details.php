@@ -523,11 +523,28 @@ if ( $deposit_enable === 'on' ) {
 
                                         if($mpcrbm_count > 0){
                                             $mpcrbm_average = round($mpcrbm_total / $mpcrbm_count, 1);
-                                            echo "<strong>" . esc_attr_e( 'Average Rating: ', 'car-rental-manager' ) . esc_html( $mpcrbm_average ) . " / 5</strong>";
-                                        } else {
-                                            echo "<strong>".esc_attr_e( 'No ratings yet.', 'car-rental-manager' )."</strong>";
-                                        }
-                                        ?>
+                                            $mpcrbm_average_rounded = round($mpcrbm_average);
+                                            ?>
+                                            <div class="mpcrbm_review_average_score"><?php echo esc_html($mpcrbm_average); ?></div>
+                                            <div class="mpcrbm_review_average_details">
+                                                <div class="mpcrbm_review_average_stars">
+                                                    <?php
+                                                    for($mpcrbm_i = 1; $mpcrbm_i <= 5; $mpcrbm_i++){
+                                                        echo ($mpcrbm_i <= $mpcrbm_average_rounded) ? '★' : '☆';
+                                                    }
+                                                    ?>
+                                                </div>
+                                                <div class="mpcrbm_review_average_count">
+                                                    <?php
+                                                    /* translators: %d: number of approved reviews with a rating */
+                                                    echo esc_html( sprintf( _n( 'Based on %d review', 'Based on %d reviews', $mpcrbm_count, 'car-rental-manager' ), $mpcrbm_count ) );
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <?php
+                                        } else { ?>
+                                            <div class="mpcrbm_review_average_empty"><?php esc_html_e( 'No ratings yet.', 'car-rental-manager' ); ?></div>
+                                        <?php } ?>
                                     </div>
 
                                     <div id="mpcrbm_review_list_wrapper">
@@ -539,17 +556,22 @@ if ( $deposit_enable === 'on' ) {
                                                     $mpcrbm_rating = get_comment_meta($mpcrbm_comment->comment_ID, 'mpcrbm_review_rating', true);
                                                     ?>
                                                     <div class="mpcrbm_review_card" data-comment-id="<?php echo esc_attr($mpcrbm_comment->comment_ID); ?>">
-                                                        <span class="mpcrbm_review_author"><?php echo esc_html($mpcrbm_comment->comment_author); ?></span>
+                                                        <div class="mpcrbm_review_card_head">
+                                                            <span class="mpcrbm_review_avatar" aria-hidden="true"><?php echo esc_html( mb_strtoupper( mb_substr( $mpcrbm_comment->comment_author, 0, 1 ) ) ); ?></span>
+                                                            <div class="mpcrbm_review_card_meta">
+                                                                <span class="mpcrbm_review_author"><?php echo esc_html($mpcrbm_comment->comment_author); ?></span>
 
-                                                        <?php if($mpcrbm_rating): ?>
-                                                            <div class="mpcrbm_review_stars">
-                                                                <?php
-                                                                for( $mpcrbm_i=1;$mpcrbm_i<=5;$mpcrbm_i++ ){
-                                                                    echo ( $mpcrbm_i <= $mpcrbm_rating) ? '★' : '☆';
-                                                                }
-                                                                ?>
+                                                                <?php if($mpcrbm_rating): ?>
+                                                                    <div class="mpcrbm_review_stars">
+                                                                        <?php
+                                                                        for( $mpcrbm_i=1;$mpcrbm_i<=5;$mpcrbm_i++ ){
+                                                                            echo ( $mpcrbm_i <= $mpcrbm_rating) ? '★' : '☆';
+                                                                        }
+                                                                        ?>
+                                                                    </div>
+                                                                <?php endif; ?>
                                                             </div>
-                                                        <?php endif; ?>
+                                                        </div>
 
                                                         <p class="mpcrbm_review_content"><?php echo esc_html($mpcrbm_comment->comment_content); ?></p>
 
@@ -575,12 +597,15 @@ if ( $deposit_enable === 'on' ) {
                                     </div>
 
                                     <form id="mpcrbm_review_form" class="mpcrbm_review_form">
+                                        <h4><?php esc_html_e( 'Write a Review', 'car-rental-manager' ); ?></h4>
                                         <input type="hidden" name="post_id" value="<?php echo esc_attr($mpcrbm_post_id); ?>">
 
                                         <?php wp_nonce_field('mpcrbm_review_nonce_action', 'mpcrbm_review_nonce'); ?>
 
-                                        <input type="text" name="author" placeholder="<?php esc_html_e( 'Your Name', 'car-rental-manager' );?>" required>
-                                        <input type="email" name="email" placeholder="<?php esc_html_e( 'Your Email', 'car-rental-manager' );?>" required>
+                                        <div class="mpcrbm_review_form_row">
+                                            <input type="text" name="author" placeholder="<?php esc_html_e( 'Your Name', 'car-rental-manager' );?>" required>
+                                            <input type="email" name="email" placeholder="<?php esc_html_e( 'Your Email', 'car-rental-manager' );?>" required>
+                                        </div>
 
                                         <div class="mpcrbm_review_star_rating">
                                             <input type="radio" id="star5" name="rating" value="5" required>
