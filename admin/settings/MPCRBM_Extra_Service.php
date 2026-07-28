@@ -84,7 +84,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-										<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'car-rental-manager' ) ); ?>
+										<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add New Extra Service', 'car-rental-manager' ) ); ?>
 										<?php do_action( 'mpcrbm_hidden_table', 'mpcrbm_extra_service_item' ); ?>
                                     </form>
                                 </div>
@@ -261,7 +261,7 @@
                             </table>
 							<?php
 								if ( $service_id == $post_id ) {
-									MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'car-rental-manager' ) );
+									MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add New Extra Service', 'car-rental-manager' ) );
 									do_action( 'mpcrbm_hidden_table', 'mpcrbm_extra_service_item' );
 								} ?>
                         </div>

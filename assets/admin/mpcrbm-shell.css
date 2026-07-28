@@ -767,7 +767,7 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 .mpcrbm-shell-body .mpcrbm_car_list_table_container {
 	border: 1px solid var(--mpcrbm-shell-border);
 	border-radius: var(--mpcrbm-shell-radius);
-	overflow: hidden;
+	overflow-x: auto;
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_car_thead {
@@ -779,7 +779,7 @@ body.mpcrbm-admin .mpcrbm-shell-body .mpcrbm-btn:hover {
 	padding: 14px 18px;
 	border: 1px solid #fff9f9;
 	color: var(--mpcrbm-shell-text-faded);
-	font-size: 11px;
+	font-size: 12px;
 }
 
 .mpcrbm-shell-body .mpcrbm_car_list_car_table td {
@@ -1112,7 +1112,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 }
 
 .mpcrbm-shell-body .mpcrbm-bm-stat-lbl {
-	font-size: .8em;
+	font-size: 11px;
 	color: var(--mpcrbm-shell-text-faded);
 	max-width: 140px;
 }
@@ -1155,14 +1155,14 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	color: var(--mpcrbm-shell-primary);
 	border-radius: var(--mpcrbm-shell-radius-xs);
 	padding: 2px 8px;
-	font-size: .82em;
+	font-size: 11px;
 	margin: 2px 2px 2px 0;
 }
 
 .mpcrbm-shell-body .mpcrbm-status-badge {
 	padding: 3px 10px;
 	border-radius: 100px;
-	font-size: .82em;
+	font-size: 11px;
 	font-weight: 600;
 }
 
@@ -1214,7 +1214,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 .mpcrbm-shell-body .mpcrbm-order-status {
 	padding: 2px 8px;
 	border-radius: var(--mpcrbm-shell-radius-xs);
-	font-size: .82em;
+	font-size: 11px;
 }
 
 .mpcrbm-shell-body .mpcrbm-wc-status-completed  { background: #e6f7ee; color: #1c9d5b; }
@@ -1230,13 +1230,13 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	gap: 4px;
 	padding: 2px 8px;
 	border-radius: var(--mpcrbm-shell-radius-xs);
-	font-size: .82em;
+	font-size: 11px;
 	font-weight: 500;
 }
 
 .mpcrbm-shell-body .mpcrbm-location-pickup  { background: #e0f2fe; color: #075985; }
 .mpcrbm-shell-body .mpcrbm-location-dropoff { background: #fef9c3; color: #713f12; }
-.mpcrbm-shell-body .mpcrbm-location-same    { color: var(--mpcrbm-shell-text-faded); font-size: .82em; font-style: italic; }
+.mpcrbm-shell-body .mpcrbm-location-same    { color: var(--mpcrbm-shell-text-faded); font-size: 11px; font-style: italic; }
 
 /* ==========================================================================
    Per-car metabox (native Add/Edit Car screen, "Information Settings" panel)
@@ -1430,18 +1430,24 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	padding: 20px 20px 20px 2px;
 }
 
-/* margin-right (not padding-right): .tabsItem already has its own white
-   card box (background/border-radius/box-shadow — assets/admin/
+/* Explicit width (not padding-right, not margin-right): .tabsItem already has
+   its own white card box (background/border-radius/box-shadow — assets/admin/
    mpcrbm_admin.css's "#mpcrbm_meta_box_panel .tabsContent .tabsItem" rule).
    padding-right only shrinks the INNER content area, leaving the box's own
    background/shadow stretching the full width underneath the absolutely-
-   positioned sidebar — so the two visually merged into one shape instead of
-   reading as separate cards. margin-right instead shrinks the box itself,
-   so its edge (and shadow) genuinely stops before the sidebar begins,
-   leaving a real gap between two distinct cards, per explicit request. */
+   positioned 280px sidebar — so the two visually merged into one shape
+   instead of reading as separate cards. A calc() width (280px sidebar + 20px
+   gap) shrinks the box itself so its edge/shadow genuinely stops before the
+   sidebar begins. (Previously this used width:84% + margin-right:288px
+   together — with margin-left implicitly 0, all three box-model values were
+   non-auto, which CSS resolves by silently discarding the specified
+   margin-right and recalculating it — so the real gap was 16% of the
+   container, not the intended 288px; correct except on wide (~1800px+)
+   screens, where content ran under the sidebar. There's no flow-sibling
+   after this box for margin-right to matter, so a single explicit width is
+   both sufficient and exact regardless of container width.) */
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent > .tabsItem {
-	margin-right: 288px;
-	width: 84%;
+	width: calc(100% - 300px);
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
@@ -1765,7 +1771,7 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 
 @media (max-width: 900px) {
 	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent > .tabsItem {
-		margin-right: 0;
+		width: 100%;
 	}
 
 	#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
@@ -2754,7 +2760,7 @@ button.mpcrbm-city-pill {
 	margin-right: 8px;
 }
 .mpcrbm-schedule-master-eyebrow {
-	font-size: 10px;
+	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: .05em;
 	text-transform: uppercase;
@@ -2771,7 +2777,7 @@ button.mpcrbm-city-pill {
 	gap: 4px;
 }
 .mpcrbm-schedule-master-field label {
-	font-size: 10px;
+	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: .04em;
 	text-transform: uppercase;
@@ -3782,7 +3788,7 @@ body.mpcrbm-admin .mpcrbm-faq-status-badge.is-off {
 	border: 1px solid var(--mpcrbm-shell-border);
 	border-collapse: separate;
 	border-spacing: 0;
-	table-layout: fixed;
+	min-width: 600px;
 	width: 98%;
 }
 
@@ -3978,4 +3984,38 @@ body.mpcrbm-admin .mpcrbm-faq-status-badge.is-off {
 	border-radius: 100px;
 	padding: 6px 20px;
 	font-weight: 600;
+}
+
+/* ==========================================================================
+   Add/Edit Car screen — mobile/tablet fix.
+   .mpcrbm-shell-sidebar.mpcrbm-shell-fixed and .mpcrbm-shell-topbar.mpcrbm-shell-fixed
+   (~line 1960) pin the sidebar open and #wpcontent's 240px margin (~line 1954)
+   at every viewport width, unlike the 7 dashboard pages which already collapse
+   via the @media (max-width:960px) block near the top of this file. Below
+   960px that left as little as ~135px for the entire post-edit form — the
+   plugin's most-used admin screen. This block re-uses the same off-canvas +
+   hamburger-trigger pattern (mpcrbm-shell-mobile-trigger, now also rendered
+   in MPCRBM_Admin_Shell::render_edit_screen_chrome(); toggle handled in
+   mpcrbm-shell.js against body.mpcrbm-mobile-menu-open, not .mpcrbm-shell,
+   since this screen has no .mpcrbm-shell flex wrapper of its own).
+   Placed at the end of the file on purpose: these selectors are equal
+   specificity to the always-open rules at ~1954-1975, so later source order
+   is what makes the override win — keep this block last if you add more
+   above it.
+   ========================================================================== */
+@media (max-width: 960px) {
+	.mpcrbm-shell-sidebar.mpcrbm-shell-fixed {
+		left: -100%;
+		transition: left .2s ease;
+	}
+	body.mpcrbm-mobile-menu-open .mpcrbm-shell-sidebar.mpcrbm-shell-fixed {
+		left: 0;
+	}
+	.mpcrbm-shell-topbar.mpcrbm-shell-fixed {
+		left: 0;
+	}
+	body.mpcrbm-admin.post-php.post-type-mpcrbm_rent #wpcontent,
+	body.mpcrbm-admin.post-new-php.post-type-mpcrbm_rent #wpcontent {
+		margin-left: 0;
+	}
 }

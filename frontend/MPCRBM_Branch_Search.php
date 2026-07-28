@@ -190,7 +190,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Search' ) ) {
 								<i class="mi mi-calendar mpcrbm-bs__field-icon"></i>
 								<input type="text" id="mpcrbm_bs_date_range" class="mpcrbm-bs__date"
 								       placeholder="<?php esc_attr_e( 'Select pickup and return dates', 'car-rental-manager' ); ?>"
-								       readonly>
+								       readonly required>
 							</div>
 							<div id="mpcrbm_bs_duration_badge" class="mpcrbm-bs__duration-badge" hidden></div>
 						</div>

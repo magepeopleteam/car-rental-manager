@@ -167,7 +167,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
             if ( $post_id && is_array( $data ) ) {
                 update_post_meta( $post_id, $this->term_option_key, $data );
 
-                wp_send_json_success(['message' => 'FAQ saved successfully!', 'data' => $data]);
+                wp_send_json_success(['message' => 'Term & Condition saved successfully!', 'data' => $data]);
             } else {
                 wp_send_json_error(['message' => 'Invalid data']);
             }

@@ -300,7 +300,7 @@ div.header-text h2 {
 }
 
 .mpcrbm-search-widget-modern .mpcrbm_search_title {
-    font-size: 11px;
+    font-size: 12.5px;
     font-weight: 700;
     letter-spacing: .03em;
     text-transform: uppercase;
@@ -376,11 +376,13 @@ div.header-text h2 {
 
 ul.input_select_list.start_time_list {
     width: 280px;
+    max-width: calc(100vw - 32px);
     padding: 20px !important;
 }
 
 ul.input_select_list.return_time_list {
     width: 280px;
+    max-width: calc(100vw - 32px);
     padding: 20px !important;
 }
 
@@ -390,7 +392,7 @@ ul.input_select_list.return_time_list {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 11px;
+    font-size: 12px;
     color: var(--mpcrbm-sw-text-faded);
     margin: 4px 0;
 }

@@ -315,8 +315,12 @@
     .mpcrbm_car_list_grid_2 {
         grid-template-columns: repeat(1, 1fr);
     }
+    /* Was 50% — squeezed the filter sidebar into the same 2-column-grid
+       breakpoint as the car cards, producing a cramped tablet layout.
+       mpcrbm_registration.css's own 768px rule already intends 100% here;
+       this file's 2-class selector just outranked it. */
     .mpcrbm_car_list_container  .mpcrbm_left_filter {
-        width: 50%;
+        width: 100%;
     }
 }
 

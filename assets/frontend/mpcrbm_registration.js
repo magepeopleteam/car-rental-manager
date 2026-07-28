@@ -362,9 +362,55 @@ jQuery(document).ready(function($) {
         });
     }
 
+    // Pickup Date / Return Date required check for the main search widget
+    // (get_details_new.php). Same reasoning as mpcrbm_validate_date_time_fields
+    // below (defined later in this file, but function declarations are
+    // hoisted so calling it here is safe): #mpcrbm_start_date/#mpcrbm_return_date
+    // are readonly and always carry a server-rendered default, so a plain
+    // "is it blank" check can never fail — this checks the data-user-selected="1"
+    // flag that date-picker.js only sets on a real pick. Unlike
+    // mpcrbm_validate_date_time_fields, this only gates the two date fields
+    // (not time), matching what was actually asked to be required here.
+    function mpcrbm_validate_search_dates(parent) {
+        let fields = [
+            { input: parent.find('#mpcrbm_start_date'), error: parent.find('#mpcrbm_pickup_date_error') },
+            { input: parent.find('#mpcrbm_return_date'), error: parent.find('#mpcrbm_return_date_error') }
+        ];
+
+        let $firstInvalidWrap = null;
+
+        fields.forEach(function (field) {
+            if (!field.input.length || !field.input.is(':visible')) {
+                return;
+            }
+            let $wrap = field.error.closest('.input_select');
+            field.error.hide();
+            $wrap.removeClass('mpcrbm-field-invalid');
+
+            if (field.input.attr('data-user-selected') !== '1') {
+                field.error.show();
+                $wrap.addClass('mpcrbm-field-invalid');
+                if (!$firstInvalidWrap) {
+                    $firstInvalidWrap = $wrap;
+                }
+            }
+        });
+
+        if ($firstInvalidWrap && $firstInvalidWrap.length) {
+            $('html, body').animate({ scrollTop: $firstInvalidWrap.offset().top - 120 }, 300);
+            return false;
+        }
+
+        return true;
+    }
+
     // Handle get vehicle button
     $(document).on("click", "#mpcrbm_get_vehicle", function() {
         let parent = $(this).closest(".mpcrbm_transport_search_area");
+
+        if (!mpcrbm_validate_search_dates(parent)) {
+            return;
+        }
         let mpcrbm_enable_return_in_different_date = parent
             .find('[name="mpcrbm_enable_return_in_different_date"]')
             .val();

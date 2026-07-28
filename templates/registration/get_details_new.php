@@ -319,8 +319,9 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-calendar"></i>
                                         <span class="mprcbm_text"><?php echo esc_html( $mpcrbm_type_text_pickup !== '' ? $mpcrbm_type_text_pickup : esc_html__('Date', 'car-rental-manager') ); ?></span>
                                     </span>
-                                    <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_date );?>" readonly />
+                                    <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_date );?>" readonly required />
                                 </label>
+                                <span class="mpcrbm_field_error" id="mpcrbm_pickup_date_error" style="display: none"><?php esc_html_e( 'Please select a pick-up date', 'car-rental-manager' ); ?></span>
                             </div>
 
                             <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>"></div>
@@ -389,9 +390,10 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-calendar"></i>
                                         <span class="mprcbm_text"><?php echo esc_html( $mpcrbm_type_text_return !== '' ? $mpcrbm_type_text_return : esc_html__('Date', 'car-rental-manager') ); ?></span>
                                     </span>
-                                    <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_date );?>" readonly name="return_date"/>
+                                    <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_date );?>" readonly required name="return_date"/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
                                 </label>
+                                <span class="mpcrbm_field_error" id="mpcrbm_return_date_error" style="display: none"><?php esc_html_e( 'Please select a return date', 'car-rental-manager' ); ?></span>
                             </div>
                             <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>"></div>
                             <div class=" input_select" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>">

@@ -25,6 +25,20 @@
     z-index: 12;
     /*width: 100%;*/
     margin-left: 55%;
+    max-width: 45vw;
+}
+
+/* Below ~480px the card (unconstrained width, sized to its icon+text rows)
+   offset 55% from the left with no width/right cap can run off the edge of
+   the viewport — pin it full-width instead. */
+@media (max-width: 480px) {
+    .mpcrbm-pickup-branch-info {
+        margin-left: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+    }
 }
 
 .mpcrbm-branch-info-card-header {
@@ -75,7 +89,7 @@
     color: #2271b1;
     cursor: pointer;
     font-size: 12px !important;
-    padding: 4px 0;
+    padding: 8px 0;
     text-decoration: underline;
     display: inline-block;
     margin-top: 4px;

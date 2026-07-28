@@ -312,7 +312,7 @@ div.mpcrbm_car_details_right h4 {
 /* Scoped — .mpcrbm_price-breakdown is also reused on car list/search-result
    cards (templates/registration/vehicle_item*.php). */
 .mpcrbm-car-price-header .mpcrbm_price-breakdown {
-    font-size: 11px;
+    font-size: 12.5px;
     color: #ffffff;
     font-weight: 500;
 }
@@ -630,7 +630,7 @@ div.mpcrbm_car_details_right h4 {
 
 .mpcrbm_car_details_price_box .price-quantity-box .mpcrbm-price-per-day {
     display: block;
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--mpcrbm-cd-text-faded, #6b7280);
 }
@@ -661,7 +661,7 @@ div.mpcrbm_car_details_right h4 {
    (.mpcrbm_search_title, above) enough room to stay visible once revealed
    on Select instead of squeezing it down to nothing. */
 .mpcrbm_car_details_price_box .price-quantity-box .qtyIncDec {
-    max-width: 74px;
+    max-width: 88px;
     display: flex;
     align-items: stretch;
     background: #fff;
@@ -678,10 +678,11 @@ div.mpcrbm_car_details_right h4 {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 22px;
+    min-width: 28px;
+    min-height: 28px;
     background: var(--mpcrbm-cd-bg, #f8fafc);
     color: var(--color_theme, #F12971);
-    font-size: 9px;
+    font-size: 11px;
     transition: background .15s ease, color .15s ease;
 }
 
@@ -782,7 +783,7 @@ div.mpcrbm_car_details_right h4 {
 .mpcrbm_field_error {
     display: block;
     margin-top: 4px;
-    font-size: 11.5px;
+    font-size: 12.5px;
     font-weight: 600;
     color: #b91c1c;
 }

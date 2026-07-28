@@ -177,7 +177,7 @@
     display: flex !important;
     align-items: center !important;
     gap: 5px !important;
-    font-size: 9px !important;
+    font-size: 11px !important;
     font-weight: 700 !important;
     color: var(--r-muted) !important;
     text-transform: uppercase !important;
@@ -312,7 +312,7 @@
 }
 .mpcrbm-bs .mpcrbm_transport_summary .justifyBetween.total h6 {
     margin: 0 !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
     font-weight: 700 !important;
     color: var(--r-muted) !important;
     text-transform: uppercase !important;
@@ -567,7 +567,7 @@
 .mpcrbm-bs .mpcrbm_discount_info { margin: 0 !important; padding: 0 !important; }
 
 .mpcrbm-bs .mpcrbm_price-breakdown {
-    font-size: 11.5px !important;
+    font-size: 12.5px !important;
     color: var(--r-muted) !important;
     margin: 0 !important;
     line-height: 1.4 !important;
@@ -604,14 +604,14 @@
 }
 
 .mpcrbm-bs .mpcrbm_price-total {
-    font-size: 11px !important;
+    font-size: 12.5px !important;
     color: var(--r-muted) !important;
     margin: 2px 0 0 !important;
     text-align: left !important;
 }
 
 .mpcrbm-bs .mpcrbm_discount-info {
-    font-size: 11.5px !important;
+    font-size: 12.5px !important;
     font-weight: 600 !important;
     color: var(--r-green) !important;
     margin: 2px 0 0 !important;

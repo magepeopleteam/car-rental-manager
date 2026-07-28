@@ -29,7 +29,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             add_submenu_page(
                 'edit.php?post_type='.MPCRBM_Function::get_cpt(),
                 __('Manage FAQ, Term & Condition', 'car-rental-manager'),
-                __('anage FAQ, Term & Condition', 'car-rental-manager'),
+                __('Manage FAQ, Term & Condition', 'car-rental-manager'),
                 'manage_options',
                 $this->menu_slug,
                 [ $this, 'render_page' ]
@@ -354,7 +354,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     update_option( $this->term_option_key, $term_condition );
                     wp_send_json_success( 'Term & Condition deleted.' );
                 } else {
-                    wp_send_json_error( 'Term & Condition found.' );
+                    wp_send_json_error( 'Term & Condition not found.' );
                 }
             }
     }

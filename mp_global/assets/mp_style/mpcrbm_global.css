@@ -2295,7 +2295,11 @@
 		margin: 10px;
 	}
 	.mpcrbm .addonGroupContent {
-		min-width: 30px;
+		min-width: 34px;
+		min-height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		cursor: pointer;
 		background-color: #FFF;
 		color: var(--color_theme_88);
@@ -2326,7 +2330,8 @@
 	}
 	@media only screen and (max-width: 450px) {
 		.mpcrbm .addonGroupContent {
-			min-width: 25px;
+			min-width: 36px;
+			min-height: 36px;
 		}
 	}
 }

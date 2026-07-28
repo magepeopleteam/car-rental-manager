@@ -415,6 +415,20 @@ jQuery(function ($) {
 		$(this).closest('li').toggleClass('mpcrbm-shell-submenu-collapsed');
 	});
 
+	// Mobile sidebar drawer toggle — delegated on document rather than $shell,
+	// since the Add/Edit Car screen's fixed sidebar/topbar
+	// (MPCRBM_Admin_Shell::render_edit_screen_chrome()) render outside any
+	// .mpcrbm-shell wrapper, and every handler below this point bails out
+	// early on that screen (see the "!$shell.length" guard). Toggling a class
+	// on <body> (always present) is what the matching CSS at the end of
+	// mpcrbm-shell.css keys off for that screen; toggling .mpcrbm-shell's own
+	// class too keeps the 7 dashboard pages' existing behavior unchanged.
+	$(document).on('click', '.mpcrbm-shell-mobile-trigger', function (e) {
+		e.preventDefault();
+		$('body').toggleClass('mpcrbm-mobile-menu-open');
+		$('.mpcrbm-shell').toggleClass('mobile-menu-open');
+	});
+
 	var $shell = $('.mpcrbm-shell');
 
 	if (!$shell.length) {
@@ -438,12 +452,6 @@ jQuery(function ($) {
 			nonce: mpcrbmShell.nonce,
 			style: nextStyle
 		});
-	});
-
-	// Mobile sidebar drawer toggle.
-	$shell.on('click', '.mpcrbm-shell-mobile-trigger', function (e) {
-		e.preventDefault();
-		$shell.toggleClass('mobile-menu-open');
 	});
 
 	// Generic in-page tab handler for tabs rendered with data-target="#selector".

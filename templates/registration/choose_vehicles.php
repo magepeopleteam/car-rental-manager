@@ -137,8 +137,7 @@ if ($mpcrbm_two_way > 1) {
         if ($mpcrbm_return_time !== "0") {
             // Validate return time format
             if (!preg_match('/^\d+(\.\d+)?$/', $mpcrbm_return_time)) {
-                // phpcs:ignore WordPress.WP.I18n.MissingArgDomain
-                wp_send_json_error( array('message' => esc_html__('Invalid return time format: ' ), 'car-rental-manager'));
+                wp_send_json_error( array('message' => esc_html__('Invalid return time format', 'car-rental-manager')));
                 wp_die();
             }
 

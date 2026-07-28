@@ -685,7 +685,7 @@ public static function all_tax_list(): array {
 								$message = esc_html__( 'Your license is not active for this URL.', 'car-rental-manager' );
 								break;
 							case 'item_name_mismatch':
-								$message = esc_html__( 'This appears to be an invalid license key for .', 'car-rental-manager' ) . ' ' . $plugin_name;
+								$message = esc_html__( 'This appears to be an invalid license key for', 'car-rental-manager' ) . ' ' . $plugin_name . '.';
 								break;
 							case 'no_activations_left':
 								$message = esc_html__( 'Your license key has reached its activation limit.', 'car-rental-manager' );
@@ -697,7 +697,7 @@ public static function all_tax_list(): array {
 					} else {
 						$payment_id = $license_data->payment_id;
 						$expire     = $license_data->expires;
-						$message    = esc_html__( 'Success, License Key is valid for the plugin', 'car-rental-manager' ) . ' ' . $plugin_name . ' ' . esc_html__( 'Your Order id is', 'car-rental-manager' ) . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__( 'Validity of this licenses is', 'car-rental-manager' ) . ' ' . MPCRBM_Global_Function::check_licensee_date( $expire );
+						$message    = esc_html__( 'Success, License Key is valid for the plugin', 'car-rental-manager' ) . ' ' . $plugin_name . ' ' . esc_html__( 'Your Order id is', 'car-rental-manager' ) . ' ' . $payment_id . ' ' . $plugin_name . ' ' . esc_html__( 'Validity of this license is', 'car-rental-manager' ) . ' ' . MPCRBM_Global_Function::check_licensee_date( $expire );
 					}
 				}
 

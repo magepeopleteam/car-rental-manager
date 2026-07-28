@@ -317,7 +317,7 @@ if ( $deposit_enable === 'on' ) {
                                 <?php } if( $mpcrbm_show_review_section === 'yes' ){?>
                                     <button data-tab="reviews"><?php esc_attr_e( 'Reviews', 'car-rental-manager' );?></button>
                                 <?php } if( $mpcrbm_show_faq_section === 'yes' ){?>
-                                    <button data-tab="faq"><?php esc_attr_e( 'FAQ’s', 'car-rental-manager' );?></button>
+                                    <button data-tab="faq"><?php esc_attr_e( 'FAQs', 'car-rental-manager' );?></button>
                                 <?php } if ( ! empty( $mpcrbm_related_rentals ) ) : ?>
                                     <button data-tab="similar_rentals"><?php esc_attr_e( 'Similar Rentals', 'car-rental-manager' );?></button>
                                 <?php endif; ?>

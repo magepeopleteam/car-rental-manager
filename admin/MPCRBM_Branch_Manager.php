@@ -349,7 +349,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								<div class="label">
 									<div>
 										<h6><?php esc_html_e( 'Enable Driver Information', 'car-rental-manager' ); ?></h6>
-										<span class="desc"><?php esc_html_e( 'By default show driver information in car OFF but you can keep it on by switching this option', 'car-rental-manager' ); ?></span>
+										<span class="desc"><?php esc_html_e( 'By default, driver information in car is OFF, but you can keep it on by switching this option', 'car-rental-manager' ); ?></span>
 									</div>
 									<label class="roundSwitchLabel">
 										<input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked ); ?>>

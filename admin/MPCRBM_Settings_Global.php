@@ -118,14 +118,14 @@
 						array(
 							'name' => 'slug',
 							'label' => $label . ' ' . esc_html__('Slug', 'car-rental-manager'),
-							'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'car-rental-manager'),
+							'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('and hit the Save Settings button.', 'car-rental-manager'),
 							'type' => 'text',
 							'default' => 'Car'
 						),
 						array(
 							'name' => 'icon',
 							'label' => $label . ' ' . esc_html__('Icon', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to ', 'car-rental-manager') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'car-rental-manager') . '</a>' . esc_html__('and copy your icon code and paste it here.', 'car-rental-manager'),
+							'desc' => esc_html__('If you want to change the icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, so please go to ', 'car-rental-manager') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'car-rental-manager') . '</a> ' . esc_html__('and copy your icon code and paste it here.', 'car-rental-manager'),
 							'type' => 'text',
 							'default' => 'dashicons-car'
 						),
@@ -171,7 +171,7 @@
 						array(
 							'name' => 'enable_view_search_result_page',
 							'label' => $label . ' ' . esc_html__('Show Search Result In A Different Page', 'car-rental-manager'),
-							'desc' => esc_html__('Enter page slug. Set No if you dont want to enable this setting set your ', 'car-rental-manager') . '<strong> ' . esc_html__(' Page Slug ', 'car-rental-manager') . '</strong>' . esc_html__(' or to make it hidden, set ', 'car-rental-manager') . '<strong> ' . esc_html__(' No ', 'car-rental-manager') . '</strong>' . esc_html__('. Default is ', 'car-rental-manager') . '<strong>' . esc_html__('transport-result', 'car-rental-manager') . '</strong>',
+							'desc' => esc_html__("Enter page slug. Set No if you don't want to enable this setting set your ", 'car-rental-manager') . '<strong> ' . esc_html__(' Page Slug ', 'car-rental-manager') . '</strong>' . esc_html__(' or to make it hidden, set ', 'car-rental-manager') . '<strong> ' . esc_html__(' No ', 'car-rental-manager') . '</strong>' . esc_html__('. Default is ', 'car-rental-manager') . '<strong>' . esc_html__('transport-result', 'car-rental-manager') . '</strong>',
 							'type' => 'text',
 							'default' => 'transport-result',
 							'placeholder' => 'mpcrbm-search'
@@ -179,7 +179,7 @@
 						array(
 							'name' => 'enable_view_find_location_page',
 							'label' => $label . ' ' . esc_html__('Take user to another page if location can not be found', 'car-rental-manager'),
-							'desc' => esc_html__('Enter page url. Leave blank if you dont want to enable this setting', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
+							'desc' => esc_html__("Enter page url. Leave blank if you don't want to enable this setting", 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
 							'type' => 'text',
 							'placeholder' => 'https://mysite.com/taxi'
 						),
@@ -573,7 +573,7 @@
 				?>
                 <div class="mpcrbm-license-intro">
                     <span class="fas fa-info-circle"></span>
-                    <p><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></p>
+                    <p><?php esc_html_e('Thank you for using our Mage-People plugin. Some of our plugins are free and require no license. We have additional addons to enhance the functionality of this plugin. If you have any addon, you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></p>
                 </div>
                 <div class="mpcrbm-license-table-wrap">
 					<?php $this->licence_area(); ?>

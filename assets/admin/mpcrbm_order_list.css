@@ -127,7 +127,7 @@
 
 .mpcrbm_order_list__filter-item label,
 .mpcrbm_order_list_name_filter-item label {
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -177,7 +177,7 @@
 .mpcrbm_order_list_table thead th {
     background: transparent;
     color: var(--ol-muted);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -377,7 +377,7 @@
     color: #166534;
     border: 1px solid #bbf7d0;
     border-radius: 20px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: capitalize;
 }
@@ -711,7 +711,7 @@
 
 .mpcrbm-mod-panel-table thead th {
     padding: 6px 12px 8px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;

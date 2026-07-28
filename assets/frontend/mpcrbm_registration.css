@@ -769,7 +769,7 @@ div.mpcrbm .mpcrbm_extra_service h3{margin:0px 0 12px 0;}
 h2#mpcrbm_title_change{color:white;}
 .mpcrbm_car_specs_lists{
 	display: flex;
-	width: 70%;
+	width: 60%;
 	flex-wrap: wrap;
 	gap: 10px 8px;
 	font-size: 16px;
@@ -807,10 +807,10 @@ h2#mpcrbm_title_change{color:white;}
 }
 
 .mpcrbm_price-breakdown {
-	font-size: 11px;
+	font-size: 12.5px;
 	color: #94a3b8;
 	font-weight: 500;
-	
+
 }
 
 .mpcrbm_list{
@@ -831,7 +831,7 @@ h2#mpcrbm_title_change{color:white;}
 	 color: var(--color_success);
  }
  .mpcrbm_seasonal-info {
-	 font-size: 10px;
+	 font-size: 12px;
 	 color: #d97706;
 	 background: #fefce8;
 	 padding: 5px;
@@ -854,7 +854,7 @@ h2#mpcrbm_title_change{color:white;}
  
 
  .mpcrbm_price-total {
-	 font-size: 11px;
+	 font-size: 12.5px;
 	 color: #64748b;
 	 font-weight: 500;
 	 padding: 2px 0px;
@@ -873,7 +873,7 @@ h2#mpcrbm_title_change{color:white;}
  }
 
  .mpcrbm_discount-info {
-	 font-size: 10px;
+	 font-size: 12px;
 	 color: #059669;
 	 font-weight: 600;
 	 background: #f0fdf4;
@@ -1132,7 +1132,7 @@ h2#mpcrbm_title_change{color:white;}
 	}
 	.mpcrbm_extra_service_layout .price-quantity-box .mpcrbm-price-per-day {
 		display: block;
-		font-size: 10.5px;
+		font-size: 12px;
 		font-weight: 400;
 		color: var(--mpcrbm-es-text-faded);
 	}
@@ -1148,7 +1148,7 @@ h2#mpcrbm_title_change{color:white;}
 		min-width: auto;
 	}
 	.mpcrbm_extra_service_layout .price-quantity-box .qtyIncDec {
-		max-width: 74px;
+		max-width: 88px;
 		display: flex;
 		align-items: stretch;
 		background: #fff;
@@ -1163,10 +1163,11 @@ h2#mpcrbm_title_change{color:white;}
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 22px;
+		min-width: 28px;
+		min-height: 28px;
 		background: var(--mpcrbm-es-bg);
 		color: var(--color_theme, #F12971);
-		font-size: 9px;
+		font-size: 11px;
 		transition: background .15s ease, color .15s ease;
 	}
 	.mpcrbm_extra_service_layout .price-quantity-box .addonGroupContent:hover {
@@ -1194,7 +1195,7 @@ h2#mpcrbm_title_change{color:white;}
 	 gap: 10px;
 	 justify-content: end;
 	 align-items: revert;
-	 width: 50%;
+	 width: 38%;
  }
 
  .mpcrbm_car_quantity{
@@ -1246,6 +1247,7 @@ h2#mpcrbm_title_change{color:white;}
 	 align-items: center;
 	 justify-content: center;
 	 min-width: 28px;
+	 min-height: 28px;
 	 background: #f8fafc;
 	 color: var(--color_theme, #F12971);
 	 font-size: 11px;

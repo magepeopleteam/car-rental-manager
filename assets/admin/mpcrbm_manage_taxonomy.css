@@ -468,7 +468,7 @@
 
 .mpcrbm_taxonomy_count_label {
     margin-top: 0;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -777,7 +777,7 @@ input[type="text"], select {
     border: 1px solid #e5e7eb;
     border-radius: 14px;
     box-shadow: 0 0 5px #d5e4ff;
-    overflow: hidden;
+    overflow-x: auto;
 }
 
 .mpcrbm-faq-container-header {
@@ -932,7 +932,7 @@ input[type="text"], select {
 
 .mpcrbm_car_list_table_container {
     width: 100%;
-    /*overflow-x: auto;*/
+    overflow-x: auto;
 }
 .mpcrbm_car_list_car_table{
     width: 100%;

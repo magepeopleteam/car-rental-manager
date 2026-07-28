@@ -170,7 +170,7 @@
                                 </div>
                                 <div class="mpcrbm_car_spec">
                                     <i class="mi mi-time-quarter-to"></i>
-                                    <div title="<?php echo esc_attr( __( 'Making Year: ', 'car-rental-manager' ) . $car['car_year'] ); ?>">
+                                    <div title="<?php echo esc_attr( __( 'Make Year: ', 'car-rental-manager' ) . $car['car_year'] ); ?>">
                                         <div class="spec-value"><?php echo esc_html( $car['car_year'] ); ?></div>
                                     </div>
                                 </div>

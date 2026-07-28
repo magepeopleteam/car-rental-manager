@@ -184,6 +184,7 @@
 					</a>
 				</div>
 				<div class="mpcrbm-shell-topbar mpcrbm-shell-fixed mpcrbm-edit-topbar">
+					<a href="#" class="mpcrbm-shell-mobile-trigger" title="<?php esc_attr_e( 'Menu', 'car-rental-manager' ); ?>"><i class="fas fa-bars"></i></a>
 					<a href="<?php echo esc_url( $car_list_url ); ?>" class="mpcrbm-edit-topbar-back">
 						<i class="fas fa-arrow-left"></i>
 						<span><?php esc_html_e( 'Back to Cars', 'car-rental-manager' ); ?></span>

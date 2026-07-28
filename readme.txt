@@ -9,7 +9,7 @@ Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	
-WPCarRently – ready-to-use WordPress car rental booking plugin. Manage vehicles, WooCommerce payments, and bookings effortlessly for your business.
+Car Rental Manager – ready-to-use WordPress car rental booking plugin. Manage vehicles, WooCommerce payments, and bookings effortlessly for your business.
 
 
 == Description ==
@@ -106,18 +106,18 @@ Log in to your WordPress admin dashboard.
 Navigate to "Plugins" > "Add New."
 Click the "Upload Plugin" button at the top of the page.
 Choose the car-rental-manager.zip file and click "Install Now."
-Once installed, click "Activate" to enable the Ecab Taxi Booking Manager WordPress plugin.
+Once installed, click "Activate" to enable the Car Rental Manager WordPress plugin.
 
 == Frequently Asked Questions ==
 
 = How the calculation works? =
-If caustomer book for less then 24 hours then it would calculate the rent as one day if more than 24 hour but less than 48 it would count as two days and vice versa
+If a customer books for less than 24 hours, it would calculate the rent as one day; if more than 24 hours but less than 48, it would count as two days, and vice versa.
 
 = Can I add extra feature of a transport? =
-Yes you can add extra feature like seat number. Car model etc 
+Yes, you can add extra features like seat number, car model, etc.
 
-= Can I offer extra service.
-Yes you can offer extra services along with the car 
+= Can I offer extra service? =
+Yes you can offer extra services along with the car
 
 = Where do I report security bugs found in this plugin? =
 Please report security bugs found in the source code of the Car Rental Manager for WordPress plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/b1431560-8325-44d1-9a15-6f0ccfb485d4). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.

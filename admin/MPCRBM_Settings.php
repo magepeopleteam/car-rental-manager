@@ -72,7 +72,7 @@
 			public static function description_array( $key ) {
 				$des = array(
 					'mpcrbm_display_faq'                     => esc_html__( 'Frequently Asked Questions about this tour that customers need to know', 'car-rental-manager' ),
-					'mpcrbm_display_why_choose_us'           => esc_html__( 'Why choose us section, write a key feature list that tourist get Trust to book. you can switch it off.', 'car-rental-manager' ),
+					'mpcrbm_display_why_choose_us'           => esc_html__( 'Why choose us section — write a key feature list that builds trust with customers. You can switch it off.', 'car-rental-manager' ),
 					'why_chose_us'                           => esc_html__( 'Please add why to book feature list one by one.', 'car-rental-manager' ),
 					'mpcrbm_display_activities'               => esc_html__( 'By default Activities type is ON but you can keep it off by switching this option', 'car-rental-manager' ),
 					'activities'                             => esc_html__( 'Add a list of tour activities for this tour.', 'car-rental-manager' ),
@@ -87,12 +87,12 @@
 					'mpcrbm_display_duration'                 => esc_html__( 'By default Duration is ON but you can keep it off by switching this option', 'car-rental-manager' ),
 					'mpcrbm_contact_phone'                    => esc_html__( 'Please Enter contact phone no', 'car-rental-manager' ),
 					'mpcrbm_contact_text'                     => esc_html__( 'Please Enter Contact Section Text', 'car-rental-manager' ),
-					'mpcrbm_contact_email'                    => esc_html__( 'Please Enter contact phone email', 'car-rental-manager' ),
+					'mpcrbm_contact_email'                    => esc_html__( 'Please Enter contact email', 'car-rental-manager' ),
 					//================//
 					'display_mpcrbm_features'                => esc_html__( 'By default slider is ON but you can keep it off by switching this option', 'car-rental-manager' ),
 					'display_slider'                      => esc_html__( 'By default slider is ON but you can keep it off by switching this option', 'car-rental-manager' ),
 					'display_mpcrbm_extra_services'          => esc_html__( 'By default Extra services is ON but you can keep it off by switching this option', 'car-rental-manager' ),
-					'mpcrbm_extra_services_global'           => esc_html__( 'Please add your global extra service which add any transport', 'car-rental-manager' ),
+					'mpcrbm_extra_services_global'           => esc_html__( 'Please add your global extra service which adds any transport', 'car-rental-manager' ),
 					'mpcrbm_extra_services_id'               => esc_html__( 'Please select your global extra service', 'car-rental-manager' ),
 					'mpcrbm_maximum_passenger'                => esc_html__( 'Filters services by the maximum number of passengers allowed', 'car-rental-manager' ),
 					'mpcrbm_maximum_bag'                      => esc_html__( 'Filters services by the maximum number of bags allowed', 'car-rental-manager' ),
@@ -103,7 +103,7 @@
 					'mpcrbm_initial_price'                    => esc_html__( 'The initial price that will be added as the starting price', 'car-rental-manager' ),
 					'mpcrbm_minimum_price'                    => esc_html__( 'Sets the minimum hour. If customer selected hour is lower, the minimum will be applied', 'car-rental-manager' ),
 					'mpcrbm_return_minimum_price'             => esc_html__( 'Sets the minimum price of return trip', 'car-rental-manager' ),
-					'mpcrbm_price_based'                     => esc_html__( 'This is a price calculation model, price will vary based on your choice', 'car-rental-manager' ),
+					'mpcrbm_price_based'                     => esc_html__( 'This is a price calculation model; price will vary based on your choice', 'car-rental-manager' ),
 					'mpcrbm_km_price'                         => esc_html__( 'Set Price per KM', 'car-rental-manager' ),
 					'mpcrbm_day_price'                       => esc_html__( 'Set Price per Day', 'car-rental-manager' ),
 					'mpcrbm_waiting_price'                    => esc_html__( 'Specifies the price charged per hour for waiting time', 'car-rental-manager' ),
@@ -113,7 +113,7 @@
 					'mpcrbm_increase_price_fixed'             => esc_html__( "Specify a fixed amount to increase the price by", "car-rental-manager" ),
 					'mpcrbm_increase_price_percentage'        => esc_html__( "Specify the percentage by which the price will be increased", "car-rental-manager" ),
 					'mpcrbm_increase_price_direction'         => esc_html__( "Select the direction of travel: 'Origin to Destination' or 'Both ways' for round trips", "car-rental-manager" ),
-					'mpcrbm_return_discount'                  => esc_html__( 'This is to way return discount fixed or percentage', 'car-rental-manager' ),
+					'mpcrbm_return_discount'                  => esc_html__( 'This sets whether the return discount is fixed or percentage-based', 'car-rental-manager' ),
 					'mpcrbm_driver_details'                   => esc_html__( 'Car Driver Details ', 'car-rental-manager' ),
 					'mpcrbm_car_stock'                        => esc_html__( 'Add the total number of available units for this car here ', 'car-rental-manager' ),
 					'mpcrbm_minimum_rental_period'            => esc_html__( 'Set the minimum number of days a car must be booked. This ensures customers cannot make bookings shorter than the defined rental period (e.g., minimum 2 days) ', 'car-rental-manager' ),
@@ -173,7 +173,7 @@
 					<label class="label">
 						<div>
 							<h6><?php esc_html_e( 'Age:', 'car-rental-manager' );?></h6>
-							<span class="desc"><?php esc_html_e( 'Input driver Age','car-rental-manager' ); ?></span>
+							<span class="desc"><?php esc_html_e( 'Input driver age','car-rental-manager' ); ?></span>
 						</div>
 						<input type="text" id="mpcrbm_driver_info_age" class="formControl" placeholder="33" name="mpcrbm_driver_info[age]" value="<?php echo esc_attr( $driver_info['age'] ); ?>" />
 					</label>
