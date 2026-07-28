@@ -218,46 +218,142 @@
 .mpcrbm_taxonomies_popup_overlay {
     display: none;
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4);
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+    inset: 0;
+    background: rgba(15, 23, 42, .55);
+    backdrop-filter: blur(3px);
+    z-index: 99999;
 }
 
+/* position:absolute + transform-centering (rather than the overlay's own
+   display:flex) so the popup stays centered regardless of whether the
+   overlay is showing as "block" or "flex" — jQuery's fadeIn()/fadeOut()
+   always restores plain display:block when it reveals a display:none
+   element, so a flex-only centering approach would silently break. */
 .mpcrbm_taxonomies_popup {
-    position: relative;
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
+    position: absolute;
+    top: 50%;
     left: 50%;
-    top: 20%;
-    width: 400px;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 16px;
+    width: 420px;
     max-width: 90%;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 24px 64px rgba(15, 23, 42, .28);
+    animation: mpcrbm-taxonomies-popup-in .25s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+@keyframes mpcrbm-taxonomies-popup-in {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(.92); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.mpcrbm_taxonomies_popup_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.mpcrbm_taxonomies_popup_header_text {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mpcrbm_taxonomies_popup_header_text i {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
 }
 
 .mpcrbm_taxonomies_popup h3 {
-    margin-top: 0;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.mpcrbm_taxonomies_popup_close {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    line-height: 1;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.mpcrbm_taxonomies_popup_close:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.mpcrbm_taxonomies_popup_body {
+    padding: 20px 22px 4px;
 }
 
 .mpcrbm_taxonomies_popup label {
     display: block;
-    margin: 10px 0 4px;
-    font-weight: 500;
+    margin: 0 0 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #94a3b8;
+}
+
+.mpcrbm_taxonomies_popup_body label:not(:first-child) {
+    margin-top: 16px;
 }
 
 .mpcrbm_taxonomies_popup input,
 .mpcrbm_taxonomies_popup textarea {
     width: 100%;
-    padding: 6px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px 12px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: #334155;
+    background: #f8fafc;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.mpcrbm_taxonomies_popup input:focus,
+.mpcrbm_taxonomies_popup textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, .15);
+    background: #fff;
+}
+
+.mpcrbm_taxonomies_popup textarea {
+    min-height: 80px;
+    resize: vertical;
 }
 
 .mpcrbm_taxonomies_popup_actions {
-    text-align: right;
-    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 22px;
 }
 
 .mpcrbm_taxonomies_content_holder{
@@ -270,22 +366,41 @@
 }
 
 .mpcrbm_taxonomies_save_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     background: #667eea;
-    color: white;
-    padding: 6px 14px;
+    color: #fff;
+    padding: 9px 18px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+}
+
+.mpcrbm_taxonomies_save_btn:hover {
+    background: #5563d8;
+    transform: translateY(-1px);
 }
 
 .mpcrbm_taxonomies_cancel_btn {
-    background: #667eea;
-    color: white;
-    padding: 6px 14px;
-    border: none;
-    border-radius: 4px;
+    background: none;
+    color: #64748b;
+    padding: 9px 16px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    margin-left: 5px;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.mpcrbm_taxonomies_cancel_btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
 }
 
 .mpcrbm_taxonomies_list{

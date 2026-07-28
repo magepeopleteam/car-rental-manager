@@ -355,10 +355,10 @@
                     <section>
                         <label class="label">
                             <div>
-                                <h6><?php esc_html_e( 'Price/Day', 'car-rental-manager' ); ?></h6>
+                                <h6><?php esc_html_e( 'Price/Day', 'car-rental-manager' ); ?> <span class="mpcrbm-required-mark">*</span></h6>
                                 <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_day_price' ); ?></span>
                             </div>
-                            <input class="formControl price_validation" name="mpcrbm_day_price" value="<?php echo esc_attr( $time_price ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:10', 'car-rental-manager' ); ?>"/>
+                            <input class="formControl price_validation" name="mpcrbm_day_price" value="<?php echo esc_attr( $time_price ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:10', 'car-rental-manager' ); ?>" required/>
                         </label>
                     </section>
 

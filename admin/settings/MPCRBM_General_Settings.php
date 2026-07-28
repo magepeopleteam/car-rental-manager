@@ -53,10 +53,10 @@
 								<section>
 									<label class="label">
 										<div>
-											<h6><?php esc_html_e('Car Type', 'car-rental-manager'); ?></h6>
+											<h6><?php esc_html_e('Car Type', 'car-rental-manager'); ?> <span class="mpcrbm-required-mark">*</span></h6>
 										</div>
-										<select name="tax_input[mpcrbm_car_type][]" class="formControl">
-											<option value=""><?php esc_html_e('— Select Car Type —','car-rental-manager'); ?></option>
+										<select name="tax_input[mpcrbm_car_type][]" class="formControl" required>
+											<option value=""><?php esc_html_e(' Select Car Type ','car-rental-manager'); ?></option>
 											<?php foreach ($car_types as $car_type): ?>
 												<option value="<?php echo esc_attr($car_type->term_id); ?>" <?php selected(in_array($car_type->term_id, $selected_car_type)); ?>>
 													<?php echo esc_html($car_type->name); ?>
@@ -70,10 +70,10 @@
 								<section>
 									<label class="label">
 										<div>
-											<h6><?php esc_html_e('Fuel Type', 'car-rental-manager'); ?></h6>
+											<h6><?php esc_html_e('Fuel Type', 'car-rental-manager'); ?> <span class="mpcrbm-required-mark">*</span></h6>
 										</div>
-										<select name="tax_input[mpcrbm_fuel_type][]" class="formControl">
-											<option value=""><?php esc_html_e('— Select Fuel Type —','car-rental-manager'); ?></option>
+										<select name="tax_input[mpcrbm_fuel_type][]" class="formControl" required>
+											<option value=""><?php esc_html_e(' Select Fuel Type ','car-rental-manager'); ?></option>
 											<?php foreach ($fuel_types as $fuel_type): ?>
 												<option value="<?php echo esc_attr($fuel_type->term_id); ?>" <?php selected(in_array($fuel_type->term_id, $selected_fuel_type)); ?>>
 													<?php echo esc_html($fuel_type->name); ?>
@@ -87,10 +87,10 @@
 								<section>
 									<label class="label">
 										<div>
-											<h6><?php esc_html_e('Seating Capacity', 'car-rental-manager'); ?></h6>
+											<h6><?php esc_html_e('Seating Capacity', 'car-rental-manager'); ?> <span class="mpcrbm-required-mark">*</span></h6>
 										</div>
-										<select name="tax_input[mpcrbm_seating_capacity][]" class="formControl">
-											<option value=""><?php esc_html_e('— Select Seating —','car-rental-manager'); ?></option>
+										<select name="tax_input[mpcrbm_seating_capacity][]" class="formControl" required>
+											<option value=""><?php esc_html_e(' Select Seating ','car-rental-manager'); ?></option>
 											<?php foreach ($seating_capacities as $seat): ?>
 												<option value="<?php echo esc_attr($seat->term_id); ?>" <?php selected(in_array($seat->term_id, $selected_seating)); ?>>
 													<?php echo esc_html($seat->name); ?>
@@ -104,10 +104,10 @@
 								<section>
 									<label class="label">
 										<div>
-											<h6><?php esc_html_e('Car Brand', 'car-rental-manager'); ?></h6>
+											<h6><?php esc_html_e('Car Brand', 'car-rental-manager'); ?> <span class="mpcrbm-required-mark">*</span></h6>
 										</div>
-										<select name="tax_input[mpcrbm_car_brand][]" class="formControl">
-											<option value=""><?php esc_html_e('— Select Brand —','car-rental-manager'); ?></option>
+										<select name="tax_input[mpcrbm_car_brand][]" class="formControl" required>
+											<option value=""><?php esc_html_e(' Select Brand ','car-rental-manager'); ?></option>
 											<?php foreach ($car_brands as $brand): ?>
 												<option value="<?php echo esc_attr($brand->term_id); ?>" <?php selected(in_array($brand->term_id, $selected_brand)); ?>>
 													<?php echo esc_html($brand->name); ?>
@@ -121,10 +121,10 @@
 								<section>
 									<label class="label">
 										<div>
-											<h6><?php esc_html_e('Make Year', 'car-rental-manager'); ?></h6>
+											<h6><?php esc_html_e('Make Year', 'car-rental-manager'); ?> <span class="mpcrbm-required-mark">*</span></h6>
 										</div>
-										<select name="tax_input[mpcrbm_make_year][]" class="formControl">
-											<option value=""><?php esc_html_e('— Select Year —','car-rental-manager'); ?></option>
+										<select name="tax_input[mpcrbm_make_year][]" class="formControl" required>
+											<option value=""><?php esc_html_e(' Select Year ','car-rental-manager'); ?></option>
 											<?php foreach ($make_years as $year): ?>
 												<option value="<?php echo esc_attr($year->term_id); ?>" <?php selected(in_array($year->term_id, $selected_year)); ?>>
 													<?php echo esc_html($year->name); ?>
@@ -145,25 +145,25 @@
                                 <section>
                                     <label class="label">
                                         <div>
-                                            <h6><?php esc_html_e( 'Maximum Passenger', 'car-rental-manager' ); ?></h6>
+                                            <h6><?php esc_html_e( 'Maximum Passenger', 'car-rental-manager' ); ?> <span class="mpcrbm-required-mark">*</span></h6>
                                         </div>
-                                        <input class="formControl price_validation" name="mpcrbm_maximum_passenger" value="<?php echo esc_attr( $max_passenger ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
+                                        <input class="formControl price_validation" name="mpcrbm_maximum_passenger" value="<?php echo esc_attr( $max_passenger ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>" required/>
                                     </label>
                                 </section>
                                 <section>
                                     <label class="label">
                                         <div>
-                                            <h6><?php esc_html_e( 'Maximum Bag', 'car-rental-manager' ); ?></h6>
+                                            <h6><?php esc_html_e( 'Maximum Bag', 'car-rental-manager' ); ?> <span class="mpcrbm-required-mark">*</span></h6>
                                         </div>
-                                        <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
+                                        <input class="formControl price_validation" name="mpcrbm_maximum_bag" value="<?php echo esc_attr( $max_bag ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>" required/>
                                     </label>
                                 </section>
                                 <section>
                                     <label class="label">
                                         <div>
-                                            <h6><?php esc_html_e( 'Car Stock', 'car-rental-manager' ); ?></h6>
+                                            <h6><?php esc_html_e( 'Car Stock', 'car-rental-manager' ); ?> <span class="mpcrbm-required-mark">*</span></h6>
                                         </div>
-                                        <input class="formControl price_validation" name="mpcrbm_car_stock" value="<?php echo esc_attr( $stock_car ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>"/>
+                                        <input class="formControl price_validation" name="mpcrbm_car_stock" value="<?php echo esc_attr( $stock_car ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:4', 'car-rental-manager' ); ?>" required/>
                                     </label>
                                 </section>
                             </div>

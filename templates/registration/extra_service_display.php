@@ -50,9 +50,6 @@ if ($mpcrbm_display_extra_services == 'on' && is_array( $mpcrbm_extra_services )
                         <span class="mprcbm_text"><?php echo esc_html($mpcrbm_service_name); ?></span>
                     </h4>
                     <div class="mpcrbm-ex-quantity-box">
-                        <div class="_mR_xs">
-                            <?php MPCRBM_Custom_Layout::load_more_text($mpcrbm_description, 100); ?>
-                        </div>
                         <div class="price-quantity-box">
                             <div class="mpcrbm-price">
                                 <?php echo wp_kses_post(wc_price($mpcrbm_service_price)); ?>

@@ -61,8 +61,15 @@
             $('.mpcrbm_taxonomies_popup_overlay').fadeIn();
         });
 
-        $(document).on('click', '.mpcrbm_taxonomies_cancel_btn', function () {
+        $(document).on('click', '.mpcrbm_taxonomies_cancel_btn, .mpcrbm_taxonomies_popup_close', function () {
             $('.mpcrbm_taxonomies_popup_overlay').fadeOut();
+        });
+
+        // Click the dimmed backdrop (not the popup card itself) to close, same as the Pro popup above.
+        $(document).on('click', '.mpcrbm_taxonomies_popup_overlay', function (e) {
+            if ( $(e.target).hasClass('mpcrbm_taxonomies_popup_overlay') ) {
+                $(this).fadeOut();
+            }
         });
 
         $(document).on('click', '.mpcrbm_taxonomies_save_btn', function () {
@@ -378,6 +385,72 @@
                 $('#mpcrbm_term_condition_answer_editor').val('');
             }
         }
+
+        // Per-car "Show FAQ Section on Frontend" switch (MPCRBM_Faq_Settings.php,
+        // the FAQ tab on each car's own edit screen — not the global FAQ list page).
+        $(document).on('change', '#mpcrbm_faq_display_toggle', function () {
+            var $toggle = $(this);
+            var isOn = $toggle.is(':checked');
+            var enabled = isOn ? 'yes' : 'no';
+            var post_id = $('[name="mpcrbm_post_id"]').val();
+            // Mirror the "FAQ Activated/Deactivated" badge instantly, don't
+            // wait on the AJAX round-trip — reverted below if it fails.
+            var $badge = $('#mpcrbm_faq_status_badge');
+            var setBadge = function (on) {
+                $badge.toggleClass('is-on', on).toggleClass('is-off', !on)
+                    .text(on ? 'FAQ Activated' : 'FAQ Deactivated');
+            };
+            setBadge(isOn);
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_faq_display_toggle',
+                post_id: post_id,
+                enabled: enabled,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function (response) {
+                if (!response || !response.success) {
+                    alert('Could not save this setting. Please try again.');
+                    $toggle.prop('checked', !isOn);
+                    setBadge(!isOn);
+                }
+            }).fail(function () {
+                alert('Could not save this setting. Please try again.');
+                $toggle.prop('checked', !isOn);
+                setBadge(!isOn);
+            });
+        });
+
+        // Per-car "Show Terms & Conditions Section on Frontend" switch
+        // (MPCRBM_Term_Condition_Setting.php) — same pattern as the FAQ toggle above.
+        $(document).on('change', '#mpcrbm_term_display_toggle', function () {
+            var $toggle = $(this);
+            var isOn = $toggle.is(':checked');
+            var enabled = isOn ? 'yes' : 'no';
+            var post_id = $('[name="mpcrbm_post_id"]').val();
+            var $badge = $('#mpcrbm_term_status_badge');
+            var setBadge = function (on) {
+                $badge.toggleClass('is-on', on).toggleClass('is-off', !on)
+                    .text(on ? 'Terms & Conditions Activated' : 'Terms & Conditions Deactivated');
+            };
+            setBadge(isOn);
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_term_display_toggle',
+                post_id: post_id,
+                enabled: enabled,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function (response) {
+                if (!response || !response.success) {
+                    alert('Could not save this setting. Please try again.');
+                    $toggle.prop('checked', !isOn);
+                    setBadge(!isOn);
+                }
+            }).fail(function () {
+                alert('Could not save this setting. Please try again.');
+                $toggle.prop('checked', !isOn);
+                setBadge(!isOn);
+            });
+        });
 
         $(document).on('click', '#mpcrbm_add_faq_btn',function() {
             $('#mpcrbm_modal_title').text('Add FAQ');
@@ -829,6 +902,60 @@
             updateFeatureMeta(actionType, termId, 'exclude');
         });
 
+        // ===== "Add New Feature" panel (per-car Car Feature tab, MPCRBM_Manage_Feature.php) =====
+        $(document).on('click', '#mpcrbm_toggle_new_feature', function() {
+            $('#mpcrbm_new_feature_panel').show();
+        });
+
+        $(document).on('click', '#mpcrbm_cancel_new_feature_btn', function() {
+            $('#mpcrbm_new_feature_name').val('');
+            $('#mpcrbm_new_feature_panel').hide();
+        });
+
+        $(document).on('click', '#mpcrbm_save_new_feature_btn', function(e) {
+            e.preventDefault();
+            const name = $('#mpcrbm_new_feature_name').val().trim();
+            const post_id = $('[name="mpcrbm_post_id"]').val();
+
+            if (name === '') {
+                alert('Please enter a feature name.');
+                return;
+            }
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_new_feature',
+                post_id: post_id,
+                name: name,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response) {
+                if (!response.success) {
+                    alert('Error saving feature' + (response.data && response.data.message ? ': ' + response.data.message : ''));
+                    return;
+                }
+
+                const termId = response.data.term_id;
+                const savedName = response.data.name;
+
+                // Already included on this term (may have existed before), skip duplicate row.
+                if ($('.mpcrbm_include_feature .mpcrbm_include_checkbox[value="' + termId + '"]').length) {
+                    $('#mpcrbm_new_feature_name').val('');
+                    $('#mpcrbm_new_feature_panel').hide();
+                    return;
+                }
+
+                const $newLabel = $('<label></label>');
+                $newLabel.append(
+                    $('<input type="checkbox" class="mpcrbm_include_checkbox" checked>').val(termId)
+                );
+                $newLabel.append(document.createTextNode(' ' + savedName));
+                $('.mpcrbm_include_feature').append($newLabel);
+
+                $('#mpcrbm_new_feature_name').val('');
+                $('#mpcrbm_new_feature_panel').hide();
+            }).fail(function() {
+                alert('Network error. Please try again.');
+            });
+        });
 
     });
 

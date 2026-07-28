@@ -2268,12 +2268,37 @@ body.mpcrbm-admin.post-php #titlediv #title,
 body.mpcrbm-admin.post-new-php #titlediv #title {
 	border: 1px solid var(--mpcrbm-shell-border);
 	border-radius: var(--mpcrbm-shell-radius-xs);
-	padding: 14px 16px;
+	padding: 8px 16px;
+	box-sizing: border-box;
 	/* Matches every other text field's size (div.mpcrbm .formControl's
 	   font-size: var(--fs), mp_global/assets/mp_style/mpcrbm_global.css),
-	   replacing the previous 20px heading-sized value, per explicit request. */
+	   replacing the previous 20px heading-sized value, per explicit request.
+	   WP core's own #titlediv #title rule (wp-admin/css/edit.css) also sets
+	   height: 1.7em and line-height: 100% — since font-size here drops from
+	   that 1.7em down to 14px, the *em*-based height no longer matches a
+	   single 14px text line, leaving a tall content-box (Chrome/Firefox
+	   don't vertically center it) with the placeholder text stranded at the
+	   top. height/line-height are overridden here too so the box sizes
+	   itself around the actual (smaller) font instead of that stale value. */
+	height: auto;
+	line-height: 1.4;
 	font-size: var(--fs, 14px);
 	background: #fff;
+}
+
+/* The visible "Add title" placeholder is this absolutely-positioned label
+   (WP core's #titlediv #title-prompt-text, wp-admin/css/edit.css sets
+   font-size: 1.7em; padding: 10px;) overlaid on top of the empty #title
+   input above — not that input's own native placeholder — so it needs its
+   own override to match #title's smaller 14px size/padding instead of
+   sitting oversized/offset relative to the box it's laid over. */
+body.mpcrbm-admin.post-php #titlediv #title-prompt-text,
+body.mpcrbm-admin.post-new-php #titlediv #title-prompt-text {
+	color: #646970;
+	position: absolute;
+	font-size: 16px;
+	padding: 18px;
+	pointer-events: none;
 }
 
 /* Permalink/slug editor (WP core's #edit-slug-box, nested in #titlediv's
@@ -2352,6 +2377,15 @@ body.mpcrbm-admin.post-new-php #postdivrich .wp-editor-area {
    (Car Type, Fuel Type, etc.), per explicit request to match that design. */
 [data-tabs="#mpcrbm_general_info"] .mpcrbm-content-editor-label {
 	margin: 0 0 8px;
+}
+
+/* Red asterisk next to every field label that carries a real "required"
+   attribute (Car Type/Fuel Type/etc. selects, Max Passenger/Bag, Car Stock,
+   Price/Day, Vehicle Title) — purely visual, the actual enforcement is the
+   required attribute itself. */
+.mpcrbm-required-mark {
+	color: #e0245e;
+	font-weight: 700;
 }
 
 [data-tabs="#mpcrbm_general_info"] #postdivrich {
@@ -3197,7 +3231,17 @@ input.formControl.mpcrbm-list-search {
 	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
 }
 .mpcrbm-faq-toolbar-text {
-	min-width: 0;
+	/* Was min-width:0 with no flex-basis — fine while toolbar-actions only
+	   held one button, but once the FAQ/Term toggle switch + status pill
+	   were added there, toolbar-actions' natural width grew a lot and (being
+	   flex-shrink:0) never gives space back, so this side had nothing to
+	   fall back on except shrinking itself, collapsing to a sliver and
+	   wrapping the title/description one word per line instead of the whole
+	   toolbar wrapping to a second row (it can already do that — flex-wrap:
+	   wrap on .mpcrbm-faq-toolbar). A real min-width means it wraps to its
+	   own row instead of getting crushed. */
+	flex: 1 1 260px;
+	min-width: 260px;
 }
 .mpcrbm-faq-eyebrow {
 	display: flex !important;
@@ -3233,8 +3277,10 @@ input.formControl.mpcrbm-list-search {
 .mpcrbm-faq-toolbar-actions {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: 14px;
 	flex-shrink: 0;
+	max-width: 100%;
 }
 
 .mpcrbm-faq-live-pill {
@@ -3255,8 +3301,11 @@ input.formControl.mpcrbm-list-search {
 .mpcrbm-faq-live-pill #mpcrbm_faq_selected_count {
 	color: var(--mpcrbm-shell-primary, #1d7bff);
 }
-/* Status indicator only — not an interactive control, so no input/click
-   handler behind it (nothing here maps to a single settable on/off state). */
+/* Status indicator, not itself a control (pointer-events:none, no
+   input/click handler of its own) — it mirrors #mpcrbm_faq_display_toggle's
+   real checkbox above instead: MPCRBM_Faq_Settings.php renders the matching
+   .is-off class on page load, and mpcrbm_manage_taxonomy.js keeps it in sync
+   the instant that checkbox is switched, so it slides/dims immediately. */
 .mpcrbm-faq-live-switch {
 	position: relative;
 	flex-shrink: 0;
@@ -3265,6 +3314,10 @@ input.formControl.mpcrbm-list-search {
 	border-radius: 20px;
 	background: var(--mpcrbm-shell-primary, #1d7bff);
 	pointer-events: none;
+	transition: background-color .2s ease;
+}
+.mpcrbm-faq-live-switch.is-off {
+	background: #cbd5e1;
 }
 .mpcrbm-faq-live-switch::before {
 	content: "";
@@ -3275,6 +3328,11 @@ input.formControl.mpcrbm-list-search {
 	height: 12px;
 	border-radius: 50%;
 	background: #fff;
+	transition: right .2s ease, left .2s ease;
+}
+.mpcrbm-faq-live-switch.is-off::before {
+	right: auto;
+	left: 2px;
 }
 
 .mpcrbm-faq-add-new-toggle {
@@ -3316,6 +3374,10 @@ input.formControl.mpcrbm-list-search {
 	width: 100%;
 }
 
+input#mpcrbm_new_feature_name {
+	margin-top: 10px;
+}
+
 .mpcrbm-faq-add-new-actions {
 	display: flex;
 	gap: 10px;
@@ -3337,11 +3399,13 @@ input.formControl.mpcrbm-list-search {
 	font-weight: 600;
 	color: var(--mpcrbm-shell-text, #1f222b);
 }
-.mpcrbm-faq-add-new-modal #mpcrbm_save_new_faq_btn {
+.mpcrbm-faq-add-new-modal #mpcrbm_save_new_faq_btn,
+.mpcrbm-faq-add-new-modal #mpcrbm_save_new_feature_btn {
 	border-radius: 100px;
 	padding: 8px 20px;
 }
-.mpcrbm-faq-add-new-modal #mpcrbm_cancel_new_faq_btn {
+.mpcrbm-faq-add-new-modal #mpcrbm_cancel_new_faq_btn,
+.mpcrbm-faq-add-new-modal #mpcrbm_cancel_new_feature_btn {
 	border-radius: 100px;
 	padding: 8px 20px;
 	font-weight: 600;
@@ -3597,6 +3661,103 @@ input.formControl.mpcrbm-list-search {
 	font-size: 13px;
 	line-height: 1.5;
 	color: var(--mpcrbm-shell-text-faded);
+}
+
+.mpcrbm-shell-body .mpcrbm-faq-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	flex-shrink: 0;
+}
+
+/* Master "Show FAQ Section on Frontend" switch (MPCRBM_Manage_Faq.php) — a
+   real, AJAX-saved checkbox toggle, unlike the purely decorative
+   .mpcrbm-faq-live-switch pill above (pointer-events:none, no input). */
+body.mpcrbm-admin .mpcrbm-faq-master-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	color: #717378;
+	user-select: none;
+	border: 1px solid #ddd;
+	padding: 8px 15px;
+	background: #f8f9f9;
+	font-size: 14px;
+	font-weight: 600;
+	border-radius: 20px;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle-slider {
+	display: inline-block;
+	position: relative;
+	width: 40px;
+	height: 22px;
+	border-radius: 20px;
+	background: #cbd5e1;
+	flex-shrink: 0;
+	transition: background-color .2s ease;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle-text {
+	display: inline-block;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle-slider::before {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+	transition: transform .2s ease;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle input:checked + .mpcrbm-faq-master-toggle-slider {
+	background: var(--mpcrbm-shell-primary);
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle input:checked + .mpcrbm-faq-master-toggle-slider::before {
+	transform: translateX(18px);
+}
+
+body.mpcrbm-admin .mpcrbm-faq-master-toggle input:focus-visible + .mpcrbm-faq-master-toggle-slider {
+	box-shadow: 0 0 0 3px rgba(29, 123, 255, .25);
+}
+
+/* "FAQ Activated"/"FAQ Deactivated" badge — replaces the old decorative
+   .mpcrbm-faq-live-switch dot inside this same pill (MPCRBM_Faq_Settings.php),
+   text/class kept in sync with the real toggle by mpcrbm_manage_taxonomy.js. */
+body.mpcrbm-admin .mpcrbm-faq-status-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 100px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+	white-space: nowrap;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-status-badge.is-on {
+	background: #dcfce7;
+	color: #15803d;
+}
+
+body.mpcrbm-admin .mpcrbm-faq-status-badge.is-off {
+	background: #f1f5f9;
+	color: #64748b;
 }
 
 .mpcrbm-shell-body .btn-primary {

@@ -16,7 +16,28 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
         public function __construct() {
             add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_save_added_term_condition', [ $this, 'mpcrbm_save_added_term_condition' ] );
+            add_action('wp_ajax_mpcrbm_save_term_display_toggle', [ $this, 'ajax_save_term_display_toggle' ] );
         }
+
+        // Per-car "Show Terms & Conditions Section on Frontend" switch — same
+        // pattern as MPCRBM_Faq_Settings.php's FAQ toggle. Only an explicit 'no'
+        // disables it, so a car whose meta was never touched (every car that
+        // existed before this switch was added) keeps its old always-on
+        // behavior, and nobody's existing terms display disappears on upgrade.
+        public function ajax_save_term_display_toggle() {
+            check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+
+            $post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
+            if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+                wp_send_json_error( [ 'message' => 'You do not have permission to edit this post.' ] );
+            }
+
+            $enabled = ( isset( $_POST['enabled'] ) && sanitize_text_field( wp_unslash( $_POST['enabled'] ) ) === 'yes' ) ? 'yes' : 'no';
+            update_post_meta( $post_id, 'mpcrbm_display_term_condition', $enabled );
+
+            wp_send_json_success( [ 'enabled' => $enabled ] );
+        }
+
         public function term_tab_content( $post_id ){
 
             $terms = get_option( $this->term_option_key, [] );
@@ -30,6 +51,8 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                 }
             }
 
+            $term_display_meta   = get_post_meta( $post_id, 'mpcrbm_display_term_condition', true );
+            $term_enabled_for_car = ( $term_display_meta !== 'no' );
 
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_term_and_condition">
@@ -47,14 +70,21 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                             <span class="desc"><?php esc_html_e( 'Choose the terms and conditions to appear during the booking journey. Only the selected terms from the list below will be displayed on the frontend.', 'car-rental-manager' ); ?></span>
                         </div>
                         <div class="mpcrbm-faq-toolbar-actions">
+                            <label class="mpcrbm-faq-master-toggle">
+                                <input type="checkbox" id="mpcrbm_term_display_toggle" <?php checked( $term_enabled_for_car ); ?>>
+                                <span class="mpcrbm-faq-master-toggle-slider"></span>
+                                <span class="mpcrbm-faq-master-toggle-text"><?php esc_html_e( 'Show Terms & Conditions Section on Frontend', 'car-rental-manager' ); ?></span>
+                            </label>
                             <?php if ( ! empty( $terms ) ) : ?>
                                 <div class="mpcrbm-faq-live-pill">
-                                    <span class="mpcrbm-faq-live-switch"></span>
+                                    <span id="mpcrbm_term_status_badge" class="mpcrbm-faq-status-badge<?php echo $term_enabled_for_car ? ' is-on' : ' is-off'; ?>">
+                                        <?php echo $term_enabled_for_car ? esc_html__( 'Terms & Conditions Activated', 'car-rental-manager' ) : esc_html__( 'Terms & Conditions Deactivated', 'car-rental-manager' ); ?>
+                                    </span>
                                     <span>
                                         <span id="mpcrbm_term_selected_count"><?php echo esc_html( count( $selected_terms_data ) ); ?></span>
                                         <?php esc_html_e( 'of', 'car-rental-manager' ); ?>
                                         <span id="mpcrbm_term_total_count"><?php echo esc_html( count( $terms ) ); ?></span>
-                                        <?php esc_html_e( 'Added to Live Site', 'car-rental-manager' ); ?>
+                                        <?php esc_html_e( 'Added to this Car', 'car-rental-manager' ); ?>
                                     </span>
                                 </div>
                             <?php endif; ?>

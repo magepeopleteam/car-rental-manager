@@ -123,7 +123,11 @@
 		var $descriptionLabel = $('<h6 class="mpcrbm-content-editor-label">Vehicle Description</h6>');
 		// Label for the title field, matching the same pattern as the
 		// description label above — inserted right before #titlediv.
-		var $titleLabel = $('<h6 class="mpcrbm-content-editor-label">Vehicle Title</h6>');
+		var $titleLabel = $('<h6 class="mpcrbm-content-editor-label">Vehicle Title <span class="mpcrbm-required-mark">*</span></h6>');
+		// WP core's #title has no "required" attribute of its own (and no filter
+		// to add one) — set here since this is the one place already touching
+		// the element after it's moved into the form other required fields live in.
+		$titlediv.find('#title').prop('required', true);
 		// #post-status-info (word count/autosave-status/resize-handle row) is
 		// deliberately NOT relocated here, unlike the other elements — left in
 		// its original position inside #post-body-content, which is already

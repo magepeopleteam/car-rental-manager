@@ -190,8 +190,17 @@ $mpcrbm_show_term_condition            = MPCRBM_Global_Function::get_settings('m
 // than a boolean) keeps every existing "=== 'yes'" check below working
 // unchanged.
 $mpcrbm_show_feature_section = ( ! empty( $mpcrbm_include_feature_names ) || ! empty( $mpcrbm_exclude_feature_names ) ) ? 'yes' : 'no';
-$mpcrbm_show_faq_section     = ! empty( $mpcrbm_selected_faqs_data ) ? 'yes' : 'no';
-$mpcrbm_show_term_condition  = ! empty( $mpcrbm_selected_term_condition ) ? 'yes' : 'no';
+// Per-car "Show FAQ Section on Frontend" switch (MPCRBM_Faq_Settings.php,
+// each car's own FAQ tab) gates this car's FAQ section specifically. Only an
+// explicit 'no' turns it off — a car whose meta was never touched (every car
+// that existed before this per-car switch was added) still reads as enabled,
+// so nobody's existing FAQ display silently disappears on upgrade.
+$mpcrbm_show_faq_section     = ( $mpcrbm_display_faq !== 'no' && ! empty( $mpcrbm_selected_faqs_data ) ) ? 'yes' : 'no';
+// Per-car "Show Terms & Conditions Section on Frontend" switch
+// (MPCRBM_Term_Condition_Setting.php, each car's own Term & Condition tab) —
+// same backward-compatible default as the FAQ switch above: only an explicit
+// 'no' turns it off, so existing cars keep showing terms as before.
+$mpcrbm_show_term_condition  = ( get_post_meta( $mpcrbm_post_id, 'mpcrbm_display_term_condition', true ) !== 'no' && ! empty( $mpcrbm_selected_term_condition ) ) ? 'yes' : 'no';
 
 $booking_period = 0;
 if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) {

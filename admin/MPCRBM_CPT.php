@@ -17,6 +17,55 @@
                 add_action('save_post', array( $this, 'mpcrbm_save_car_taxonomies_names_as_meta'), 10, 3);
 
 				add_action( 'admin_menu', array( $this, 'remove_duplicate_native_submenus' ) );
+				add_filter( 'enter_title_here', array( $this, 'change_title_placeholder' ), 10, 2 );
+
+				add_action( 'save_post', array( $this, 'require_featured_image' ), 20, 2 );
+				add_action( 'admin_notices', array( $this, 'missing_thumbnail_notice' ) );
+			}
+
+			// Swaps WP core's generic "Add title" placeholder (shown over #title on
+			// the Add/Edit Car screen) for something specific to this CPT.
+			public function change_title_placeholder( $title, $post ) {
+				if ( $post->post_type === MPCRBM_Function::get_cpt() ) {
+					/* translators: %s: the plugin's configurable "Car" label */
+					$title = sprintf( __( 'Enter %s Name', 'car-rental-manager' ), MPCRBM_Function::get_name() );
+				}
+				return $title;
+			}
+
+			// The featured image meta box has no HTML "required" equivalent (it's a
+			// media-modal button, not a form field), so this is enforced on save
+			// instead: publishing without one silently reverts the post back to
+			// draft, and missing_thumbnail_notice() below surfaces why via a
+			// short-lived per-user transient (cleared as soon as it's shown once,
+			// unlike an option-based flag which would keep re-appearing).
+			public function require_featured_image( $post_id, $post ) {
+				if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+					return;
+				}
+				if ( $post->post_type !== MPCRBM_Function::get_cpt() || 'publish' !== $post->post_status ) {
+					return;
+				}
+				if ( has_post_thumbnail( $post_id ) ) {
+					return;
+				}
+
+				remove_action( 'save_post', array( $this, 'require_featured_image' ), 20 );
+				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'draft' ) );
+				add_action( 'save_post', array( $this, 'require_featured_image' ), 20, 2 );
+
+				set_transient( 'mpcrbm_missing_thumbnail_' . get_current_user_id(), 1, 60 );
+			}
+
+			public function missing_thumbnail_notice() {
+				$key = 'mpcrbm_missing_thumbnail_' . get_current_user_id();
+				if ( ! get_transient( $key ) ) {
+					return;
+				}
+				delete_transient( $key );
+				/* translators: %s: the plugin's configurable "Car" label, lowercased */
+				$message = sprintf( __( 'This %s was saved as a draft because it needs a featured image before it can be published.', 'car-rental-manager' ), strtolower( MPCRBM_Function::get_name() ) );
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			}
 
 			// The mpcrbm_locations taxonomy and mpcrbm_ex_services post type (both

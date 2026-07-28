@@ -633,17 +633,25 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 <!-- Popup Form -->
                 <div class="mpcrbm_taxonomies_popup_overlay">
                     <div class="mpcrbm_taxonomies_popup">
-                        <h3><?php esc_attr_e( 'Add New Taxonomy', 'car-rental-manager' );?></h3>
-                        <label><?php esc_attr_e( 'Name', 'car-rental-manager' );?>:</label>
-                        <input type="text" id="mpcrbm_taxonomies_name" placeholder="<?php esc_attr_e( 'Enter name', 'car-rental-manager' );?>">
-                        <label><?php esc_attr_e( 'Slug', 'car-rental-manager' );?>:</label>
-                        <input type="text" id="mpcrbm_taxonomies_slug" placeholder="<?php esc_attr_e( 'Optional slug', 'car-rental-manager' );?>">
-                        <label><?php esc_attr_e( 'Description', 'car-rental-manager' );?>:</label>
-                        <textarea id="mpcrbm_taxonomies_desc" placeholder="<?php esc_attr_e( 'Short description', 'car-rental-manager' );?>"></textarea>
+                        <div class="mpcrbm_taxonomies_popup_header">
+                            <div class="mpcrbm_taxonomies_popup_header_text">
+                                <i class="fas fa-tags"></i>
+                                <h3><?php esc_attr_e( 'Add New Taxonomy', 'car-rental-manager' );?></h3>
+                            </div>
+                            <button type="button" class="mpcrbm_taxonomies_popup_close" aria-label="<?php esc_attr_e( 'Close', 'car-rental-manager' );?>">&times;</button>
+                        </div>
+                        <div class="mpcrbm_taxonomies_popup_body">
+                            <label for="mpcrbm_taxonomies_name"><?php esc_attr_e( 'Name', 'car-rental-manager' );?></label>
+                            <input type="text" id="mpcrbm_taxonomies_name" placeholder="<?php esc_attr_e( 'Enter name', 'car-rental-manager' );?>">
+                            <label for="mpcrbm_taxonomies_slug"><?php esc_attr_e( 'Slug', 'car-rental-manager' );?></label>
+                            <input type="text" id="mpcrbm_taxonomies_slug" placeholder="<?php esc_attr_e( 'Optional slug', 'car-rental-manager' );?>">
+                            <label for="mpcrbm_taxonomies_desc"><?php esc_attr_e( 'Description', 'car-rental-manager' );?></label>
+                            <textarea id="mpcrbm_taxonomies_desc" placeholder="<?php esc_attr_e( 'Short description', 'car-rental-manager' );?>"></textarea>
+                        </div>
 
                         <div class="mpcrbm_taxonomies_popup_actions">
-                            <button class="mpcrbm_taxonomies_save_btn"><?php esc_attr_e( 'Save', 'car-rental-manager' );?></button>
                             <button class="mpcrbm_taxonomies_cancel_btn"><?php esc_attr_e( 'Cancel', 'car-rental-manager' );?></button>
+                            <button class="mpcrbm_taxonomies_save_btn"><i class="fas fa-check"></i> <?php esc_attr_e( 'Save', 'car-rental-manager' );?></button>
                         </div>
                     </div>
                 </div>

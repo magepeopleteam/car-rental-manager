@@ -14,6 +14,28 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
         public function __construct() {
             add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_save_added_faq', [ $this, 'mpcrbm_save_added_faq' ] );
+            add_action('wp_ajax_mpcrbm_save_faq_display_toggle', [ $this, 'ajax_save_faq_display_toggle' ] );
+        }
+
+        // Per-car "Show FAQ Section on Frontend" switch — stored as post meta
+        // (mpcrbm_display_faq) so each car can be turned on/off independently,
+        // instead of the old single site-wide switch. Meta value 'no' is the
+        // only thing that disables it; anything else (including the meta never
+        // having been set at all) reads as enabled, so cars that already had
+        // FAQs showing before this per-car switch existed keep showing them —
+        // nobody's existing setup silently goes dark on upgrade.
+        public function ajax_save_faq_display_toggle() {
+            check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+
+            $post_id = isset( $_POST['post_id'] ) ? absint( wp_unslash( $_POST['post_id'] ) ) : 0;
+            if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
+                wp_send_json_error( [ 'message' => 'You do not have permission to edit this post.' ] );
+            }
+
+            $enabled = ( isset( $_POST['enabled'] ) && sanitize_text_field( wp_unslash( $_POST['enabled'] ) ) === 'yes' ) ? 'yes' : 'no';
+            update_post_meta( $post_id, 'mpcrbm_display_faq', $enabled );
+
+            wp_send_json_success( [ 'enabled' => $enabled ] );
         }
 
         function mpcrbm_save_added_faq() {
@@ -54,6 +76,12 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                 }
             }
 
+            // Backward-compatible default: only an explicit 'no' disables the
+            // section — a car whose meta was never touched (every car that
+            // existed before this per-car switch was added) reads as enabled,
+            // same as its old always-on behavior.
+            $faq_display_meta   = get_post_meta( $post_id, 'mpcrbm_display_faq', true );
+            $faq_enabled_for_car = ( $faq_display_meta !== 'no' );
 
             ?>
             <div class="tabsItem" data-tabs="#mpcrbm_setting_manage_faq">
@@ -71,14 +99,21 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                             <span class="desc"><?php esc_html_e( 'Choose the frequently asked questions to appear during the booking journey. Only the selected FAQs from the list below will be displayed on the frontend.', 'car-rental-manager' ); ?></span>
                         </div>
                         <div class="mpcrbm-faq-toolbar-actions">
+                            <label class="mpcrbm-faq-master-toggle">
+                                <input type="checkbox" id="mpcrbm_faq_display_toggle" <?php checked( $faq_enabled_for_car ); ?>>
+                                <span class="mpcrbm-faq-master-toggle-slider"></span>
+                                <span class="mpcrbm-faq-master-toggle-text"><?php esc_html_e( 'Show FAQ Section on Frontend', 'car-rental-manager' ); ?></span>
+                            </label>
                             <?php if ( ! empty( $faqs ) ) : ?>
                                 <div class="mpcrbm-faq-live-pill">
-                                    <span class="mpcrbm-faq-live-switch"></span>
+                                    <span id="mpcrbm_faq_status_badge" class="mpcrbm-faq-status-badge<?php echo $faq_enabled_for_car ? ' is-on' : ' is-off'; ?>">
+                                        <?php echo $faq_enabled_for_car ? esc_html__( 'FAQ Activated', 'car-rental-manager' ) : esc_html__( 'FAQ Deactivated', 'car-rental-manager' ); ?>
+                                    </span>
                                     <span>
                                         <span id="mpcrbm_faq_selected_count"><?php echo esc_html( count( $selected_faqs_data ) ); ?></span>
                                         <?php esc_html_e( 'of', 'car-rental-manager' ); ?>
                                         <span id="mpcrbm_faq_total_count"><?php echo esc_html( count( $faqs ) ); ?></span>
-                                        <?php esc_html_e( 'Added to Live Site', 'car-rental-manager' ); ?>
+                                        <?php esc_html_e( 'Added to this Car', 'car-rental-manager' ); ?>
                                     </span>
                                 </div>
                             <?php endif; ?>
