@@ -141,6 +141,11 @@ div.header-text h2 {
     margin: 2px;
 }
 
+.mpcrbm_extra_service_item span.mprcbm_text {
+    padding-left: 10px;
+    font-size: 16px;
+}
+
 .custom-divider {
     border: none;
     border-top: 1px solid #ccc; /* change color if needed */
@@ -315,6 +320,68 @@ div.header-text h2 {
     border: none;
     padding: 0;
     background: transparent;
+}
+
+/* ===== Time dropdown (start_time_list / return_time_list) =====
+   Redesigned into a wrapping 3-column grid of rounded "chips" instead of
+   one tall single-column list — much easier to scan 48 half-hour slots.
+   Only the <li> layout changes here; the <ul>'s own display:none/slideDown
+   toggle (mp_global/assets/mp_style/mpcrbm_global.js) is left untouched —
+   jQuery's slideDown restores display:block (not flex/grid) once its
+   animation finishes, so a flex/grid <ul> would get silently fought back
+   to block. inline-block <li>s avoid that fight entirely; font-size:0 on
+   the <ul> (reset back to 12.5px on the <li>s) just collapses the
+   whitespace PHP's loop leaves between each <li> tag so exactly 3 fit
+   per row instead of wrapping early. */
+.mpcrbm-search-widget-modern .input_select_list {
+    padding: 10px;
+    border: 1px solid var(--mpcrbm-sw-border);
+    border-radius: var(--mpcrbm-sw-radius-sm);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, .16);
+    background: #fff;
+    font-size: 0;
+}
+
+.mpcrbm-search-widget-modern .input_select_list li {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 33.333%;
+    vertical-align: top;
+    margin: 0;
+    padding: 9px 4px;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--mpcrbm-sw-text);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+}
+
+.mpcrbm-search-widget-modern .input_select_list li:hover {
+    background: #fdf1f5 !important; /* fallback for browsers without color-mix() */
+    background: color-mix(in srgb, var(--color_theme, #F12971) 12%, #fff) !important;
+    color: var(--color_theme, #F12971) !important;
+    font-weight: 700;
+}
+
+.mpcrbm-search-widget-modern .input_select_list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mpcrbm-search-widget-modern .input_select_list::-webkit-scrollbar-thumb {
+    background: var(--mpcrbm-sw-border);
+    border-radius: 3px;
+}
+
+ul.input_select_list.start_time_list {
+    width: 280px;
+    padding: 20px !important;
+}
+
+ul.input_select_list.return_time_list {
+    width: 280px;
+    padding: 20px !important;
 }
 
 /* "Return" section — a divider-with-label instead of plain uppercase text
