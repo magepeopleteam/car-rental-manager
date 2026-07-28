@@ -15,6 +15,27 @@
 				add_filter( 'manage_edit-mpcrbm_rent_sortable_columns', array( $this, 'rent_sortable_columns' ) );
 
                 add_action('save_post', array( $this, 'mpcrbm_save_car_taxonomies_names_as_meta'), 10, 3);
+
+				add_action( 'admin_menu', array( $this, 'remove_duplicate_native_submenus' ) );
+			}
+
+			// The mpcrbm_locations taxonomy and mpcrbm_ex_services post type (both
+			// registered in cpt() below) each keep show_ui/show_in_menu on, because
+			// MPCRBM_Locations_Manager / MPCRBM_Extra_Services_Manager still rely on
+			// their underlying terms/posts being creatable under the hood — but that
+			// also makes WordPress auto-add its own native "Locations" / "Extra
+			// Services" submenu, duplicating the fully custom shell page those two
+			// classes already render. Same "remove submenu added by register_post_type"
+			// idiom already used by MPCRBM_Taxonomies::remove_registered_submenu().
+			public function remove_duplicate_native_submenus() {
+				$cpt = MPCRBM_Function::get_cpt();
+				// wp-admin/menu.php builds the taxonomy submenu slug with sprintf('edit-tags.php?taxonomy=%s&amp;post_type=...')
+				// — i.e. the literal string stored in $submenu has an HTML-encoded "&amp;", not a plain "&".
+				// remove_submenu_page() matches by exact string, so the plain-"&" form silently no-ops; both are
+				// removed here to stay correct across WP versions that may not entity-encode it.
+				remove_submenu_page( 'edit.php?post_type=' . $cpt, 'edit-tags.php?taxonomy=mpcrbm_locations&amp;post_type=' . $cpt );
+				remove_submenu_page( 'edit.php?post_type=' . $cpt, 'edit-tags.php?taxonomy=mpcrbm_locations&post_type=' . $cpt );
+				remove_submenu_page( 'edit.php?post_type=' . $cpt, 'edit.php?post_type=mpcrbm_ex_services' );
 			}
 
             public function mpcrbm_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {

@@ -487,6 +487,7 @@ body.mpcrbm-admin *:after {
 	border-radius: var(--mpcrbm-shell-radius);
 	box-shadow: var(--mpcrbm-shell-shadow);
 	margin-bottom: 24px;
+	padding-bottom: 20px;
 }
 
 .mpcrbm-shell-body .mpcrbm-card-header {

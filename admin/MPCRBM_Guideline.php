@@ -23,6 +23,7 @@
 			private function sections() {
 				return array(
 					'overview'      => array('icon' => 'fas fa-compass', 'title' => esc_html__('Getting Started', 'car-rental-manager')),
+					'shortcode'     => array('icon' => 'fas fa-code', 'title' => esc_html__('Shortcodes', 'car-rental-manager')),
 					'cars'          => array('icon' => 'fas fa-car-side', 'title' => esc_html__('Adding & Managing Cars', 'car-rental-manager')),
 					'pricing'       => array('icon' => 'fas fa-money-bill-wave', 'title' => esc_html__('Pricing & Discounts', 'car-rental-manager')),
 					'schedule'      => array('icon' => 'fas fa-calendar-check', 'title' => esc_html__('Availability & Schedule', 'car-rental-manager')),
@@ -30,7 +31,6 @@
 					'branches'      => array('icon' => 'fas fa-code-branch', 'title' => esc_html__('Drivers & Branches', 'car-rental-manager')),
 					'faq'           => array('icon' => 'fas fa-circle-question', 'title' => esc_html__('FAQs & Terms and Conditions', 'car-rental-manager')),
 					'services'      => array('icon' => 'fas fa-shopping-basket', 'title' => esc_html__('Extra Services & Features', 'car-rental-manager')),
-					'shortcode'     => array('icon' => 'fas fa-code', 'title' => esc_html__('Embedding the Booking Form', 'car-rental-manager')),
 					'help'          => array('icon' => 'fas fa-life-ring', 'title' => esc_html__('Need Help?', 'car-rental-manager')),
 				);
 			}
@@ -139,7 +139,7 @@
 
 				.mpcrbm-guide-intro {
 					margin: 0 0 20px;
-					font-size: 14px;
+					font-size: 12px;
 					line-height: 1.65;
 					color: var(--mpcrbm-shell-text-faded, #788291);
 				}
@@ -167,7 +167,7 @@
 					gap: 10px;
 					margin-top: 0;
 					margin-bottom: 10px !important;
-					font-size: 14px;
+					font-size: 16px !important;
 					font-weight: 700;
 					line-height: 1.4;
 					color: var(--mpcrbm-shell-text, #1f222b);
@@ -258,11 +258,68 @@
 					padding: 16px 18px;
 					margin-bottom: 16px;
 				}
+				.mpcrbm-guide-shortcode-row {
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					gap: 10px;
+				}
 				.mpcrbm-guide-shortcode-box code {
-					font-size: 13px;
+					font-family: Consolas, Monaco, "Courier New", monospace;
+					font-size: 12.5px;
 					color: #1d4ed8;
-					background: none;
+					background: #eef2ff;
+					padding: 5px 10px;
+					border-radius: 6px;
+					word-break: break-all;
+				}
+				.mpcrbm-guide-copy-btn {
+					flex-shrink: 0;
+					display: inline-flex;
+					align-items: center;
+					justify-content: center;
+					width: 30px;
+					height: 30px;
 					padding: 0;
+					background: #fff;
+					border: 1px solid #e2e8f0;
+					border-radius: 7px;
+					color: #6b7280;
+					font-size: 12px;
+					cursor: pointer;
+					transition: background .15s ease, color .15s ease, border-color .15s ease;
+				}
+				.mpcrbm-guide-copy-btn:hover {
+					background: #eff6ff;
+					border-color: var(--mpcrbm-shell-primary, #1d7bff);
+					color: var(--mpcrbm-shell-primary, #1d7bff);
+				}
+				.mpcrbm-guide-copy-btn.is-copied {
+					background: #dcfce7;
+					border-color: #86efac;
+					color: #15803d;
+				}
+				.mpcrbm-guide-shortcode-box p {
+					margin: 8px 0 0;
+					font-size: 12.5px;
+					line-height: 1.6;
+					color: #6b7280;
+				}
+				.mpcrbm-guide-subheading {
+					margin: 0 0 10px;
+					font-size: 13px;
+					font-weight: 700;
+					color: var(--mpcrbm-shell-text, #1f222b);
+				}
+				.mpcrbm-guide-subheading:not(:first-child) {
+					margin-top: 26px;
+				}
+				.mpcrbm-guide-param-table + .mpcrbm-guide-subheading {
+					margin-top: 26px;
+				}
+				h4.mpcrbm-guide-subheading {
+					margin-bottom: 20px !important;
+					font-size: 16px !important;
 				}
 				.mpcrbm-guide-param-table {
 					width: 100%;
@@ -386,6 +443,127 @@
 							echo esc_html( sprintf( __( 'Add Your First %s', 'car-rental-manager' ), $label ) );
 							?>
 						</a>
+					</div>
+				</div>
+
+				<!-- Shortcode -->
+				<div class="mpcrbm-card" id="mpcrbm-guide-shortcode">
+					<div class="mpcrbm-card-header mpcrbm-guide-card-header">
+						<div class="mpcrbm-guide-card-header-text">
+							<i class="<?php echo esc_attr( $sections['shortcode']['icon'] ); ?>"></i>
+							<h3><?php echo esc_html( $sections['shortcode']['title'] ); ?></h3>
+						</div>
+					</div>
+					<div class="mpcrbm-card-content">
+						<p class="mpcrbm-guide-intro"><?php esc_html_e( 'Two shortcodes cover everything: the booking search form, and a standalone car listing — drop either into any page or post.', 'car-rental-manager' ); ?></p>
+
+						<h4 class="mpcrbm-guide-subheading"><?php esc_html_e( 'Booking Search Form — [mpcrbm_booking]', 'car-rental-manager' ); ?></h4>
+
+						<div class="mpcrbm-guide-shortcode-box">
+							<div class="mpcrbm-guide-shortcode-row">
+								<code>[mpcrbm_booking form='inline' progressbar='no']</code>
+								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_booking form='inline' progressbar='no']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
+							</div>
+							<p><?php esc_html_e( 'A simple shortcode that displays only the search form, the same as the homepage.', 'car-rental-manager' ); ?></p>
+						</div>
+						<div class="mpcrbm-guide-shortcode-box">
+							<div class="mpcrbm-guide-shortcode-row">
+								<code>[mpcrbm_booking form='inline' title='yes' progressbar='no' search_result='yes' ajax_search='yes']</code>
+								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_booking form='inline' title='yes' progressbar='no' search_result='yes' ajax_search='yes']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
+							</div>
+							<p><?php esc_html_e( 'Shows the title bar above the form (title=\'yes\'), displays the default search results together with the form (search_result=\'yes\'), and loads those results via AJAX instead of redirecting to a results page (ajax_search=\'yes\').', 'car-rental-manager' ); ?></p>
+						</div>
+						<div class="mpcrbm-guide-shortcode-box">
+							<div class="mpcrbm-guide-shortcode-row">
+								<code>[mpcrbm_booking form='horizontal' progressbar='no']</code>
+								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_booking form='horizontal' progressbar='no']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
+							</div>
+							<p><?php esc_html_e( 'The same form laid out horizontally instead of inline — handy for a full-width header or hero section.', 'car-rental-manager' ); ?></p>
+						</div>
+
+						<table class="mpcrbm-guide-param-table">
+							<thead>
+							<tr>
+								<th><?php esc_html_e( 'Parameter', 'car-rental-manager' ); ?></th>
+								<th><?php esc_html_e( 'Values', 'car-rental-manager' ); ?></th>
+								<th><?php esc_html_e( 'What it does', 'car-rental-manager' ); ?></th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<td><code>form</code></td>
+								<td><strong>horizontal</strong> / inline</td>
+								<td><?php esc_html_e( 'Layout of the search form — a full row, or a compact single line.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>title</code></td>
+								<td><strong>yes</strong> / no</td>
+								<td><?php esc_html_e( 'Show or hide the title bar above the search form.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>progressbar</code></td>
+								<td><strong>yes</strong> / no</td>
+								<td><?php esc_html_e( 'Show or hide the booking progress bar.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>search_result</code></td>
+								<td>yes / <strong>no</strong></td>
+								<td><?php esc_html_e( 'Show the default search results together with the form.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>ajax_search</code></td>
+								<td>yes / <strong>no</strong></td>
+								<td><?php esc_html_e( 'Load search results via AJAX in place, instead of redirecting to a results page (requires search_result=\'yes\').', 'car-rental-manager' ); ?></td>
+							</tr>
+							</tbody>
+						</table>
+
+						<h4 class="mpcrbm-guide-subheading"><?php esc_html_e( 'Car Listing — [mpcrbm_car_list]', 'car-rental-manager' ); ?></h4>
+
+						<div class="mpcrbm-guide-shortcode-box">
+							<div class="mpcrbm-guide-shortcode-row">
+								<code>[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6']</code>
+								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
+							</div>
+							<p><?php esc_html_e( 'Displays a car list with a left-hand filter sidebar (by car type, fuel type, brand, and more), showing 6 cars in a grid layout.', 'car-rental-manager' ); ?></p>
+						</div>
+
+						<table class="mpcrbm-guide-param-table">
+							<thead>
+							<tr>
+								<th><?php esc_html_e( 'Parameter', 'car-rental-manager' ); ?></th>
+								<th><?php esc_html_e( 'Values', 'car-rental-manager' ); ?></th>
+								<th><?php esc_html_e( 'What it does', 'car-rental-manager' ); ?></th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<td><code>style</code></td>
+								<td><strong>grid</strong> / list</td>
+								<td><?php esc_html_e( 'Display cars as a grid of cards, or a vertical list.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>mpcrbm_left_filter</code></td>
+								<td>yes / <strong>no</strong></td>
+								<td><?php esc_html_e( 'Show a sidebar for visitors to filter the list by car type, fuel type, brand, and more.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>show</code></td>
+								<td><?php esc_html_e( 'number, default 20', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'How many cars to display.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>column</code></td>
+								<td><?php esc_html_e( '1–6, default 3', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'Number of columns in grid style.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>car_type</code> / <code>fuel_type</code> / <code>brand</code></td>
+								<td><?php esc_html_e( 'optional', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'Only show cars matching these taxonomies.', 'car-rental-manager' ); ?></td>
+							</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 
@@ -668,43 +846,6 @@
 					</div>
 				</div>
 
-				<!-- Shortcode -->
-				<div class="mpcrbm-card" id="mpcrbm-guide-shortcode">
-					<div class="mpcrbm-card-header mpcrbm-guide-card-header">
-						<div class="mpcrbm-guide-card-header-text">
-							<i class="<?php echo esc_attr( $sections['shortcode']['icon'] ); ?>"></i>
-							<h3><?php echo esc_html( $sections['shortcode']['title'] ); ?></h3>
-						</div>
-					</div>
-					<div class="mpcrbm-card-content">
-						<p class="mpcrbm-guide-intro"><?php esc_html_e( 'Drop this shortcode into any page or post to show the booking search form.', 'car-rental-manager' ); ?></p>
-						<div class="mpcrbm-guide-shortcode-box">
-							<code>[mpcrbm_booking form='inline' progressbar='yes']</code>
-						</div>
-						<table class="mpcrbm-guide-param-table">
-							<thead>
-							<tr>
-								<th><?php esc_html_e( 'Parameter', 'car-rental-manager' ); ?></th>
-								<th><?php esc_html_e( 'Values', 'car-rental-manager' ); ?></th>
-								<th><?php esc_html_e( 'What it does', 'car-rental-manager' ); ?></th>
-							</tr>
-							</thead>
-							<tbody>
-							<tr>
-								<td><code>form</code></td>
-								<td><strong>inline</strong> / horizontal</td>
-								<td><?php esc_html_e( 'Default is "horizontal"; "inline" renders a minimal single-line form.', 'car-rental-manager' ); ?></td>
-							</tr>
-							<tr>
-								<td><code>progressbar</code></td>
-								<td><strong>yes</strong> / no</td>
-								<td><?php esc_html_e( 'Default is "yes"; set to "no" to hide the booking progress bar.', 'car-rental-manager' ); ?></td>
-							</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-
 				<!-- Need Help? -->
 				<div class="mpcrbm-card" id="mpcrbm-guide-help">
 					<div class="mpcrbm-card-header mpcrbm-guide-card-header">
@@ -733,6 +874,46 @@
 						</div>
 					</div>
 				</div>
+
+				<script>
+				(function () {
+					document.addEventListener('click', function (e) {
+						var btn = e.target.closest('.mpcrbm-guide-copy-btn');
+						if (!btn) {
+							return;
+						}
+						var text = btn.getAttribute('data-copy') || '';
+						var icon = btn.querySelector('i');
+						var showCopied = function () {
+							btn.classList.add('is-copied');
+							if (icon) {
+								icon.className = 'fas fa-check';
+							}
+							setTimeout(function () {
+								btn.classList.remove('is-copied');
+								if (icon) {
+									icon.className = 'fas fa-copy';
+								}
+							}, 1500);
+						};
+						if (navigator.clipboard && navigator.clipboard.writeText) {
+							navigator.clipboard.writeText(text).then(showCopied);
+						} else {
+							var ta = document.createElement('textarea');
+							ta.value = text;
+							ta.style.position = 'fixed';
+							ta.style.opacity = '0';
+							document.body.appendChild(ta);
+							ta.select();
+							try {
+								document.execCommand('copy');
+							} catch (err) {}
+							document.body.removeChild(ta);
+							showCopied();
+						}
+					});
+				})();
+				</script>
 				<?php
 				MPCRBM_Admin_Shell::render_shell_close();
 			}
