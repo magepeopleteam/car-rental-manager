@@ -12,6 +12,8 @@
 				add_shortcode('mpcrbm_booking', array($this, 'mpcrbm_booking'));
 
                 add_shortcode( 'mpcrbm_car_list', [ $this, 'mpcrbm_car_list_shortcode'] );
+                add_action( 'wp_ajax_mpcrbm_car_list_page',        [ $this, 'mpcrbm_car_list_ajax_page' ] );
+                add_action( 'wp_ajax_nopriv_mpcrbm_car_list_page', [ $this, 'mpcrbm_car_list_ajax_page' ] );
 
                 add_shortcode( 'mpcrbm_my_bookings', [ $this, 'mpcrbm_my_bookings_shortcode' ] );
                 add_action( 'wp_ajax_mpcrbm_mb_load',       [ $this, 'mpcrbm_mb_load' ] );
@@ -20,7 +22,7 @@
 
 			}
 
-            public static function mpcrbm_get_car_data( $atts ) {
+            public static function mpcrbm_get_car_data( $atts, $per_page = 20, $paged = 1 ) {
 
                 $meta_query = [ 'relation' => 'AND' ];
 
@@ -59,9 +61,10 @@
 
                 $args = [
                     'post_type'      => 'mpcrbm_rent',
-//                    'posts_per_page' => intval( $atts['per_page'] ),
-                    'posts_per_page' => intval( $atts['show'] ),
-					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query		
+                    'posts_per_page' => max( 1, intval( $per_page ) ),
+                    'paged'          => max( 1, intval( $paged ) ),
+                    'no_found_rows'  => false,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
                     'meta_query'     => $meta_query,
                 ];
 
@@ -118,37 +121,191 @@
                 }
 
                 return array(
-                        'cars' => $cars,
-                        'car_ids' => $post_ids,
+                        'cars'          => $cars,
+                        'car_ids'       => $post_ids,
+                        'found_posts'   => (int) $query->found_posts,
+                        'max_num_pages' => (int) $query->max_num_pages,
                 );
+            }
+
+            /** Single car card markup — shared by the grid/list render, the AJAX
+             *  pagination handler, and the carousel render so all three stay
+             *  visually identical. */
+            private static function render_car_item_card( array $car ): string {
+                $permalink = get_permalink( $car['id'] );
+                ob_start(); ?>
+                <div class="mpcrbm_car_list_grid_item mpcrbm_booking_item "
+                     data-car-type="<?php echo esc_attr( $car['type'])?>"
+                     data-fuel-type="<?php echo esc_attr( $car['fuel'])?>"
+                     data-seating-capacity="<?php echo esc_attr( $car['seating_capacity'] )?>"
+                     data-car-brand="<?php echo esc_attr( $car['brand'] )?>"
+                     data-car-year="<?php echo esc_attr( $car['car_year'])?>"
+                     data-filter-category-items="<?php echo esc_attr( $car['filter_string'])?>"
+                >
+                    <a href="<?php echo esc_url( $permalink ); ?>" class="mpcrbm_car_list_grid_image">
+                        <?php if ( $car['image'] ) : ?>
+                            <img src="<?php echo esc_url( $car['image'] ); ?>" alt="<?php echo esc_attr( $car['title'] ); ?>">
+                        <?php endif; ?>
+                    </a>
+                    <div class="mpcrbm_car_list_grid_content">
+                        <h3 class="mpcrbm_car_list_grid_title"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $car['title'] ); ?></a></h3>
+                            <div class="mpcrbm_car_specs_lists">
+                                <div class="mpcrbm_car_spec">
+                                    <i class="mi mi-car"></i>
+                                    <div title="<?php echo esc_attr( __( 'Car Type: ', 'car-rental-manager' ) . $car['type'] ); ?>">
+                                        <div class="spec-value"><?php echo esc_html( $car['type'] ); ?></div>
+                                    </div>
+                                </div>
+                                <div class="mpcrbm_car_spec">
+                                    <i class="mi mi-gas-pump-alt"></i>
+                                    <div title="<?php echo esc_attr( __( 'Fuel Type: ', 'car-rental-manager' ) . $car['fuel'] ); ?>">
+                                        <div class="spec-value"><?php echo esc_html( $car['fuel'] ); ?></div>
+                                    </div>
+                                </div>
+                                <div class="mpcrbm_car_spec">
+                                    <i class="mi mi-bonus"></i>
+                                    <div title="<?php echo esc_attr( __( 'Brands: ', 'car-rental-manager' ) . $car['brand'] ); ?>">
+                                        <div class="spec-value"><?php echo esc_html( $car['brand'] ); ?></div>
+                                    </div>
+                                </div>
+                                <div class="mpcrbm_car_spec">
+                                    <i class="mi mi-time-quarter-to"></i>
+                                    <div title="<?php echo esc_attr( __( 'Making Year: ', 'car-rental-manager' ) . $car['car_year'] ); ?>">
+                                        <div class="spec-value"><?php echo esc_html( $car['car_year'] ); ?></div>
+                                    </div>
+                                </div>
+                                <div class="mpcrbm_car_spec">
+                                    <i class="mi mi-person-seat"></i>
+                                    <div title="<?php echo esc_attr( __( 'Seating Capacity: ', 'car-rental-manager' ) . $car['seating_capacity'] ); ?>">
+                                        <div class="spec-value"><?php echo esc_html( $car['seating_capacity'] ); ?></div>
+                                    </div>
+                                </div>
+                                <div class="mpcrbm_car_spec">
+                                    <i class="mi mi-person-luggage"></i>
+                                    <div title="<?php echo esc_attr( __( 'Maximum Bags: ', 'car-rental-manager' ) . $car['bag'] ); ?>">
+                                        <div class="spec-value"><?php echo esc_html( $car['bag'] ); ?> <?php esc_html_e( 'Bags', 'car-rental-manager' ); ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mpcrbm_car_list_price_display">
+                                <div class="mpcrbm_car_list_price">
+                                    <h3>
+                                        <span class="woocommerce-Price-amount amount">
+                                            <?php echo wp_kses_post( wc_price( $car['day_price'] ) );?>
+                                        </span>
+                                        <small>/ day</small>
+                                    </h3>
+                                </div>
+                                <a href="<?php echo esc_url( $permalink ); ?>" class="mpcrbm_car_list_book_btn"><?php esc_html_e( 'Book Now', 'car-rental-manager' ); ?></a>
+                            </div>
+                    </div>
+                </div>
+                <?php return ob_get_clean();
+            }
+
+            /** "Load More" control for the grid/list view — empty string once
+             *  there's nothing left to load. Clicking it (car_list_shortcode.js)
+             *  fetches the next page via AJAX and appends the cards in place,
+             *  rather than replacing the grid like numbered pagination did. */
+            private static function render_load_more_btn( int $current_page, int $max_pages ): string {
+                if ( $current_page >= $max_pages ) {
+                    return '';
+                }
+                ob_start(); ?>
+                <div class="mpcrbm_car_list_loadmore_wrap">
+                    <button type="button" class="mpcrbm_car_list_loadmore_btn" data-page="<?php echo esc_attr( $current_page + 1 ); ?>">
+                        <span class="mpcrbm_car_list_loadmore_text"><?php esc_html_e( 'Load More', 'car-rental-manager' ); ?></span>
+                        <span class="mpcrbm_car_list_loadmore_spinner" style="display:none"></span>
+                    </button>
+                </div>
+                <?php return ob_get_clean();
+            }
+
+            /** Empty-state block shared by the grid/list render, the carousel
+             *  render, and the AJAX handler's fallback. */
+            private static function render_empty_state(): string {
+                ob_start(); ?>
+                <div class="mpcrbm_car_list_empty">
+                    <i class="mi mi-car"></i>
+                    <p><?php esc_html_e( 'No cars found.', 'car-rental-manager' ); ?></p>
+                </div>
+                <?php return ob_get_clean();
             }
 
 
             function mpcrbm_car_list_shortcode( $atts ) {
+                $raw_atts = is_array( $atts ) ? $atts : [];
+
                 $atts = shortcode_atts( [
                     'car_type'      => '',
                     'fuel_type'     => '',
                     'brand'         => '',
-                    'per_page'      => 20,
+                    'per_page'      => 9,
                     'show'          => 20,
                     'column'        => 3,
-                    'style'         => 'grid',
+                    'style'         => 'grid', // grid | list | carousel
                     'mpcrbm_left_filter'   => 'no',
-                ], $atts, 'mpcrbm_car_list' );
+                ], $raw_atts, 'mpcrbm_car_list' );
 
+                // 'per_page' is the real page size / carousel item count. 'show' stays
+                // as a back-compat alias so shortcodes already placed with only
+                // show="N" keep the same count now that per_page actually does something.
+                $per_page = isset( $raw_atts['per_page'] ) ? intval( $atts['per_page'] ) : intval( $atts['show'] );
+                if ( $per_page < 1 ) { $per_page = 9; }
+
+                $column      = max( 1, min( 6, intval( $atts['column'] ) ) );
+                $left_filter = sanitize_text_field( $atts['mpcrbm_left_filter'] );
+                $car_style   = in_array( $atts['style'], [ 'grid', 'list', 'carousel' ], true ) ? $atts['style'] : 'grid';
+
+                // ===== CAROUSEL — a plain sliding Owl Carousel, no grid/list toggle, no pagination =====
+                if ( $car_style === 'carousel' ) {
+                    $car_data = self::mpcrbm_get_car_data( $atts, $per_page, 1 );
+                    $cars     = $car_data['cars'];
+
+                    ob_start(); ?>
+                    <div class=" mpcrbm mpcrbm_transport_search_area ">
+                        <div class="mpcrbm_car_list_grid_wrapper mpcrbm_car_list_carousel_wrapper">
+                            <?php if ( ! empty( $cars ) ) : ?>
+                                <div class="mpcrbm_car_list_carousel owl-carousel">
+                                    <?php foreach ( $cars as $car ) : ?>
+                                        <div class="mpcrbm_car_list_carousel_item"><?php echo self::render_car_item_card( $car ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
+                                    <?php endforeach; ?>
+                                </div>
+                                <script>
+                                jQuery(function ($) {
+                                    $('.mpcrbm_car_list_carousel').owlCarousel({
+                                        loop: false,
+                                        margin: 16,
+                                        nav: true,
+                                        dots: false,
+                                        responsive: {
+                                            0:   { items: 1 },
+                                            600: { items: 2 },
+                                            992: { items: <?php echo esc_html( $column ); ?> }
+                                        }
+                                    });
+                                });
+                                </script>
+                            <?php else : ?>
+                                <?php echo self::render_empty_state(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php
+                    return ob_get_clean();
+                }
+
+                // ===== GRID / LIST — client-side view switcher + AJAX-paginated grid =====
                 $left_side_filter = [];
-                $car_data = self::mpcrbm_get_car_data( $atts );
-                $cars = $car_data['cars'];
-                $car_ids = $car_data['car_ids'];
+                $car_data      = self::mpcrbm_get_car_data( $atts, $per_page, 1 );
+                $cars          = $car_data['cars'];
+                $car_ids       = $car_data['car_ids'];
+                $max_num_pages = $car_data['max_num_pages'];
 
                 if( count( $car_ids ) > 0 ){
                     $left_side_filter = MPCRBM_Global_Function::get_meta_key( $car_ids );
                 }
 
-                $column = max( 1, min( 6, intval( $atts['column'] ) ) );
-                $left_filter =  sanitize_text_field( $atts['mpcrbm_left_filter'] );
-
-                $car_style = $atts['style'];
                 if( $car_style === 'list' ){
                     $list_grid_class = 'mpcrbm_car_list_lists mpcrbm_car_list_list_view';
                     $grid_active = '';
@@ -159,13 +316,30 @@
                     $list_active = '';
                 }
 
+                $data_car_type  = is_array( $atts['car_type'] ) ? implode( ',', $atts['car_type'] ) : $atts['car_type'];
+                $data_fuel_type = is_array( $atts['fuel_type'] ) ? implode( ',', $atts['fuel_type'] ) : $atts['fuel_type'];
+                $data_brand     = is_array( $atts['brand'] ) ? implode( ',', $atts['brand'] ) : $atts['brand'];
+
                 ob_start(); ?>
 
                 <div class=" mpcrbm mpcrbm_transport_search_area ">
-                    <div class="mpcrbm_car_list_grid_wrapper">
+                    <div class="mpcrbm_car_list_grid_wrapper"
+                         data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>"
+                         data-nonce="<?php echo esc_attr( wp_create_nonce( 'mpcrbm_car_list' ) ); ?>"
+                         data-per-page="<?php echo esc_attr( $per_page ); ?>"
+                         data-column="<?php echo esc_attr( $column ); ?>"
+                         data-car-type="<?php echo esc_attr( $data_car_type ); ?>"
+                         data-fuel-type="<?php echo esc_attr( $data_fuel_type ); ?>"
+                         data-brand="<?php echo esc_attr( $data_brand ); ?>">
                         <div class="mpcrbm_car_list_grid_toggle">
-                            <button class="mpcrbm_car_list_grid_btn <?php echo esc_html( $grid_active );?>" data-view="grid">Grid</button>
-                            <button class="mpcrbm_car_list_list_btn <?php echo esc_html( $list_active );?>" data-view="list">List</button>
+                            <div class="mpcrbm_car_list_grid_toggle_group">
+                                <button class="mpcrbm_car_list_grid_btn <?php echo esc_html( $grid_active );?>" data-view="grid" title="<?php esc_attr_e( 'Grid view', 'car-rental-manager' ); ?>" aria-label="<?php esc_attr_e( 'Grid view', 'car-rental-manager' ); ?>">
+                                    <i class="mi mi-grid"></i>
+                                </button>
+                                <button class="mpcrbm_car_list_list_btn <?php echo esc_html( $list_active );?>" data-view="list" title="<?php esc_attr_e( 'List view', 'car-rental-manager' ); ?>" aria-label="<?php esc_attr_e( 'List view', 'car-rental-manager' ); ?>">
+                                    <i class="mi mi-list"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="mpcrbm_car_list_container ">
                             <?php if( $left_filter === 'yes' && count( $left_side_filter ) > 0 ){?>
@@ -173,90 +347,66 @@
                                     <?php do_action( 'mpcrbm_left_side_car_filter', $left_side_filter );?>
                                 </div>
                             <?php }?>
-                            <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>">
-                                <?php if ( ! empty( $cars ) ) : ?>
-                                    <?php foreach ( $cars as $car ) :?>
-                                <a href="<?php echo esc_url( get_permalink( $car['id'] ) ); ?>">
-                                        <div class="mpcrbm_car_list_grid_item mpcrbm_booking_item "
-                                             data-car-type="<?php echo esc_attr( $car['type'])?>"
-                                             data-fuel-type="<?php echo esc_attr( $car['fuel'])?>"
-                                             data-seating-capacity="<?php echo esc_attr( $car['seating_capacity'] )?>"
-                                             data-car-brand="<?php echo esc_attr( $car['brand'] )?>"
-                                             data-car-year="<?php echo esc_attr( $car['car_year'])?>"
-                                             data-filter-category-items="<?php echo esc_attr( $car['filter_string'])?>"
-                                        >
-                                            
-                                                <div class="mpcrbm_car_list_grid_image">
-                                                    <?php if ( $car['image'] ) : ?>
-                                                        <img src="<?php echo esc_url( $car['image'] ); ?>" alt="<?php echo esc_attr( $car['title'] ); ?>">
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="mpcrbm_car_list_grid_content">
-                                                    <h3 class="mpcrbm_car_list_grid_title"><?php echo esc_html( $car['title'] ); ?></h3>
-                                                    <div class="mpcrbm_car_specs_lists">
-                                                        <div class="mpcrbm_car_spec">
-                                                            <i class="mi mi-car"></i>
-                                                            <div title="<?php echo esc_html_e('Car Type: ','car-rental-manager').esc_attr($car['type']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html($car['type']); ?></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mpcrbm_car_spec">
-                                                            <i class="mi mi-gas-pump-alt"></i>
-                                                            <div title="<?php echo esc_html_e('Fuel Type: ','car-rental-manager').esc_attr($car['fuel']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html( $car['fuel']); ?></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mpcrbm_car_spec">
-                                                            <i class="mi mi-bonus"></i>
-                                                            <div title="<?php echo esc_html_e('Brands: ','car-rental-manager').esc_attr($car['brand']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html($car['brand']); ?></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mpcrbm_car_spec">
-                                                            <i class="mi mi-time-quarter-to"></i>
-                                                            <div title="<?php echo esc_html_e('Making Year: ','car-rental-manager').esc_attr($car['car_year']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html($car['car_year']); ?></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mpcrbm_car_spec">
-                                                            <i class="mi mi-person-seat"></i>
-                                                            <div title="<?php echo esc_html_e('Seating Capacity: ','car-rental-manager').esc_attr($car['seating_capacity']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html($car['seating_capacity']); ?></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mpcrbm_car_spec">
-                                                            <i class="mi mi-person-luggage"></i>
-                                                            <div title="<?php echo esc_html_e('Maximum Bags: ','car-rental-manager').esc_attr($car['bag']); ?>">
-                                                                <div class="spec-value"><?php echo esc_html($car['bag']).esc_html_e(' Bags','car-rental-manager'); ?></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mpcrbm_car_list_price_display">
-                                                        <div class="mpcrbm_car_list_price">
-                                                            <h3>
-                                                                <span class="woocommerce-Price-amount amount">
-                                                                    <?php echo wp_kses_post( wc_price( $car['day_price'] ) );?>
-                                                                </span>
-                                                                <small>/ day</small>
-                                                            </h3>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                        </div>
-                                </a>
-                                    <?php endforeach; ?>
-                                <?php else : ?>
-                                    <p>No cars found.</p>
-                                <?php endif; ?>
+                            <div class="mpcrbm_car_list_grid_col">
+                                <div id="mpcrbm_car_list_grid" class="<?php echo esc_html( $list_grid_class )?> mpcrbm_car_list_grid_<?php echo esc_html($column) ;?>">
+                                    <?php if ( ! empty( $cars ) ) : ?>
+                                        <?php foreach ( $cars as $car ) : ?>
+                                            <?php echo self::render_car_item_card( $car ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                        <?php endforeach; ?>
+                                    <?php else : ?>
+                                        <?php echo self::render_empty_state(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                    <?php endif; ?>
+                                </div>
+                                <div id="mpcrbm_car_list_loadmore" class="mpcrbm_car_list_loadmore_holder">
+                                    <?php echo self::render_load_more_btn( 1, $max_num_pages ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
                 <?php
                 return ob_get_clean();
+            }
+
+            /** AJAX "Load More" for the grid/list view — returns the next page's
+             *  item cards for JS to append to the grid (not replace), plus
+             *  whether there's still more to load. Registered for both
+             *  logged-in and guest visitors since the car list is a public
+             *  browsing surface. */
+            public function mpcrbm_car_list_ajax_page() {
+                check_ajax_referer( 'mpcrbm_car_list', 'nonce' );
+
+                $page     = isset( $_POST['page'] ) ? max( 1, absint( $_POST['page'] ) ) : 1;
+                $per_page = isset( $_POST['per_page'] ) ? max( 1, absint( $_POST['per_page'] ) ) : 9;
+
+                $to_filter_array = function( $raw ) {
+                    $raw = sanitize_text_field( wp_unslash( $raw ) );
+                    if ( $raw === '' ) { return ''; }
+                    return strpos( $raw, ',' ) !== false ? array_map( 'trim', explode( ',', $raw ) ) : $raw;
+                };
+
+                $atts = [
+                    'car_type'  => isset( $_POST['car_type'] ) ? $to_filter_array( $_POST['car_type'] ) : '',
+                    'fuel_type' => isset( $_POST['fuel_type'] ) ? $to_filter_array( $_POST['fuel_type'] ) : '',
+                    'brand'     => isset( $_POST['brand'] ) ? $to_filter_array( $_POST['brand'] ) : '',
+                ];
+
+                $car_data      = self::mpcrbm_get_car_data( $atts, $per_page, $page );
+                $cars          = $car_data['cars'];
+                $max_num_pages = $car_data['max_num_pages'];
+
+                ob_start();
+                foreach ( $cars as $car ) {
+                    echo self::render_car_item_card( $car ); // phpcs:ignore WordPress.Security.EscapeOutput
+                }
+                $items_html = ob_get_clean();
+
+                wp_send_json_success( [
+                    'html'      => $items_html,
+                    'has_more'  => $page < $max_num_pages,
+                    'next_page' => $page + 1,
+                ] );
             }
 
             function mpcrbm_car_list_shortcode1( $atts ) {

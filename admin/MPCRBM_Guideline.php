@@ -522,10 +522,18 @@
 
 						<div class="mpcrbm-guide-shortcode-box">
 							<div class="mpcrbm-guide-shortcode-row">
-								<code>[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6']</code>
-								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
+								<code>[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' per_page='6']</code>
+								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' per_page='6']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
 							</div>
-							<p><?php esc_html_e( 'Displays a car list with a left-hand filter sidebar (by car type, fuel type, brand, and more), showing 6 cars in a grid layout.', 'car-rental-manager' ); ?></p>
+							<p><?php esc_html_e( 'Displays a car list with a left-hand filter sidebar (by car type, fuel type, brand, and more), showing 6 cars per page in a grid layout with a Grid/List switcher and numbered pagination.', 'car-rental-manager' ); ?></p>
+						</div>
+
+						<div class="mpcrbm-guide-shortcode-box">
+							<div class="mpcrbm-guide-shortcode-row">
+								<code>[mpcrbm_car_list style='carousel' per_page='8' column='4']</code>
+								<button type="button" class="mpcrbm-guide-copy-btn" data-copy="<?php echo esc_attr( "[mpcrbm_car_list style='carousel' per_page='8' column='4']" ); ?>" title="<?php esc_attr_e( 'Copy shortcode', 'car-rental-manager' ); ?>"><i class="fas fa-copy"></i></button>
+							</div>
+							<p><?php esc_html_e( 'Instead of a grid/list with pagination, shows the cars as a single sliding Owl Carousel with arrow navigation — no Grid/List switcher, no pagination.', 'car-rental-manager' ); ?></p>
 						</div>
 
 						<table class="mpcrbm-guide-param-table">
@@ -539,23 +547,28 @@
 							<tbody>
 							<tr>
 								<td><code>style</code></td>
-								<td><strong>grid</strong> / list</td>
-								<td><?php esc_html_e( 'Display cars as a grid of cards, or a vertical list.', 'car-rental-manager' ); ?></td>
+								<td><strong>grid</strong> / list / carousel</td>
+								<td><?php esc_html_e( 'Cards in a grid, a vertical list, or a single sliding Owl Carousel. Grid and list share a client-side Grid/List switcher and AJAX pagination; carousel shows one sliding row instead, with neither.', 'car-rental-manager' ); ?></td>
 							</tr>
 							<tr>
 								<td><code>mpcrbm_left_filter</code></td>
 								<td>yes / <strong>no</strong></td>
-								<td><?php esc_html_e( 'Show a sidebar for visitors to filter the list by car type, fuel type, brand, and more.', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'Show a sidebar for visitors to filter the list by car type, fuel type, brand, and more. Grid/list style only.', 'car-rental-manager' ); ?></td>
+							</tr>
+							<tr>
+								<td><code>per_page</code></td>
+								<td><?php esc_html_e( 'number, default 9', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'Grid/list: cars per page — additional cars are reachable via pagination. Carousel: total cars loaded into the slider.', 'car-rental-manager' ); ?></td>
 							</tr>
 							<tr>
 								<td><code>show</code></td>
 								<td><?php esc_html_e( 'number, default 20', 'car-rental-manager' ); ?></td>
-								<td><?php esc_html_e( 'How many cars to display.', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'Older alias for per_page, kept for shortcodes placed before pagination existed. Ignored if per_page is also set.', 'car-rental-manager' ); ?></td>
 							</tr>
 							<tr>
 								<td><code>column</code></td>
 								<td><?php esc_html_e( '1–6, default 3', 'car-rental-manager' ); ?></td>
-								<td><?php esc_html_e( 'Number of columns in grid style.', 'car-rental-manager' ); ?></td>
+								<td><?php esc_html_e( 'Number of columns in grid style, or visible slides at desktop width in carousel style.', 'car-rental-manager' ); ?></td>
 							</tr>
 							<tr>
 								<td><code>car_type</code> / <code>fuel_type</code> / <code>brand</code></td>
