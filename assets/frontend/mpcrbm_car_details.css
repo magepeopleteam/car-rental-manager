@@ -1022,7 +1022,13 @@ div.mpcrbm_car_details_right h4 {
     box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
 }
 
-.mpcrbm_car_details_faq_question {
+/* ".mpcrbm button" in mp_global/assets/mp_style/mpcrbm_global.css forces
+   display:flex + justify-content:center on every plain <button> in the page
+   (class+element beats this rule's single class). Qualifying with the
+   wrapper class here — same trick already used above for
+   ".mpcrbm_car_details .mpcrbm_car_details_tabs button" — outranks it so the
+   question/icon actually stay left-aligned instead of centering. */
+.mpcrbm_car_details_faq_wrapper .mpcrbm_car_details_faq_question {
     width: 100%;
     padding: 16px 18px;
     border: none;
@@ -1033,8 +1039,9 @@ div.mpcrbm_car_details_right h4 {
     text-align: left;
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 10px;
 }
 
 .mpcrbm_car_details_faq_icon {
