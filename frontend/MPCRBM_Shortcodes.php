@@ -691,6 +691,13 @@
                                 <span class="mpcrbm-mb-badge mpcrbm-mb-badge--<?php echo esc_attr( $status ); ?>"><?php echo esc_html( ucfirst( $status ) ); ?></span>
                                 <span class="mpcrbm-mb-detail-order-num"><?php echo esc_html__( 'Order', 'car-rental-manager' ); ?> #<?php echo esc_html( $order_id ?: $booking_id ); ?></span>
                             </div>
+                            <?php if ( $order_id && class_exists( 'MPCRBM_Pro_Pdf' ) ) :
+                                $pdf_url = MPCRBM_Pro_Pdf::get_pdf_url( [ 'order_id' => $order_id ] );
+                                if ( $pdf_url ) : ?>
+                            <a href="<?php echo esc_url( $pdf_url ); ?>" target="_blank" class="mpcrbm-mb-pdf-btn">
+                                <i class="mi mi-file-download"></i> <?php esc_html_e( 'Download Invoice', 'car-rental-manager' ); ?>
+                            </a>
+                            <?php endif; endif; ?>
                         </div>
                     </div>
 

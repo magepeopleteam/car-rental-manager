@@ -374,6 +374,29 @@
 .mpcrbm-mb-detail-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .mpcrbm-mb-detail-order-num { font-size: 13px; color: var(--mb-muted); }
 
+.mpcrbm-mb-pdf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 7px 16px;
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #e11d48;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.mpcrbm-mb-pdf-btn:hover {
+    background: #fff1f2;
+    border-color: #fda4af;
+    box-shadow: 0 2px 8px rgba(225,29,72,.12);
+    color: #be123c;
+    text-decoration: none;
+}
+
 .mpcrbm-mb-detail-sections { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 20px; }
 
 .mpcrbm-mb-detail-section {
