@@ -359,11 +359,13 @@ if (sizeof($mpcrbm_all_dates) > 0) {
 
                         </div>
                         <?php
-                        // $mpcrbm_single_page === 'yes' only on the car-details page (the main
-                        // search widget on other pages, get_details_new.php, is a separate
-                        // template). Both Pick-up and Return date/time show at once from page
-                        // load — no locked/hidden guided-reveal step.
-                        $mpcrbm_return_step_class = $mpcrbm_single_page === 'yes' ? ' mpcrbm-date-step mpcrbm-date-step-return' : '';
+                        // Guided single-date flow (car-details page only, $mpcrbm_single_page ===
+                        // 'yes' — the main search widget on other pages, get_details_new.php, is a
+                        // separate template and keeps both fields always visible/unchanged): the
+                        // Return date/time starts locked/hidden and is revealed by JS
+                        // (mpcrbm_registration.js, ".start_time_list li" click handler) once the
+                        // pick-up date AND time are both chosen, instead of showing both up front.
+                        $mpcrbm_return_step_class = $mpcrbm_single_page === 'yes' ? ' mpcrbm-date-step mpcrbm-date-step-return is-locked' : '';
                         ?>
                         <div class="<?php echo esc_attr( ltrim( $mpcrbm_return_step_class ) ); ?>" id="mpcrbm_date_step_return">
                         <?php if( $mpcrbm_form_style === 'horizontal' ){?>

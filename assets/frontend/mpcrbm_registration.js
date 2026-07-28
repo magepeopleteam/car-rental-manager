@@ -784,6 +784,16 @@ jQuery(document).ready(function($) {
             $('#mpcrbm_return_date').datepicker('option', 'minDate', formattedDate);
         }
 
+        // Guided single-date flow, car-details page only (see the matching note
+        // in the ".start_time_list li" handler below). Reveal the Return step as
+        // soon as a pick-up date is picked instead of waiting for the pick-up
+        // time too — the pickup step itself only gets marked ".is-complete"
+        // (checkmark) once its time is also chosen, in that later handler.
+        let $returnStep = $('#mpcrbm_date_step_return.mpcrbm-date-step-return');
+        if ($returnStep.length && $returnStep.hasClass('is-locked')) {
+            $returnStep.removeClass('is-locked').hide().slideDown(300);
+        }
+
         let parent = $(this).closest(".mpcrbm_transport_search_area");
         mpcrbm_content_refresh(parent);
         parent
@@ -847,12 +857,20 @@ jQuery(document).ready(function($) {
         // Clear the inline "required" notice (if shown) now that a time is picked.
         $('#mpcrbm_pickup_time_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
 
-        // Marks the pick-up step ".is-complete" (checkmark styling, see
-        // mpcrbm_car_details.css) once its time is chosen — car-details page
-        // only (single_car_search_details.php renders .mpcrbm-date-step-return
-        // only there, so this is a no-op everywhere else).
-        if ($('#mpcrbm_date_step_return.mpcrbm-date-step-return').length) {
+        // Guided single-date flow, car-details page only (single_car_search_details.php
+        // renders .mpcrbm-date-step-return only there — get_details_new.php, the main
+        // search widget on other pages, has no such element, so this is a no-op
+        // everywhere else). The Return step is already revealed as soon as the
+        // pick-up date was chosen (see the "#mpcrbm_map_start_date" change handler
+        // above) — picking the pick-up time here just marks the pick-up step
+        // ".is-complete" (checkmark). The "is-locked" check still guards the
+        // reveal itself in case this ever fires before that handler does.
+        let $returnStep = $('#mpcrbm_date_step_return.mpcrbm-date-step-return');
+        if ($returnStep.length) {
             $(this).closest('.mpcrbm-date-step-pickup').addClass('is-complete');
+            if ($returnStep.hasClass('is-locked')) {
+                $returnStep.removeClass('is-locked').hide().slideDown(300);
+            }
         }
     });
 
@@ -1268,16 +1286,14 @@ jQuery(document).ready(function($) {
     // #mpcrbm_start_date/#mpcrbm_return_date and the time fields are readonly
     // AND always carry a server-rendered default (single_car_search_details.php:
     // $mpcrbm_start_date = today, $mpcrbm_start_time = the car's default start
-    // time, etc.), so this only blocks Continue on a genuinely blank value —
-    // which practically never happens given those defaults, matching how this
-    // behaved before the stricter "data-user-selected" flag check: clicking
-    // Continue while the page's default date/time is still showing (i.e.
-    // before the guided flow's date/time pickers finish loading, or without
-    // touching them at all) now goes straight through instead of surfacing a
-    // false "not selected" error. Still shows/clears the inline
-    // ".mpcrbm_field_error" notice for the rare genuinely-empty case (car-
-    // details page only — single_car_search_details.php only renders those
-    // spans there), scrolling to the first one.
+    // time, etc.) so they are never actually *empty* — a plain "is it blank"
+    // check can never fail, and "required" has no effect on readonly fields
+    // anyway. Instead this checks the data-user-selected="1" flag that
+    // date-picker.js / the .start_time_list & .return_time_list click
+    // handlers below only set on a *real* pick, and shows/clears the inline
+    // ".mpcrbm_field_error" notice next to whichever field(s) are still
+    // unpicked (car-details page only — single_car_search_details.php only
+    // renders those spans there), scrolling to the first one.
     function mpcrbm_validate_date_time_fields(parent) {
         let fields = [
             { input: parent.find('#mpcrbm_start_date'), error: parent.find('#mpcrbm_pickup_date_error') },
@@ -1293,8 +1309,7 @@ jQuery(document).ready(function($) {
             field.error.hide();
             $wrap.removeClass('mpcrbm-field-invalid');
 
-            let value = field.input.val();
-            if (!value || !String(value).trim()) {
+            if (field.input.attr('data-user-selected') !== '1') {
                 field.error.show();
                 $wrap.addClass('mpcrbm-field-invalid');
                 if (!$firstInvalidWrap) {

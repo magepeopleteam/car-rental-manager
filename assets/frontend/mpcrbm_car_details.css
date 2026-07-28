@@ -1433,13 +1433,19 @@ div.mpcrbm_car_details_right h4 {
     }
 }
 
-/* ===== PICK-UP / RETURN STEP COMPLETION (car-details page only) =====
+/* ===== GUIDED SINGLE-DATE FLOW (car-details page only) =====
    templates/registration/single_car_search_details.php wraps the Return
-   date/time block in #mpcrbm_date_step_return.mpcrbm-date-step-return — both
-   Pick-up and Return show at once from page load (no locked/hidden guided-
-   reveal step). assets/frontend/mpcrbm_registration.js marks each step
-   .is-complete once it's actually finished — pick-up needs its time picked
-   as well before it gets the checkmark. */
+   date/time block in #mpcrbm_date_step_return.mpcrbm-date-step-return,
+   starting with .is-locked so it's hidden on first paint (no JS-dependent
+   flash). assets/frontend/mpcrbm_registration.js removes .is-locked and
+   reveals it as soon as the pick-up date is chosen (not waiting for the
+   pick-up time too), then marks each step .is-complete once it's actually
+   finished — pick-up needs its time picked as well before it gets the
+   checkmark. */
+.mpcrbm-date-step-return.is-locked {
+    display: none;
+}
+
 .mpcrbm-date-step-pickup {
     position: relative;
     transition: box-shadow .2s ease;
