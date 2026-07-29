@@ -3,7 +3,8 @@
    ───────────────────────────────────────────────────────────────────────── */
 
 /* ── Design Tokens ───────────────────────────────────────────────────── */
-.mpcrbm-branch-dashboard {
+.mpcrbm-branch-dashboard,
+.mpcrbm-locations-manager {
     --bm-primary:       #667eea;
     --bm-primary-dark:  #5568d3;
     --bm-primary-light: #eef0ff;
@@ -134,12 +135,39 @@
 }
 
 .mpcrbm-no-branches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     color: var(--bm-text-muted);
     font-size: 13px;
     text-align: center;
     padding: 40px 24px;
     line-height: 1.7;
     margin: 0;
+}
+
+.mpcrbm-no-branches i {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 4px;
+    color: var(--bm-primary);
+    background: var(--bm-primary-light);
+    border-radius: 13px;
+    font-size: 20px;
+}
+
+.mpcrbm-no-branches strong {
+    color: var(--bm-text);
+    font-size: 14px;
+}
+
+.mpcrbm-no-branches span {
+    color: var(--bm-text-muted);
+    font-size: 12px;
 }
 
 /* ── Branch Card ───────────────────────────────────────────────────── */
@@ -289,7 +317,7 @@
     margin-top: 14px;
 }
 
-.mpcrbm-view-branch-cars {
+div.mpcrbm .mpcrbm-view-branch-cars {
     flex: 1;
     display: inline-flex;
     align-items: center;
@@ -307,15 +335,18 @@
     transition: background 0.15s ease, transform 0.15s ease;
 }
 
-.mpcrbm-view-branch-cars i {
+div.mpcrbm .mpcrbm-view-branch-cars i {
     font-size: 13px;
 }
 
-.mpcrbm-view-branch-cars:hover {
+div.mpcrbm .mpcrbm-view-branch-cars:hover,
+div.mpcrbm .mpcrbm-view-branch-cars:focus {
     background: #5568d3;
+    color: #fff;
+    opacity: 1;
 }
 
-.mpcrbm-branch-edit-btn {
+div.mpcrbm .mpcrbm-branch-edit-btn.mpcrbm-location-edit-btn {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
@@ -330,14 +361,16 @@
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-.mpcrbm-branch-edit-btn i {
+div.mpcrbm .mpcrbm-branch-edit-btn.mpcrbm-location-edit-btn i {
     font-size: 14px;
 }
 
-.mpcrbm-branch-edit-btn:hover {
+div.mpcrbm .mpcrbm-branch-edit-btn.mpcrbm-location-edit-btn:hover,
+div.mpcrbm .mpcrbm-branch-edit-btn.mpcrbm-location-edit-btn:focus {
     background: #e2e8f0;
     border-color: #cbd5e1;
     color: var(--bm-text);
+    opacity: 1;
 }
 
 /* ── Branch Grid Footer ──────────────────────────────────────────────── */
@@ -345,7 +378,7 @@
     padding: 0 16px 16px;
 }
 
-.mpcrbm-add-branch-link {
+div.mpcrbm .mpcrbm-add-branch-link {
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -356,31 +389,40 @@
     padding: 7px 16px;
     border-radius: 7px;
     border: 1.5px dashed #93c5fd;
+    background: #fff;
+    font-family: inherit;
+    line-height: 1.4;
+    text-transform: none;
+    cursor: pointer;
     transition: background 0.15s, border-color 0.15s;
 }
 
-.mpcrbm-add-branch-link:hover {
+div.mpcrbm .mpcrbm-add-branch-link:hover,
+div.mpcrbm .mpcrbm-add-branch-link:focus {
     background: var(--bm-primary-light);
     border-color: var(--bm-primary);
     color: var(--bm-primary);
     text-decoration: none;
+    opacity: 1;
 }
 
-.mpcrbm-add-branch-link i {
+div.mpcrbm .mpcrbm-add-branch-link i {
     font-size: 13px;
 }
 
 /* ── Cars Panel (full-width bottom section) ──────────────────────────── */
 .mpcrbm-branch-cars-panel {
     width: 100%;
-    background: var(--bm-bg);
+    background: var(--bm-bg, #f8fafc);
     display: flex;
     flex-direction: column;
-    border-top: 1px solid var(--bm-border);
+    border-top: 1px solid var(--bm-border, #e2e8f0);
 }
 
 .mpcrbm-branch-cars-panel-header {
-    background: linear-gradient(135deg, #1e40af 0%, var(--bm-primary) 100%);
+    min-height: 58px;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #26388f 0%, var(--bm-primary, #667eea) 100%);
     color: #fff;
     padding: 16px 24px;
     display: flex;
@@ -412,7 +454,7 @@
     flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--bm-border) transparent;
+    scrollbar-color: var(--bm-border, #e2e8f0) transparent;
 }
 
 /* ── Select Prompt ───────────────────────────────────────────────────── */
@@ -424,7 +466,7 @@
     padding: 48px 24px;
     gap: 14px;
     text-align: center;
-    color: var(--bm-text-muted);
+    color: var(--bm-text-muted, #94a3b8);
 }
 
 .mpcrbm-select-prompt i {
@@ -437,16 +479,16 @@
     margin: 0 0 4px;
     font-size: 15px;
     font-weight: 600;
-    color: var(--bm-text-sec);
+    color: var(--bm-text-sec, #64748b);
 }
 
 .mpcrbm-select-prompt span {
     font-size: 13px;
-    color: var(--bm-text-muted);
+    color: var(--bm-text-muted, #94a3b8);
 }
 
 .mpcrbm-no-cars {
-    color: var(--bm-text-muted);
+    color: var(--bm-text-sec, #64748b);
     font-size: 14px;
     padding: 40px 0;
     text-align: center;

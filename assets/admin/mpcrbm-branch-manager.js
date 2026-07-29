@@ -23,6 +23,11 @@ jQuery(document).ready(function ($) {
         setTimeout(function () { toast.fadeOut(400, function () { $(this).remove(); }); }, 3500);
     }
 
+    // Shared feedback channel used by the in-dashboard branch Add/Edit modal.
+    $(document).on('mpcrbm:branch-toast', function (event, message, type) {
+        showToast(message, type);
+    });
+
     function showLoading(panel) {
         panel.html('<div class="mpcrbm-branch-loading">' + (mpcrbmBranchAdmin.loadingText || 'Loading…') + '</div>');
     }
