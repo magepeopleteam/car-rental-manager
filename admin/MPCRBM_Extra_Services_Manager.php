@@ -15,8 +15,8 @@
  * .item_insert" structure the native mpcrbm_ex_services edit screen uses —
  * so the existing global add-row/remove-row JS
  * (mp_global/assets/admin/mpcrbm_admin_settings.js, delegated on
- * "div.mpcrbm .add_item" / ".item_remove") works here with no new JS, and
- * both surfaces always render identical rows.
+ * "div.mpcrbm .add_item" / ".item_remove") continues to power the rows
+ * inside the custom modal, and both surfaces always render identical fields.
  *
  * Saving goes through wp_insert_post()/wp_update_post() for the
  * mpcrbm_ex_services CPT, which fires save_post synchronously —
@@ -38,6 +38,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 		public function __construct() {
 			add_action( 'admin_menu', [ $this, 'register_menu' ] );
 			add_action( 'admin_post_mpcrbm_save_ex_service_group', [ $this, 'handle_save' ] );
+			add_action( 'wp_ajax_mpcrbm_get_ex_service_group', [ $this, 'ajax_get_group' ] );
 			add_action( 'wp_ajax_mpcrbm_delete_ex_service_group', [ $this, 'ajax_delete' ] );
 			add_action( 'admin_post_mpcrbm_export_ex_services', [ $this, 'handle_export' ] );
 		}
@@ -69,14 +70,11 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 
 		public function render_page() {
 			$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : 'list'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view routing.
+			$open_editor = in_array( $action, [ 'edit', 'new' ], true );
+			$editor_id   = 'edit' === $action && isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view routing.
 
 			MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Extra Services', 'car-rental-manager' ) );
-
-			if ( 'edit' === $action || 'new' === $action ) {
-				$this->render_editor();
-			} else {
-				$this->render_list();
-			}
+			$this->render_list( $open_editor, $editor_id );
 
 			MPCRBM_Admin_Shell::render_shell_close();
 		}
@@ -148,7 +146,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 			];
 		}
 
-		private function render_list() {
+		private function render_list( bool $open_editor = false, int $editor_id = 0 ) {
 			$groups = get_posts( [
 				'post_type'      => self::POST_TYPE,
 				'post_status'    => [ 'publish', 'draft' ],
@@ -174,18 +172,15 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 						<p class="mpcrbm-ex-services-head-subtitle"><?php esc_html_e( 'Manage premium add-ons and complimentary offerings for your fleet. Define GPS units, seasonal equipment, and hospitality items to enhance the rental experience.', 'car-rental-manager' ); ?></p>
 					</div>
 					<div class="mpcrbm-ex-services-head-actions">
-						<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=mpcrbm_export_ex_services' ), 'mpcrbm_export_ex_services' ) ); ?>" class="mpcrbm-ex-services-export-btn">
-							<i class="mi mi-download"></i> <?php esc_html_e( 'Export List', 'car-rental-manager' ); ?>
-						</a>
-						<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-services-add-btn">
+						<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-services-add-btn mpcrbm-ex-service-open-modal" data-post-id="0">
 							<i class="mi mi-plus"></i> <?php esc_html_e( 'Add Service Group', 'car-rental-manager' ); ?>
 						</a>
 					</div>
 				</div>
 
 				<?php if ( ! empty( $groups ) ) : ?>
-					<div class="mpcrbm_analytics">
-						<div class="mpcrbm_stat-card groups">
+					<div class="mpcrbm_analytics mpcrbm-ex-services-stats">
+						<div class="mpcrbm_stat-card mpcrbm-ex-services-stat groups">
 							<div class="mpcrbm_stat-left">
 								<i class="mi mi-archive"></i>
 								<div>
@@ -195,7 +190,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 							</div>
 						</div>
 
-						<div class="mpcrbm_stat-card items">
+						<div class="mpcrbm_stat-card mpcrbm-ex-services-stat items">
 							<div class="mpcrbm_stat-left">
 								<i class="mi mi-check-circle"></i>
 								<div>
@@ -205,7 +200,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 							</div>
 						</div>
 
-						<div class="mpcrbm_stat-card utilization">
+						<div class="mpcrbm_stat-card mpcrbm-ex-services-stat mpcrbm-ex-stat-utilization">
 							<div class="mpcrbm_stat-left">
 								<i class="mi mi-chart-pie"></i>
 								<div>
@@ -213,7 +208,7 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 									<div class="mpcrbm_stat-value"><?php echo esc_html( $stats['utilization'] ); ?>%</div>
 								</div>
 							</div>
-							<span class="mpcrbm_stat-change mpcrbm-ex-stat-ring" style="--pct: <?php echo (int) $stats['utilization']; ?>;" title="<?php esc_attr_e( 'Share of published vehicles with an extra-service group assigned', 'car-rental-manager' ); ?>"></span>
+							<span class="mpcrbm_stat-change mpcrbm-ex-stat-ring" style="--pct: <?php echo (int) $stats['utilization']; ?>;" title="<?php esc_attr_e( 'Share of published vehicles with an extra-service group assigned', 'car-rental-manager' ); ?>" aria-hidden="true"></span>
 						</div>
 					</div>
 				<?php endif; ?>
@@ -259,89 +254,146 @@ if ( ! class_exists( 'MPCRBM_Extra_Services_Manager' ) ) {
 									<?php if ( $extra_count > 0 ) : ?>
 										<button type="button" class="mpcrbm-ex-service-view-btn" title="<?php esc_attr_e( 'Show all items', 'car-rental-manager' ); ?>"><i class="mi mi-eye"></i></button>
 									<?php endif; ?>
-									<a href="<?php echo esc_url( $this->edit_url( $group->ID ) ); ?>" class="mpcrbm-ex-service-edit-btn"><i class="mi mi-pencil"></i> <?php esc_html_e( 'Edit Group', 'car-rental-manager' ); ?></a>
+									<a href="<?php echo esc_url( $this->edit_url( $group->ID ) ); ?>" class="mpcrbm-ex-service-edit-btn mpcrbm-ex-service-open-modal" data-post-id="<?php echo esc_attr( $group->ID ); ?>"><i class="mi mi-pencil"></i> <?php esc_html_e( 'Edit Group', 'car-rental-manager' ); ?></a>
 									<button type="button" class="mpcrbm-ex-service-delete-btn" data-post-id="<?php echo esc_attr( $group->ID ); ?>"><i class="mi mi-trash"></i></button>
 								</div>
 							</div>
 						<?php endforeach; ?>
 
-						<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-service-card-add">
+						<a href="<?php echo esc_url( $this->edit_url() ); ?>" class="mpcrbm-ex-service-card-add mpcrbm-ex-service-open-modal" data-post-id="0">
 							<span class="mpcrbm-ex-service-card-add-icon"><i class="mi mi-plus"></i></span>
 							<?php esc_html_e( 'Create New Category', 'car-rental-manager' ); ?>
 						</a>
 					</div>
 				<?php endif; ?>
+				<?php $this->render_editor_modal( $open_editor, $editor_id ); ?>
 			</div>
 			<?php
 		}
 
-		private function render_editor() {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view routing.
-			$post_id = isset( $_GET['id'] ) ? absint( $_GET['id'] ) : 0;
+		private function render_editor_modal( bool $open_by_default = false, int $post_id = 0 ) {
 			$post    = $post_id ? get_post( $post_id ) : null;
 			$is_edit = $post && self::POST_TYPE === $post->post_type;
+			$post_id = $is_edit ? $post_id : 0;
 			$title   = $is_edit ? $post->post_title : '';
 			$rows    = $is_edit ? get_post_meta( $post_id, 'mpcrbm_extra_service_infos', true ) : [];
-			$rows    = is_array( $rows ) ? $rows : [];
+			$rows    = is_array( $rows ) && ! empty( $rows ) ? $rows : [ [] ];
 			?>
-			<div class="mpcrbm-ex-services-manager">
-				<div class="mpcrbm-ex-services-head mpcrbm-ex-services-head--editor">
-					<div class="mpcrbm-ex-services-head-text">
-						<h2><?php echo $is_edit ? esc_html__( 'Edit Service Group', 'car-rental-manager' ) : esc_html__( 'Add Service Group', 'car-rental-manager' ); ?></h2>
-						<p class="mpcrbm-ex-services-head-subtitle"><?php esc_html_e( 'Each row represents a bespoke add-on available during the client checkout process. Define the visual identity, fiscal value, and quantity mechanics for each premium offering.', 'car-rental-manager' ); ?></p>
-					</div>
-					<a href="<?php echo esc_url( $this->list_url() ); ?>" class="mpcrbm-ex-services-back-btn">
-						<i class="mi mi-arrow-left"></i> <?php esc_html_e( 'Back to List', 'car-rental-manager' ); ?>
-					</a>
-				</div>
+			<div class="mpcrbm-ex-service-modal-overlay<?php echo $open_by_default ? ' is-open' : ''; ?>"
+				 id="mpcrbm_ex_service_modal"
+				 data-auto-open="<?php echo $open_by_default ? '1' : '0'; ?>"
+				 data-initial-post-id="<?php echo esc_attr( $post_id ); ?>"
+				 aria-hidden="<?php echo $open_by_default ? 'false' : 'true'; ?>">
+				<div class="mpcrbm-ex-service-modal" role="dialog" aria-modal="true" aria-labelledby="mpcrbm_ex_service_modal_title">
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="mpcrbm mpcrbm_settings mpcrbm-ex-service-modal-form" id="mpcrbm_ex_service_modal_form">
+						<input type="hidden" name="action" value="mpcrbm_save_ex_service_group">
+						<input type="hidden" name="post_id" id="mpcrbm_ex_service_post_id" value="<?php echo esc_attr( $post_id ); ?>">
+						<?php wp_nonce_field( 'mpcrbm_save_extra_service_nonce', 'mpcrbm_ex_service_nonce' ); ?>
 
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="mpcrbm mpcrbm_settings mpcrbm-ex-service-form">
-					<input type="hidden" name="action" value="mpcrbm_save_ex_service_group">
-					<?php if ( $is_edit ) : ?>
-						<input type="hidden" name="post_id" value="<?php echo esc_attr( $post_id ); ?>">
-					<?php endif; ?>
-					<?php wp_nonce_field( 'mpcrbm_save_extra_service_nonce', 'mpcrbm_ex_service_nonce' ); ?>
-
-					<div class="mpcrbm-ex-service-card-form">
-						<label for="mpcrbm_ex_service_group_name"><?php esc_html_e( 'Group Identity', 'car-rental-manager' ); ?></label>
-						<input type="text" id="mpcrbm_ex_service_group_name" name="mpcrbm_ex_service_group_name" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'e.g. Standard Add-ons', 'car-rental-manager' ); ?>" required>
-					</div>
-
-					<div class="settings_area">
-						<div class="_ovAuto_mT_xs">
-							<table class="mpcrbm-ex-service-table widefat">
-								<thead>
-								<tr>
-									<th><span><?php esc_html_e( 'Icon', 'car-rental-manager' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Service Name', 'car-rental-manager' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Price ($)', 'car-rental-manager' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Qty Control', 'car-rental-manager' ); ?></span></th>
-									<th><span><?php esc_html_e( 'Actions', 'car-rental-manager' ); ?></span></th>
-								</tr>
-								</thead>
-								<tbody class="sortable_area item_insert">
-									<?php
-									if ( ! empty( $rows ) ) {
-										foreach ( $rows as $row ) {
-											MPCRBM_Extra_Service::extra_service_item( $row );
-										}
-									}
-									?>
-								</tbody>
-							</table>
+						<div class="mpcrbm-ex-service-modal-header">
+							<div class="mpcrbm-ex-service-modal-heading">
+								<span class="mpcrbm-ex-service-modal-icon"><i class="fas fa-layer-group" aria-hidden="true"></i></span>
+								<div>
+									<span class="mpcrbm-ex-service-modal-eyebrow"><?php echo $is_edit ? esc_html__( 'Update Offering', 'car-rental-manager' ) : esc_html__( 'New Offering', 'car-rental-manager' ); ?></span>
+									<h2 id="mpcrbm_ex_service_modal_title"><?php echo $is_edit ? esc_html__( 'Edit Service Group', 'car-rental-manager' ) : esc_html__( 'Add Service Group', 'car-rental-manager' ); ?></h2>
+									<p><?php esc_html_e( 'Build a reusable collection of optional services for your rental fleet.', 'car-rental-manager' ); ?></p>
+								</div>
+							</div>
+							<button type="button" class="mpcrbm-ex-service-modal-close" aria-label="<?php esc_attr_e( 'Close service group form', 'car-rental-manager' ); ?>">&times;</button>
 						</div>
-						<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add Additional Service Row', 'car-rental-manager' ) ); ?>
-						<?php do_action( 'mpcrbm_hidden_table', 'mpcrbm_extra_service_item' ); ?>
-					</div>
 
-					<div class="mpcrbm-ex-service-form-actions">
-						<button type="submit" class="mpcrbm-ex-service-save-btn"><?php esc_html_e( 'Save Service Group', 'car-rental-manager' ); ?></button>
-						<a href="<?php echo esc_url( $this->list_url() ); ?>" class="mpcrbm-ex-service-cancel-btn"><?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?></a>
-					</div>
-				</form>
+						<div class="mpcrbm-ex-service-modal-body">
+							<div class="mpcrbm-ex-service-modal-alert" role="alert" hidden></div>
+
+							<section class="mpcrbm-ex-service-modal-section" aria-labelledby="mpcrbm_ex_service_identity_heading">
+								<div class="mpcrbm-ex-service-modal-section-heading">
+									<i class="fas fa-tag" aria-hidden="true"></i>
+									<div>
+										<h3 id="mpcrbm_ex_service_identity_heading"><?php esc_html_e( 'Group Identity', 'car-rental-manager' ); ?></h3>
+										<p><?php esc_html_e( 'Give this service collection a clear, recognizable name.', 'car-rental-manager' ); ?></p>
+									</div>
+								</div>
+								<div class="mpcrbm-ex-service-modal-field">
+									<label for="mpcrbm_ex_service_group_name"><?php esc_html_e( 'Service Group Name', 'car-rental-manager' ); ?> <span>*</span></label>
+									<input type="text" id="mpcrbm_ex_service_group_name" name="mpcrbm_ex_service_group_name" value="<?php echo esc_attr( $title ); ?>" placeholder="<?php esc_attr_e( 'e.g. Standard Add-ons', 'car-rental-manager' ); ?>" required>
+								</div>
+							</section>
+
+							<section class="mpcrbm-ex-service-modal-section" aria-labelledby="mpcrbm_ex_service_items_heading">
+								<div class="mpcrbm-ex-service-modal-section-heading">
+									<i class="fas fa-list-ul" aria-hidden="true"></i>
+									<div>
+										<h3 id="mpcrbm_ex_service_items_heading"><?php esc_html_e( 'Service Items', 'car-rental-manager' ); ?></h3>
+										<p><?php esc_html_e( 'Set each item’s icon, price, pricing basis, and quantity control.', 'car-rental-manager' ); ?></p>
+									</div>
+								</div>
+
+								<div class="settings_area mpcrbm-ex-service-modal-settings">
+									<div class="mpcrbm-ex-service-modal-loading" role="status" aria-live="polite" hidden><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> <span><?php esc_html_e( 'Loading service group…', 'car-rental-manager' ); ?></span></div>
+									<div class="_ovAuto_mT_xs mpcrbm-ex-service-modal-table-wrap">
+										<table class="mpcrbm-ex-service-table widefat">
+											<thead>
+											<tr>
+												<th><span><?php esc_html_e( 'Icon', 'car-rental-manager' ); ?></span></th>
+												<th><span><?php esc_html_e( 'Service Name', 'car-rental-manager' ); ?></span></th>
+												<th><span><?php esc_html_e( 'Price ($)', 'car-rental-manager' ); ?></span></th>
+												<th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
+												<th><span><?php esc_html_e( 'Qty Control', 'car-rental-manager' ); ?></span></th>
+												<th><span><?php esc_html_e( 'Actions', 'car-rental-manager' ); ?></span></th>
+											</tr>
+											</thead>
+											<tbody class="sortable_area item_insert">
+												<?php foreach ( $rows as $row ) : ?>
+													<?php MPCRBM_Extra_Service::extra_service_item( $row ); ?>
+												<?php endforeach; ?>
+											</tbody>
+										</table>
+									</div>
+									<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add Additional Service Row', 'car-rental-manager' ) ); ?>
+									<?php do_action( 'mpcrbm_hidden_table', 'mpcrbm_extra_service_item' ); ?>
+								</div>
+							</section>
+						</div>
+
+						<div class="mpcrbm-ex-service-modal-footer">
+							<button type="button" class="mpcrbm-ex-service-modal-cancel"><?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?></button>
+							<button type="submit" class="mpcrbm-ex-service-modal-submit" data-create-text="<?php esc_attr_e( 'Create Service Group', 'car-rental-manager' ); ?>" data-update-text="<?php esc_attr_e( 'Update Service Group', 'car-rental-manager' ); ?>" data-loading-text="<?php esc_attr_e( 'Saving…', 'car-rental-manager' ); ?>">
+								<i class="fas fa-save" aria-hidden="true"></i>
+								<span><?php echo $is_edit ? esc_html__( 'Update Service Group', 'car-rental-manager' ) : esc_html__( 'Create Service Group', 'car-rental-manager' ); ?></span>
+							</button>
+						</div>
+					</form>
+				</div>
 			</div>
 			<?php
+		}
+
+		public function ajax_get_group() {
+			check_ajax_referer( 'mpcrbm_extra_service', 'nonce' );
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( [ 'message' => __( 'Unauthorized', 'car-rental-manager' ) ], 403 );
+			}
+
+			$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+			$post    = $post_id ? get_post( $post_id ) : null;
+			if ( ! $post || self::POST_TYPE !== $post->post_type ) {
+				wp_send_json_error( [ 'message' => __( 'Invalid service group.', 'car-rental-manager' ) ], 400 );
+			}
+
+			$rows = get_post_meta( $post_id, 'mpcrbm_extra_service_infos', true );
+			$rows = is_array( $rows ) && ! empty( $rows ) ? $rows : [ [] ];
+
+			ob_start();
+			foreach ( $rows as $row ) {
+				MPCRBM_Extra_Service::extra_service_item( $row );
+			}
+
+			wp_send_json_success( [
+				'postId'   => $post_id,
+				'title'    => $post->post_title,
+				'rowsHtml' => ob_get_clean(),
+			] );
 		}
 
 		// ═══════════════════════════════════════════════════════════════════

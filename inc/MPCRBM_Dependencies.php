@@ -68,6 +68,19 @@
 					'nonce' => $nonce,
                     'site_url' => get_site_url(),
 				) );
+				wp_localize_script( 'mpcrbm_ex_services_manager', 'mpcrbmExServicesAdmin', array(
+					'nonce'         => $nonce,
+					'addTitle'      => __( 'Add Service Group', 'car-rental-manager' ),
+					'editTitle'     => __( 'Edit Service Group', 'car-rental-manager' ),
+					'addEyebrow'    => __( 'New Offering', 'car-rental-manager' ),
+					'editEyebrow'   => __( 'Update Offering', 'car-rental-manager' ),
+					'loadFailed'    => __( 'Unable to load the service group.', 'car-rental-manager' ),
+					'networkError'  => __( 'Network error. Please try again.', 'car-rental-manager' ),
+					'deleteConfirm' => __( 'Are you sure you want to delete this service group?', 'car-rental-manager' ),
+					'deleteFailed'  => __( 'Failed to delete service group.', 'car-rental-manager' ),
+					'showItems'     => __( 'Show all items', 'car-rental-manager' ),
+					'hideItems'     => __( 'Hide extra items', 'car-rental-manager' ),
+				) );
 				wp_localize_script( 'mpcrbm_branch_manager', 'mpcrbmBranchAdmin', array(
 					'loadingText'         => __( 'Loading…', 'car-rental-manager' ),
 					'carText'             => __( 'car', 'car-rental-manager' ),
