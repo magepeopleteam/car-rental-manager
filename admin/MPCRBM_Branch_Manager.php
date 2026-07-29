@@ -743,55 +743,56 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 		// BRANCH DASHBOARD — rendered inside the taxonomies admin panel
 		// ═══════════════════════════════════════════════════════════════════════
 
-		public static function render_branch_dashboard() {
-			$branches    = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
-			$nonce       = wp_create_nonce( 'mpcrbm_branch_transfer' );
-			$cpt         = MPCRBM_Function::get_cpt();
-			$add_new_url = admin_url( 'edit-tags.php?taxonomy=mpcrbm_locations&post_type=' . $cpt );
+		/**
+		 * Render the branch card grid independently so create/edit AJAX requests
+		 * can refresh the cards without replacing the cars panel or leaving the tab.
+		 */
+		public static function render_branch_sidebar(): string {
+			$branches = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
+			$cpt      = MPCRBM_Function::get_cpt();
 
 			// One SQL query for all branch car counts instead of N get_posts() calls.
 			$car_counts = ( ! empty( $branches ) && ! is_wp_error( $branches ) )
 				? self::get_branch_car_counts( $cpt )
 				: [];
+
+			ob_start();
 			?>
-			<div class="mpcrbm-branch-manager-head">
-				<div class="mpcrbm-branch-manager-head-text">
-					<h2><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
-					<p class="mpcrbm-branch-manager-head-subtitle"><?php esc_html_e( 'Manage your rental locations, assign vehicles to branches, and track transfers across your fleet.', 'car-rental-manager' ); ?></p>
-				</div>
-			</div>
-
-			<div class="mpcrbm-branch-dashboard" data-nonce="<?php echo esc_attr( $nonce ); ?>"
-				 data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
-
-				<div class="mpcrbm-branch-sidebar">
-
-					<div class="mpcrbm-branch-sidebar-header">
-						<div class="mpcrbm-branch-sidebar-title">
-							<i class="mi mi-map-location-track"></i>
-							<span><?php esc_html_e( 'Branches', 'car-rental-manager' ); ?></span>
-						</div>
-						<?php if ( ! empty( $branches ) && ! is_wp_error( $branches ) ) : ?>
-							<span class="mpcrbm-branch-total-pill"><?php echo esc_html( count( $branches ) ); ?></span>
-						<?php endif; ?>
+			<div class="mpcrbm-branch-sidebar">
+				<div class="mpcrbm-branch-sidebar-header">
+					<div class="mpcrbm-branch-sidebar-title">
+						<i class="mi mi-map-location-track"></i>
+						<span><?php esc_html_e( 'Branches', 'car-rental-manager' ); ?></span>
 					</div>
+					<span class="mpcrbm-branch-total-pill"><?php echo esc_html( ! empty( $branches ) && ! is_wp_error( $branches ) ? count( $branches ) : 0 ); ?></span>
+				</div>
 
-					<?php if ( empty( $branches ) || is_wp_error( $branches ) ) : ?>
-						<p class="mpcrbm-no-branches">
-							<?php esc_html_e( 'No branches configured yet. Add locations from WP Admin → Car Rental locations taxonomy.', 'car-rental-manager' ); ?>
-						</p>
-					<?php else : ?>
-						<div class="mpcrbm-branch-list">
-							<?php foreach ( $branches as $branch ) :
-								// Use term_id directly — get_terms() already primed the meta cache,
-								// so these are object-cache hits, not DB queries.
-								$tid       = $branch->term_id;
-								$address   = (string) ( get_term_meta( $tid, 'mpcrbm_branch_address', true ) ?: '' );
-								$phone     = (string) ( get_term_meta( $tid, 'mpcrbm_branch_phone', true ) ?: '' );
-								$car_count = $car_counts[ $branch->slug ] ?? 0;
-								$edit_url  = get_edit_term_link( $tid, 'mpcrbm_locations' );
+				<?php if ( empty( $branches ) || is_wp_error( $branches ) ) : ?>
+					<div class="mpcrbm-no-branches">
+						<i class="mi mi-map-location-track" aria-hidden="true"></i>
+						<strong><?php esc_html_e( 'No branches configured yet', 'car-rental-manager' ); ?></strong>
+						<span><?php esc_html_e( 'Create your first branch without leaving this dashboard.', 'car-rental-manager' ); ?></span>
+					</div>
+				<?php else : ?>
+					<div class="mpcrbm-branch-list">
+						<?php foreach ( $branches as $branch ) :
+							// get_terms() primes the term-meta cache, so these are cache hits.
+							$tid       = $branch->term_id;
+							$address   = (string) ( get_term_meta( $tid, 'mpcrbm_branch_address', true ) ?: '' );
+							$phone     = (string) ( get_term_meta( $tid, 'mpcrbm_branch_phone', true ) ?: '' );
+							$hours     = get_term_meta( $tid, 'mpcrbm_branch_hours', true );
+							$hours     = is_array( $hours ) ? $hours : [];
+							$car_count = $car_counts[ $branch->slug ] ?? 0;
 							?>
-							<div class="mpcrbm-branch-card" data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>">
+							<div class="mpcrbm-branch-card"
+								 data-term-id="<?php echo esc_attr( $tid ); ?>"
+								 data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"
+								 data-name="<?php echo esc_attr( $branch->name ); ?>"
+								 data-slug="<?php echo esc_attr( $branch->slug ); ?>"
+								 data-desc="<?php echo esc_attr( $branch->description ); ?>"
+								 data-address="<?php echo esc_attr( $address ); ?>"
+								 data-phone="<?php echo esc_attr( $phone ); ?>"
+								 data-hours='<?php echo esc_attr( wp_json_encode( $hours ) ); ?>'>
 								<div class="mpcrbm-branch-card-header">
 									<span class="mpcrbm-branch-eyebrow"><?php esc_html_e( 'Branch', 'car-rental-manager' ); ?></span>
 									<span class="mpcrbm-car-count-badge"><?php echo esc_html( $car_count ); ?></span>
@@ -811,32 +812,52 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								<?php endif; ?>
 								<div class="mpcrbm-branch-badges"></div>
 								<div class="mpcrbm-branch-card-actions">
-									<button class="mpcrbm-view-branch-cars"
+									<button type="button" class="mpcrbm-view-branch-cars"
 											data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"
 											data-branch-name="<?php echo esc_attr( $branch->name ); ?>">
 										<i class="mi mi-car"></i>
 										<?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?>
 									</button>
-									<?php if ( $edit_url ) : ?>
-										<a href="<?php echo esc_url( $edit_url ); ?>" class="mpcrbm-branch-edit-btn" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">
-											<i class="mi mi-edit"></i>
-										</a>
-									<?php endif; ?>
+									<button type="button"
+											class="mpcrbm-branch-edit-btn mpcrbm-location-edit-btn"
+											title="<?php esc_attr_e( 'Edit branch', 'car-rental-manager' ); ?>"
+											aria-label="<?php echo esc_attr( sprintf( __( 'Edit %s', 'car-rental-manager' ), $branch->name ) ); ?>">
+										<i class="mi mi-edit"></i>
+									</button>
 								</div>
 							</div>
-							<?php endforeach; ?>
-						</div>
+						<?php endforeach; ?>
+					</div>
+				<?php endif; ?>
 
-						<div class="mpcrbm-branch-sidebar-footer">
-							<a href="<?php echo esc_url( $add_new_url ); ?>" class="mpcrbm-add-branch-link">
-								<i class="mi mi-plus"></i>
-								<?php esc_html_e( 'Add New Branch', 'car-rental-manager' ); ?>
-							</a>
-						</div>
+				<div class="mpcrbm-branch-sidebar-footer">
+					<button type="button" class="mpcrbm-add-branch-link" id="mpcrbm_add_location_btn">
+						<i class="mi mi-plus"></i>
+						<?php esc_html_e( 'Add New Branch', 'car-rental-manager' ); ?>
+					</button>
+				</div>
+			</div>
+			<?php
 
-					<?php endif; ?>
+			return (string) ob_get_clean();
+		}
 
-				</div><!-- .mpcrbm-branch-sidebar -->
+		public static function render_branch_dashboard() {
+			$nonce          = wp_create_nonce( 'mpcrbm_branch_transfer' );
+			$location_nonce = wp_create_nonce( 'mpcrbm_locations_nonce' );
+			?>
+			<div class="mpcrbm-branch-manager-head">
+				<div class="mpcrbm-branch-manager-head-text">
+					<h2><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
+					<p class="mpcrbm-branch-manager-head-subtitle"><?php esc_html_e( 'Manage your rental locations, assign vehicles to branches, and track transfers across your fleet.', 'car-rental-manager' ); ?></p>
+				</div>
+			</div>
+
+			<div class="mpcrbm-branch-dashboard" data-nonce="<?php echo esc_attr( $nonce ); ?>"
+				 data-location-nonce="<?php echo esc_attr( $location_nonce ); ?>"
+				 data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
+
+				<?php echo self::render_branch_sidebar(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- method escapes all dynamic output. ?>
 
 				<div class="mpcrbm-branch-cars-panel">
 					<div class="mpcrbm-branch-cars-panel-header" style="display:none">
@@ -856,6 +877,9 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 
 			</div><!-- .mpcrbm-branch-dashboard -->
 			<?php
+			if ( class_exists( 'MPCRBM_Locations_Manager' ) ) {
+				MPCRBM_Locations_Manager::render_location_modal();
+			}
 		}
 	}
 

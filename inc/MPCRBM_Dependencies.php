@@ -77,6 +77,17 @@
 					'confirmTransferText' => __( 'Transfer this car to the selected branch?', 'car-rental-manager' ),
 					'isPro'               => is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ),
 				) );
+				wp_localize_script( 'mpcrbm_locations_manager', 'mpcrbmLocationsAdmin', array(
+					'addTitle'          => __( 'Add New Branch', 'car-rental-manager' ),
+					'editTitle'         => __( 'Edit Branch', 'car-rental-manager' ),
+					'saveText'          => __( 'Save Branch', 'car-rental-manager' ),
+					'savingText'        => __( 'Saving…', 'car-rental-manager' ),
+					'nameRequired'      => __( 'Branch name is required.', 'car-rental-manager' ),
+					'saveFailed'        => __( 'Unable to save the branch.', 'car-rental-manager' ),
+					'networkError'      => __( 'Network error. Please try again.', 'car-rental-manager' ),
+					'deleteConfirmText' => __( 'Are you sure you want to delete this branch?', 'car-rental-manager' ),
+					'deleteFailed'      => __( 'Unable to delete the branch.', 'car-rental-manager' ),
+				) );
 				// Trigger the action hook to add additional scripts if needed
 				do_action( 'mpcrbm_admin_script' );
 			}

@@ -7,6 +7,10 @@
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
 		class MPCRBM_Dummy_Import {
+			const DUMMY_MARKER_META = '_mpcrbm_dummy_imported';
+			const LEGACY_REPAIR_OPTION = 'mpcrbm_dummy_import_repair_v1';
+			const DUMMY_IMAGE_BASE = 'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/';
+
 			public function __construct() {
 				// This class can be instantiated more than once (file-level + admin loader).
 				// Register hooks only once so the modal/scripts are not output twice.
@@ -17,8 +21,62 @@
 				$booted = true;
 				add_action('admin_enqueue_scripts', array($this, 'enqueue_assets'));
 				add_action('admin_footer', array($this, 'render_popup'));
+				add_action('admin_init', array($this, 'repair_legacy_dummy_cars'));
 				add_action('wp_ajax_mpcrbm_import_dummy_data', array($this, 'ajax_import_dummy_data'));
 				add_action('wp_ajax_mpcrbm_dismiss_dummy_import', array($this, 'ajax_dismiss_dummy_import'));
+			}
+
+			/**
+			 * Repair demo cars imported before thumbnails were attached prior to
+			 * publishing. Only known demo titles with MagePeople demo thumbnails
+			 * qualify, so unrelated administrator drafts are never published.
+			 */
+			public function repair_legacy_dummy_cars() {
+				if (!current_user_can('manage_options') || get_option(self::LEGACY_REPAIR_OPTION) === 'yes') {
+					return;
+				}
+
+				if (get_option('mpcrbm_dummy_already_inserted', 'no') !== 'yes') {
+					update_option(self::LEGACY_REPAIR_OPTION, 'yes');
+					return;
+				}
+
+				$dummy_cpt = $this->dummy_cpt();
+				$dummy_cars = isset($dummy_cpt['custom_post']['mpcrbm_rent'])
+					? $dummy_cpt['custom_post']['mpcrbm_rent']
+					: array();
+				$expected_titles = array_filter(wp_list_pluck($dummy_cars, 'name'));
+
+				$draft_ids = get_posts(array(
+					'post_type'      => 'mpcrbm_rent',
+					'post_status'    => 'draft',
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+				));
+				$repair_failed = false;
+
+				foreach ($draft_ids as $post_id) {
+					if (!in_array(get_the_title($post_id), $expected_titles, true)) {
+						continue;
+					}
+
+					$thumbnail_id = get_post_thumbnail_id($post_id);
+					$source_url = $thumbnail_id ? (string) get_post_meta($thumbnail_id, '_source_url', true) : '';
+					if (!$thumbnail_id || strpos($source_url, self::DUMMY_IMAGE_BASE) !== 0) {
+						continue;
+					}
+
+					update_post_meta($post_id, self::DUMMY_MARKER_META, '1');
+					$updated = wp_update_post(array('ID' => $post_id, 'post_status' => 'publish'), true);
+					if (is_wp_error($updated) || get_post_status($post_id) !== 'publish') {
+						$repair_failed = true;
+					}
+				}
+
+				if (!$repair_failed) {
+					update_option(self::LEGACY_REPAIR_OPTION, 'yes');
+				}
 			}
 
 			/**
@@ -243,9 +301,15 @@
 				if (!current_user_can('manage_options')) {
 					wp_send_json_error(array('message' => __('You do not have permission to import data.', 'car-rental-manager')));
 				}
-				$this->dummy_import();
+				$result = $this->dummy_import();
+				if (is_wp_error($result)) {
+					wp_send_json_error(array('message' => $result->get_error_message()));
+				}
 				update_option('mpcrbm_dummy_already_inserted', 'yes');
-				wp_send_json_success(array('message' => __('Demo data imported successfully!', 'car-rental-manager')));
+				wp_send_json_success(array(
+					'message' => __('Demo data imported successfully!', 'car-rental-manager'),
+					'cars'    => isset($result['cars']) ? (int) $result['cars'] : 0,
+				));
 			}
 
 			/**
@@ -265,22 +329,28 @@
 				$count_existing_event = wp_count_posts('mpcrbm_rent')->publish;
 				$plugin_active = MPCRBM_Global_Function::check_plugin( 'car-rental-manager', 'car-rental-manager.php' );
 				$ex_id = 0;
+				$imported_cars = 0;
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				// if (1) {
 					$dummy_taxonomies = $this->dummy_taxonomy();
 					if (array_key_exists('taxonomy', $dummy_taxonomies)) {
 						foreach ($dummy_taxonomies['taxonomy'] as $taxonomy => $dummy_taxonomy) {
 							if (taxonomy_exists($taxonomy)) {
-								$check_terms = get_terms(array('taxonomy' => $taxonomy, 'hide_empty' => false));
-								if (is_string($check_terms) || sizeof($check_terms) == 0) {
-									foreach ($dummy_taxonomy as $taxonomy_data) {
-										unset($term);
+								foreach ($dummy_taxonomy as $taxonomy_data) {
+									$existing_term = get_term_by('name', $taxonomy_data['name'], $taxonomy);
+									if ($existing_term) {
+										$term_id = (int) $existing_term->term_id;
+									} else {
 										$term = wp_insert_term($taxonomy_data['name'], $taxonomy);
-						
-										if (array_key_exists('meta_data', $taxonomy_data)) {
-											foreach ($taxonomy_data['meta_data'] as $meta_key => $data) {
-												update_term_meta($term['term_id'], $meta_key, $data);
-											}
+										if (is_wp_error($term)) {
+											continue;
+										}
+										$term_id = (int) $term['term_id'];
+									}
+
+									if (array_key_exists('meta_data', $taxonomy_data)) {
+										foreach ($taxonomy_data['meta_data'] as $meta_key => $data) {
+											update_term_meta($term_id, $meta_key, $data);
 										}
 									}
 								}
@@ -288,32 +358,44 @@
 						}
 					}
 					$dummy_cpt = $this->dummy_cpt();
-					$faqs = $this->set_FAQ_data();
-					$Terms = $this->set_Terms_data();
 					
 					if (array_key_exists('custom_post', $dummy_cpt)) {
 						$dummy_images = self::dummy_images();
+						if (is_wp_error($dummy_images)) {
+							return $dummy_images;
+						}
+						$faqs = $this->set_FAQ_data();
+						$Terms = $this->set_Terms_data();
 						
 						foreach ($dummy_cpt['custom_post'] as $custom_post => $dummy_post) {
 							unset($args);
 							$args = array(
 								'post_type' => $custom_post,
+								'post_status' => 'any',
 								'posts_per_page' => -1,
 							);
 							unset($post);
 							$post = new WP_Query($args);
 							
 							// if (1) {
-							if ($post->post_count == 0) {
+							if ($custom_post === 'mpcrbm_rent' || $post->post_count == 0) {
 								foreach ($dummy_post as $dummy_data) {
 									$args = array();
 									if (isset($dummy_data['name']))
 										$args['post_title'] = $dummy_data['name'];
 									if (isset($dummy_data['content']))
 										$args['post_content'] = $dummy_data['content'];
-									$args['post_status'] = 'publish';
+									// Cars must receive their featured image before publishing;
+									// MPCRBM_CPT otherwise correctly returns them to draft.
+									$args['post_status'] = $custom_post === 'mpcrbm_rent' ? 'draft' : 'publish';
 									$args['post_type'] = $custom_post;
-									$post_id = wp_insert_post($args);
+									$post_id = wp_insert_post($args, true);
+									if (is_wp_error($post_id)) {
+										return $post_id;
+									}
+									if ($custom_post === 'mpcrbm_rent') {
+										update_post_meta($post_id, self::DUMMY_MARKER_META, '1');
+									}
 
 									if($custom_post=='mpcrbm_ex_services'){
 										$ex_id = $post_id;
@@ -361,7 +443,7 @@
 												if (is_array($data)) {
 													$thumnail_ids = array();
 													foreach ($data as $url_index) {
-														if (isset($dummy_images[$url_index])) {
+														if (isset($dummy_images[$url_index]) && !is_wp_error($dummy_images[$url_index])) {
 															$thumnail_ids[] = $dummy_images[$url_index];
 														}
 													}
@@ -405,8 +487,10 @@
 												$include_features=[];
 												if (is_array($data)) {
 													foreach ($data as $item) {
-														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
-														$include_features[] = $term->term_id;
+														$term = get_term_by( 'name', trim($item), 'mpcrbm_car_feature' );
+														if ($term) {
+															$include_features[] = $term->term_id;
+														}
 													}
 													update_post_meta($post_id, 'mpcrbm_include_features', $include_features);
 												}
@@ -416,8 +500,10 @@
 												$exclude_features=[];
 												if (is_array($data)) {
 													foreach ($data as $item) {
-														$term = get_term_by( 'name', $item, 'mpcrbm_car_feature' );
-														$exclude_features[] = $term->term_id;
+														$term = get_term_by( 'name', trim($item), 'mpcrbm_car_feature' );
+														if ($term) {
+															$exclude_features[] = $term->term_id;
+														}
 													}
 													update_post_meta($post_id, 'mpcrbm_exclude_features', $exclude_features);
 												}
@@ -427,23 +513,43 @@
 												update_post_meta( $post_id, $meta_key, $ex_id );
 											}
 										}
-									}									
+									}
+
+									if ($custom_post === 'mpcrbm_rent') {
+										if (!has_post_thumbnail($post_id)) {
+											return new WP_Error('mpcrbm_dummy_thumbnail_missing', __('A demo vehicle image could not be attached. No incomplete import was marked as successful.', 'car-rental-manager'));
+										}
+										$published = wp_update_post(array('ID' => $post_id, 'post_status' => 'publish'), true);
+										if (is_wp_error($published) || get_post_status($post_id) !== 'publish') {
+											return is_wp_error($published) ? $published : new WP_Error('mpcrbm_dummy_publish_failed', __('A demo vehicle could not be published.', 'car-rental-manager'));
+										}
+										$imported_cars++;
+									}
 								}
 							}
 						}
 					}
 					//$this->craete_pages();
 					//$this->update_related_products($custom_post);
+
+					$expected_cars = isset($dummy_cpt['custom_post']['mpcrbm_rent'])
+						? count($dummy_cpt['custom_post']['mpcrbm_rent'])
+						: 0;
+					if ($imported_cars !== $expected_cars) {
+						return new WP_Error('mpcrbm_dummy_incomplete', __('The demo vehicle import was incomplete and was not marked as successful.', 'car-rental-manager'));
+					}
 					
 					update_option( 'mpcrbm_faq_list', $faqs );
 					update_option( 'mpcrbm_term_condition_list', $Terms );
 					flush_rewrite_rules();
 					update_option('mpcrbm_dummy_already_inserted', 'yes');
+					return array('cars' => $imported_cars);
 				}
+
+				return new WP_Error('mpcrbm_dummy_not_eligible', __('Demo data cannot be imported because it was already imported or published vehicles already exist.', 'car-rental-manager'));
 			}
 
 			public function set_Terms_data() {
-				update_option( 'mpcrbm_term_condition_list', []);
 				return[
 						'term_1' => [
 							'title' => 'Age and License Requirements',
@@ -488,7 +594,6 @@
 					];
 			}
 			public function set_FAQ_data() {
-				update_option( 'mpcrbm_faq_list', []);
 				return [
 						'faq_1' => [
 							'title' => 'What documents are required to rent a car?',
@@ -549,10 +654,21 @@
 					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-4.jpg',
 					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-5.jpg',
 				);
-				unset($image_ids);
 				$image_ids = array();
-				foreach ($urls as $url) {
-					$image_ids[] = media_sideload_image($url, '0', $url, 'id');
+				$errors = array();
+				foreach ($urls as $index => $url) {
+					$image_id = media_sideload_image($url, 0, $url, 'id');
+					if (is_wp_error($image_id)) {
+						$errors[] = $image_id->get_error_message();
+						continue;
+					}
+					$image_ids[$index] = (int) $image_id;
+				}
+				if ($errors || count($image_ids) !== count($urls)) {
+					return new WP_Error(
+						'mpcrbm_dummy_image_download_failed',
+						__('Demo vehicle images could not be downloaded. Check the server connection and try again.', 'car-rental-manager')
+					);
 				}
 				return $image_ids;
 			}
@@ -1543,4 +1659,3 @@
 		}
 		new MPCRBM_Dummy_Import();
 	}
-
