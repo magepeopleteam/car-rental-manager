@@ -9,12 +9,26 @@
  */
 jQuery(document).ready(function ($) {
 
-	var $wrap   = $('.mpcrbm-locations-manager');
-	var nonce   = $wrap.data('nonce');
-	var days    = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+	var days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+	var lastFocusedElement = null;
+	var strings = window.mpcrbmLocationsAdmin || {};
+
+	function modal() {
+		return $('#mpcrbm_location_modal_overlay');
+	}
+
+	function locationNonce() {
+		return $('.mpcrbm-locations-manager').first().data('nonce')
+			|| $('.mpcrbm-branch-dashboard').first().attr('data-location-nonce')
+			|| '';
+	}
+
+	function requestContext() {
+		return $('.mpcrbm-locations-manager').length ? 'locations' : 'branch';
+	}
 
 	function hoursField(day, part) {
-		return $('input[name="mpcrbm_branch_hours[' + day + '][' + part + ']"]');
+		return modal().find('input[name="mpcrbm_branch_hours[' + day + '][' + part + ']"]');
 	}
 
 	function resetHoursTable() {
@@ -36,20 +50,76 @@ jQuery(document).ready(function ($) {
 		});
 	}
 
+	function clearError() {
+		$('#mpcrbm_location_modal_error').removeClass('is-visible').text('');
+		$('#mpcrbm_location_name').removeClass('has-error').attr('aria-invalid', 'false');
+	}
+
+	function showError(message) {
+		$('#mpcrbm_location_modal_error').text(message).addClass('is-visible');
+		$('#mpcrbm_location_name').addClass('has-error').attr('aria-invalid', 'true').trigger('focus');
+	}
+
 	function openModal() {
-		// Explicit "flex" (not fadeIn's auto-detected display) — the overlay
-		// uses flex to center the modal, and jQuery's default fallback for a
-		// plain <div> is "block".
-		$('#mpcrbm_location_modal_overlay').css('display', 'flex').hide().fadeIn(150);
+		var $modal = modal();
+		if (!$modal.length) {
+			return;
+		}
+
+		lastFocusedElement = document.activeElement;
+		clearError();
+		$('body').addClass('mpcrbm-branch-modal-open');
+		$modal.attr('aria-hidden', 'false').css('display', 'flex').hide().fadeIn(150, function () {
+			$('#mpcrbm_location_name').trigger('focus');
+		});
 	}
 
 	function closeModal() {
-		$('#mpcrbm_location_modal_overlay').fadeOut(150);
+		var $modal = modal();
+		$modal.attr('aria-hidden', 'true').fadeOut(150, function () {
+			$('body').removeClass('mpcrbm-branch-modal-open');
+			clearError();
+			if (lastFocusedElement && document.contains(lastFocusedElement)) {
+				lastFocusedElement.focus();
+			}
+		});
+	}
+
+	function setSaving(isSaving) {
+		var $button = $('#mpcrbm_save_location_btn');
+		$button.prop('disabled', isSaving).toggleClass('is-saving', isSaving);
+		$button.find('i').toggleClass('mi-disk', !isSaving).toggleClass('mi-spinner', isSaving);
+		$button.find('span').text(isSaving ? (strings.savingText || 'Saving…') : (strings.saveText || 'Save Branch'));
+	}
+
+	function notify(message, type) {
+		$(document).trigger('mpcrbm:branch-toast', [message, type || 'success']);
+	}
+
+	function refreshBranchSidebar(html, editedTermId) {
+		var $sidebar = $('.mpcrbm-branch-sidebar').first();
+		if (!$sidebar.length || !html) {
+			return;
+		}
+
+		var activeTermId = parseInt($('.mpcrbm-branch-card.is-active').data('term-id'), 10) || 0;
+		$sidebar.replaceWith(html);
+
+		if (activeTermId) {
+			var $activeCard = $('.mpcrbm-branch-card').filter(function () {
+				return parseInt($(this).data('term-id'), 10) === activeTermId;
+			}).first();
+			$activeCard.addClass('is-active');
+
+			if (editedTermId && activeTermId === editedTermId) {
+				$('.mpcrbm-panel-branch-name').text($activeCard.data('name') || '');
+			}
+		}
 	}
 
 	// ── Add ──────────────────────────────────────────────────────────────
 	$(document).on('click', '#mpcrbm_add_location_btn', function () {
-		$('#mpcrbm_location_modal_title').text('Add Location');
+		$('#mpcrbm_location_modal_title').text(strings.addTitle || 'Add New Branch');
 		$('#mpcrbm_location_term_id').val('');
 		$('#mpcrbm_location_name').val('');
 		$('#mpcrbm_location_slug').val('');
@@ -62,7 +132,7 @@ jQuery(document).ready(function ($) {
 
 	// ── Edit ─────────────────────────────────────────────────────────────
 	$(document).on('click', '.mpcrbm-location-edit-btn', function () {
-		var $card = $(this).closest('.mpcrbm-location-card');
+		var $card = $(this).closest('.mpcrbm-location-card, .mpcrbm-branch-card');
 		var hours = {};
 		try {
 			hours = JSON.parse($card.attr('data-hours') || '{}');
@@ -70,7 +140,7 @@ jQuery(document).ready(function ($) {
 			hours = {};
 		}
 
-		$('#mpcrbm_location_modal_title').text('Edit Location');
+		$('#mpcrbm_location_modal_title').text(strings.editTitle || 'Edit Branch');
 		$('#mpcrbm_location_term_id').val($card.data('term-id'));
 		$('#mpcrbm_location_name').val($card.data('name'));
 		$('#mpcrbm_location_slug').val($card.data('slug'));
@@ -85,8 +155,27 @@ jQuery(document).ready(function ($) {
 	$(document).on('click', '#mpcrbm_cancel_location_btn', closeModal);
 	$(document).on('click', '#mpcrbm_close_location_modal', closeModal);
 	$(document).on('keydown', function (e) {
-		if (e.key === 'Escape' && $('#mpcrbm_location_modal_overlay').is(':visible')) {
+		if (!modal().is(':visible')) {
+			return;
+		}
+
+		if (e.key === 'Escape') {
 			closeModal();
+			return;
+		}
+
+		if (e.key === 'Tab') {
+			var $focusable = modal().find('button:not(:disabled), input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])').filter(':visible');
+			var first = $focusable.first()[0];
+			var last  = $focusable.last()[0];
+
+			if (e.shiftKey && document.activeElement === first) {
+				e.preventDefault();
+				last.focus();
+			} else if (!e.shiftKey && document.activeElement === last) {
+				e.preventDefault();
+				first.focus();
+			}
 		}
 	});
 	$(document).on('click', '#mpcrbm_location_modal_overlay', function (e) {
@@ -96,19 +185,29 @@ jQuery(document).ready(function ($) {
 	});
 
 	// ── Save (add or update) ─────────────────────────────────────────────
-	$(document).on('click', '#mpcrbm_save_location_btn', function () {
-		var $btn    = $(this);
+	$(document).on('submit', '#mpcrbm_location_form', function (event) {
+		event.preventDefault();
+
 		var termId  = $('#mpcrbm_location_term_id').val();
 		var name    = $('#mpcrbm_location_name').val().trim();
+		var nonce   = locationNonce();
 
 		if (!name) {
-			alert('Name is required.');
+			showError(strings.nameRequired || 'Branch name is required.');
 			return;
 		}
+
+		if (!nonce) {
+			showError(strings.saveFailed || 'Unable to save the branch.');
+			return;
+		}
+
+		clearError();
 
 		var data = {
 			action:      termId ? 'mpcrbm_update_location' : 'mpcrbm_save_location',
 			nonce:       nonce,
+			context:     requestContext(),
 			name:        name,
 			slug:        $('#mpcrbm_location_slug').val(),
 			description: $('#mpcrbm_location_desc').val(),
@@ -126,19 +225,23 @@ jQuery(document).ready(function ($) {
 			}
 		});
 
-		$btn.prop('disabled', true).text('Saving…');
+		setSaving(true);
 
-		$.post(ajaxurl, data, function (res) {
+		$.post(typeof ajaxurl !== 'undefined' ? ajaxurl : '', data, function (res) {
 			if (res.success) {
-				$('#mpcrbm_locations_list').html(res.data.html);
+				if ($('#mpcrbm_locations_list').length && res.data.html) {
+					$('#mpcrbm_locations_list').html(res.data.html);
+				}
+				refreshBranchSidebar(res.data.branch_html, parseInt(termId, 10) || 0);
 				closeModal();
+				notify(res.data.message || 'Branch saved successfully.', 'success');
 			} else {
-				alert((res.data && res.data.message) || 'Failed to save location.');
+				showError((res.data && res.data.message) || strings.saveFailed || 'Unable to save the branch.');
 			}
 		}).fail(function () {
-			alert('Network error. Please try again.');
+			showError(strings.networkError || 'Network error. Please try again.');
 		}).always(function () {
-			$btn.prop('disabled', false).text('Save Changes');
+			setSaving(false);
 		});
 	});
 
@@ -147,22 +250,25 @@ jQuery(document).ready(function ($) {
 		var $card = $(this).closest('.mpcrbm-location-card');
 		var termId = $card.data('term-id');
 
-		if (!confirm('Are you sure you want to delete this location?')) {
+		if (!confirm(strings.deleteConfirmText || 'Are you sure you want to delete this branch?')) {
 			return;
 		}
 
-		$.post(ajaxurl, {
+		$.post(typeof ajaxurl !== 'undefined' ? ajaxurl : '', {
 			action:  'mpcrbm_delete_location',
-			nonce:   nonce,
+			nonce:   locationNonce(),
+			context: requestContext(),
 			term_id: termId,
 		}, function (res) {
 			if (res.success) {
 				$('#mpcrbm_locations_list').html(res.data.html);
+				refreshBranchSidebar(res.data.branch_html, 0);
+				notify(res.data.message || 'Branch deleted.', 'success');
 			} else {
-				alert((res.data && res.data.message) || 'Failed to delete location.');
+				notify((res.data && res.data.message) || strings.deleteFailed || 'Unable to delete the branch.', 'error');
 			}
 		}).fail(function () {
-			alert('Network error. Please try again.');
+			notify(strings.networkError || 'Network error. Please try again.', 'error');
 		});
 	});
 
