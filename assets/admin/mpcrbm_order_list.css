@@ -534,6 +534,51 @@
     color: var(--ol-text);
 }
 
+/* ── Replace Vehicle tab controls ── */
+#mpcrbm-tab-replace label {
+    font-size: 13px;
+    color: var(--ol-text);
+}
+
+#mpcrbm-replace-car-select,
+#mpcrbm-replace-reason {
+    width: 100%;
+    max-width: 420px;
+    padding: 8px 10px;
+    border: 1px solid var(--ol-border);
+    border-radius: var(--ol-radius);
+    font-size: 13px;
+    color: var(--ol-text);
+    background: var(--ol-bg);
+    outline: none;
+    box-shadow: none;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+#mpcrbm-replace-car-select {
+    height: 38px;
+    cursor: pointer;
+}
+
+#mpcrbm-replace-reason {
+    resize: vertical;
+    line-height: 1.5;
+}
+
+#mpcrbm-replace-car-select:focus,
+#mpcrbm-replace-reason:focus {
+    border-color: var(--ol-primary);
+    background: #fff;
+}
+
+#mpcrbm-replace-price-hint {
+    color: var(--ol-muted);
+}
+
+#mpcrbm-replace-vehicle-btn {
+    border-radius: 7px !important;
+}
+
 /* ── Modification request flag button ── */
 .mpcrbm-btn-mod-requests {
     background: #fff7ed !important;
@@ -842,6 +887,17 @@
 .mpcrbm-mod-panel-actions .mpcrbm-mod-action-btn:disabled {
     opacity: 0.55 !important;
     cursor: not-allowed !important;
+}
+
+#mpcrbm-replace-candidates-wrap{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.mpcrbm-replace-reason-holder{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* ── Misc ── */
