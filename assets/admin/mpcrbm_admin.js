@@ -412,17 +412,22 @@
 			let post_id = $('[name="mpcrbm_post_id"]').val();
 			let metaKey  = $checkbox.attr('id');
 			let containerId =metaKey+'_holder';
+			let $container = $('#' + containerId);
 
 			var heading = $checkbox.closest('.mpcrbm-section').find('.mpcrbm-heading');
 
-			// Visible loading state on the switch itself while the AJAX call is
-			// in flight, so there's feedback right away instead of the card
-			// body just silently sitting there until the request finishes —
-			// it's this callback's success handler (below), not the click
-			// itself, that actually reveals/hides #<metaKey>_holder.
-			let $switchLabel = $checkbox.closest('.roundSwitchLabel');
+			// Visible loading state on the card body itself (centered spinner)
+			// while the AJAX call is in flight, so feedback shows up where the
+			// content is about to expand/collapse rather than on the tiny
+			// switch. When turning a section on, its holder starts out
+			// display:none, so it's revealed right away in the loading state
+			// (content hidden, spinner centered) instead of waiting for the
+			// success handler below to reveal/hide it.
 			$checkbox.prop('disabled', true);
-			$switchLabel.addClass('mpcrbm-switch-loading');
+			if ( checked === 1 ) {
+				$container.show();
+			}
+			$container.addClass('mpcrbm-content-loading');
 
 			$.ajax({
 				type: 'POST',
@@ -439,12 +444,25 @@
 				},
 				success: function(response) {
 
+					$container.removeClass('mpcrbm-content-loading');
+
 					if( response.data.message ){
 						if( checked === 1 ){
-							$("#"+containerId).slideDown(300);
+							// Fade the content in while it slides open (instead of a
+							// flat height-only slide) so it reads as an easing
+							// reveal rather than content snapping into place —
+							// "mpcrbm-fade-in" (opacity:0, see mpcrbm-shell.css)
+							// is dropped a frame after slideDown starts so the CSS
+							// opacity transition runs alongside the slide.
+							$container.hide().addClass('mpcrbm-fade-in').slideDown(400, 'swing');
+							requestAnimationFrame(function() {
+								requestAnimationFrame(function() {
+									$container.removeClass('mpcrbm-fade-in');
+								});
+							});
 							heading.addClass('mpcrbm_toggle_class');
 						}else{
-							$("#"+containerId).slideUp(300);
+							$container.slideUp(280, 'swing');
 							heading.removeClass('mpcrbm_toggle_class');
 						}
 					}else{
@@ -456,11 +474,14 @@
 					// leaving it checked/unchecked out of sync with the saved
 					// (unsaved) meta value.
 					$checkbox.prop('checked', checked !== 1);
+					$container.removeClass('mpcrbm-content-loading');
+					if ( checked === 1 ) {
+						$container.hide();
+					}
 					alert('Something went wrong while saving this setting. Please try again.');
 				},
 				complete: function() {
 					$checkbox.prop('disabled', false);
-					$switchLabel.removeClass('mpcrbm-switch-loading');
 				}
 			});
 		});
