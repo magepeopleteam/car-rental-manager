@@ -199,78 +199,108 @@
 				return sanitize_text_field( $value );
 			}
 
-			public static function data_sanitize( $data ) {
-				// Security fix: Prevent PHP Object Injection by checking for serialized objects
-				// Only allow unserialization of arrays and primitive types, reject objects
-				if ( is_string( $data ) && is_serialized( $data ) ) {
-					$unserialized = @unserialize( $data );
-					// Reject if unserialized data is an object (potential security risk)
-					if ( is_object( $unserialized ) ) {
-						// Return empty string for objects to prevent object injection
-						return '';
-					}
-					// Only proceed if it's an array or primitive type
-					if ( $unserialized !== false ) {
-						$data = $unserialized;
-					}
-				} else {
-					$data = maybe_unserialize( $data );
+			/**
+			 * Unserialize a value without ever instantiating a PHP object.
+			 *
+			 * Security: this is the plugin's only safe entry point for untrusted
+			 * serialized data. Calling unserialize() and *then* testing is_object()
+			 * is not a fix -- PHP runs __wakeup()/__destruct() during the call, so a
+			 * POP chain has already executed by the time the check happens, and an
+			 * object nested inside an array never trips the check at all.
+			 *
+			 * allowed_classes => false makes PHP refuse to build any class: every
+			 * serialized object becomes an inert __PHP_Incomplete_Class with no magic
+			 * methods, which strip_objects() then removes at any nesting depth.
+			 *
+			 * @param mixed $data Possibly serialized value.
+			 *
+			 * @return mixed Unserialized value with every object removed. Non-serialized
+			 *               input is returned untouched.
+			 */
+			public static function safe_maybe_unserialize( $data ) {
+				if ( ! is_string( $data ) || ! is_serialized( $data ) ) {
+					return $data;
 				}
-				
-				// Additional security check: if data is still an object after unserialization, reject it
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Hardened with allowed_classes => false.
+				$unserialized = @unserialize( trim( $data ), array( 'allowed_classes' => false ) );
+				if ( false === $unserialized && 'b:0;' !== trim( $data ) ) {
+					// Malformed payload: keep the raw string, callers sanitize it as text.
+					return $data;
+				}
+
+				return self::strip_objects( $unserialized );
+			}
+
+			/**
+			 * Recursively drop object placeholders left behind by safe_maybe_unserialize().
+			 *
+			 * @param mixed $data Unserialized value.
+			 *
+			 * @return mixed Value guaranteed to contain no objects.
+			 */
+			public static function strip_objects( $data ) {
 				if ( is_object( $data ) ) {
 					return '';
 				}
-				
+				if ( is_array( $data ) ) {
+					$clean = array();
+					foreach ( $data as $key => $value ) {
+						if ( is_object( $value ) ) {
+							continue;
+						}
+						$clean[ $key ] = is_array( $value ) ? self::strip_objects( $value ) : $value;
+					}
+
+					return $clean;
+				}
+
+				return $data;
+			}
+
+			/**
+			 * Sanitize a single scalar according to the kind of content it holds.
+			 *
+			 * @param mixed $value Scalar value.
+			 *
+			 * @return mixed Sanitized value; non-strings are returned unchanged.
+			 */
+			protected static function sanitize_scalar( $value ) {
+				if ( ! is_scalar( $value ) ) {
+					// Only null can reach this point; keep the pre-existing empty-string result.
+					return '';
+				}
+				if ( is_email( $value ) ) {
+					return sanitize_email( $value );
+				} else if ( strpos( $value, 'http' ) === 0 ) {
+					return esc_url_raw( $value );
+				} else if ( strpos( $value, '<' ) !== false && strpos( $value, '>' ) !== false ) {
+					return wp_kses_post( $value );
+				}
+
+				return sanitize_text_field( wp_strip_all_tags( $value ) );
+			}
+
+			public static function data_sanitize( $data ) {
+				// Security: PHP Object Injection guard. No class is ever instantiated,
+				// so no magic method can fire, and no object survives at any depth.
+				$data = self::safe_maybe_unserialize( $data );
 				if ( is_string( $data ) ) {
-					// Check again if it's serialized (double-serialized case)
-					if ( is_serialized( $data ) ) {
-						$unserialized = @unserialize( $data );
-						// Reject objects
-						if ( is_object( $unserialized ) ) {
-							return '';
-						}
-						if ( $unserialized !== false ) {
-							$data = $unserialized;
-						}
-					}
-					
-					// Additional check after second unserialization
-					if ( is_object( $data ) ) {
-						return '';
-					}
-					
-					if ( is_array( $data ) ) {
-						$data = self::data_sanitize( $data );
-					} else if ( is_string( $data ) ) {
-						// Determine type of data and sanitize accordingly
-						if ( is_email( $data ) ) {
-							$data = sanitize_email( $data );
-						} else if ( strpos( $data, 'http' ) === 0 ) {
-							$data = esc_url_raw( $data );
-						} else if ( strpos( $data, '<' ) !== false && strpos( $data, '>' ) !== false ) {
-							$data = wp_kses_post( $data );
-						} else {
-							$data = sanitize_text_field( wp_strip_all_tags( $data ) );
-						}
-					}
-				} elseif ( is_array( $data ) ) {
+					// Double-serialized case.
+					$data = self::safe_maybe_unserialize( $data );
+				}
+				if ( is_object( $data ) ) {
+					return '';
+				}
+				if ( is_array( $data ) ) {
 					foreach ( $data as &$value ) {
-						if ( is_array( $value ) ) {
-							$value = self::data_sanitize( $value );
-						} else {
-							// Determine type of value and sanitize accordingly
-							if ( is_email( $value ) ) {
-								$value = sanitize_email( $value );
-							} else if ( strpos( $value, 'http' ) === 0 ) {
-								$value = esc_url_raw( $value );
-							} else if ( strpos( $value, '<' ) !== false && strpos( $value, '>' ) !== false ) {
-								$value = wp_kses_post( $value );
-							} else {
-								$value = sanitize_text_field( wp_strip_all_tags( $value ) );
-							}
-						}
+						$value = is_array( $value ) ? self::data_sanitize( $value ) : self::sanitize_scalar( $value );
 					}
+					unset( $value );
+
+					return $data;
+				}
+				if ( is_string( $data ) ) {
+					return self::sanitize_scalar( $data );
 				}
 
 				return $data;
@@ -753,9 +783,9 @@ public static function all_tax_list(): array {
                     foreach ($meta_keys as $key) {
                         $value = get_post_meta($post_id, $key, true);
 
-                        // Unserialize if needed
+                        // Unserialize if needed. Security: object-safe, see safe_maybe_unserialize().
                         if (is_serialized($value)) {
-                            $value = maybe_unserialize($value);
+                            $value = self::safe_maybe_unserialize($value);
                         }
 
                         // Merge arrays or single values

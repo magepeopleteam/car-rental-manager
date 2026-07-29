@@ -3,7 +3,7 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.3.8
+Stable tag: 1.4.0
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
@@ -123,6 +123,9 @@ Yes you can offer extra services along with the car
 Please report security bugs found in the source code of the Car Rental Manager for WordPress plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/b1431560-8325-44d1-9a15-6f0ccfb485d4). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
 == Changelog ==
+
+= 1.4.0 =
+* Security: Fixed a PHP Object Injection vulnerability (Patchstack) reachable by users with the Editor role. Serialized post meta is now unserialized with `allowed_classes => false`, so no class is ever instantiated and no `__wakeup()`/`__destruct()` magic method can run. Object placeholders are stripped recursively, which also closes the nested-object bypass. The date/time settings sanitizer and the vehicle-duplication meta copier, previously unpatched, are now covered as well.
 
 = 1.3.7 =
 * Security: Fixed a Broken Access Control vulnerability (Patchstack) in the front-end review handlers. Unauthenticated visitors could edit or delete guest-submitted reviews by supplying a comment ID and the public review nonce. Edit/delete are now restricted to comment moderators and the logged-in review author.

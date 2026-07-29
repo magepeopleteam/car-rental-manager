@@ -102,7 +102,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             $metas = get_post_meta( $post_id );
             foreach ( $metas as $key => $values ) {
                 foreach ( $values as $value ) {
-                    update_post_meta( $new_post_id, $key, maybe_unserialize( $value ) );
+                    // Security: never instantiate objects while copying meta (PHP Object Injection).
+                    update_post_meta( $new_post_id, $key, MPCRBM_Global_Function::safe_maybe_unserialize( $value ) );
                 }
             }
             wp_safe_redirect( get_edit_post_link( $new_post_id, 'url' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.DangerousRedirect
