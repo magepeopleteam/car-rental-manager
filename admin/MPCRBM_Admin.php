@@ -9,6 +9,18 @@
 	if ( ! class_exists( 'MPCRBM_Admin' ) ) {
 		class MPCRBM_Admin {
 			public function __construct() {
+				// MPCRBM_CPT registers the mpcrbm_rent CPT and the mpcrbm_car_type /
+				// mpcrbm_fuel_type / mpcrbm_car_brand / mpcrbm_seating_capacity /
+				// mpcrbm_make_year taxonomies (hooked to 'init', which fires on every
+				// request) — loading it only inside the is_admin() block below meant
+				// these taxonomies were never registered on the frontend at all, so
+				// any frontend template querying them (e.g. templates/registration/
+				// vehicle_item.php's car type/fuel type/brand/year/seating spec grid,
+				// via wp_get_post_terms()) always got "Invalid taxonomy" and rendered
+				// every car's specs as blank dashes — regardless of whether the car
+				// actually has terms assigned.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_CPT.php';
+
 				if ( is_admin() ) {
 					$this->load_file();
 					add_filter( 'use_block_editor_for_post_type', [ $this, 'disable_gutenberg' ], 10, 2 );
@@ -26,7 +38,6 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Dummy_Import.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Hidden_Product.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin_Shell.php';
-				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_CPT.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Status.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Guideline.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_License.php';

@@ -243,8 +243,18 @@
 				if (!current_user_can('manage_options')) {
 					wp_send_json_error(array('message' => __('You do not have permission to import data.', 'car-rental-manager')));
 				}
-				$this->dummy_import();
-				update_option('mpcrbm_dummy_already_inserted', 'yes');
+				// dummy_import() only marks 'mpcrbm_dummy_already_inserted' as 'yes'
+				// itself once it actually inserts something (see its own guard) —
+				// previously this handler set that option unconditionally right
+				// here regardless of the return value, so a run that inserted
+				// nothing (e.g. its guard skipped, or the image sideload below
+				// failed/timed out before any post got created) still reported
+				// "success" and permanently disabled every future retry, since
+				// is_eligible() checks this same option.
+				$imported = $this->dummy_import();
+				if (!$imported) {
+					wp_send_json_error(array('message' => __('Demo data could not be imported. Please try again.', 'car-rental-manager')));
+				}
 				wp_send_json_success(array('message' => __('Demo data imported successfully!', 'car-rental-manager')));
 			}
 
@@ -265,6 +275,7 @@
 				$count_existing_event = wp_count_posts('mpcrbm_rent')->publish;
 				$plugin_active = MPCRBM_Global_Function::check_plugin( 'car-rental-manager', 'car-rental-manager.php' );
 				$ex_id = 0;
+				$imported = false;
 				if ($count_existing_event == 0 && $plugin_active == 1 && $dummy_post_inserted != 'yes') {
 				// if (1) {
 					$dummy_taxonomies = $this->dummy_taxonomy();
@@ -361,7 +372,7 @@
 												if (is_array($data)) {
 													$thumnail_ids = array();
 													foreach ($data as $url_index) {
-														if (isset($dummy_images[$url_index])) {
+														if (!empty($dummy_images[$url_index])) {
 															$thumnail_ids[] = $dummy_images[$url_index];
 														}
 													}
@@ -428,6 +439,16 @@
 											}
 										}
 									}									
+
+									// wp_insert_post() above (post_status 'publish') fires save_post
+									// immediately, before this meta loop has set a featured image —
+									// MPCRBM_CPT::require_featured_image() sees no thumbnail yet and
+									// reverts the post to draft. Now that set_post_thumbnail() has
+									// actually run (via the mpcrbm_gallery_images branch above),
+									// re-publish so the demo car doesn't end up stuck in draft.
+									if ( $post_id && has_post_thumbnail( $post_id ) && get_post_status( $post_id ) !== 'publish' ) {
+										wp_update_post( array( 'ID' => $post_id, 'post_status' => 'publish' ) );
+									}
 								}
 							}
 						}
@@ -439,7 +460,9 @@
 					update_option( 'mpcrbm_term_condition_list', $Terms );
 					flush_rewrite_rules();
 					update_option('mpcrbm_dummy_already_inserted', 'yes');
+					$imported = true;
 				}
+				return $imported;
 			}
 
 			public function set_Terms_data() {
@@ -541,6 +564,18 @@
 				}
 			}
 			
+			/**
+			 * Caps the HTTP timeout while sideloading dummy images (see
+			 * dummy_images() below) so an unreachable/blocked host fails each
+			 * image quickly instead of hanging close to download_url()'s 300s
+			 * default — five of those back to back easily exceeds most hosts'
+			 * max_execution_time and fatal-errors the whole import before a
+			 * single dummy car post gets created.
+			 */
+			public static function short_image_timeout() {
+				return 15;
+			}
+
 			public static function dummy_images() {
 				$urls = array(
 					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-1.jpg',
@@ -549,11 +584,17 @@
 					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-4.jpg',
 					'https://raw.githubusercontent.com/magepeopleteam/dummy-images/main/car-rental/car-5.jpg',
 				);
-				unset($image_ids);
 				$image_ids = array();
+				add_filter('http_request_timeout', array(__CLASS__, 'short_image_timeout'));
 				foreach ($urls as $url) {
-					$image_ids[] = media_sideload_image($url, '0', $url, 'id');
+					$id = media_sideload_image($url, '0', $url, 'id');
+					// A failed/timed-out sideload returns a WP_Error, not an
+					// attachment ID — store 0 instead so downstream gallery/
+					// thumbnail code (which only checks isset()) can't push a
+					// WP_Error object into post meta or set_post_thumbnail().
+					$image_ids[] = is_wp_error($id) ? 0 : $id;
 				}
+				remove_filter('http_request_timeout', array(__CLASS__, 'short_image_timeout'));
 				return $image_ids;
 			}
 

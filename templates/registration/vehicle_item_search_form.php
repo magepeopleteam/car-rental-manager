@@ -391,12 +391,12 @@ if ($post_id) {
                                 data-security-deposit="<?php echo esc_attr($mpcrbm_security_deposit_result); ?>"
                                 data-post-id="<?php echo esc_attr($post_id); ?>"
                                 data-wc_link_id="<?php echo esc_attr($mpcrbm_link_wc_product); ?>"
-                                data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"
+                                data-open-text="<?php esc_attr_e('Select', 'car-rental-manager'); ?>"
                                 data-close-text="<?php esc_html_e('Selected', 'car-rental-manager'); ?>"
                                 data-open-icon=""
                                 data-close-icon="fas fa-check mR_xs">
                             <span class="" data-icon></span>
-                            <span data-text><?php esc_html_e('Select Car', 'car-rental-manager'); ?></span>
+                            <span data-text><?php esc_html_e('Select', 'car-rental-manager'); ?></span>
                         </button>
                     </div>
 

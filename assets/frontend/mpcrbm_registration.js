@@ -214,6 +214,10 @@ jQuery(document).ready(function($) {
         if ($this.hasClass('active_select')) {
             // Deselect vehicle
             $this.removeClass('active_select');
+            $this.find('[data-text]').text($this.data('open-text'));
+            if ($this.data('open-icon') !== undefined) {
+                $this.find('[data-icon]').attr('class', $this.data('open-icon'));
+            }
             // The "Details" card (templates/registration/choose_vehicles.php,
             // get_search_result.php) is now visible from page load instead of only
             // appearing once a car is picked, so it no longer slides away on deselect
@@ -232,7 +236,14 @@ jQuery(document).ready(function($) {
             checkAndToggleBookNowButton(parent);
         } else {
             // Select new vehicle
-            parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
+            parent.find('.mpcrbm_transport_select.active_select').each(function () {
+                let $prev = $(this);
+                $prev.removeClass('active_select');
+                $prev.find('[data-text]').text($prev.data('open-text'));
+                if ($prev.data('open-icon') !== undefined) {
+                    $prev.find('[data-icon]').attr('class', $prev.data('open-icon'));
+                }
+            });
 
             let transport_name  = $this.attr('data-transport-name');
             let transport_price = parseFloat($this.attr('data-transport-price'));
@@ -281,6 +292,10 @@ jQuery(document).ready(function($) {
             target_summary.find('.mpcrbm_car_day_value').text(mpcrbm_calculate_rental_days(parent));
 
             $this.addClass('active_select');
+            $this.find('[data-text]').text($this.data('close-text'));
+            if ($this.data('close-icon') !== undefined) {
+                $this.find('[data-icon]').attr('class', $this.data('close-icon'));
+            }
             parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', base_price);
             checkAndToggleBookNowButton(parent);
 
