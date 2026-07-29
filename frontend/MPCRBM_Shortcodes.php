@@ -19,8 +19,77 @@
                 add_action( 'wp_ajax_mpcrbm_mb_load',       [ $this, 'mpcrbm_mb_load' ] );
                 add_action( 'wp_ajax_mpcrbm_mb_detail',     [ $this, 'mpcrbm_mb_detail' ] );
                 add_action( 'wp_ajax_mpcrbm_mb_mod_request', [ $this, 'mpcrbm_mb_mod_request' ] );
+                add_action( 'wp_ajax_mpcrbm_mb_accept_replacement', [ $this, 'mpcrbm_mb_accept_replacement' ] );
+                add_action( 'wp_ajax_mpcrbm_mb_reject_replacement', [ $this, 'mpcrbm_mb_reject_replacement' ] );
 
 			}
+
+            // =========================================================
+            // Customer Accept/Reject on a pending vehicle-replacement
+            // proposal (created by the Pro plugin's admin-side "Request
+            // Approval" flow — this class only reads/writes the plain
+            // `mpcrbm_pending_replacement` meta and fires a generic action;
+            // it has no dependency on the Pro plugin being active.
+            // =========================================================
+            private function mpcrbm_mb_get_owned_pending_replacement( int $booking_id ) {
+                if ( ! is_user_logged_in() || ! $booking_id ) {
+                    return null;
+                }
+                $booking = get_post( $booking_id );
+                if ( ! $booking || $booking->post_type !== 'mpcrbm_booking' ) {
+                    return null;
+                }
+                $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
+                $order_obj = $order_id ? wc_get_order( $order_id ) : null;
+                if ( ! $order_obj || (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
+                    return null;
+                }
+                $pending = get_post_meta( $booking_id, 'mpcrbm_pending_replacement', true );
+                if ( ! is_array( $pending ) || 'pending' !== ( $pending['status'] ?? '' ) ) {
+                    return null;
+                }
+                return $pending;
+            }
+
+            public function mpcrbm_mb_accept_replacement() {
+                check_ajax_referer( 'mpcrbm_my_bookings', 'nonce' );
+                $booking_id = isset( $_POST['booking_id'] ) ? absint( $_POST['booking_id'] ) : 0;
+
+                $pending = $this->mpcrbm_mb_get_owned_pending_replacement( $booking_id );
+                if ( ! $pending ) {
+                    wp_send_json_error( [ 'message' => __( 'No pending replacement request found.', 'car-rental-manager' ) ] );
+                }
+
+                $pending['status']      = 'accepted';
+                $pending['resolved_at'] = current_time( 'mysql' );
+                update_post_meta( $booking_id, 'mpcrbm_pending_replacement', $pending );
+                wp_clear_scheduled_hook( 'mpcrbm_replacement_approval_timeout', [ $booking_id ] );
+
+                do_action( 'mpcrbm_replacement_customer_responded', $booking_id, 'accepted', '' );
+
+                wp_send_json_success( [ 'message' => __( 'Thanks — you\'ve approved the vehicle change. The agency will finalize it shortly.', 'car-rental-manager' ) ] );
+            }
+
+            public function mpcrbm_mb_reject_replacement() {
+                check_ajax_referer( 'mpcrbm_my_bookings', 'nonce' );
+                $booking_id = isset( $_POST['booking_id'] ) ? absint( $_POST['booking_id'] ) : 0;
+                $note       = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
+
+                $pending = $this->mpcrbm_mb_get_owned_pending_replacement( $booking_id );
+                if ( ! $pending ) {
+                    wp_send_json_error( [ 'message' => __( 'No pending replacement request found.', 'car-rental-manager' ) ] );
+                }
+
+                $pending['status']         = 'rejected';
+                $pending['resolved_at']    = current_time( 'mysql' );
+                $pending['response_note']  = $note;
+                update_post_meta( $booking_id, 'mpcrbm_pending_replacement', $pending );
+                wp_clear_scheduled_hook( 'mpcrbm_replacement_approval_timeout', [ $booking_id ] );
+
+                do_action( 'mpcrbm_replacement_customer_responded', $booking_id, 'rejected', $note );
+
+                wp_send_json_success( [ 'message' => __( 'You\'ve declined the vehicle change. The agency has been notified.', 'car-rental-manager' ) ] );
+            }
 
             public static function mpcrbm_get_car_data( $atts, $per_page = 20, $paged = 1 ) {
 
@@ -747,6 +816,8 @@
                 $return_time = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt, 'time' ) : '';
                 $replacement_log = get_post_meta( $id, 'mpcrbm_replacement_log', true );
                 $vehicle_updated = ! empty( $replacement_log ) && is_array( $replacement_log );
+                $pending_replacement = get_post_meta( $id, 'mpcrbm_pending_replacement', true );
+                $pending_replacement = ( is_array( $pending_replacement ) && 'pending' === ( $pending_replacement['status'] ?? '' ) ) ? $pending_replacement : null;
 
                 ob_start(); ?>
                 <div class="mpcrbm-mb-card" data-id="<?php echo esc_attr( $id ); ?>">
@@ -762,6 +833,40 @@
                             <h3 class="mpcrbm-mb-card-title"><?php echo esc_html( $car_title ); ?><?php if ( $vehicle_updated ) : ?> <span class="mpcrbm-mb-vehicle-updated" title="<?php esc_attr_e( 'The vehicle for this booking was updated by the agency.', 'car-rental-manager' ); ?>"><?php esc_html_e( 'Vehicle updated', 'car-rental-manager' ); ?></span><?php endif; ?></h3>
                             <span class="mpcrbm-mb-card-num">#<?php echo esc_html( $order_id ?: $id ); ?></span>
                         </div>
+                        <?php if ( $pending_replacement ) : ?>
+                        <div class="mpcrbm-mb-replace-notice" data-id="<?php echo esc_attr( $id ); ?>">
+                            <p>
+                                <strong><?php esc_html_e( 'The agency would like to change your vehicle:', 'car-rental-manager' ); ?></strong><br>
+                                <?php
+                                echo esc_html(
+                                    sprintf(
+                                        /* translators: 1: current vehicle, 2: proposed vehicle */
+                                        __( '"%1$s" → "%2$s"', 'car-rental-manager' ),
+                                        get_the_title( (int) ( $pending_replacement['old_car_id'] ?? 0 ) ),
+                                        get_the_title( (int) ( $pending_replacement['new_car_id'] ?? 0 ) )
+                                    )
+                                );
+                                ?>
+                            </p>
+                            <?php if ( ! empty( $pending_replacement['reason'] ) ) : ?>
+                                <p class="mpcrbm-mb-replace-reason"><?php echo esc_html( $pending_replacement['reason'] ); ?></p>
+                            <?php endif; ?>
+                            <div class="mpcrbm-mb-replace-actions">
+                                <button type="button" class="mpcrbm-mb-replace-accept-btn" data-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Accept', 'car-rental-manager' ); ?></button>
+                                <button type="button" class="mpcrbm-mb-replace-reject-btn" data-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Reject', 'car-rental-manager' ); ?></button>
+                            </div>
+                            <div class="mpcrbm-mb-replace-reject-panel" style="display:none;">
+                                <p><?php esc_html_e( 'Would you like to cancel this booking or request a refund instead?', 'car-rental-manager' ); ?></p>
+                                <textarea class="mpcrbm-mb-replace-reject-note" rows="2" placeholder="<?php esc_attr_e( 'Optional note…', 'car-rental-manager' ); ?>"></textarea>
+                                <div class="mpcrbm-mb-replace-actions">
+                                    <button type="button" class="mpcrbm-mb-replace-confirm-reject-btn" data-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Just Reject', 'car-rental-manager' ); ?></button>
+                                    <button type="button" class="mpcrbm-mb-replace-cancel-booking-btn" data-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Reject & Cancel Booking', 'car-rental-manager' ); ?></button>
+                                    <button type="button" class="mpcrbm-mb-replace-refund-btn" data-id="<?php echo esc_attr( $id ); ?>"><?php esc_html_e( 'Reject & Request Refund', 'car-rental-manager' ); ?></button>
+                                </div>
+                            </div>
+                            <div class="mpcrbm-mb-replace-result"></div>
+                        </div>
+                        <?php endif; ?>
                         <div class="mpcrbm-mb-card-dates">
                             <div class="mpcrbm-mb-card-date">
                                 <span class="mpcrbm-mb-card-date-label"><?php esc_html_e( 'Pickup', 'car-rental-manager' ); ?></span>
@@ -1032,7 +1137,7 @@
                 $new_pickup = isset( $_POST['new_pickup'] ) ? sanitize_text_field( wp_unslash( $_POST['new_pickup'] ) ) : '';
                 $new_return = isset( $_POST['new_return'] ) ? sanitize_text_field( wp_unslash( $_POST['new_return'] ) ) : '';
 
-                if ( ! $booking_id || ! in_array( $req_type, [ 'cancellation', 'date_change' ], true ) ) {
+                if ( ! $booking_id || ! in_array( $req_type, [ 'cancellation', 'date_change', 'refund_request' ], true ) ) {
                     wp_send_json_error( [ 'message' => __( 'Invalid request.', 'car-rental-manager' ) ] );
                 }
 
@@ -1073,7 +1178,7 @@
                 $user      = wp_get_current_user();
                 $car_id    = get_post_meta( $booking_id, 'mpcrbm_id', true );
                 $car_title = $car_id ? get_the_title( (int) $car_id ) : __( 'Car Rental', 'car-rental-manager' );
-                $type_label = $req_type === 'cancellation' ? 'Cancellation' : 'Date Change';
+                $type_label = [ 'cancellation' => 'Cancellation', 'date_change' => 'Date Change', 'refund_request' => 'Refund Request' ][ $req_type ] ?? ucfirst( $req_type );
                 $subject   = sprintf( '[%s] Booking %s Request — #%d', get_bloginfo( 'name' ), $type_label, $booking_id );
                 $body  = "A customer has submitted a booking modification request.\n\n";
                 $body .= "Car: {$car_title}\n";

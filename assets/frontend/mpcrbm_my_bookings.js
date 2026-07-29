@@ -169,4 +169,113 @@ jQuery(function ($) {
         });
     });
 
+    // ── Vehicle replacement: Accept / Reject ───────────────────────────────
+
+    function replaceNoticeMsg($notice, msg, isError) {
+        $notice.find('.mpcrbm-mb-replace-result').html(
+            '<div class="mpcrbm-mb-mod-msg mpcrbm-mb-mod-msg--' + (isError ? 'error' : 'success') + '">' + msg + '</div>'
+        );
+    }
+
+    $(document).on('click', '.mpcrbm-mb-replace-accept-btn', function () {
+        var $btn    = $(this);
+        var $notice = $btn.closest('.mpcrbm-mb-replace-notice');
+        var id      = $btn.data('id');
+        $btn.prop('disabled', true);
+
+        $.post(ajaxUrl, {
+            action:     'mpcrbm_mb_accept_replacement',
+            nonce:      nonce,
+            booking_id: id
+        }, function (res) {
+            if (res.success) {
+                replaceNoticeMsg($notice, res.data.message, false);
+                $notice.find('.mpcrbm-mb-replace-actions, .mpcrbm-mb-replace-reject-panel').slideUp(150);
+            } else {
+                replaceNoticeMsg($notice, (res.data && res.data.message) || 'An error occurred.', true);
+                $btn.prop('disabled', false);
+            }
+        }).fail(function () {
+            replaceNoticeMsg($notice, 'Network error. Please try again.', true);
+            $btn.prop('disabled', false);
+        });
+    });
+
+    $(document).on('click', '.mpcrbm-mb-replace-reject-btn', function () {
+        $(this).closest('.mpcrbm-mb-replace-notice').find('.mpcrbm-mb-replace-reject-panel').slideDown(150);
+    });
+
+    function submitReplacementReject($notice, id, note, then) {
+        return $.post(ajaxUrl, {
+            action:     'mpcrbm_mb_reject_replacement',
+            nonce:      nonce,
+            booking_id: id,
+            note:       note
+        }, then);
+    }
+
+    $(document).on('click', '.mpcrbm-mb-replace-confirm-reject-btn', function () {
+        var $btn    = $(this);
+        var $notice = $btn.closest('.mpcrbm-mb-replace-notice');
+        var id      = $btn.data('id');
+        var note    = $notice.find('.mpcrbm-mb-replace-reject-note').val();
+        $notice.find('.mpcrbm-mb-replace-actions button, .mpcrbm-mb-replace-reject-panel button').prop('disabled', true);
+
+        submitReplacementReject($notice, id, note, function (res) {
+            if (res.success) {
+                replaceNoticeMsg($notice, res.data.message, false);
+                $notice.find('.mpcrbm-mb-replace-actions, .mpcrbm-mb-replace-reject-panel').slideUp(150);
+            } else {
+                replaceNoticeMsg($notice, (res.data && res.data.message) || 'An error occurred.', true);
+                $notice.find('.mpcrbm-mb-replace-actions button, .mpcrbm-mb-replace-reject-panel button').prop('disabled', false);
+            }
+        }).fail(function () {
+            replaceNoticeMsg($notice, 'Network error. Please try again.', true);
+            $notice.find('.mpcrbm-mb-replace-actions button, .mpcrbm-mb-replace-reject-panel button').prop('disabled', false);
+        });
+    });
+
+    function submitFollowUpModRequest($notice, id, reqType, note, successMsg) {
+        return $.post(ajaxUrl, {
+            action:     'mpcrbm_mb_mod_request',
+            nonce:      nonce,
+            booking_id: id,
+            req_type:   reqType,
+            note:       note
+        }, function (res) {
+            if (res.success) {
+                replaceNoticeMsg($notice, successMsg, false);
+            } else {
+                replaceNoticeMsg($notice, (res.data && res.data.message) || 'An error occurred.', true);
+            }
+        }).fail(function () {
+            replaceNoticeMsg($notice, 'Network error. Please try again.', true);
+        });
+    }
+
+    $(document).on('click', '.mpcrbm-mb-replace-cancel-booking-btn, .mpcrbm-mb-replace-refund-btn', function () {
+        var $btn     = $(this);
+        var $notice  = $btn.closest('.mpcrbm-mb-replace-notice');
+        var id       = $btn.data('id');
+        var note     = $notice.find('.mpcrbm-mb-replace-reject-note').val();
+        var isRefund = $btn.hasClass('mpcrbm-mb-replace-refund-btn');
+        $notice.find('.mpcrbm-mb-replace-actions button, .mpcrbm-mb-replace-reject-panel button').prop('disabled', true);
+
+        // Reject the proposal first, then submit the follow-up request the
+        // customer chose — reusing the existing cancellation/refund_request
+        // modification-request flow rather than building a new one.
+        submitReplacementReject($notice, id, note, function () {
+            submitFollowUpModRequest(
+                $notice, id,
+                isRefund ? 'refund_request' : 'cancellation',
+                note,
+                isRefund
+                    ? 'Vehicle change rejected and your refund request has been submitted.'
+                    : 'Vehicle change rejected and your cancellation request has been submitted.'
+            ).always(function () {
+                $notice.find('.mpcrbm-mb-replace-actions, .mpcrbm-mb-replace-reject-panel').slideUp(150);
+            });
+        });
+    });
+
 });
