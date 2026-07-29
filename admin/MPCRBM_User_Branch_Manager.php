@@ -45,6 +45,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 
 			// Admin panel pages + form handlers
 			add_action( 'admin_menu',            [ $this, 'register_menus' ] );
+			add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_manager_assets' ], 90 );
 			add_action( 'admin_post_mpcrbm_save_bm',   [ $this, 'handle_save_bm' ] );
 			add_action( 'admin_post_mpcrbm_delete_bm', [ $this, 'handle_delete_bm' ] );
 
@@ -53,6 +54,31 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 
 			// Tag each WooCommerce order with pickup branch slug for fast querying
 			add_action( 'woocommerce_checkout_order_created', [ $this, 'tag_order_with_branch' ] );
+		}
+
+		/** Load the manager modal assets only on the Branch Managers screen. */
+		public function enqueue_manager_assets(): void {
+			$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+			if ( ! $screen || 'mpcrbm_rent_page_mpcrbm_branch_managers' !== $screen->id ) {
+				return;
+			}
+
+			$css_path = MPCRBM_PLUGIN_DIR . '/assets/admin/mpcrbm-user-branch-manager.css';
+			$js_path  = MPCRBM_PLUGIN_DIR . '/assets/admin/mpcrbm-user-branch-manager.js';
+
+			wp_enqueue_style(
+				'mpcrbm-user-branch-manager',
+				MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-user-branch-manager.css',
+				[ 'mpcrbm-shell' ],
+				file_exists( $css_path ) ? filemtime( $css_path ) : MPCRBM_PLUGIN_VERSION
+			);
+			wp_enqueue_script(
+				'mpcrbm-user-branch-manager',
+				MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-user-branch-manager.js',
+				[ 'jquery' ],
+				file_exists( $js_path ) ? filemtime( $js_path ) : MPCRBM_PLUGIN_VERSION,
+				true
+			);
 		}
 
 		// ═══════════════════════════════════════════════════════════════════
@@ -453,11 +479,11 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 		// ═══════════════════════════════════════════════════════════════════
 
 		public function render_branch_managers_page(): void {
-			$action = isset( $_GET['action'] ) ? sanitize_key( $_GET['action'] ) : 'list';
+			$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : 'list';
 			$bm_id  = isset( $_GET['bm_id'] )  ? (int) $_GET['bm_id']           : 0;
 
-			$title = in_array( $action, [ 'add', 'edit' ], true )
-				? ( $bm_id ? esc_html__( 'Edit Branch Manager', 'car-rental-manager' ) : esc_html__( 'Add Branch Manager', 'car-rental-manager' ) )
+			$title = 'edit' === $action && $bm_id
+				? esc_html__( 'Edit Branch Manager', 'car-rental-manager' )
 				: esc_html__( 'Branch Managers', 'car-rental-manager' );
 
 			MPCRBM_Admin_Shell::render_shell_open( $title );
@@ -465,9 +491,11 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$this->render_admin_notices();
 
 			switch ( $action ) {
-				case 'add':
 				case 'edit':
 					$this->render_bm_form( $bm_id );
+					break;
+				case 'add':
+					$this->render_bm_list( true );
 					break;
 				default:
 					$this->render_bm_list();
@@ -477,6 +505,8 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 		}
 
 		private function render_admin_notices(): void {
+			$action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
+
 			if ( isset( $_GET['saved'] ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>'
 					. esc_html__( 'Branch manager saved successfully.', 'car-rental-manager' )
@@ -487,7 +517,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 					. esc_html__( 'Branch manager deleted.', 'car-rental-manager' )
 					. '</p></div>';
 			}
-			if ( isset( $_GET['error'] ) ) {
+			if ( isset( $_GET['error'] ) && 'add' !== $action ) {
 				echo '<div class="notice notice-error is-dismissible"><p>'
 					. esc_html( urldecode( wp_unslash( $_GET['error'] ) ) )
 					. '</p></div>';
@@ -496,7 +526,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 
 		// ── List all branch managers ──────────────────────────────────────────
 
-		private function render_bm_list(): void {
+		private function render_bm_list( bool $open_add_modal = false ): void {
 			$managers = get_users( [ 'role' => self::ROLE_SLUG, 'orderby' => 'display_name' ] );
 			$branches = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
 			$bmap     = [];
@@ -511,7 +541,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			<div class="mpcrbm-card">
 				<div class="mpcrbm-card-header">
 					<h2><?php esc_html_e( 'Branch Managers', 'car-rental-manager' ); ?></h2>
-					<a href="<?php echo esc_url( $add_url ); ?>" class="mpcrbm-btn">
+					<a href="<?php echo esc_url( $add_url ); ?>" class="mpcrbm-btn mpcrbm-open-bm-modal" id="mpcrbm_open_bm_modal">
 						<i class="fas fa-plus"></i> <?php esc_html_e( 'Add Branch Manager', 'car-rental-manager' ); ?>
 					</a>
 				</div>
@@ -579,6 +609,142 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 						</tbody>
 					</table>
 				<?php endif; ?>
+				</div>
+			</div>
+			<?php $this->render_add_bm_modal( is_wp_error( $branches ) ? [] : $branches, $open_add_modal ); ?>
+			<?php
+		}
+
+		/**
+		 * Modern Add Branch Manager modal. It posts to the existing hardened
+		 * admin-post handler, preserving the established creation workflow.
+		 *
+		 * @param WP_Term[] $branches       Available location terms.
+		 * @param bool      $open_by_default Whether a direct action=add URL should open it.
+		 */
+		private function render_add_bm_modal( array $branches, bool $open_by_default = false ): void {
+			$page_url = admin_url( 'edit.php?post_type=' . MPCRBM_Function::get_cpt() . '&page=mpcrbm_branch_managers' );
+			$error    = isset( $_GET['error'] ) ? urldecode( wp_unslash( $_GET['error'] ) ) : '';
+			?>
+			<div class="mpcrbm-bm-modal-overlay<?php echo $open_by_default ? ' is-open' : ''; ?>"
+				 id="mpcrbm_bm_modal"
+				 data-auto-open="<?php echo $open_by_default ? '1' : '0'; ?>"
+				 aria-hidden="<?php echo $open_by_default ? 'false' : 'true'; ?>">
+				<div class="mpcrbm-bm-modal" role="dialog" aria-modal="true" aria-labelledby="mpcrbm_bm_modal_title">
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="mpcrbm-bm-modal-form" id="mpcrbm_add_bm_form">
+						<?php wp_nonce_field( 'mpcrbm_save_bm_0', 'mpcrbm_bm_nonce' ); ?>
+						<input type="hidden" name="action" value="mpcrbm_save_bm">
+						<input type="hidden" name="bm_id" value="0">
+
+						<div class="mpcrbm-bm-modal-header">
+							<div class="mpcrbm-bm-modal-heading">
+								<span class="mpcrbm-bm-modal-icon"><i class="fas fa-user-tie" aria-hidden="true"></i></span>
+								<div>
+									<span class="mpcrbm-bm-modal-eyebrow"><?php esc_html_e( 'Team Access', 'car-rental-manager' ); ?></span>
+									<h2 id="mpcrbm_bm_modal_title"><?php esc_html_e( 'Add Branch Manager', 'car-rental-manager' ); ?></h2>
+									<p><?php esc_html_e( 'Create a secure account and assign the branches this manager can operate.', 'car-rental-manager' ); ?></p>
+								</div>
+							</div>
+							<button type="button" class="mpcrbm-bm-modal-close" aria-label="<?php esc_attr_e( 'Close branch manager form', 'car-rental-manager' ); ?>">&times;</button>
+						</div>
+
+						<div class="mpcrbm-bm-modal-body">
+							<?php if ( $error ) : ?>
+								<div class="mpcrbm-bm-modal-alert" role="alert">
+									<i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+									<span><?php echo esc_html( $error ); ?></span>
+								</div>
+							<?php endif; ?>
+
+							<section class="mpcrbm-bm-form-section" aria-labelledby="mpcrbm_bm_account_heading">
+								<div class="mpcrbm-bm-form-section-heading">
+									<i class="fas fa-id-card" aria-hidden="true"></i>
+									<div>
+										<h3 id="mpcrbm_bm_account_heading"><?php esc_html_e( 'Account Information', 'car-rental-manager' ); ?></h3>
+										<p><?php esc_html_e( 'Basic identity and secure login credentials.', 'car-rental-manager' ); ?></p>
+									</div>
+								</div>
+
+								<div class="mpcrbm-bm-fields-grid">
+									<div class="mpcrbm-bm-field">
+										<label for="mpcrbm_bm_first_name"><?php esc_html_e( 'First Name', 'car-rental-manager' ); ?></label>
+										<input type="text" id="mpcrbm_bm_first_name" name="bm_first_name" autocomplete="given-name" placeholder="<?php esc_attr_e( 'Enter first name', 'car-rental-manager' ); ?>">
+									</div>
+									<div class="mpcrbm-bm-field">
+										<label for="mpcrbm_bm_last_name"><?php esc_html_e( 'Last Name', 'car-rental-manager' ); ?></label>
+										<input type="text" id="mpcrbm_bm_last_name" name="bm_last_name" autocomplete="family-name" placeholder="<?php esc_attr_e( 'Enter last name', 'car-rental-manager' ); ?>">
+									</div>
+									<div class="mpcrbm-bm-field">
+										<label for="mpcrbm_bm_email"><?php esc_html_e( 'Email Address', 'car-rental-manager' ); ?> <span>*</span></label>
+										<input type="email" id="mpcrbm_bm_email" name="bm_email" autocomplete="email" required placeholder="manager@example.com">
+									</div>
+									<div class="mpcrbm-bm-field">
+										<label for="mpcrbm_bm_username"><?php esc_html_e( 'Username', 'car-rental-manager' ); ?> <span>*</span></label>
+										<input type="text" id="mpcrbm_bm_username" name="bm_username" autocomplete="username" required placeholder="<?php esc_attr_e( 'Unique login name', 'car-rental-manager' ); ?>">
+									</div>
+									<div class="mpcrbm-bm-field mpcrbm-bm-field-full">
+										<label for="mpcrbm_bm_password"><?php esc_html_e( 'Temporary Password', 'car-rental-manager' ); ?> <span>*</span></label>
+										<div class="mpcrbm-bm-password-wrap">
+											<input type="password" id="mpcrbm_bm_password" name="bm_password" autocomplete="new-password" minlength="8" required placeholder="<?php esc_attr_e( 'Minimum 8 characters', 'car-rental-manager' ); ?>">
+											<button type="button" class="mpcrbm-bm-password-toggle"
+												aria-label="<?php esc_attr_e( 'Show password', 'car-rental-manager' ); ?>"
+												data-show-label="<?php esc_attr_e( 'Show password', 'car-rental-manager' ); ?>"
+												data-hide-label="<?php esc_attr_e( 'Hide password', 'car-rental-manager' ); ?>"><i class="fas fa-eye" aria-hidden="true"></i></button>
+											<button type="button" class="mpcrbm-bm-generate-password"><i class="fas fa-key" aria-hidden="true"></i> <?php esc_html_e( 'Generate', 'car-rental-manager' ); ?></button>
+										</div>
+										<span class="mpcrbm-bm-field-help"><?php esc_html_e( 'Share this password securely. The manager can change it from their WordPress profile.', 'car-rental-manager' ); ?></span>
+									</div>
+								</div>
+							</section>
+
+							<section class="mpcrbm-bm-form-section" aria-labelledby="mpcrbm_bm_access_heading">
+								<div class="mpcrbm-bm-form-section-heading">
+									<i class="fas fa-building" aria-hidden="true"></i>
+									<div>
+										<h3 id="mpcrbm_bm_access_heading"><?php esc_html_e( 'Branch Access', 'car-rental-manager' ); ?></h3>
+										<p><?php esc_html_e( 'Choose every branch this manager is allowed to operate.', 'car-rental-manager' ); ?></p>
+									</div>
+								</div>
+
+								<?php if ( empty( $branches ) ) : ?>
+									<div class="mpcrbm-bm-no-branches">
+										<i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+										<span><?php esc_html_e( 'No branches are available yet.', 'car-rental-manager' ); ?></span>
+										<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . MPCRBM_Function::get_cpt() . '&page=mpcrbm_car_rental&mpcrbm_tab=mpcrbm_branch_manager' ) ); ?>"><?php esc_html_e( 'Create a branch', 'car-rental-manager' ); ?></a>
+									</div>
+								<?php else : ?>
+									<div class="mpcrbm-bm-branch-options">
+										<?php foreach ( $branches as $branch ) : ?>
+											<label class="mpcrbm-bm-branch-option">
+												<input type="checkbox" name="bm_branches[]" value="<?php echo esc_attr( $branch->slug ); ?>">
+												<span class="mpcrbm-bm-branch-option-box">
+													<i class="fas fa-building" aria-hidden="true"></i>
+													<span><?php echo esc_html( $branch->name ); ?></span>
+													<i class="fas fa-check mpcrbm-bm-branch-check" aria-hidden="true"></i>
+												</span>
+											</label>
+										<?php endforeach; ?>
+									</div>
+								<?php endif; ?>
+
+								<div class="mpcrbm-bm-field mpcrbm-bm-status-field">
+									<label for="mpcrbm_bm_status"><?php esc_html_e( 'Account Status', 'car-rental-manager' ); ?></label>
+									<select name="bm_status" id="mpcrbm_bm_status">
+										<option value="active"><?php esc_html_e( 'Active — manager can log in', 'car-rental-manager' ); ?></option>
+										<option value="inactive"><?php esc_html_e( 'Inactive — login is blocked', 'car-rental-manager' ); ?></option>
+									</select>
+								</div>
+							</section>
+						</div>
+
+						<div class="mpcrbm-bm-modal-footer">
+							<button type="button" class="mpcrbm-bm-modal-cancel"><?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?></button>
+							<button type="submit" class="mpcrbm-bm-modal-submit" data-loading-text="<?php esc_attr_e( 'Creating…', 'car-rental-manager' ); ?>">
+								<i class="fas fa-user-plus" aria-hidden="true"></i>
+								<span><?php esc_html_e( 'Create Branch Manager', 'car-rental-manager' ); ?></span>
+							</button>
+						</div>
+					</form>
 				</div>
 			</div>
 			<?php
@@ -744,12 +910,29 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			$email    = sanitize_email( wp_unslash( $_POST['bm_email']    ?? '' ) );
 			$username = sanitize_user( wp_unslash(  $_POST['bm_username'] ?? '' ) );
 			$password = wp_unslash( $_POST['bm_password'] ?? '' );
-			$branches = isset( $_POST['bm_branches'] )
-				? array_map( 'sanitize_text_field', (array) $_POST['bm_branches'] )
+			$submitted_branches = isset( $_POST['bm_branches'] )
+				? (array) wp_unslash( $_POST['bm_branches'] )
 				: [];
-			$status   = in_array( $_POST['bm_status'] ?? '', [ 'active', 'inactive' ], true )
-				? sanitize_text_field( $_POST['bm_status'] )
+			$branches = array_values( array_unique( array_filter( array_map( 'sanitize_title', $submitted_branches ) ) ) );
+			$valid_branch_slugs = get_terms( [
+				'taxonomy'   => 'mpcrbm_locations',
+				'hide_empty' => false,
+				'fields'     => 'slugs',
+			] );
+			$branches = is_wp_error( $valid_branch_slugs )
+				? []
+				: array_values( array_intersect( $branches, $valid_branch_slugs ) );
+			$submitted_status = sanitize_key( wp_unslash( $_POST['bm_status'] ?? '' ) );
+			$status   = in_array( $submitted_status, [ 'active', 'inactive' ], true )
+				? $submitted_status
 				: 'active';
+
+			if ( $password && strlen( $password ) < 8 ) {
+				wp_safe_redirect( add_query_arg( 'error', rawurlencode(
+					__( 'The password must contain at least 8 characters.', 'car-rental-manager' )
+				), $err_url ) );
+				exit;
+			}
 
 			if ( $bm_id ) {
 				// ── Update existing user ──
