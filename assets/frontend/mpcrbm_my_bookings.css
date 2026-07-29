@@ -675,31 +675,51 @@
 
 /* ── Vehicle replacement approval notice ── */
 .mpcrbm-mb-replace-notice {
-    margin: 10px 0;
-    padding: 12px 14px;
-    border-radius: 9px;
+    margin: 8px 0;
+    padding: 8px 10px;
+    border-radius: 8px;
     background: #fffbeb;
     border: 1px solid #fde68a;
 }
-.mpcrbm-mb-replace-notice p {
-    margin: 0 0 8px;
-    font-size: 13px;
-    color: #92400e;
+.mpcrbm-mb-replace-head {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 3px;
+}
+.mpcrbm-mb-replace-icon {
+    font-size: 11px;
+    line-height: 1;
+}
+.mpcrbm-mb-replace-label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #b45309;
+}
+.mpcrbm-mb-replace-cars {
+    margin: 0 0 4px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #78350f;
 }
 .mpcrbm-mb-replace-reason {
+    margin: 0 0 6px;
+    font-size: 11.5px;
     font-style: italic;
-    color: #78716c !important;
+    color: #a8825a;
 }
 .mpcrbm-mb-replace-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 .mpcrbm-mb-replace-actions button {
     border: none;
-    border-radius: 7px;
-    padding: 7px 14px;
-    font-size: 12px;
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: opacity .15s;
@@ -711,21 +731,26 @@
 .mpcrbm-mb-replace-cancel-booking-btn { background: #ef4444; color: #fff; }
 .mpcrbm-mb-replace-refund-btn { background: #64748b; color: #fff; }
 .mpcrbm-mb-replace-reject-panel {
-    margin-top: 10px;
-    padding-top: 10px;
+    margin-top: 8px;
+    padding-top: 8px;
     border-top: 1px dashed #fde68a;
+}
+.mpcrbm-mb-replace-reject-panel p {
+    margin: 0 0 6px;
+    font-size: 11.5px;
+    color: #92400e;
 }
 .mpcrbm-mb-replace-reject-note {
     width: 100%;
     box-sizing: border-box;
     border: 1px solid #fde68a;
-    border-radius: 7px;
-    padding: 8px;
-    font-size: 13px;
-    margin-bottom: 8px;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 12px;
+    margin-bottom: 6px;
     resize: vertical;
 }
-.mpcrbm-mb-replace-result { margin-top: 8px; }
+.mpcrbm-mb-replace-result { margin-top: 6px; font-size: 12px; }
 
 /* ── Responsive ── */
 @media (max-width: 680px) {

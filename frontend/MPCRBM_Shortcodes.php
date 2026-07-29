@@ -835,8 +835,11 @@
                         </div>
                         <?php if ( $pending_replacement ) : ?>
                         <div class="mpcrbm-mb-replace-notice" data-id="<?php echo esc_attr( $id ); ?>">
-                            <p>
-                                <strong><?php esc_html_e( 'The agency would like to change your vehicle:', 'car-rental-manager' ); ?></strong><br>
+                            <div class="mpcrbm-mb-replace-head">
+                                <span class="mpcrbm-mb-replace-icon">⚠</span>
+                                <span class="mpcrbm-mb-replace-label"><?php esc_html_e( 'Vehicle change requested', 'car-rental-manager' ); ?></span>
+                            </div>
+                            <p class="mpcrbm-mb-replace-cars">
                                 <?php
                                 echo esc_html(
                                     sprintf(
