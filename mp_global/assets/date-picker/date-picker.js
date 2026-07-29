@@ -60,6 +60,15 @@ jQuery(document).ready(function ($) {
 
         let start_time = parseFloat(parentClass.find("#mpcrbm_map_start_time").val() );
         let return_time = parseFloat(parentClass.find("#mpcrbm_map_return_time") .val() );
+
+        // Either time can still be unset mid-selection (guided single-date flow picks
+        // date and time separately) — bail out instead of letting NaN through, which
+        // "diffMs < 0" below does NOT catch (NaN < 0 is false), and previously ended up
+        // writing "NaN x days" / "$NaN" over the server-rendered defaults.
+        if (isNaN(start_time) || isNaN(return_time)) {
+            return;
+        }
+
         let start = new Date(startDate);
         let end = new Date(endDate);
 
@@ -70,7 +79,7 @@ jQuery(document).ready(function ($) {
 
         let diffMs = endDateTime - startDateTime;
 
-        if (diffMs < 0) {
+        if (isNaN(diffMs) || diffMs < 0) {
             console.log("End date/time must be after start date/time");
             return;
         }
@@ -170,27 +179,45 @@ jQuery(document).ready(function ($) {
         return candidate;
     }
 
-    function mpcrbm_apply_car_date_range_to_dom(selectedDates, instance) {
-        let startDate = instance.formatDate(selectedDates[0], "Y-m-d");
-        let endDate = selectedDates[1] ? instance.formatDate(selectedDates[1], "Y-m-d") : '';
-
-        let startDateDisplay = instance.formatDate(selectedDates[0], "D M d Y");
-        let endDateDisplay = selectedDates[1] ? instance.formatDate(selectedDates[1], "D M d Y") : '';
+    function mpcrbm_apply_pickup_date_to_dom(date, instance) {
+        let startDate = instance.formatDate(date, "Y-m-d");
+        let startDateDisplay = instance.formatDate(date, "D M d Y");
 
         $("#mpcrbm_start_date").val(startDateDisplay);
-        $("#mpcrbm_return_date").val(endDateDisplay);
+        $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate).trigger('change');
 
-        $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val(startDate);
+        // #mpcrbm_start_date/#mpcrbm_return_date always carry a server-rendered
+        // default (single_car_search_details.php: $mpcrbm_start_date = today,
+        // $mpcrbm_end_date = today+1), so they're never actually *empty* — a
+        // plain "is it blank" required check can never fail. This flag marks
+        // a *real* user pick, which mpcrbm_validate_date_time_fields()
+        // (mpcrbm_registration.js) checks instead.
+        $("#mpcrbm_start_date").attr('data-user-selected', '1');
+
+        // Clear the inline "required" notice (if shown) now that a date is picked.
+        $('#mpcrbm_pickup_date_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
+    }
+
+    function mpcrbm_apply_return_date_to_dom(date, instance) {
+        let endDate = instance.formatDate(date, "Y-m-d");
+        let endDateDisplay = instance.formatDate(date, "D M d Y");
+
+        $("#mpcrbm_return_date").val(endDateDisplay);
         $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val(endDate).trigger('change');
+        $("#mpcrbm_return_date").attr('data-user-selected', '1');
+
+        // Clear the inline "required" notice (if shown) now that a date is picked.
+        $('#mpcrbm_return_date_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
 
         if (parent.length > 0) {
             parent.find("#mpcrbm_car_details_continue_btn").fadeIn();
             parent.find("#mpcrbm_car_already_booked").fadeOut();
 
+            let startDate = $("#mpcrbm_start_date").closest('label').find('input[type="hidden"]').val();
             let car_id = parent.find('[name="mpcrbm_post_id"]').val();
             let day_wise_price = parent.find('#mpcrbm_car_day_wise_price').val();
 
-            if (endDate) {
+            if (startDate) {
                 mpcrbm_get_car_qty(startDate, car_id, day_wise_price);
             }
         }
@@ -255,55 +282,70 @@ jQuery(document).ready(function ($) {
     function initFlatpickr() {
 
         let minDay = $('input[name="mpcrbm_minimum_booking_day"]').val();
+        let pickupFlatpickr;
+        let returnFlatpickr;
 
-        selectors.forEach(function (selector) {
-
-            flatpickr(selector, {
-                mode: "range",
-                minDate: "today",
-                dateFormat: "Y-m-d",
-                showMonths: window.innerWidth < 768 ? 1 : 2, // ✅ responsive
-                locale: {
-                    firstDayOfWeek: mpcrbm_start_date
+        let commonOptions = {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            showMonths: window.innerWidth < 768 ? 1 : 2, // ✅ responsive
+            locale: {
+                firstDayOfWeek: mpcrbm_start_date
+            },
+            disable: [
+                function(date) {
+                    return mpcrbm_off_days_ary.includes(date.getDay());
                 },
-                disable: [
-                    function(date) {
-                        return mpcrbm_off_days_ary.includes(date.getDay());
-                    },
-                    ...mpcrbm_offDates.map(d => new Date(d))
-                ],
+                ...mpcrbm_offDates.map(d => new Date(d))
+            ]
+        };
 
-                onChange: function(selectedDates, dateStr, instance) {
+        // Pick-up date: a single independent picker. Selecting a date only
+        // fills the pick-up field and pushes a minimum-stay floor onto the
+        // return picker — it never touches the return date itself.
+        pickupFlatpickr = flatpickr('#mpcrbm_start_date', Object.assign({}, commonOptions, {
+            onChange: function(selectedDates, dateStr, instance) {
+                if (!selectedDates.length) {
+                    return;
+                }
 
-                    const minDayNum = parseInt(minDay, 10) || 0;
+                const start = selectedDates[0];
+                mpcrbm_apply_pickup_date_to_dom(start, instance);
 
-                    if (selectedDates.length === 1 && minDayNum > 0) {
-                        const start = selectedDates[0];
-                        const endMin = mpcrbm_find_minimum_valid_return(start, minDayNum);
-                        const range = [start, endMin];
-                        instance.setDate(range, false);
-                        mpcrbm_apply_car_date_range_to_dom(range, instance);
-                        return;
-                    }
+                const minDayNum = parseInt(minDay, 10) || 0;
+                const minReturn = minDayNum > 0 ? mpcrbm_find_minimum_valid_return(start, minDayNum) : start;
 
-                    if (selectedDates.length === 2) {
-                        const start = selectedDates[0];
-                        const end = selectedDates[1];
-                        const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-                        if (minDayNum > 0 && diffDays < minDayNum) {
-                            const endAdj = mpcrbm_find_minimum_valid_return(start, minDayNum);
-                            const range = [start, endAdj];
-                            instance.setDate(range, false);
-                            mpcrbm_apply_car_date_range_to_dom(range, instance);
-                            return;
+                if (returnFlatpickr) {
+                    returnFlatpickr.set('minDate', minReturn);
+
+                    const currentReturn = returnFlatpickr.selectedDates[0];
+                    if (currentReturn && currentReturn < minReturn) {
+                        // Existing return pick no longer satisfies the minimum stay — clear it
+                        // so the customer explicitly re-picks instead of silently booking short.
+                        returnFlatpickr.clear(false);
+                        $("#mpcrbm_return_date").val('').removeAttr('data-user-selected');
+                        $("#mpcrbm_return_date").closest('label').find('input[type="hidden"]').val('').trigger('change');
+                        if (parent.length > 0) {
+                            parent.find("#mpcrbm_car_details_continue_btn").fadeOut();
                         }
-
-                        mpcrbm_apply_car_date_range_to_dom(selectedDates, instance);
+                    } else {
+                        mpcrbm_get_selected_days();
                     }
                 }
-            });
+            }
+        }));
 
-        });
+        // Return date: a single independent picker, constrained to stay on/after
+        // the minimum-stay floor set above. Selecting a date only fills the return field.
+        returnFlatpickr = flatpickr('#mpcrbm_return_date', Object.assign({}, commonOptions, {
+            onChange: function(selectedDates, dateStr, instance) {
+                if (!selectedDates.length) {
+                    return;
+                }
+
+                mpcrbm_apply_return_date_to_dom(selectedDates[0], instance);
+            }
+        }));
     }
     initFlatpickr();
     window.addEventListener("resize", () => {

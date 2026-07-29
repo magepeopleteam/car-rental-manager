@@ -12,6 +12,9 @@
             var content_holder_id = currentType + '_holder';
             $('#' + content_holder_id).fadeIn();
 
+            // Fleet stat cards only make sense on the Car List tab.
+            $('#mpcrbm_analytics_holder').toggle( currentType === 'mpcrbm_car_list' );
+
             // Pro gate: show upgrade popup if tab requires pro and pro is not active
             var isProRequired = $(this).data('pro-required') == 1;
             var isPro = (typeof mpcrbmBranchAdmin !== 'undefined') && !!mpcrbmBranchAdmin.isPro;
@@ -58,8 +61,15 @@
             $('.mpcrbm_taxonomies_popup_overlay').fadeIn();
         });
 
-        $(document).on('click', '.mpcrbm_taxonomies_cancel_btn', function () {
+        $(document).on('click', '.mpcrbm_taxonomies_cancel_btn, .mpcrbm_taxonomies_popup_close', function () {
             $('.mpcrbm_taxonomies_popup_overlay').fadeOut();
+        });
+
+        // Click the dimmed backdrop (not the popup card itself) to close, same as the Pro popup above.
+        $(document).on('click', '.mpcrbm_taxonomies_popup_overlay', function (e) {
+            if ( $(e.target).hasClass('mpcrbm_taxonomies_popup_overlay') ) {
+                $(this).fadeOut();
+            }
         });
 
         $(document).on('click', '.mpcrbm_taxonomies_save_btn', function () {
@@ -376,6 +386,72 @@
             }
         }
 
+        // Per-car "Show FAQ Section on Frontend" switch (MPCRBM_Faq_Settings.php,
+        // the FAQ tab on each car's own edit screen — not the global FAQ list page).
+        $(document).on('change', '#mpcrbm_faq_display_toggle', function () {
+            var $toggle = $(this);
+            var isOn = $toggle.is(':checked');
+            var enabled = isOn ? 'yes' : 'no';
+            var post_id = $('[name="mpcrbm_post_id"]').val();
+            // Mirror the "FAQ Activated/Deactivated" badge instantly, don't
+            // wait on the AJAX round-trip — reverted below if it fails.
+            var $badge = $('#mpcrbm_faq_status_badge');
+            var setBadge = function (on) {
+                $badge.toggleClass('is-on', on).toggleClass('is-off', !on)
+                    .text(on ? 'FAQ Activated' : 'FAQ Deactivated');
+            };
+            setBadge(isOn);
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_faq_display_toggle',
+                post_id: post_id,
+                enabled: enabled,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function (response) {
+                if (!response || !response.success) {
+                    alert('Could not save this setting. Please try again.');
+                    $toggle.prop('checked', !isOn);
+                    setBadge(!isOn);
+                }
+            }).fail(function () {
+                alert('Could not save this setting. Please try again.');
+                $toggle.prop('checked', !isOn);
+                setBadge(!isOn);
+            });
+        });
+
+        // Per-car "Show Terms & Conditions Section on Frontend" switch
+        // (MPCRBM_Term_Condition_Setting.php) — same pattern as the FAQ toggle above.
+        $(document).on('change', '#mpcrbm_term_display_toggle', function () {
+            var $toggle = $(this);
+            var isOn = $toggle.is(':checked');
+            var enabled = isOn ? 'yes' : 'no';
+            var post_id = $('[name="mpcrbm_post_id"]').val();
+            var $badge = $('#mpcrbm_term_status_badge');
+            var setBadge = function (on) {
+                $badge.toggleClass('is-on', on).toggleClass('is-off', !on)
+                    .text(on ? 'Terms & Conditions Activated' : 'Terms & Conditions Deactivated');
+            };
+            setBadge(isOn);
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_term_display_toggle',
+                post_id: post_id,
+                enabled: enabled,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function (response) {
+                if (!response || !response.success) {
+                    alert('Could not save this setting. Please try again.');
+                    $toggle.prop('checked', !isOn);
+                    setBadge(!isOn);
+                }
+            }).fail(function () {
+                alert('Could not save this setting. Please try again.');
+                $toggle.prop('checked', !isOn);
+                setBadge(!isOn);
+            });
+        });
+
         $(document).on('click', '#mpcrbm_add_faq_btn',function() {
             $('#mpcrbm_modal_title').text('Add FAQ');
             closeModal();
@@ -539,112 +615,24 @@
             });
         });
 
-        // ===== ADD FAQ =====
-        $(document).on('click', '.mpcrbm_add_faq', function() {
-            let item = $(this).closest('.mpcrbm_faq_item');
-            let $this = $(this);
-            $this.text( 'adding...');
-            let key = item.data('key');
-            let title = item.data('title');
+        // ===== TOGGLE FAQ (single-list: clicking an item adds/removes it in place) =====
+        $(document).on('click', '.mpcrbm-faq-toggle-item', function() {
+            let $item = $(this);
+            if ($item.hasClass('is-saving')) return;
 
-            let html = `
-            <div class="mpcrbm_selected_item" 
-            data-key="${key}"
-            data-title="${title}"
-            >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
-            </div>`;
-
-            updateFaqMeta( $this, item, 'add', 'mpcrbm_selected_faq_question', html );
-
-        });
-        // ===== REMOVE FAQ =====
-        $(document).on('click', '.mpcrbm_remove_faq', function() {
-            let $this = $(this);
-            $this.text( 'removing...');
-            let item = $(this).closest('.mpcrbm_selected_item');
-            let key = item.data('key');
-            let title = item.data('title');
-
-            let html = `
-            <div class="mpcrbm_faq_item" 
-            data-key="${key}"
-            data-title="${title}"
-            >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
-            </div>`;
-
-            updateFaqMeta( $this, item, 'remove', 'mpcrbm_faq_all_question', html  );
-
-        });
-
-        // ===== ADD TERM =====
-        $(document).on('click', '.mpcrbm_add_term_condition', function() {
-            let item = $(this).closest('.mpcrbm_faq_item');
-            let $this = $(this);
-            $this.text( 'adding...');
-            let key = item.data('key');
-            let title = item.data('title');
-
-            let html = `
-            <div class="mpcrbm_selected_item" 
-            data-key="${key}"
-            data-key="${title}"
-            >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_remove_faq">Remove</button>
-            </div>`;
-
-            updateTermMeta( $this, item, 'add', 'mpcrbm_selected_term_condition', html );
-
-        });
-        // ===== REMOVE FAQ =====
-        $(document).on('click', '.mpcrbm_remove_term_condition', function() {
-            let $this = $(this);
-            $this.text( 'removing...');
-            let item = $(this).closest('.mpcrbm_selected_item');
-            let key = item.data('key');
-            let title = item.data('title');
-
-            let html = `
-            <div class="mpcrbm_faq_item" 
-            data-key="${key}"
-            data-key="${title}"
-            >
-                <div class="mpcrbm_faq_title">${title}</div>
-                <button type="button" class="button button-small mpcrbm_add_faq">Add</button>
-            </div>`;
-
-            updateTermMeta( $this, item, 'remove', 'mpcrbm_all_term_condition', html  );
-
-        });
-
-        function updateFaqMeta( clickBtn, item, action, append_section, html ) {
-
+            let willBeSelected = !$item.hasClass('is-selected');
             let post_id = $('[name="mpcrbm_post_id"]').val();
+
+            $item.toggleClass('is-selected', willBeSelected).addClass('is-saving');
+
             let data = [];
-
-            $('.mpcrbm_selected_item').each(function() {
-                let key = $(this).data('key');
-                data.push(key);
+            $('.mpcrbm-faq-toggle-item.is-selected').each(function() {
+                data.push($(this).data('key'));
             });
-            let key = $(item).data('key');
-
-            if ( action === 'add' ) {
-                if (!data.includes(key)) {
-                    data.push(key);
-                }
-            } else if (action === 'remove') {
-                let index = data.indexOf(key);
-                if (index !== -1) {
-                    data.splice(index, 1);
-                }
-            }
-
             let faq_keys = JSON.stringify(data);
-            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+
+            $('#mpcrbm_added_faq_input').val(faq_keys);
+            $('#mpcrbm_faq_selected_count').text(data.length);
 
             $.ajax({
                 url: ajaxurl,
@@ -655,43 +643,122 @@
                     mpcrbm_added_faq: faq_keys,
                     nonce: mpcrbm_admin_nonce.nonce
                 },
-                success: function (response) {
-                    if (response.success) {
-                        // alert('✅ FAQs saved successfully');
-
-                        clickBtn.text( action );
-                        $('.'+append_section).append(html);
-                        item.remove();
-                    } else {
-                        alert('❌ Error saving FAQs:', response.data.message);
+                success: function(response) {
+                    $item.removeClass('is-saving');
+                    if (!response.success) {
+                        // Revert this item's state and the counter on failure
+                        $item.toggleClass('is-selected', !willBeSelected);
+                        $('#mpcrbm_faq_selected_count').text($('.mpcrbm-faq-toggle-item.is-selected').length);
+                        alert('Error saving FAQs' + (response.data && response.data.message ? ': ' + response.data.message : ''));
                     }
+                },
+                error: function() {
+                    $item.removeClass('is-saving').toggleClass('is-selected', !willBeSelected);
+                    $('#mpcrbm_faq_selected_count').text($('.mpcrbm-faq-toggle-item.is-selected').length);
                 }
             });
-        }
-        function updateTermMeta( clickBtn, item, action, append_section, html ) {
+        });
 
-            let post_id = $('[name="mpcrbm_post_id"]').val();
-            let data = [];
+        // ===== "Add New FAQ" modal (per-car FAQ tab, MPCRBM_Faq_Settings.php) =====
+        $(document).on('click', '#mpcrbm_toggle_new_faq', function() {
+            $('#mpcrbm_new_faq_panel').show();
+        });
 
-            $('.mpcrbm_selected_item').each(function() {
-                let key = $(this).data('key');
-                data.push(key);
-            });
-            let key = $(item).data('key');
+        $(document).on('click', '#mpcrbm_cancel_new_faq_btn', function() {
+            $('#mpcrbm_new_faq_title').val('');
+            if (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_faq_answer_editor')) {
+                tinymce.get('mpcrbm_new_faq_answer_editor').setContent('');
+            } else {
+                $('#mpcrbm_new_faq_answer_editor').val('');
+            }
+            $('#mpcrbm_new_faq_panel').hide();
+        });
 
-            if ( action === 'add' ) {
-                if (!data.includes(key)) {
-                    data.push(key);
-                }
-            } else if (action === 'remove') {
-                let index = data.indexOf(key);
-                if (index !== -1) {
-                    data.splice(index, 1);
-                }
+        $(document).on('click', '#mpcrbm_save_new_faq_btn', function(e) {
+            e.preventDefault();
+            let $btn = $(this);
+            let title = $.trim($('#mpcrbm_new_faq_title').val());
+            let answer = (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_faq_answer_editor'))
+                ? tinymce.get('mpcrbm_new_faq_answer_editor').getContent()
+                : $('#mpcrbm_new_faq_answer_editor').val();
+
+            if (title === '' || answer === '') {
+                alert('Please fill in both the question and the answer.');
+                return;
             }
 
-            let faq_keys = JSON.stringify(data);
-            $('#mpcrbm_added_faq_input').val(JSON.stringify( faq_keys ));
+            let originalText = $btn.text();
+            $btn.prop('disabled', true).text('Saving...');
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_faq',
+                title: title,
+                answer: answer,
+                key: '',
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response) {
+                $btn.prop('disabled', false).text(originalText);
+
+                if (!response.success) {
+                    alert(typeof response.data === 'string' ? response.data : 'Could not save the FAQ.');
+                    return;
+                }
+
+                let key = response.data.key;
+                let savedTitle = response.data.title;
+
+                // Drop the "no FAQs available yet" placeholder, if this was the first one.
+                $('.mpcrbm-faq-list p').remove();
+
+                let $newItem = $(
+                    '<div class="mpcrbm_faq_item mpcrbm-faq-toggle-item" data-key="' + key + '">' +
+                    '<span class="mpcrbm-faq-toggle-check"><i class="fas fa-check"></i></span>' +
+                    '<div class="mpcrbm_faq_title"></div>' +
+                    '<span class="mpcrbm-faq-toggle-status">Selected</span>' +
+                    '</div>'
+                );
+                $newItem.attr('data-title', savedTitle);
+                $newItem.find('.mpcrbm_faq_title').text(savedTitle);
+                $newItem.prependTo('.mpcrbm-faq-list');
+
+                let $totalCount = $('#mpcrbm_faq_total_count');
+                if ($totalCount.length) {
+                    $totalCount.text(parseInt($totalCount.text(), 10) + 1);
+                }
+
+                // Also mark it "added" to this car — reuses the existing
+                // single-item toggle handler above rather than duplicating
+                // its save-to-car AJAX logic.
+                $newItem.trigger('click');
+
+                $('#mpcrbm_new_faq_title').val('');
+                if (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_faq_answer_editor')) {
+                    tinymce.get('mpcrbm_new_faq_answer_editor').setContent('');
+                } else {
+                    $('#mpcrbm_new_faq_answer_editor').val('');
+                }
+                $('#mpcrbm_new_faq_panel').hide();
+            });
+        });
+
+        // ===== TOGGLE TERM & CONDITION (single-list: clicking an item adds/removes it in place) =====
+        $(document).on('click', '.mpcrbm-term-toggle-item', function() {
+            let $item = $(this);
+            if ($item.hasClass('is-saving')) return;
+
+            let willBeSelected = !$item.hasClass('is-selected');
+            let post_id = $('[name="mpcrbm_post_id"]').val();
+
+            $item.toggleClass('is-selected', willBeSelected).addClass('is-saving');
+
+            let data = [];
+            $('.mpcrbm-term-toggle-item.is-selected').each(function() {
+                data.push($(this).data('key'));
+            });
+            let term_keys = JSON.stringify(data);
+
+            $('#mpcrbm_added_term_condition_input').val(term_keys);
+            $('#mpcrbm_term_selected_count').text(data.length);
 
             $.ajax({
                 url: ajaxurl,
@@ -699,23 +766,104 @@
                 data: {
                     action: 'mpcrbm_save_added_term_condition',
                     post_id: post_id,
-                    mpcrbm_added_term: faq_keys,
+                    mpcrbm_added_term: term_keys,
                     nonce: mpcrbm_admin_nonce.nonce
                 },
-                success: function (response) {
-                    if (response.success) {
-                        // alert('✅ FAQs saved successfully');
-
-                        console.log(append_section);
-                        clickBtn.text( action );
-                        $('.'+append_section).append(html);
-                        item.remove();
-                    } else {
-                        alert('❌ Error saving FAQs:', response.data.message);
+                success: function(response) {
+                    $item.removeClass('is-saving');
+                    if (!response.success) {
+                        $item.toggleClass('is-selected', !willBeSelected);
+                        $('#mpcrbm_term_selected_count').text($('.mpcrbm-term-toggle-item.is-selected').length);
+                        alert('Error saving Terms & Conditions' + (response.data && response.data.message ? ': ' + response.data.message : ''));
                     }
+                },
+                error: function() {
+                    $item.removeClass('is-saving').toggleClass('is-selected', !willBeSelected);
+                    $('#mpcrbm_term_selected_count').text($('.mpcrbm-term-toggle-item.is-selected').length);
                 }
             });
-        }
+        });
+
+        // ===== "Add New Term & Condition" modal (per-car Term & Condition tab) =====
+        $(document).on('click', '#mpcrbm_toggle_new_term', function() {
+            $('#mpcrbm_new_term_panel').show();
+        });
+
+        $(document).on('click', '#mpcrbm_cancel_new_term_btn', function() {
+            $('#mpcrbm_new_term_title').val('');
+            if (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_term_answer_editor')) {
+                tinymce.get('mpcrbm_new_term_answer_editor').setContent('');
+            } else {
+                $('#mpcrbm_new_term_answer_editor').val('');
+            }
+            $('#mpcrbm_new_term_panel').hide();
+        });
+
+        $(document).on('click', '#mpcrbm_save_new_term_btn', function(e) {
+            e.preventDefault();
+            let $btn = $(this);
+            let title = $.trim($('#mpcrbm_new_term_title').val());
+            let answer = (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_term_answer_editor'))
+                ? tinymce.get('mpcrbm_new_term_answer_editor').getContent()
+                : $('#mpcrbm_new_term_answer_editor').val();
+
+            if (title === '' || answer === '') {
+                alert('Please fill in both the title and the description.');
+                return;
+            }
+
+            let originalText = $btn.text();
+            $btn.prop('disabled', true).text('Saving...');
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_term_and_condition',
+                title: title,
+                answer: answer,
+                key: '',
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response) {
+                $btn.prop('disabled', false).text(originalText);
+
+                if (!response.success) {
+                    alert(typeof response.data === 'string' ? response.data : 'Could not save the Term & Condition.');
+                    return;
+                }
+
+                let key = response.data.key;
+                let savedTitle = response.data.title;
+
+                // Drop the "no terms available yet" placeholder, if this was the first one.
+                $('.mpcrbm-term-list p').remove();
+
+                let $newItem = $(
+                    '<div class="mpcrbm_faq_item mpcrbm-term-toggle-item" data-key="' + key + '">' +
+                    '<span class="mpcrbm-faq-toggle-check"><i class="fas fa-check"></i></span>' +
+                    '<div class="mpcrbm_faq_title"></div>' +
+                    '<span class="mpcrbm-faq-toggle-status">Selected</span>' +
+                    '</div>'
+                );
+                $newItem.attr('data-title', savedTitle);
+                $newItem.find('.mpcrbm_faq_title').text(savedTitle);
+                $newItem.prependTo('.mpcrbm-term-list');
+
+                let $totalCount = $('#mpcrbm_term_total_count');
+                if ($totalCount.length) {
+                    $totalCount.text(parseInt($totalCount.text(), 10) + 1);
+                }
+
+                // Also mark it "added" to this car — reuses the toggle handler
+                // above rather than duplicating its save-to-car AJAX logic.
+                $newItem.trigger('click');
+
+                $('#mpcrbm_new_term_title').val('');
+                if (typeof tinymce !== 'undefined' && tinymce.get('mpcrbm_new_term_answer_editor')) {
+                    tinymce.get('mpcrbm_new_term_answer_editor').setContent('');
+                } else {
+                    $('#mpcrbm_new_term_answer_editor').val('');
+                }
+                $('#mpcrbm_new_term_panel').hide();
+            });
+        });
 
         function updateFeatureMeta( actionType, termId, featureType) {
             let post_id = $('[name="mpcrbm_post_id"]').val();
@@ -754,6 +902,60 @@
             updateFeatureMeta(actionType, termId, 'exclude');
         });
 
+        // ===== "Add New Feature" panel (per-car Car Feature tab, MPCRBM_Manage_Feature.php) =====
+        $(document).on('click', '#mpcrbm_toggle_new_feature', function() {
+            $('#mpcrbm_new_feature_panel').show();
+        });
+
+        $(document).on('click', '#mpcrbm_cancel_new_feature_btn', function() {
+            $('#mpcrbm_new_feature_name').val('');
+            $('#mpcrbm_new_feature_panel').hide();
+        });
+
+        $(document).on('click', '#mpcrbm_save_new_feature_btn', function(e) {
+            e.preventDefault();
+            const name = $('#mpcrbm_new_feature_name').val().trim();
+            const post_id = $('[name="mpcrbm_post_id"]').val();
+
+            if (name === '') {
+                alert('Please enter a feature name.');
+                return;
+            }
+
+            $.post(ajaxurl, {
+                action: 'mpcrbm_save_new_feature',
+                post_id: post_id,
+                name: name,
+                nonce: mpcrbm_admin_nonce.nonce
+            }, function(response) {
+                if (!response.success) {
+                    alert('Error saving feature' + (response.data && response.data.message ? ': ' + response.data.message : ''));
+                    return;
+                }
+
+                const termId = response.data.term_id;
+                const savedName = response.data.name;
+
+                // Already included on this term (may have existed before), skip duplicate row.
+                if ($('.mpcrbm_include_feature .mpcrbm_include_checkbox[value="' + termId + '"]').length) {
+                    $('#mpcrbm_new_feature_name').val('');
+                    $('#mpcrbm_new_feature_panel').hide();
+                    return;
+                }
+
+                const $newLabel = $('<label></label>');
+                $newLabel.append(
+                    $('<input type="checkbox" class="mpcrbm_include_checkbox" checked>').val(termId)
+                );
+                $newLabel.append(document.createTextNode(' ' + savedName));
+                $('.mpcrbm_include_feature').append($newLabel);
+
+                $('#mpcrbm_new_feature_name').val('');
+                $('#mpcrbm_new_feature_panel').hide();
+            }).fail(function() {
+                alert('Network error. Please try again.');
+            });
+        });
 
     });
 

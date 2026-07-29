@@ -28,11 +28,6 @@ $mpcrbm_extra_service_class = 'mpcrbm_extra_service_layout';
 
 include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );
 // Get service data
-?>
-<div class="justifyBetween">
-    <div></div>
-    <button class="_successButton_min_200 mpcrbm_book_now" style="display:none;" type="button" data-wc_link_id="<?php echo esc_attr($mpcrbm_link_wc_product); ?>">
-        <span class="fas fa-cart-plus _mR_xs"></span>
-        <?php esc_html_e('Book Now', 'car-rental-manager'); ?>
-    </button>
-</div>
+// Book Now itself now lives in templates/registration/summary_new.php as a
+// single persistent button, always visible on the page instead of only
+// appearing here once this AJAX response loads — see that file for details.

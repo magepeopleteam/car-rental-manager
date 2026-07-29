@@ -29,7 +29,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             add_submenu_page(
                 'edit.php?post_type='.MPCRBM_Function::get_cpt(),
                 __('Manage FAQ, Term & Condition', 'car-rental-manager'),
-                __('anage FAQ, Term & Condition', 'car-rental-manager'),
+                __('Manage FAQ, Term & Condition', 'car-rental-manager'),
                 'manage_options',
                 $this->menu_slug,
                 [ $this, 'render_page' ]
@@ -49,8 +49,13 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             $term_and_conditions = get_option( 'mpcrbm_term_condition_list', [] );
             ?>
             <div class="mpcrbm_faq_container">
-                <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
-                <button id="mpcrbm_add_term_condition_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Term & Condition', 'car-rental-manager' );?></button>
+                <div class="mpcrbm-faq-container-header">
+                    <div class="mpcrbm-faq-container-header-text">
+                        <h2><?php esc_attr_e( 'Manage Term & Condition', 'car-rental-manager' );?></h2>
+                        <p class="mpcrbm-faq-container-header-subtitle"><?php esc_attr_e( 'Set the rental terms and conditions customers must agree to before completing a booking.', 'car-rental-manager' );?></p>
+                    </div>
+                    <button id="mpcrbm_add_term_condition_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Term & Condition', 'car-rental-manager' );?></button>
+                </div>
 
                 <table class="widefat mpcrbm_faq_table">
                     <thead>
@@ -80,8 +85,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 								</td>
 
                                 <td>
-                                    <button class="button mpcrbm_edit_term"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
-                                    <button class="button mpcrbm_delete_term"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    <div class="mpcrbm_faq_row_actions">
+                                        <button class="mpcrbm_edit_term"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
+                                        <button class="mpcrbm_delete_term"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -90,6 +97,19 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     <?php endif; ?>
                     </tbody>
                 </table>
+
+                <div class="mpcrbm_faq_table_footer">
+                    <span class="mpcrbm_faq_table_count">
+                        <?php
+                        // translators: %d is the number of term & condition entries.
+                        echo esc_html( sprintf( _n( 'Showing %d entry', 'Showing %d entries', count( $term_and_conditions ), 'car-rental-manager' ), count( $term_and_conditions ) ) );
+                        ?>
+                    </span>
+                    <div class="mpcrbm_faq_table_pagination">
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Prev', 'car-rental-manager' );?></button>
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Next', 'car-rental-manager' );?></button>
+                    </div>
+                </div>
 
                 <!-- Popup Modal -->
                 <div id="mpcrbm_term_condition_modal" class="mpcrbm_faq_modal">
@@ -127,8 +147,20 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
             ?>
 
             <div class="mpcrbm_faq_container">
-                <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
-                <button id="mpcrbm_add_faq_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add FAQ', 'car-rental-manager' );?></button>
+                <div class="mpcrbm-faq-container-header">
+                    <div class="mpcrbm-faq-container-header-text">
+                        <h2><?php esc_attr_e( 'Manage FAQs', 'car-rental-manager' );?></h2>
+                        <p class="mpcrbm-faq-container-header-subtitle">
+                            <?php
+                            // The on/off switch lives per-car now (each car's own FAQ tab,
+                            // MPCRBM_Faq_Settings.php), not here — this list is just the
+                            // shared question/answer library every car picks from.
+                            esc_attr_e( 'Answer the questions customers ask most before booking. Turn the FAQ section on or off for each vehicle from its own FAQ tab.', 'car-rental-manager' );
+                            ?>
+                        </p>
+                    </div>
+                    <button id="mpcrbm_add_faq_btn" class="btn-primary"><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add FAQ', 'car-rental-manager' );?></button>
+                </div>
 
                 <table class="widefat mpcrbm_faq_table">
                     <thead>
@@ -148,8 +180,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                                 <td class="faq-title"><?php echo esc_html( $faq['title'] ); ?></td>
                                 <td class="faq-answer"><?php echo wp_kses_post( wp_trim_words( $faq['answer'], 15 ) ); ?></td>
                                 <td>
-                                    <button class="button edit-faq"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
-                                    <button class="button delete-faq"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    <div class="mpcrbm_faq_row_actions">
+                                        <button class="edit-faq"><?php esc_attr_e( 'Edit', 'car-rental-manager' );?></button>
+                                        <button class="delete-faq"><?php esc_attr_e( 'Delete', 'car-rental-manager' );?></button>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -158,6 +192,19 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     <?php endif; ?>
                     </tbody>
                 </table>
+
+                <div class="mpcrbm_faq_table_footer">
+                    <span class="mpcrbm_faq_table_count">
+                        <?php
+                        // translators: %d is the number of FAQ entries.
+                        echo esc_html( sprintf( _n( 'Showing %d entry', 'Showing %d entries', count( $faqs ), 'car-rental-manager' ), count( $faqs ) ) );
+                        ?>
+                    </span>
+                    <div class="mpcrbm_faq_table_pagination">
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Prev', 'car-rental-manager' );?></button>
+                        <button type="button" class="mpcrbm_faq_page_btn" disabled><?php esc_html_e( 'Next', 'car-rental-manager' );?></button>
+                    </div>
+                </div>
 
                 <!-- Popup Modal -->
                 <div id="mpcrbm_faq_modal" class="mpcrbm_faq_modal">
@@ -220,7 +267,16 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
                 update_option( $this->option_key, $faqs );
 
-                wp_send_json_success( 'Saved successfully.' );
+                // 'key'/'title' let callers that create a *new* FAQ (no incoming
+                // $_POST['key']) find out the generated key without guessing at
+                // uniqid()'s output — e.g. MPCRBM_Faq_Settings.php's inline
+                // "Add New FAQ" toggle uses this to add the new FAQ straight to
+                // the current car instead of reloading the page.
+                wp_send_json_success( [
+                    'message' => 'Saved successfully.',
+                    'key'     => $key,
+                    'title'   => $title,
+                ] );
             }
 
             public function mpcrbm_save_term_and_condition() {
@@ -249,7 +305,15 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
 
                 update_option( $this->term_option_key, $term_condition );
 
-                wp_send_json_success( 'Saved successfully.' );
+                // 'key'/'title' mirror ajax_save_faq()'s response shape — used by
+                // MPCRBM_Term_Condition_Setting.php's inline "Add New Term &
+                // Condition" toggle to add the new item straight to the current
+                // car without reloading the page.
+                wp_send_json_success( [
+                    'message' => 'Saved successfully.',
+                    'key'     => $key,
+                    'title'   => $title,
+                ] );
             }
 
             /**
@@ -290,7 +354,7 @@ if ( ! class_exists( 'MPCRBM_Manage_Faq' ) ) {
                     update_option( $this->term_option_key, $term_condition );
                     wp_send_json_success( 'Term & Condition deleted.' );
                 } else {
-                    wp_send_json_error( 'Term & Condition found.' );
+                    wp_send_json_error( 'Term & Condition not found.' );
                 }
             }
     }

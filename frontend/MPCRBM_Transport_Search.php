@@ -57,7 +57,10 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
                     if( is_array( $values ) && !empty( $values ) ){
                         $title = isset( $titles[$taxonomy] ) ? $titles[$taxonomy] : ucfirst( str_replace('mpcrbm_', '', $taxonomy ) ); ?>
                         <div class="mpcrbm-filter-group" data-filter="mpcrbm_car_brand">
-                            <h5 class="mpcrbm-filter-title"><?php echo esc_attr( $title );?></h5>
+                            <h5 class="mpcrbm-filter-title">
+                                <span><?php echo esc_attr( $title );?></span>
+                                <i class="fas fa-chevron-down mpcrbm-filter-arrow"></i>
+                            </h5>
                             <ul class="mpcrbm-filter-list">
                                 <?php foreach ( $values as $value ) { ?>
                                     <li><label><input class="mpcrbm-filter-checkbox" type="checkbox" value="<?php echo esc_attr( $value );?>"> <?php echo esc_attr( $value );?></label></li>

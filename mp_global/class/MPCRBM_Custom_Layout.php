@@ -52,7 +52,7 @@
 								?>
                                 <div class="buttonGroup">
 									<?php if ( $total_page > 2 ) { ?>
-                                        <button class="_mpBtn_xs page_prev" type="button" title="<?php esc_html_e( 'GoTO Previous Page', 'car-rental-manager' ); ?>" disabled>
+                                        <button class="_mpBtn_xs page_prev" type="button" title="<?php esc_html_e( 'Go To Previous Page', 'car-rental-manager' ); ?>" disabled>
                                             <span class="fas fa-chevron-left mp_zero"></span>
                                         </button>
 									<?php } ?>
@@ -72,7 +72,7 @@
 									<?php } ?>
 
 									<?php if ( $total_page > 2 ) { ?>
-                                        <button class="_mpBtn_xs page_next" type="button" title="<?php esc_html_e( 'GoTO Next Page', 'car-rental-manager' ); ?>">
+                                        <button class="_mpBtn_xs page_next" type="button" title="<?php esc_html_e( 'Go To Next Page', 'car-rental-manager' ); ?>">
                                             <span class="fas fa-chevron-right mp_zero"></span>
                                         </button>
 									<?php } ?>
@@ -198,9 +198,9 @@
 				if ( $text && $text_length > $length ) {
 					?>
                     <div class="mpcrbm_load_more_text_area">
-                        <span data-read-close><?php echo esc_html( substr( $text, 0, $length ) ); ?> ....</span>
+                        <span data-read-close><?php echo esc_html( substr( $text, 0, $length ) ); ?>&hellip;</span>
                         <span data-read-open class="dNone"><?php echo esc_html( $text ); ?></span>
-                        <div data-read data-open-text="<?php esc_attr_e( 'Load More', 'car-rental-manager' ); ?>" data-close-text="<?php esc_attr_e( 'Less More', 'car-rental-manager' ); ?>">
+                        <div data-read data-open-text="<?php esc_attr_e( 'Load More', 'car-rental-manager' ); ?>" data-close-text="<?php esc_attr_e( 'Show Less', 'car-rental-manager' ); ?>">
                             <span data-text><?php esc_html_e( 'Load More', 'car-rental-manager' ); ?></span>
                         </div>
                     </div>

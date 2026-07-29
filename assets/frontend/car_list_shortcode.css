@@ -12,13 +12,20 @@
     font-family: "Poppins", sans-serif;
 }
 
-/* Toggle Buttons */
+/* Toggle Buttons — icon-only segmented control, pinned top-right */
 .mpcrbm_car_list_grid_toggle {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 10px;
     margin-bottom: 20px;
+}
+.mpcrbm_car_list_grid_toggle_group {
+    display: inline-flex;
+    gap: 2px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 4px;
+    border-radius: 10px;
 }
 
 .mpcrbm_car_list_grid_1{
@@ -36,35 +43,48 @@
 .mpcrbm_car_list_grid_5{
     grid-template-columns: repeat(5, 1fr);
 }
-.mpcrbm_car_list_grid_5{
+.mpcrbm_car_list_grid_6{
     grid-template-columns: repeat(6, 1fr);
 }
 
 .mpcrbm_car_list_grid_toggle button {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    color: #111827;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    border-radius: 7px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 .mpcrbm_car_list_grid_toggle button:hover {
-    background: var(--color_theme);
-    color: #fff;
-    transform: translateY(-2px);
+    color: var(--color_theme, #F12971);
 }
 .mpcrbm_car_list_grid_toggle .active {
-    background: var(--color_theme);
-    color: #fff;
+    background: var(--color_theme, #F12971);
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+/* Column holding the grid/list + pagination, next to the optional left filter */
+.mpcrbm_car_list_grid_col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+    min-width: 0;
 }
 
 /* Grid Layout */
 .mpcrbm_car_list_grid {
     display: grid;
     /*grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));*/
-    gap: 10px;
-    width: calc( 100% - 250px );
+    gap: 22px;
+    width: 100%;
 }
 .mpcrbm_car_list_grid_content .mpcrbm_car_specs_lists {
     width: 100%;
@@ -72,22 +92,24 @@
 /* Card Container */
 .mpcrbm_car_list_grid_item {
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
     transform: translateY(0);
     transition: all 0.4s ease;
     opacity: 0;
-    animation: fadeInUp 0.8s forwards;
+    animation: fadeInUp 0.6s forwards;
 }
 .mpcrbm_car_list_grid_item:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+    border-color: #d1d5db;
 }
 
 /* Image with Animation */
 .mpcrbm_car_list_grid_image {
+    display: block;
     position: relative;
     overflow: hidden;
     height: 170px;
@@ -114,34 +136,42 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.6s ease, filter 0.6s ease;
-    filter: brightness(0.9);
 }
-
+.mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_image img:not(.wp_editor img) {
+    transform: scale(1.08);
+}
 
 /* Text Overlay Focus Effect */
 .mpcrbm_car_list_grid_image::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(transparent 60%, rgba(0,0,0,0.6));
+    background: linear-gradient(transparent 60%, rgba(0,0,0,0.5));
     opacity: 0;
     transition: opacity 0.5s ease;
+}
+.mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_image::after {
+    opacity: 1;
 }
 
 /* Content Area */
 .mpcrbm_car_list_grid_content {
-    padding:10px;
+    padding: 14px;
 }
 .mpcrbm_car_list_grid_content h3.mpcrbm_car_list_grid_title {
-    font-size: 18px;
-    font-weight: normal;
+    font-size: 17px;
+    font-weight: 600;
     color: #111827 !important;
-    margin-bottom: 8px;
-    margin-top: 5px !important;
+    margin-bottom: 10px;
+    margin-top: 0 !important;
     transition: color 0.3s ease;
 }
+.mpcrbm_car_list_grid_title a {
+    color: inherit;
+    text-decoration: none;
+}
 .mpcrbm_car_list_grid_item:hover .mpcrbm_car_list_grid_title {
-    color: #0073aa;
+    color: var(--color_theme, #F12971);
 }
 
 /* Meta Info */
@@ -175,7 +205,7 @@
 /* List View */
 .mpcrbm_car_list_list_view {
     display: flex;
-    width: calc( 100% - 250px );
+    width: 100%;
     flex-direction: column;
     gap: 20px;
 }
@@ -204,9 +234,33 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
 }
 .mpcrbm_car_list_price_display .mpcrbm_car_list_price h3{
-    margin: 10px 0;
+    margin: 0;
+}
+.mpcrbm_car_list_book_btn {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: var(--color_theme, #F12971);
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(241, 41, 113, .25);
+    transition: opacity .15s ease, transform .15s ease;
+}
+.mpcrbm_car_list_book_btn:hover {
+    opacity: .88;
+    color: #fff !important;
+    transform: translateY(-1px);
 }
 /* Animation */
 @keyframes fadeInUp {
@@ -261,8 +315,12 @@
     .mpcrbm_car_list_grid_2 {
         grid-template-columns: repeat(1, 1fr);
     }
+    /* Was 50% — squeezed the filter sidebar into the same 2-column-grid
+       breakpoint as the car cards, producing a cramped tablet layout.
+       mpcrbm_registration.css's own 768px rule already intends 100% here;
+       this file's 2-class selector just outranked it. */
     .mpcrbm_car_list_container  .mpcrbm_left_filter {
-        width: 50%;
+        width: 100%;
     }
 }
 
@@ -282,4 +340,95 @@
     .mpcrbm_car_list_container{
         flex-direction: column;
     }
+}
+
+/* Load More */
+.mpcrbm_car_list_loadmore_wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.mpcrbm_car_list_loadmore_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 34px;
+    background: #fff;
+    color: var(--color_theme, #F12971);
+    border: 2px solid var(--color_theme, #F12971);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.mpcrbm_car_list_loadmore_btn:hover:not(:disabled) {
+    background: var(--color_theme, #F12971);
+    color: #fff;
+}
+.mpcrbm_car_list_loadmore_btn:disabled {
+    opacity: .75;
+    cursor: not-allowed;
+}
+.mpcrbm_car_list_loadmore_spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(0,0,0,.15);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: mpcrbm_car_list_spin .7s linear infinite;
+}
+@keyframes mpcrbm_car_list_spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.mpcrbm_car_list_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 60px 20px;
+    color: #9ca3af;
+    text-align: center;
+}
+.mpcrbm_car_list_empty i {
+    font-size: 32px;
+}
+.mpcrbm_car_list_empty p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Carousel style — same card markup as grid/list, riding an Owl Carousel
+   slider instead (no grid/list toggle, no pagination in this mode). Arrow
+   styling mirrors the "Similar Rentals" carousel on the car details page. */
+.mpcrbm_car_list_carousel_wrapper {
+    position: relative;
+    padding: 0 6px;
+}
+.mpcrbm_car_list_carousel .mpcrbm_car_list_grid_item {
+    margin: 0 0 6px;
+}
+.mpcrbm_car_list_carousel.owl-carousel .owl-nav button.owl-prev,
+.mpcrbm_car_list_carousel.owl-carousel .owl-nav button.owl-next {
+    position: absolute;
+    top: 35%;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #fff !important;
+    border: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
+.mpcrbm_car_list_carousel.owl-carousel .owl-nav button.owl-prev {
+    left: -14px;
+}
+.mpcrbm_car_list_carousel.owl-carousel .owl-nav button.owl-next {
+    right: -14px;
 }

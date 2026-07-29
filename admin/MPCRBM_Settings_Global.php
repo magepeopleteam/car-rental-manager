@@ -21,23 +21,23 @@
 				add_submenu_page('edit.php?post_type=' . $cpt, esc_html__('Global Settings', 'car-rental-manager'), esc_html__('Global Settings', 'car-rental-manager'), 'manage_options', 'mpcrbm_settings_page', array($this, 'settings_page'));
 			}
 			public function settings_page() {
+				MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Global Settings', 'car-rental-manager' ) );
 				?>
-                <div class="mpcrbm">
-                    <div class="global_settings">
-                        <div class="mpcrbm_panel">
-                            <div class="panel_header"><?php esc_html_e(' Global Settings', 'car-rental-manager'); ?></div>
-                            <div class="panel_body mp_zero">
-                                <div class="mpcrbm_tabs leftTabs">
-									<?php $this->settings_api->show_navigation(); ?>
-                                    <div class="tabsContent">
-										<?php $this->settings_api->show_forms(); ?>
-                                    </div>
-                                </div>
-                            </div>
+				<div class="mpcrbm-settings-head">
+					<span class="mpcrbm-settings-head-eyebrow"><?php esc_html_e( 'Configuration', 'car-rental-manager' ); ?></span>
+					<h2><?php esc_html_e( 'Global Settings', 'car-rental-manager' ); ?></h2>
+					<p class="mpcrbm-settings-head-subtitle"><?php esc_html_e( 'Configure booking behavior, formatting, appearance, and licensing for your rental fleet.', 'car-rental-manager' ); ?></p>
+				</div>
+                <div class="mpcrbm-card global_settings">
+                    <div class="mpcrbm_tabs leftTabs">
+						<?php $this->settings_api->show_navigation(); ?>
+                        <div class="tabsContent">
+							<?php $this->settings_api->show_forms_grid(); ?>
                         </div>
                     </div>
                 </div>
 				<?php
+				MPCRBM_Admin_Shell::render_shell_close();
 			}
 			public function admin_init() {
 				$sections = $this->get_settings_sections();
@@ -56,6 +56,7 @@
 					),
 					array(
 						'id' => 'mpcrbm_global_settings',
+						'icon' => 'fas fa-globe',
 						'title' => esc_html__('Global Settings', 'car-rental-manager')
 					),
 				);
@@ -65,10 +66,12 @@
 				$sections = array(
 					array(
 						'id' => 'mpcrbm_style_settings',
+						'icon' => 'fas fa-palette',
 						'title' => esc_html__('Style Settings', 'car-rental-manager')
 					),
 					array(
 						'id' => 'mpcrbm_license_settings',
+						'icon' => 'fas fa-key',
 						'title' => esc_html__('Mage-People License', 'car-rental-manager'),
 						'callback' => array($this, 'license_settings')
 					)
@@ -115,14 +118,14 @@
 						array(
 							'name' => 'slug',
 							'label' => $label . ' ' . esc_html__('Slug', 'car-rental-manager'),
-							'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('hit the Save Settings button.', 'car-rental-manager'),
+							'desc' => esc_html__('Please enter the slug name you want. Remember, after changing this slug; you need to flush permalink; go to', 'car-rental-manager') . '<strong>' . esc_html__('Settings-> Permalinks', 'car-rental-manager') . '</strong> ' . esc_html__('and hit the Save Settings button.', 'car-rental-manager'),
 							'type' => 'text',
 							'default' => 'Car'
 						),
 						array(
 							'name' => 'icon',
 							'label' => $label . ' ' . esc_html__('Icon', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to change the  icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, So please go to ', 'car-rental-manager') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'car-rental-manager') . '</a>' . esc_html__('and copy your icon code and paste it here.', 'car-rental-manager'),
+							'desc' => esc_html__('If you want to change the icon in the dashboard menu, you can change it from here, and the Dashboard icon only supports the Dashicons, so please go to ', 'car-rental-manager') . '<a href=https://developer.wordpress.org/resource/dashicons/#calendar-alt target=_blank>' . esc_html__('Dashicons Library.', 'car-rental-manager') . '</a> ' . esc_html__('and copy your icon code and paste it here.', 'car-rental-manager'),
 							'type' => 'text',
 							'default' => 'dashicons-car'
 						),
@@ -168,7 +171,7 @@
 						array(
 							'name' => 'enable_view_search_result_page',
 							'label' => $label . ' ' . esc_html__('Show Search Result In A Different Page', 'car-rental-manager'),
-							'desc' => esc_html__('Enter page slug. Set No if you dont want to enable this setting set your ', 'car-rental-manager') . '<strong> ' . esc_html__(' Page Slug ', 'car-rental-manager') . '</strong>' . esc_html__(' or to make it hidden, set ', 'car-rental-manager') . '<strong> ' . esc_html__(' No ', 'car-rental-manager') . '</strong>' . esc_html__('. Default is ', 'car-rental-manager') . '<strong>' . esc_html__('transport-result', 'car-rental-manager') . '</strong>',
+							'desc' => esc_html__("Enter page slug. Set No if you don't want to enable this setting set your ", 'car-rental-manager') . '<strong> ' . esc_html__(' Page Slug ', 'car-rental-manager') . '</strong>' . esc_html__(' or to make it hidden, set ', 'car-rental-manager') . '<strong> ' . esc_html__(' No ', 'car-rental-manager') . '</strong>' . esc_html__('. Default is ', 'car-rental-manager') . '<strong>' . esc_html__('transport-result', 'car-rental-manager') . '</strong>',
 							'type' => 'text',
 							'default' => 'transport-result',
 							'placeholder' => 'mpcrbm-search'
@@ -176,7 +179,7 @@
 						array(
 							'name' => 'enable_view_find_location_page',
 							'label' => $label . ' ' . esc_html__('Take user to another page if location can not be found', 'car-rental-manager'),
-							'desc' => esc_html__('Enter page url. Leave blank if you dont want to enable this setting', 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
+							'desc' => esc_html__("Enter page url. Leave blank if you don't want to enable this setting", 'car-rental-manager') . '<strong> ' . esc_html__('Yes', 'car-rental-manager') . '</strong>' . esc_html__('or to make it hidden, select', 'car-rental-manager') . '<strong> ' . esc_html__('No', 'car-rental-manager') . '</strong>' . esc_html__('. Default is', 'car-rental-manager') . '<strong>' . esc_html__('No', 'car-rental-manager') . '</strong>',
 							'type' => 'text',
 							'placeholder' => 'https://mysite.com/taxi'
 						),
@@ -568,16 +571,12 @@
 			}
 			public function license_settings() {
 				?>
-                <div class="mpcrbm_license_settings">
-                    <h3><?php esc_html_e('Mage-People License', 'car-rental-manager'); ?></h3>
-                    <div class="_dFlex">
-                        <span class="fas fa-info-circle _mR_xs"></span>
-                        <i><?php esc_html_e('Thanking you for using our Mage-People plugin. Our some plugin free and no license is required. We have some Additional addon to enhance feature of this plugin functionality. If you have any addon you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></i>
-                    </div>
-                    <div class="divider"></div>
-                    <div class="dLayout basic_license_area">
-						<?php $this->licence_area(); ?>
-                    </div>
+                <div class="mpcrbm-license-intro">
+                    <span class="fas fa-info-circle"></span>
+                    <p><?php esc_html_e('Thank you for using our Mage-People plugin. Some of our plugins are free and require no license. We have additional addons to enhance the functionality of this plugin. If you have any addon, you need to enter a valid license for that plugin below.', 'car-rental-manager'); ?></p>
+                </div>
+                <div class="mpcrbm-license-table-wrap">
+					<?php $this->licence_area(); ?>
                 </div>
 				<?php
 			}

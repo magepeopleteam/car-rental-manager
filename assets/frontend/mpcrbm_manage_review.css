@@ -149,7 +149,8 @@
 
 .mpcrbm_review_actions button {
     font-size: 12px;
-    padding: 5px 12px;
+    padding: 9px 14px;
+    min-height: 34px;
     border: none;
     border-radius: 6px;
     cursor: pointer;

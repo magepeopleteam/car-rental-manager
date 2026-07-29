@@ -90,7 +90,7 @@ if ( wp_is_block_theme() ) {
                         </h4>
                         <h6 class="circleTitle" data-class><?php esc_html_e('Enter Ride Details', 'car-rental-manager'); ?></h6>
                     </div>
-                    <div data-tabs-target-next="#mpcrbm_search_result" class="tabItemNext" data-open-text="2" data-close-text="" data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
+                    <div data-tabs-target-next="#mpcrbm_search_result" class="tabItemNext active" data-open-text="2" data-close-text="" data-open-icon="" data-close-icon="fas fa-check" data-add-class="success">
                         <h4 class="circleIcon" data-class>
                             <span class="mp_zero" data-icon></span>
                             <span class="mp_zero" data-text>2</span>

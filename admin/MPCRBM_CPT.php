@@ -15,6 +15,76 @@
 				add_filter( 'manage_edit-mpcrbm_rent_sortable_columns', array( $this, 'rent_sortable_columns' ) );
 
                 add_action('save_post', array( $this, 'mpcrbm_save_car_taxonomies_names_as_meta'), 10, 3);
+
+				add_action( 'admin_menu', array( $this, 'remove_duplicate_native_submenus' ) );
+				add_filter( 'enter_title_here', array( $this, 'change_title_placeholder' ), 10, 2 );
+
+				add_action( 'save_post', array( $this, 'require_featured_image' ), 20, 2 );
+				add_action( 'admin_notices', array( $this, 'missing_thumbnail_notice' ) );
+			}
+
+			// Swaps WP core's generic "Add title" placeholder (shown over #title on
+			// the Add/Edit Car screen) for something specific to this CPT.
+			public function change_title_placeholder( $title, $post ) {
+				if ( $post->post_type === MPCRBM_Function::get_cpt() ) {
+					/* translators: %s: the plugin's configurable "Car" label */
+					$title = sprintf( __( 'Enter %s Name', 'car-rental-manager' ), MPCRBM_Function::get_name() );
+				}
+				return $title;
+			}
+
+			// The featured image meta box has no HTML "required" equivalent (it's a
+			// media-modal button, not a form field), so this is enforced on save
+			// instead: publishing without one silently reverts the post back to
+			// draft, and missing_thumbnail_notice() below surfaces why via a
+			// short-lived per-user transient (cleared as soon as it's shown once,
+			// unlike an option-based flag which would keep re-appearing).
+			public function require_featured_image( $post_id, $post ) {
+				if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+					return;
+				}
+				if ( $post->post_type !== MPCRBM_Function::get_cpt() || 'publish' !== $post->post_status ) {
+					return;
+				}
+				if ( has_post_thumbnail( $post_id ) ) {
+					return;
+				}
+
+				remove_action( 'save_post', array( $this, 'require_featured_image' ), 20 );
+				wp_update_post( array( 'ID' => $post_id, 'post_status' => 'draft' ) );
+				add_action( 'save_post', array( $this, 'require_featured_image' ), 20, 2 );
+
+				set_transient( 'mpcrbm_missing_thumbnail_' . get_current_user_id(), 1, 60 );
+			}
+
+			public function missing_thumbnail_notice() {
+				$key = 'mpcrbm_missing_thumbnail_' . get_current_user_id();
+				if ( ! get_transient( $key ) ) {
+					return;
+				}
+				delete_transient( $key );
+				/* translators: %s: the plugin's configurable "Car" label, lowercased */
+				$message = sprintf( __( 'This %s was saved as a draft because it needs a featured image before it can be published.', 'car-rental-manager' ), strtolower( MPCRBM_Function::get_name() ) );
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+			}
+
+			// The mpcrbm_locations taxonomy and mpcrbm_ex_services post type (both
+			// registered in cpt() below) each keep show_ui/show_in_menu on, because
+			// MPCRBM_Locations_Manager / MPCRBM_Extra_Services_Manager still rely on
+			// their underlying terms/posts being creatable under the hood — but that
+			// also makes WordPress auto-add its own native "Locations" / "Extra
+			// Services" submenu, duplicating the fully custom shell page those two
+			// classes already render. Same "remove submenu added by register_post_type"
+			// idiom already used by MPCRBM_Taxonomies::remove_registered_submenu().
+			public function remove_duplicate_native_submenus() {
+				$cpt = MPCRBM_Function::get_cpt();
+				// wp-admin/menu.php builds the taxonomy submenu slug with sprintf('edit-tags.php?taxonomy=%s&amp;post_type=...')
+				// — i.e. the literal string stored in $submenu has an HTML-encoded "&amp;", not a plain "&".
+				// remove_submenu_page() matches by exact string, so the plain-"&" form silently no-ops; both are
+				// removed here to stay correct across WP versions that may not entity-encode it.
+				remove_submenu_page( 'edit.php?post_type=' . $cpt, 'edit-tags.php?taxonomy=mpcrbm_locations&amp;post_type=' . $cpt );
+				remove_submenu_page( 'edit.php?post_type=' . $cpt, 'edit-tags.php?taxonomy=mpcrbm_locations&post_type=' . $cpt );
+				remove_submenu_page( 'edit.php?post_type=' . $cpt, 'edit.php?post_type=mpcrbm_ex_services' );
 			}
 
             public function mpcrbm_save_car_taxonomies_names_as_meta( $post_id, $post, $update ) {

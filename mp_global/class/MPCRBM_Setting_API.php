@@ -411,6 +411,84 @@
 				$this->enqueue_scripts();
 			}
 
+			// Card-grid renderer for the Global Settings admin page — matches the
+			// .mpcrbm-info-card / .mpcrbm-info-grid design used by the per-car
+			// metabox tabs, instead of do_settings_sections()'s native WP
+			// <table class="form-table"> markup. Reuses the same callback_*
+			// methods (and therefore the same saved values/sanitization) as
+			// show_forms(); only the surrounding markup differs.
+			public function show_forms_grid() {
+				foreach ( $this->settings_sections as $section ) {
+					$section_id  = $section['id'];
+					$has_fields  = isset( $this->settings_fields[ $section_id ] );
+					?>
+					<div class="tabsItem" data-tabs="#<?php echo esc_attr( $section_id ); ?>">
+						<form method="post" action="options.php">
+							<?php
+							do_action( 'mpcrbm_wsa_form_top_' . $section_id, $section );
+							settings_fields( $section_id );
+							?>
+							<div class="mpcrbm-info-card">
+								<div class="mpcrbm-info-card-body">
+									<?php if ( $has_fields ) : ?>
+										<div class="mpcrbm-info-grid">
+											<?php
+											foreach ( $this->settings_fields[ $section_id ] as $option ) {
+												$this->render_grid_field( $section_id, $option );
+											}
+											?>
+										</div>
+									<?php elseif ( isset( $section['callback'] ) && is_callable( $section['callback'] ) ) : ?>
+										<?php call_user_func( $section['callback'] ); ?>
+									<?php endif; ?>
+								</div>
+								<?php if ( $has_fields ) : ?>
+									<div class="mpcrbm-info-card-footer">
+										<?php submit_button(); ?>
+									</div>
+								<?php endif; ?>
+							</div>
+							<?php do_action( 'mpcrbm_wsa_form_bottom_' . $section_id, $section ); ?>
+						</form>
+					</div>
+					<?php
+				}
+				$this->enqueue_scripts();
+			}
+
+			private function render_grid_field( $section_id, $option ) {
+				$type     = isset( $option['type'] ) ? $option['type'] : 'text';
+				$args     = array(
+					'id'                => $option['name'],
+					'class'             => isset( $option['class'] ) ? $option['class'] : $option['name'],
+					'label_for'         => "{$section_id}[{$option['name']}]",
+					'desc'              => isset( $option['desc'] ) ? $option['desc'] : '',
+					'name'              => isset( $option['label'] ) ? $option['label'] : '',
+					'section'           => $section_id,
+					'size'              => isset( $option['size'] ) ? $option['size'] : null,
+					'options'           => isset( $option['options'] ) ? $option['options'] : '',
+					'std'               => isset( $option['default'] ) ? $option['default'] : '',
+					'sanitize_callback' => isset( $option['sanitize_callback'] ) ? $option['sanitize_callback'] : '',
+					'type'              => $type,
+					'placeholder'       => isset( $option['placeholder'] ) ? $option['placeholder'] : '',
+					'min'               => isset( $option['min'] ) ? $option['min'] : '',
+					'max'               => isset( $option['max'] ) ? $option['max'] : '',
+					'step'              => isset( $option['step'] ) ? $option['step'] : '',
+				);
+				$callback = isset( $option['callback'] ) ? $option['callback'] : array( $this, 'callback_' . $type );
+				?>
+				<section>
+					<div class="field-head">
+						<h6><?php echo esc_html( $args['name'] ); ?></h6>
+						<?php if ( ! empty( $args['desc'] ) ) : ?>
+							<span class="desc"><?php echo wp_kses_post( $args['desc'] ); ?></span>
+						<?php endif; ?>
+					</div>
+					<?php call_user_func( $callback, $args ); ?>
+				</section>
+				<?php
+			}
+
 			public function enqueue_scripts() {
 				// Register the JS file
 				wp_register_script(

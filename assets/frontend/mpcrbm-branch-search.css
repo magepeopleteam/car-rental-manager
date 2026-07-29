@@ -473,8 +473,8 @@
 .flatpickr-months .flatpickr-next-month:hover { color: #fff !important; fill: #fff !important; }
 
 /* Weekday header */
-.flatpickr-weekdays { background: #f0f1ff !important; }
-.flatpickr-weekday { color: #4f46e5 !important; font-weight: 700 !important; font-size: 11px !important; }
+.flatpickr-weekdays { background: #fff !important; }
+.flatpickr-weekday { color: #515154 !important; font-weight: 700 !important; font-size: 11px !important; }
 
 /* Day cells */
 .flatpickr-day {

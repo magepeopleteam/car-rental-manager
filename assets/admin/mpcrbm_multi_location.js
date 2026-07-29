@@ -33,7 +33,9 @@ jQuery(document).ready(function($) {
                 $(this).attr('name', newName);
             }
         });
-        
+        template.find('.mpcrbm-remove-location-price').attr('data-index', newIndex);
+        template.find('.mpcrbm-location-badge-num').text(String(newIndex + 1).padStart(2, '0'));
+
         // Add the new row
         container.append(template);
         
@@ -74,6 +76,8 @@ jQuery(document).ready(function($) {
                     $(this).attr('name', newName);
                 }
             });
+            $(this).find('.mpcrbm-remove-location-price').attr('data-index', index);
+            $(this).find('.mpcrbm-location-badge-num').text(String(index + 1).padStart(2, '0'));
         });
     }
     

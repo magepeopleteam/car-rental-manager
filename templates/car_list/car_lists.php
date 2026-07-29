@@ -9,15 +9,15 @@ $mpcrbm_car_data = isset( $car_result_data['cars'] ) && !empty( $car_result_data
     ? $car_result_data['cars'] : [] ;
 
 $mpcrbm_car_count = count( $mpcrbm_car_data );
-$mpcrbm_load_more_display = 'flex';
-if( $mpcrbm_car_count < $mpcrbm_display_limit  ){
-    $mpcrbm_load_more_display = 'none';
-}
 
 $mpcrbm_remaining = 0;
 if( $mpcrbm_car_count > $mpcrbm_display_limit ){
     $mpcrbm_remaining = $mpcrbm_car_count - $mpcrbm_display_limit;
 }
+
+// Load More is always visible so the control is discoverable even with a
+// short list — it's just disabled when there's nothing left to reveal.
+$mpcrbm_has_more = $mpcrbm_remaining > 0;
 
 
 $mpcrbm_car_taxonomy_data = isset( $car_result_data['meta'] ) && !empty( $car_result_data['meta'] )
@@ -38,9 +38,12 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
         <!-- Car List Tab Content -->
         <div class="mpcrbm_list_tab_content" id="mpcrbm_carListTab">
             <div class="mpcrbm_car_list_controls">
-                <h2><?php esc_attr_e( 'Car Inventory', 'car-rental-manager' );?></h2>
+                <div class="mpcrbm_car_list_controls_text">
+                    <h2><?php esc_attr_e( 'Vehicle Management', 'car-rental-manager' );?></h2>
+                    <p class="mpcrbm_car_list_controls_subtitle"><?php esc_attr_e( 'Manage your fleet, track status, and update pricing.', 'car-rental-manager' );?></p>
+                </div>
                 <div class="mpcrbm_car_list_control_buttons">
-                    <a href="<?php echo esc_url( $mpcrbm_add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Car', 'car-rental-manager' );?></button></a>
+                    <a href="<?php echo esc_url( $mpcrbm_add_new_url ); ?>"><button class="mpcrbm_car_list_control_btn btn-primary" ><i class="mi mi-plus"></i> <?php esc_attr_e( 'Add New Vehicle', 'car-rental-manager' );?></button></a>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Export', 'car-rental-manager' );?></button>
                     <button class="mpcrbm_car_list_control_btn btn-secondary" style="display: none"><?php esc_attr_e( 'Bulk Actions', 'car-rental-manager' );?></button>
                 </div>
@@ -110,6 +113,8 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                                 ? implode( ', ', $mpcrbm_car['brand'] ) : '';
                             $mpcrbm_make_year = isset( $mpcrbm_car['year'] ) && !empty($mpcrbm_car['year'])
                                 ? implode( ', ', $mpcrbm_car['year'] ) : '';
+
+                            $mpcrbm_thumb = get_the_post_thumbnail( $mpcrbm_car_id, 'thumbnail', [ 'class' => 'mpcrbm_car_thumb_img' ] );
                             ?>
                             <tr
                             data-title-filter="<?php echo esc_html( $mpcrbm_car['title'] );?>"
@@ -121,7 +126,18 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                             style="display: <?php echo esc_attr( $mpcrbm_display_car );?>"
                             >
                                 <td><input type="checkbox" class="checkbox"></td>
-                                <td><a class="car-title" href="<?php echo esc_url( get_edit_post_link( $mpcrbm_car_id ) ); ?>"><?php echo esc_html( $mpcrbm_car['title'] );?></a></td>
+                                <td>
+                                    <div class="mpcrbm_car_title_cell">
+                                        <div class="mpcrbm_car_thumb">
+                                            <?php if ( $mpcrbm_thumb ) : ?>
+                                                <?php echo wp_kses_post( $mpcrbm_thumb ); ?>
+                                            <?php else : ?>
+                                                <i class="mi mi-car"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <a class="car-title" href="<?php echo esc_url( get_edit_post_link( $mpcrbm_car_id ) ); ?>"><?php echo esc_html( $mpcrbm_car['title'] );?></a>
+                                    </div>
+                                </td>
                                 <td><?php echo esc_attr( $mpcrbm_cart_type );?></td>
                                 <td><span class="badge badge-petrol"><?php echo esc_attr( $mpcrbm_fuel_type );?></span></td>
                                 <td><?php echo esc_attr( $mpcrbm_seat_capacity );?></td>
@@ -135,11 +151,11 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                                         <a href="<?php echo esc_url( get_permalink( $mpcrbm_car_id ) ); ?>"
                                            class="mpcrbm_action_btn view"
                                            title="<?php esc_attr_e( 'View', 'car-rental-manager' ); ?>"
-                                           target="_blank"><i class="mi mi-eye"></i></a>
+                                           target="_blank"><i class="far fa-eye"></i></a>
 
                                         <a href="<?php echo esc_url( get_edit_post_link( $mpcrbm_car_id ) ); ?>"
                                            class="mpcrbm_action_btn edit"
-                                           title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="mi mi-pencil"></i></a>
+                                           title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><i class="far fa-edit"></i></a>
 
                                         <?php
                                         $mpcrbm_duplicate_url = wp_nonce_url(
@@ -149,14 +165,14 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                                         ?>
                                         <a href="<?php echo esc_url( $mpcrbm_duplicate_url ); ?>"
                                            class="mpcrbm_action_btn duplicate"
-                                           title="<?php esc_attr_e( 'Duplicate', 'car-rental-manager' ); ?>"><i class="mi mi-copy-alt"></i></a>
+                                           title="<?php esc_attr_e( 'Duplicate', 'car-rental-manager' ); ?>"><i class="far fa-copy"></i></a>
 
                                         <?php
                                         $mpcrbm_delete_url = get_delete_post_link( $mpcrbm_car_id, '', true );
                                         ?>
                                         <a href="<?php echo esc_url( $mpcrbm_delete_url ); ?>"
                                            class="mpcrbm_action_btn delete"
-                                           title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="mi mi-trash"></i></a>
+                                           title="<?php esc_attr_e( 'Delete', 'car-rental-manager' ); ?>"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
 
@@ -174,10 +190,10 @@ $mpcrbm_add_new_url = admin_url( 'post-new.php?post_type='.$mpcrbm_cpt );
                 <span class="mpcrbm_multiple_delete"><?php esc_html_e( 'Delete', 'car-rental-manager' );?></span>
             </div>
 
-            <div class="mpcrbm_loadMoreContainer" id="mpcrbm_loadMoreContainer" style="display: <?php echo esc_attr( $mpcrbm_load_more_display );?>">
+            <div class="mpcrbm_loadMoreContainer" id="mpcrbm_loadMoreContainer">
                 <input id="mpcrbm_number_of_car_load"  type="hidden" value="<?php echo esc_attr( $mpcrbm_display_limit );?>">
                 <input id="mpcrbm_number_load"  type="hidden" value="<?php echo esc_attr( $mpcrbm_display_limit );?>">
-                <button class="mpcrbm_btn_load_more">
+                <button class="mpcrbm_btn_load_more" <?php disabled( ! $mpcrbm_has_more ); ?>>
                     <span class="mpcrbm_loadmore_text" id="mpcrbm_loadmore_text"><?php esc_html_e( 'Load More', 'car-rental-manager' );?> </span>
                     <span class="mpcrbm_remaining_count" id="mpcrbm_remaining_count"> (<?php echo esc_attr( $mpcrbm_remaining );?>)</span>
                 </button>

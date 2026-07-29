@@ -214,12 +214,22 @@ jQuery(document).ready(function($) {
         if ($this.hasClass('active_select')) {
             // Deselect vehicle
             $this.removeClass('active_select');
-            target_summary.slideUp(400);
+            // The "Details" card (templates/registration/choose_vehicles.php,
+            // get_search_result.php) is now visible from page load instead of only
+            // appearing once a car is picked, so it no longer slides away on deselect
+            // either — it resets back to a neutral $0.00 state instead, same idea as
+            // the persistent Book Now button going back to disabled rather than
+            // disappearing.
+            target_summary.find('.mpcrbm_product_name').html('');
+            target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(0));
+            target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(0));
+            target_summary.find('#mpcrbm_selected_vehicle_row').hide();
             target_extra_service.slideUp(400);
             target_extra_service_summary.slideUp(400);
             parent.find('[name="mpcrbm_post_id"]').val('');
             parent.find('[name="mpcrbm_security_deposit_value"]').val(0);
             target_summary.find('.mpcrbm_security_deposit_summary').remove();
+            checkAndToggleBookNowButton(parent);
         } else {
             // Select new vehicle
             parent.find('.mpcrbm_transport_select.active_select').removeClass('active_select');
@@ -253,6 +263,7 @@ jQuery(document).ready(function($) {
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
             target_summary.find('.mpcrbm_product_price').html(mpcrbm_price_format(transport_price));
+            target_summary.find('#mpcrbm_selected_vehicle_row').show();
 
             // Show or update deposit row in summary
             target_summary.find('.mpcrbm_security_deposit_summary').remove();
@@ -264,8 +275,14 @@ jQuery(document).ready(function($) {
 
             target_summary.find('.mpcrbm_product_total_price').html(mpcrbm_price_format(initial_total));
 
+            // "Total Rental Duration" row — mpcrbm_calculate_rental_days() (defined
+            // below, already used for day-wise extra-service pricing) reads the
+            // same start/return date+time fields this whole page shares.
+            target_summary.find('.mpcrbm_car_day_value').text(mpcrbm_calculate_rental_days(parent));
+
             $this.addClass('active_select');
             parent.find('[name="mpcrbm_post_id"]').val(post_id).attr('data-price', base_price);
+            checkAndToggleBookNowButton(parent);
 
             // Show summary sections
             target_summary.slideDown(400);
@@ -331,14 +348,80 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // Marks step 2 ("Choose a vehicle") active on the #mpcrbm_progress_bar_holder
+    // step indicator, cumulatively (step 1 stays active too) — without the rest
+    // of active_next_tab()'s panel-switching (mp_global/assets/mp_style/
+    // mpcrbm_global.js, triggered via ".nextTab_next" click). That function
+    // slides one [data-tabs-next] panel out and another in, which is right for
+    // the redirect/non-ajax flow (a new panel gets appended for step 2/3) but
+    // wrong for ajax_search='yes': results append inline into the *same*
+    // step-1 panel, so there's no separate panel to switch to.
+    function mpcrbm_advance_progress_bar_to_step(parent, stepIndex) {
+        parent.find('.tabListsNext:first').children('[data-tabs-target-next]').each(function (i) {
+            $(this).toggleClass('active', (i + 1) <= stepIndex);
+        });
+    }
+
+    // Pickup Date / Return Date required check for the main search widget
+    // (get_details_new.php). Same reasoning as mpcrbm_validate_date_time_fields
+    // below (defined later in this file, but function declarations are
+    // hoisted so calling it here is safe): #mpcrbm_start_date/#mpcrbm_return_date
+    // are readonly and always carry a server-rendered default, so a plain
+    // "is it blank" check can never fail — this checks the data-user-selected="1"
+    // flag that date-picker.js only sets on a real pick. Unlike
+    // mpcrbm_validate_date_time_fields, this only gates the two date fields
+    // (not time), matching what was actually asked to be required here.
+    function mpcrbm_validate_search_dates(parent) {
+        let fields = [
+            { input: parent.find('#mpcrbm_start_date'), error: parent.find('#mpcrbm_pickup_date_error') },
+            { input: parent.find('#mpcrbm_return_date'), error: parent.find('#mpcrbm_return_date_error') }
+        ];
+
+        let $firstInvalidWrap = null;
+
+        fields.forEach(function (field) {
+            if (!field.input.length || !field.input.is(':visible')) {
+                return;
+            }
+            let $wrap = field.error.closest('.input_select');
+            field.error.hide();
+            $wrap.removeClass('mpcrbm-field-invalid');
+
+            if (field.input.attr('data-user-selected') !== '1') {
+                field.error.show();
+                $wrap.addClass('mpcrbm-field-invalid');
+                if (!$firstInvalidWrap) {
+                    $firstInvalidWrap = $wrap;
+                }
+            }
+        });
+
+        if ($firstInvalidWrap && $firstInvalidWrap.length) {
+            $('html, body').animate({ scrollTop: $firstInvalidWrap.offset().top - 120 }, 300);
+            return false;
+        }
+
+        return true;
+    }
+
     // Handle get vehicle button
     $(document).on("click", "#mpcrbm_get_vehicle", function() {
         let parent = $(this).closest(".mpcrbm_transport_search_area");
+
+        if (!mpcrbm_validate_search_dates(parent)) {
+            return;
+        }
         let mpcrbm_enable_return_in_different_date = parent
             .find('[name="mpcrbm_enable_return_in_different_date"]')
             .val();
 
         let target = parent.find(".tabsContentNext");
+        // .tabsContentNext also carries its own padding (--dmp) around the visible
+        // search-area card, so a loader on it overlaid a plain rectangle past the
+        // card's rounded corners/shadow — used for the loader only, .append(data)
+        // calls below still target .tabsContentNext (the actual step-2/3 content
+        // needs to land there, not inside the card).
+        let loaderTarget = parent.find(".mpcrbm_search_area");
         let target_date = parent.find("#mpcrbm_map_start_date");
         let return_target_date = parent.find("#mpcrbm_map_return_date");
         let target_time = parent.find("#mpcrbm_map_start_time");
@@ -353,7 +436,6 @@ jQuery(document).ready(function($) {
 
 
         let progress_bar = $("#mpcrbm_progress_bar_display").val();
-        let redirect_another = $("#mpcrbm_redirect_another_page").val().trim();
 
         let mpcrbm_enable_view_search_result_page = parent
             .find('[name="mpcrbm_enable_view_search_result_page"]')
@@ -411,7 +493,7 @@ jQuery(document).ready(function($) {
         } else if (!end_place.value) {
             end_place.focus();
         } else {
-            mpcrbm_loader(parent.find(".tabsContentNext"));
+            mpcrbm_loader(loaderTarget);
             mpcrbm_content_refresh(parent);
             if (price_based !== "manual") {
                 mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
@@ -485,11 +567,19 @@ jQuery(document).ready(function($) {
                                         .append(data)
                                         .promise()
                                         .done(function () {
-                                            mpcrbm_loader_remove(parent.find(".tabsContentNext"));
+                                            mpcrbm_loader_remove(loaderTarget);
 
                                             if( ajax_search !== 'yes' ) {
                                                 parent.find(".nextTab_next").trigger("click");
                                             }
+                                            // Always advance the step indicator itself, regardless of
+                                            // whether .nextTab_next's full panel-switch (active_next_tab(),
+                                            // mp_global/assets/mp_style/mpcrbm_global.js) ran above — that
+                                            // function only marks step 2 active as a side effect of finding
+                                            // and sliding in a [data-tabs-next="#mpcrbm_search_result"]
+                                            // panel, so anything that keeps it from matching (timing,
+                                            // markup variations) silently leaves the indicator on step 1.
+                                            mpcrbm_advance_progress_bar_to_step(parent, 2);
 
                                             if( progress_bar === 'yes' ) {
                                                 $('#mpcrbm_progress_bar_holder').css('display', 'flex');
@@ -524,7 +614,7 @@ jQuery(document).ready(function($) {
                                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                                 },
                                 beforeSend: function () {
-                                    mpcrbm_loader(target);
+                                    mpcrbm_loader(loaderTarget);
                                 },
                                 success: function (data) {
                                     // Check if response is an error object
@@ -548,9 +638,10 @@ jQuery(document).ready(function($) {
                                         console.error('Invalid response format:', data);
                                     }
 
-                                    if( progress_bar === 'yes' && redirect_another === 'no' ) {
-                                        $('#mpcrbm_progress_bar_holder').css('display', 'flex');
-                                    }
+                                    // No progress-bar reveal here: this branch always navigates away via
+                                    // window.location.href above, so showing it just flashes the step
+                                    // indicator on the page for a moment before the browser leaves it —
+                                    // setting display:flex here has no effect on the destination page.
                                 },
                                 error: function (response) {
                                     console.log(response);
@@ -603,10 +694,16 @@ jQuery(document).ready(function($) {
                                     .append(data)
                                     .promise()
                                     .done(function () {
-                                        mpcrbm_loader_remove(parent.find(".tabsContentNext"));
+                                        mpcrbm_loader_remove(loaderTarget);
                                         if( ajax_search !== 'yes' ) {
                                             parent.find(".nextTab_next").trigger("click");
                                         }
+                                        // Always advance the step indicator itself, regardless of
+                                        // whether .nextTab_next's full panel-switch (active_next_tab(),
+                                        // mp_global/assets/mp_style/mpcrbm_global.js) ran above — see
+                                        // note in the other mpcrbm_get_map_search_result success handler
+                                        // above (same pattern, price_based !== 'manual' branch).
+                                        mpcrbm_advance_progress_bar_to_step(parent, 2);
                                         if( progress_bar === 'yes') {
                                             $('#mpcrbm_progress_bar_holder').css('display', 'flex');
                                         }
@@ -638,7 +735,7 @@ jQuery(document).ready(function($) {
                                 mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                             },
                             beforeSend: function (xhr, settings) {
-                                mpcrbm_loader(target);
+                                mpcrbm_loader(loaderTarget);
                             },
                             success: function (data) {
                                 // Check if response is an error object
@@ -661,9 +758,10 @@ jQuery(document).ready(function($) {
                                     console.error('Invalid response format:', data);
                                 }
 
-                                if( progress_bar === 'yes' && redirect_another === 'no' ) {
-                                    $('#mpcrbm_progress_bar_holder').css('display', 'flex');
-                                }
+                                // No progress-bar reveal here: this branch always navigates away via
+                                // window.location.href above, so showing it just flashes the step
+                                // indicator on the page for a moment before the browser leaves it —
+                                // setting display:flex here has no effect on the destination page.
                             },
                             error: function (response) {
                                 console.log(response);
@@ -785,13 +883,70 @@ jQuery(document).ready(function($) {
         $('#mpcrbm_map_start_time').val(selectedValue).trigger('change');
 
         mpcrbm_get_selected_days();
+
+        // #mpcrbm_map_start_time/#mpcrbm_map_return_time always carry a
+        // server-rendered default, so they're never actually *empty* — this
+        // flag marks a *real* user pick for mpcrbm_validate_date_time_fields()
+        // to check instead of a plain "is it blank" test.
+        $('#mpcrbm_map_start_time').attr('data-user-selected', '1');
+
+        // Clear the inline "required" notice (if shown) now that a time is picked.
+        $('#mpcrbm_pickup_time_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
+
+        // Guided single-date flow, car-details page only (single_car_search_details.php
+        // renders .mpcrbm-date-step-return only there — get_details_new.php, the main
+        // search widget on other pages, has no such element, so this is a no-op
+        // everywhere else). Once a pick-up time is chosen, reveal the Return step
+        // instead of showing both at once.
+        let $returnStep = $('#mpcrbm_date_step_return.mpcrbm-date-step-return');
+        if ($returnStep.length) {
+            $(this).closest('.mpcrbm-date-step-pickup').addClass('is-complete');
+            if ($returnStep.hasClass('is-locked')) {
+                $returnStep.removeClass('is-locked').hide().slideDown(300);
+            }
+        }
     });
 
     $(document).on("click", ".return_time_list li", function() {
         let selectedValue = $(this).attr('data-value');
         $('#mpcrbm_map_return_time').val(selectedValue).trigger('change');
+        $('#mpcrbm_map_return_time').attr('data-user-selected', '1');
 
         mpcrbm_get_selected_days();
+
+        // Clear the inline "required" notice (if shown) now that a time is picked.
+        $('#mpcrbm_return_time_error').hide().closest('.input_select').removeClass('mpcrbm-field-invalid');
+
+        // Guided single-date flow, car-details page only (see note above).
+        let $returnStep = $(this).closest('.mpcrbm-date-step-return');
+        if ($returnStep.length) {
+            $returnStep.addClass('is-complete');
+
+            // Deferred to the next tick: this same click also matches the generic
+            // "div.mpcrbm .input_select .input_select_list li" handler
+            // (mp_global/assets/mp_style/mpcrbm_global.js), which is what actually
+            // writes the human-readable text (e.g. "12:00 am") into the visible
+            // date/time inputs this reads below — deferring avoids a registration-
+            // order race where this could read the value from *before* the click.
+            setTimeout(function () {
+                let $summary = $('#mpcrbm_date_range_summary');
+                if (!$summary.length) {
+                    return;
+                }
+                let pickupDate = $('#mpcrbm_start_date').val();
+                let returnDate = $('#mpcrbm_return_date').val();
+                let pickupTime = $('#mpcrbm_map_start_time').closest('.input_select').find('input.formControl').val();
+                let returnTime = $('#mpcrbm_map_return_time').closest('.input_select').find('input.formControl').val();
+
+                $('#mpcrbm_date_range_text').text(pickupDate + ' → ' + returnDate);
+                $('#mpcrbm_summary_pickup_time').text(pickupTime);
+                $('#mpcrbm_summary_return_time').text(returnTime);
+
+                if ($summary.is(':hidden')) {
+                    $summary.slideDown(300);
+                }
+            }, 0);
+        }
     });
 
     // Handle place changes
@@ -1161,10 +1316,58 @@ jQuery(document).ready(function($) {
             });
         }
     });
+    // #mpcrbm_start_date/#mpcrbm_return_date and the time fields are readonly
+    // AND always carry a server-rendered default (single_car_search_details.php:
+    // $mpcrbm_start_date = today, $mpcrbm_start_time = the car's default start
+    // time, etc.) so they are never actually *empty* — a plain "is it blank"
+    // check can never fail, and "required" has no effect on readonly fields
+    // anyway. Instead this checks the data-user-selected="1" flag that
+    // date-picker.js / the .start_time_list & .return_time_list click
+    // handlers below only set on a *real* pick, and shows/clears the inline
+    // ".mpcrbm_field_error" notice next to whichever field(s) are still
+    // unpicked (car-details page only — single_car_search_details.php only
+    // renders those spans there), scrolling to the first one.
+    function mpcrbm_validate_date_time_fields(parent) {
+        let fields = [
+            { input: parent.find('#mpcrbm_start_date'), error: parent.find('#mpcrbm_pickup_date_error') },
+            { input: parent.find('#mpcrbm_map_start_time'), error: parent.find('#mpcrbm_pickup_time_error') },
+            { input: parent.find('#mpcrbm_return_date'), error: parent.find('#mpcrbm_return_date_error') },
+            { input: parent.find('#mpcrbm_map_return_time'), error: parent.find('#mpcrbm_return_time_error') }
+        ];
+
+        let $firstInvalidWrap = null;
+
+        fields.forEach(function (field) {
+            let $wrap = field.error.closest('.input_select');
+            field.error.hide();
+            $wrap.removeClass('mpcrbm-field-invalid');
+
+            if (field.input.attr('data-user-selected') !== '1') {
+                field.error.show();
+                $wrap.addClass('mpcrbm-field-invalid');
+                if (!$firstInvalidWrap) {
+                    $firstInvalidWrap = $wrap;
+                }
+            }
+        });
+
+        if ($firstInvalidWrap && $firstInvalidWrap.length) {
+            $('html, body').animate({ scrollTop: $firstInvalidWrap.offset().top - 120 }, 300);
+            return false;
+        }
+
+        return true;
+    }
+
     // Handle Book Now button click
 
     $(document).on("click", ".mpcrbm_car_details_continue_btn", function() {
         let parent = $(this).closest('.mpcrbm_car_details_wrapper');
+
+        if (!mpcrbm_validate_date_time_fields(parent)) {
+            return;
+        }
+
         let start_place = parent.find('#mpcrbm_manual_start_place').val();
         let end_place   = parent.find('#mpcrbm_manual_end_place').val();
         let mpcrbm_waiting_time = '';
@@ -1308,6 +1511,10 @@ jQuery(document).ready(function($) {
             let parent = $(this).closest(".mpcrbm_transport_search_area");
             parent.find(".nextTab_prev").trigger("click");
         }
+    });
+
+    $(document).on('click', '.mpcrbm-filter-title', function() {
+        $(this).closest('.mpcrbm-filter-group').toggleClass('mpcrbm-filter-collapsed');
     });
 
     $(document).on('change', '.mpcrbm-filter-checkbox', function() {
@@ -1468,6 +1675,15 @@ jQuery(document).ready(function($) {
 
         let start_time = parseFloat(parentClass.find("#mpcrbm_map_start_time").val() );
         let return_time = parseFloat(parentClass.find("#mpcrbm_map_return_time") .val() );
+
+        // Either time can still be unset mid-selection (guided single-date flow picks
+        // date and time separately) — bail out instead of letting NaN through, which
+        // "diffMs < 0" below does NOT catch (NaN < 0 is false), and previously ended up
+        // writing "NaN x days" / "$NaN" over the server-rendered defaults.
+        if (isNaN(start_time) || isNaN(return_time)) {
+            return;
+        }
+
         let start = new Date(startDate);
         let end = new Date(endDate);
 
@@ -1478,7 +1694,7 @@ jQuery(document).ready(function($) {
 
         let diffMs = endDateTime - startDateTime;
 
-        if (diffMs < 0) {
+        if (isNaN(diffMs) || diffMs < 0) {
             console.log("End date/time must be after start date/time");
             return;
         }
@@ -1492,6 +1708,15 @@ jQuery(document).ready(function($) {
         parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
 
 
+        // Loading state + "reveal" pulse on the summary once both pick-up and
+        // return are selected — reuses the existing mpcrbm_loader()/
+        // mpcrbm_loader_remove() pair (mp_global/assets/mp_style/mpcrbm_global.js)
+        // already used elsewhere in this file, and .mpcrbm_car_details_price_box
+        // (already scoped to this page — see mpcrbm_car_details.css) as the loader
+        // target since it wraps both the rate header and the "Details" summary
+        // card this AJAX call updates.
+        let $priceBox = parentClass.find('.mpcrbm_car_details_price_box');
+
         $.ajax({
             type: 'POST',
             url: mpcrbm_ajax.ajax_url,
@@ -1503,6 +1728,11 @@ jQuery(document).ready(function($) {
                 total_price: get_price,
                 total_days: totalDays,
                 _nonce: mpcrbm_ajax.nonce
+            },
+            beforeSend: function () {
+                if ($priceBox.length) {
+                    mpcrbm_loader($priceBox);
+                }
             },
             success: function (data) {
 
@@ -1519,10 +1749,21 @@ jQuery(document).ready(function($) {
                     let deposit = parseFloat(parentClass.find('#mpcrbm_security_deposit_value').val()) || 0;
                     let totalWithFee = data.data.calculated_price + (oneWayFee * carQty) + deposit;
                     parentClass.find("#mpcrbm_car_total_price").html(mpcrbm_price_format(totalWithFee));
+
+                    let $summary = parentClass.find('.mpcrbm_transport_summary');
+                    $summary.addClass('mpcrbm-summary-pulse');
+                    setTimeout(function () {
+                        $summary.removeClass('mpcrbm-summary-pulse');
+                    }, 900);
                 }
             },
             error: function(response) {
                 console.log(response);
+            },
+            complete: function () {
+                if ($priceBox.length) {
+                    mpcrbm_loader_remove($priceBox);
+                }
             }
         });
 
@@ -1541,16 +1782,23 @@ function mpcrbm_content_refresh(parent) {
     }
 }
 
+// Book Now (templates/registration/summary_new.php) is now a single button
+// that's always present on the search-results page, rather than only
+// existing in the DOM once the per-car extra-services AJAX response
+// (templates/registration/extra_service.php) had loaded. So instead of
+// show()/hide(), this enables/disables it and syncs data-wc_link_id from
+// whichever vehicle's Select Car button is currently active — the existing
+// ".mpcrbm_book_now[type='button']" click handler already reads that
+// attribute plus the #mpcrbm_post_id hidden field at click time, so it needs
+// no changes to work with either the old or new button.
 function checkAndToggleBookNowButton(parent) {
     var $parent = jQuery(parent);
-    var hasSelectedVehicle = $parent.find('.mpcrbm_transport_select.active_select').length > 0;
+    var $activeSelect = $parent.find('.mpcrbm_transport_select.active_select');
+    var hasSelectedVehicle = $activeSelect.length > 0;
     var $bookNowButton = $parent.find('.mpcrbm_book_now[type="button"]');
 
-    if (hasSelectedVehicle) {
-        $bookNowButton.show();
-    } else {
-        $bookNowButton.hide();
-    }
+    $bookNowButton.prop('disabled', !hasSelectedVehicle);
+    $bookNowButton.attr('data-wc_link_id', hasSelectedVehicle ? ($activeSelect.attr('data-wc_link_id') || '') : '');
 }
 
 function gm_authFailure() {

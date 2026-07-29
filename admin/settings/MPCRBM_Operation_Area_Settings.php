@@ -24,17 +24,17 @@
 				}
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_setting_operation_area">
-                    <h2><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'You can choose multiple regions as your operational area', 'car-rental-manager' ); ?></p>
-                    <section class="bg-light">
-						<h6><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h6>
-						<span><?php esc_html_e( 'Operation Area settings', 'car-rental-manager' ); ?></span>
-					</section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-map-location-dot"></i>
+                            <h3><?php esc_html_e( 'Operation Area', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
 					<section>
 						<label class="label">
 							<div>
-								<h6><?php esc_html_e('Select Operation area', 'car-rental-manager'); ?></h6>
-								<span class="desc"><?php esc_html_e( 'Hold down the Ctrl (Windows) or Command (Mac) button to select multiple options.', 'car-rental-manager' ); ?></span>
+								<h6><?php esc_html_e('Select Operation Area', 'car-rental-manager'); ?></h6>
+								<span class="desc"><?php esc_html_e( 'Click to add an area; click the × on a tag to remove it.', 'car-rental-manager' ); ?></span>
 							</div>
 							<select name="mpcrbm_terms_start_location[]" id="operation_area_select" class="formControl" multiple>
 								<?php
@@ -62,7 +62,17 @@
 							</select>
 						</label>
 					</section>
-				</div>
+                        </div>
+                    </div>
+
+                    <?php
+                    // "Date" tab (MPCRBM_Date_Settings::date_settings()) moved here, after
+                    // Operation Area's content, and out of its own separate tab — this tab
+                    // was renamed from "Operation Area" to "Operation Area & Date Time" to
+                    // reflect it, and the "Date" nav <li> was removed from MPCRBM_Settings.php.
+                    do_action( 'mpcrbm_operation_area_tab_after_content', $post_id );
+                    ?>
+                </div>
 				<?php
 			}
 

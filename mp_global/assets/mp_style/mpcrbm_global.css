@@ -644,10 +644,6 @@
 		padding: var(--dmp_xs) var(--dmp);
 		border: 1px solid var(--color_theme);
 	}
-	.mpcrbm .themeButton span,
-	.mpcrbm [class*="_themeButton"] span {
-		color: var(--color_theme_alter);
-	}
 	.mpcrbm .themeButton:hover,
 	.mpcrbm [class*="_themeButton"]:hover {
 		background-color: var(--color_theme);
@@ -715,12 +711,13 @@
 	}
 	.mpcrbm .successButton:hover,
 	.mpcrbm [class*="_successButton"]:hover {
-		background-color: var(--color_light);
-		color: var(--color_success);
+		opacity: 0.9;
+		color: #fff;
+		background: var(--color_success);
 	}
 	.mpcrbm .successButton:hover span,
 	.mpcrbm [class*="_successButton"]:hover span {
-		color: var(--color_success);
+		color: #fff;
 	}
 	/*********/
 	.mpcrbm .navy_blueButton,
@@ -2298,7 +2295,11 @@
 		margin: 10px;
 	}
 	.mpcrbm .addonGroupContent {
-		min-width: 30px;
+		min-width: 34px;
+		min-height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		cursor: pointer;
 		background-color: #FFF;
 		color: var(--color_theme_88);
@@ -2329,7 +2330,8 @@
 	}
 	@media only screen and (max-width: 450px) {
 		.mpcrbm .addonGroupContent {
-			min-width: 25px;
+			min-width: 36px;
+			min-height: 36px;
 		}
 	}
 }
@@ -2413,7 +2415,7 @@
 	}
 	.mpcrbm table th,
 	.mpcrbm table td {
-		border: 1px solid var(--color_border);
+		border: none;
 		padding: var(--dmp_xs);
 	}
 	.mpcrbm table thead th {
@@ -2483,7 +2485,7 @@
 	.mpcrbm [data-tabs-target].active {
 		background-color: var(--color_theme_alter);
 		color: var(--d_color);
-		border-left: 2px solid var(--color_theme);
+		border-left: none;
 	}
 	.topTabs [data-tabs-target] {
 		border-right: 1px solid var(--color_border);

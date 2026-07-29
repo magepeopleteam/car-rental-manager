@@ -71,10 +71,6 @@
     border-left: 8px solid var(--mpcrbm-primary);
   }
 
-#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li.active span{
-  color: #fff;
-}
-
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li:hover {
   background-color: #EAF6FF;
   transform: translateY(-2px);
@@ -115,7 +111,7 @@ div.mpcrbm_faq_all_question_box h3,div.mpcrbm_selected_faq_question_box  h3{
     padding: 24px;
     margin-bottom: 24px;
     transition: transform 0.2s, box-shadow 0.2s;
-    width: 100%;
+    width: 82% !important;
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem > h2 {
@@ -145,8 +141,10 @@ div.mpcrbm_faq_all_question_box h3,div.mpcrbm_selected_faq_question_box  h3{
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section .label {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
   cursor: pointer;
 }
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem section .label h6 {

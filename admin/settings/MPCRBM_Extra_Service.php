@@ -14,7 +14,10 @@
 				//********************//
 				add_action( 'mpcrbm_extra_service_item', array( $this, 'extra_service_item' ) );
 				//****************************//
-				add_action( 'mpcrbm_settings_tab_content', [ $this, 'ex_service_settings' ] );
+				// Renders inside the Pricing tab (after Seasonal Pricing) rather than as its
+				// own tab — see MPCRBM_Price_Settings::price_settings()'s do_action() call and
+				// the removed "Extra Service" nav <li> in MPCRBM_Settings.php.
+				add_action( 'mpcrbm_pricing_tab_after_seasonal', [ $this, 'ex_service_settings' ] );
 				//*******************//
 				add_action( 'wp_ajax_mpcrbm_get_ex_service', array( $this, 'mpcrbm_get_ex_service' ) );
 				// NOTE: no nopriv registration — this handler mutates post meta and requires
@@ -81,7 +84,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-										<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'car-rental-manager' ) ); ?>
+										<?php MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add New Extra Service', 'car-rental-manager' ) ); ?>
 										<?php do_action( 'mpcrbm_hidden_table', 'mpcrbm_extra_service_item' ); ?>
                                     </form>
                                 </div>
@@ -92,14 +95,19 @@
 				<?php
 			}
 
-			public function extra_service_item( $field = array() ) {
+			// Public static (doesn't touch $this): reused by
+			// MPCRBM_Extra_Services_Manager's in-shell group editor for the
+			// same repeatable service-row markup/field names, so both surfaces
+			// stay in sync and share the existing add-row/remove-row JS in
+			// mp_global/assets/admin/mpcrbm_admin_settings.js (delegated on
+			// "div.mpcrbm .add_item" / ".item_remove", not tied to this class).
+			public static function extra_service_item( $field = array() ) {
 				$field         = $field ?: array();
 				$service_icon  = array_key_exists( 'service_icon', $field ) ? $field['service_icon'] : '';
 				$service_name  = array_key_exists( 'service_name', $field ) ? $field['service_name'] : '';
 				$service_price = array_key_exists( 'service_price', $field ) ? $field['service_price'] : '';
 				$input_type    = array_key_exists( 'service_qty_type', $field ) ? $field['service_qty_type'] : 'inputbox';
 				$price_type    = array_key_exists( 'service_price_type', $field ) ? $field['service_price_type'] : 'flat';
-				$description   = array_key_exists( 'extra_service_description', $field ) ? $field['extra_service_description'] : '';
 				$icon          = $image = "";
 				if ( $service_icon ) {
 					if ( preg_match( '/\s/', $service_icon ) ) {
@@ -115,11 +123,6 @@
                     </td>
                     <td class="text-center">
                         <input type="text" class="small name_validation" name="service_name[]" placeholder="<?php esc_attr_e( 'EX: Driver', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_name ); ?>"/>
-                    </td>
-                    <td>
-                        <label>
-                            <textarea rows="1" cols="5" class="" name="extra_service_description[]" placeholder="<?php esc_attr_e( 'EX: Description', 'car-rental-manager' ); ?>"><?php echo esc_html( $description ); ?></textarea>
-                        </label>
                     </td>
                     <td class="text-center">
                         <input type="number" pattern="[0-9]*" step="0.01" class="small price_validation" name="service_price[]" placeholder="<?php esc_attr_e( 'EX: 10', 'car-rental-manager' ); ?>" value="<?php echo esc_attr( $service_price ); ?>"/>
@@ -190,22 +193,17 @@
 				$checked            = $display == 'off' ? '' : 'checked';
 				$all_ex_services_id = MPCRBM_Query::query_post_id( 'mpcrbm_ex_services' );
 				?>
-                <div class="tabsItem mpcrbm_extra_services_setting" data-tabs="#mpcrbm_settings_ex_service">
-                    <h2><?php esc_html_e( 'On/Off Extra Service Settings', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'Configure extra services for this vehicle', 'car-rental-manager' ); ?></p>
-                    <section class="bg-light">
-                        <h6><?php esc_html_e( 'Extra Service Options', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Enable or disable extra services and select predefined services', 'car-rental-manager' ); ?></span>
-                    </section>
-                    <section>
-                        <label class="label">
+                <div class="mpcrbm_extra_services_setting">
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-shopping-basket"></i>
                             <div>
-                                <h6><?php esc_html_e( 'Display Extra Services', 'car-rental-manager' ); ?></h6>
+                                <h3><?php esc_html_e( 'Extra Service Options', 'car-rental-manager' ); ?></h3>
                                 <span class="desc"><?php MPCRBM_Settings::info_text( 'display_mpcrbm_extra_services' ); ?></span>
                             </div>
 							<?php MPCRBM_Custom_Layout::switch_button( 'display_mpcrbm_extra_services', $checked ); ?>
-                        </label>
-                    </section>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <div data-collapse="#display_mpcrbm_extra_services" class="settings_area <?php echo esc_attr( $active ); ?>">
                         <section>
                             <label class="label">
@@ -228,6 +226,8 @@
 							<?php $this->ex_service_table( $service_id, $post_id ); ?>
                         </div>
                     </div>
+                        </div>
+                    </div>
                 </div>
 				<?php
 			}
@@ -243,7 +243,6 @@
                                 <tr>
                                     <th><span><?php esc_html_e( 'Icon', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Name', 'car-rental-manager' ); ?></span></th>
-                                    <th><span><?php esc_html_e( 'Description', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Price', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Pricing Type', 'car-rental-manager' ); ?></span></th>
                                     <th><span><?php esc_html_e( 'Qty Box Type', 'car-rental-manager' ); ?></span></th>
@@ -262,7 +261,7 @@
                             </table>
 							<?php
 								if ( $service_id == $post_id ) {
-									MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add Extra New Service', 'car-rental-manager' ) );
+									MPCRBM_Custom_Layout::add_new_button( esc_html__( 'Add New Extra Service', 'car-rental-manager' ) );
 									do_action( 'mpcrbm_hidden_table', 'mpcrbm_extra_service_item' );
 								} ?>
                         </div>

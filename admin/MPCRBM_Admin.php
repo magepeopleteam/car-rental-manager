@@ -25,6 +25,7 @@
 			private function load_file(): void {
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Dummy_Import.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Hidden_Product.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin_Shell.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_CPT.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Status.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Guideline.php';

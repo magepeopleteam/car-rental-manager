@@ -123,7 +123,9 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			<?php
 		}
 
-		private function render_hours_fields( array $hours ) {
+		// Public static (was private): reused by MPCRBM_Locations_Manager's
+		// in-shell add/edit form for the same mpcrbm_branch_hours field.
+		public static function render_hours_fields( array $hours ) {
 			?>
 			<table class="mpcrbm-hours-table widefat">
 				<thead>
@@ -205,7 +207,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			?>
 			<li data-tabs-target="#mpcrbm_branch_assignment">
 				<span class="mi mi-map-location-track"></span>
-				<?php esc_html_e( 'Branch Assignment', 'car-rental-manager' ); ?>
+				<?php esc_html_e( 'Driver and Branch Assignment', 'car-rental-manager' ); ?>
 			</li>
 			<?php
 		}
@@ -227,20 +229,29 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			wp_nonce_field( 'mpcrbm_branch_nonce', 'mpcrbm_branch_nonce_field' );
 			$enabled_checked = $branch_enabled === '1' ? 'checked' : '';
 			$enabled_display = $branch_enabled === '1' ? 'block' : 'none';
+
+			// Moved here from MPCRBM_General_Settings::general_settings() — this
+			// tab is now "Driver and Branch Assignment" (see branch_tab_nav()).
+			$enable_driver_information = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_enable_driver_information' );
+			$is_driver_checked = $enable_driver_information === 'on' ? 'checked' : '';
+			$is_info_show      = $enable_driver_information === 'on' ? 'block' : 'none';
 			?>
 			<div class="tabsItem" data-tabs="#mpcrbm_branch_assignment">
-				<h2><?php esc_html_e( 'Branch Assignment', 'car-rental-manager' ); ?></h2>
-				<p><?php esc_html_e( 'Assign this car to a branch and track its current physical location.', 'car-rental-manager' ); ?></p>
-
-				<section class="bg-light" style="display: flex; justify-content: space-between">
+				<div class="mpcrbm-info-card">
+					<div class="mpcrbm-info-card-header">
+						<i class="fas fa-map-location-dot"></i>
+						<h3><?php esc_html_e( 'Branch Settings', 'car-rental-manager' ); ?></h3>
+					</div>
+					<div class="mpcrbm-info-card-body">
+				<section style="display: flex; justify-content: space-between">
 					<div>
-						<h6><?php esc_html_e( 'Branch Settings', 'car-rental-manager' ); ?></h6>
-						<span><?php esc_html_e( 'Changing "Current Branch" here creates an audit log entry.', 'car-rental-manager' ); ?></span>
+						<h6><?php esc_html_e( 'Enable Branch Assignment', 'car-rental-manager' ); ?></h6>
+						<span class="desc"><?php esc_html_e( 'Changing "Current Branch" here creates an audit log entry.', 'car-rental-manager' ); ?></span>
 					</div>
 					<?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_branch_enabled', $enabled_checked ); ?>
 				</section>
 
-				<div class="mpcrbm-section" style="display: <?php echo esc_attr( $enabled_display ); ?>" data-collapse="#mpcrbm_branch_enabled">
+				<div data-collapse="#mpcrbm_branch_enabled" style="display: <?php echo esc_attr( $enabled_display ); ?>">
 
 				<section>
 					<div class="label">
@@ -283,14 +294,17 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				</section>
 
 				</div><!-- data-collapse="#mpcrbm_branch_enabled" -->
+					</div>
+				</div>
 
 				<?php if ( ! empty( $transfer_log ) ) : ?>
 
-				<section class="bg-light">
-					<h6><?php esc_html_e( 'Transfer History', 'car-rental-manager' ); ?></h6>
-					<span><?php esc_html_e( 'Last 50 branch transfers for this car', 'car-rental-manager' ); ?></span>
-				</section>
-
+				<div class="mpcrbm-info-card">
+					<div class="mpcrbm-info-card-header">
+						<i class="fas fa-clock-rotate-left"></i>
+						<h3><?php esc_html_e( 'Car Branch Ownership Transfer History', 'car-rental-manager' ); ?></h3>
+					</div>
+					<div class="mpcrbm-info-card-body">
 				<section>
 					<table class="mpcrbm-transfer-log-table widefat striped">
 						<thead>
@@ -319,8 +333,36 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 						</tbody>
 					</table>
 				</section>
+					</div>
+				</div>
 
 				<?php endif; ?>
+
+				<div class="mpcrbm-info-card">
+					<div class="mpcrbm-info-card-header">
+						<i class="fas fa-id-card"></i>
+						<h3><?php esc_html_e( 'Driver Information', 'car-rental-manager' ); ?></h3>
+					</div>
+					<div class="mpcrbm-info-card-body">
+						<div class="mpcrbm_driver_info_holder" id="mpcrbm_driver_info_holder">
+							<section class="bg-light">
+								<div class="label">
+									<div>
+										<h6><?php esc_html_e( 'Enable Driver Information', 'car-rental-manager' ); ?></h6>
+										<span class="desc"><?php esc_html_e( 'By default, driver information in car is OFF, but you can keep it on by switching this option', 'car-rental-manager' ); ?></span>
+									</div>
+									<label class="roundSwitchLabel">
+										<input type="checkbox" class="mpcrbm_switch_checkbox" id="mpcrbm_enable_driver_information" name="mpcrbm_enable_driver_information" <?php echo esc_attr( $is_driver_checked ); ?>>
+										<span class="roundSwitch" data-collapse-target="#mpcrbm_enable_driver_information"></span>
+									</label>
+								</div>
+							</section>
+							<div class="mpcrbm_driver_info mpcrbm-info-grid" id="mpcrbm_get_driver_info" style="display: <?php echo esc_attr( $is_info_show ); ?>">
+								<?php MPCRBM_Settings::mpcrbm_driver_info_box_callback( $post_id ); ?>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<?php
 		}
@@ -712,6 +754,13 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				? self::get_branch_car_counts( $cpt )
 				: [];
 			?>
+			<div class="mpcrbm-branch-manager-head">
+				<div class="mpcrbm-branch-manager-head-text">
+					<h2><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
+					<p class="mpcrbm-branch-manager-head-subtitle"><?php esc_html_e( 'Manage your rental locations, assign vehicles to branches, and track transfers across your fleet.', 'car-rental-manager' ); ?></p>
+				</div>
+			</div>
+
 			<div class="mpcrbm-branch-dashboard" data-nonce="<?php echo esc_attr( $nonce ); ?>"
 				 data-ajax="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">
 
@@ -744,9 +793,10 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 							?>
 							<div class="mpcrbm-branch-card" data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>">
 								<div class="mpcrbm-branch-card-header">
-									<span class="mpcrbm-branch-name"><?php echo esc_html( $branch->name ); ?></span>
+									<span class="mpcrbm-branch-eyebrow"><?php esc_html_e( 'Branch', 'car-rental-manager' ); ?></span>
 									<span class="mpcrbm-car-count-badge"><?php echo esc_html( $car_count ); ?></span>
 								</div>
+								<span class="mpcrbm-branch-name"><?php echo esc_html( $branch->name ); ?></span>
 								<?php if ( $address ) : ?>
 									<div class="mpcrbm-branch-meta-row">
 										<i class="mi mi-map-marker"></i>
@@ -761,16 +811,15 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								<?php endif; ?>
 								<div class="mpcrbm-branch-badges"></div>
 								<div class="mpcrbm-branch-card-actions">
-									<button class="button button-primary mpcrbm-view-branch-cars"
+									<button class="mpcrbm-view-branch-cars"
 											data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"
 											data-branch-name="<?php echo esc_attr( $branch->name ); ?>">
 										<i class="mi mi-car"></i>
 										<?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?>
 									</button>
 									<?php if ( $edit_url ) : ?>
-										<a href="<?php echo esc_url( $edit_url ); ?>" class="button">
+										<a href="<?php echo esc_url( $edit_url ); ?>" class="mpcrbm-branch-edit-btn" title="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>">
 											<i class="mi mi-edit"></i>
-											<?php esc_html_e( 'Edit', 'car-rental-manager' ); ?>
 										</a>
 									<?php endif; ?>
 								</div>

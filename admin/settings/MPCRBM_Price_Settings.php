@@ -59,6 +59,7 @@
                 $daywise    = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
                 $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
                 $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
+                $currency   = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
 
                 $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
                 $enable_day_wise    = (int)get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );
@@ -107,127 +108,49 @@
                     </div>
                 </div>-->
 
-                <div class="mpcrbm-section">
-                    <section class="bg-light <?php echo esc_attr( $tired_toggle_class );?>">
-                        <h6><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></h6>
-                        <span><?php esc_html_e('Add tiered discount rules', 'car-rental-manager'); ?></span>
-                    </section>
-                    <section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e('Enable Tiered Discount Rules', 'car-rental-manager'); ?></h6>
-                                <span class="desc"><?php esc_html_e('By default tired discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_tired_discount', $tired_checked ); ?>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-layer-group"></i>
+                        <div>
+                            <h3><?php esc_html_e('Tiered Discount Rules', 'car-rental-manager'); ?></h3>
+                            <span class="desc"><?php esc_html_e('By default, tiered discount rules are OFF, but you can turn them on by switching this option', 'car-rental-manager'); ?></span>
                         </div>
-                    </section>
-                    <section class="mpcrbm-price-content-container" id="mpcrbm_enable_tired_discount_holder" style="display: <?php echo esc_attr( $tired_display )?>">
-                        
+                        <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_tired_discount', $tired_checked ); ?>
+                    </div>
+                    <div class="mpcrbm-info-card-body" id="mpcrbm_enable_tired_discount_holder" style="display: <?php echo esc_attr( $tired_display )?>">
+                    <section>
+
                         <div>
                             <h6><?php esc_html_e('Set discount percentages', 'car-rental-manager'); ?></h6>
                             <span class="desc"><?php esc_html_e( 'Set discount percentages based on rental duration. Longer rentals get better rates.', 'car-rental-manager' ); ?></span>
                         </div>
                         <div id="mpcrbm-tiered-rows" class="mpcrbm-list">
-                            <?php if ( isset( $tiered[0] ) && is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) :
-                                foreach ( $tiered as $t ) :
-
-                                    ?>
-                                    <!--<div class="mpcrbm-item mpcrbm-price-discount-tier">
-                                        <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php /*echo esc_attr($t['min']); */?>" class="mpcrbm-input" placeholder="<?php /*esc_html_e( 'Min Days', 'car-rental-manager' ); */?>">
-                                        <span class="separator">–</span>
-                                        <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php /*echo esc_attr($t['max']); */?>" class="mpcrbm-input" placeholder="<?php /*esc_html_e( 'Max Days', 'car-rental-manager' ); */?>">
-                                        <span>days</span>
-                                        <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php /*echo esc_attr($t['percent']); */?>" class="mpcrbm-input" placeholder="<?php /*esc_html_e( '% Discount', 'car-rental-manager' ); */?>">
-                                        <span>% discount</span>
-                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php /*esc_html_e( 'Remove', 'car-rental-manager' ); */?></button>
-                                    </div>-->
-
-
-                                    <div class="mpcrbm-item mpcrbm-price-discount-tier">
-                                        <input type="number"
-                                               name="mpcrbm_tiered_discounts[min][]"
-                                               value="<?php echo esc_attr($t['min']); ?>"
-                                               class="mpcrbm-input"
-                                               placeholder="<?php esc_html_e( 'Min Days', 'car-rental-manager' ); ?>">
-
-                                        <span class="separator">–</span>
-                                        <input type="number"
-                                               name="mpcrbm_tiered_discounts[max][]"
-                                               value="<?php echo esc_attr($t['max']); ?>"
-                                               class="mpcrbm-input"
-                                               placeholder="<?php esc_html_e( 'Max Days', 'car-rental-manager' ); ?>">
-
-                                        <span><?php esc_html_e( 'days', 'car-rental-manager' ); ?></span>
-                                        <select name="mpcrbm_tiered_discounts[type][]" class="mpcrbm-discount-type mpcrbm-input">
-                                            <option value="percent" <?php selected($t['type'] ?? '', 'percent'); ?>>
-                                                <?php esc_html_e( 'Percentage (%)', 'car-rental-manager' ); ?>
-                                            </option>
-                                            <option value="fixed_discount" <?php selected($t['type'] ?? '', 'fixed_discount'); ?>>
-                                                <?php esc_html_e( 'Fixed Discount', 'car-rental-manager' ); ?>
-                                            </option>
-                                            <option value="fixed_price" <?php selected($t['type'] ?? '', 'fixed_price'); ?>>
-                                                <?php esc_html_e( 'Fixed Total Price', 'car-rental-manager' ); ?>
-                                            </option>
-                                            <option value="day_price" <?php selected($t['type'] ?? '', 'day_price'); ?>>
-                                                <?php esc_html_e( 'Day-wise Price', 'car-rental-manager' ); ?>
-                                            </option>
-                                        </select>
-
-                                        <input type="number" step="0.01"
-                                               name="mpcrbm_tiered_discounts[percent][]"
-                                               value="<?php echo esc_attr($t['percent'] ?? ''); ?>"
-                                               class="mpcrbm-input mpcrbm-field mpcrbm-percent"
-                                               placeholder="<?php esc_html_e( '% Discount', 'car-rental-manager' ); ?>">
-
-                                        <input type="number" step="0.01"
-                                               name="mpcrbm_tiered_discounts[fixed_discount][]"
-                                               value="<?php echo esc_attr($t['fixed_discount'] ?? ''); ?>"
-                                               class="mpcrbm-input mpcrbm-field mpcrbm-fixed-discount"
-                                               placeholder="<?php esc_html_e( 'Discount Amount', 'car-rental-manager' ); ?>"
-                                               style="display:none;">
-
-                                        <input type="number" step="0.01"
-                                               name="mpcrbm_tiered_discounts[fixed_price][]"
-                                               value="<?php echo esc_attr($t['fixed_price'] ?? ''); ?>"
-                                               class="mpcrbm-input mpcrbm-field mpcrbm-fixed-price"
-                                               placeholder="<?php esc_html_e( 'Fixed Total Price', 'car-rental-manager' ); ?>"
-                                               style="display:none;">
-
-                                        <input type="number" step="0.01"
-                                               name="mpcrbm_tiered_discounts[day_price][]"
-                                               value="<?php echo esc_attr($t['day_price'] ?? ''); ?>"
-                                               class="mpcrbm-input mpcrbm-field mpcrbm-day-price"
-                                               placeholder="<?php esc_html_e( 'Price Per Day', 'car-rental-manager' ); ?>"
-                                               style="display:none;">
-
-                                        <button type="button"
-                                                class="button mpcrbm-remove-row mpcrbm-remove-btn">
-                                            <?php esc_html_e( 'Remove', 'car-rental-manager' ); ?>
-                                        </button>
-
-                                    </div>
-                                <?php endforeach;
-                            endif; ?>
+                            <?php
+                            if ( isset( $tiered[0] ) && is_array( $tiered[0] ) && ! empty( $tiered[0] ) ) {
+                                foreach ( $tiered as $ti => $t ) {
+                                    $this->render_tier_row( $ti, $t, $currency );
+                                }
+                            } else {
+                                $this->render_tier_row( 0, array(), $currency );
+                            }
+                            ?>
                         </div>
                         <button type="button" id="mpcrbm-add-tier" class="_themeButton_xs_mT_xs mpcrbm-price-add-btn"><i class="mi mi-plus"></i> <?php esc_html_e( 'Add Tier', 'car-rental-manager' ); ?></button>
                     </section>
+                    </div>
                 </div>
 
-                <div class="mpcrbm-section">
-                    <section class="bg-light <?php echo esc_attr( $day_wise_toggle_class );?>">
-                        <h6><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></h6>
-                        <span class="desc"><?php esc_html_e('Day-wise Pricing Configuration', 'car-rental-manager'); ?></span>   
-                    </section>
-                    <section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e('Enable Day Wise Discount Rules', 'car-rental-manager'); ?></h6>
-                                <span class="desc"><?php esc_html_e('By default day wise discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_day_wise_discount', $day_wise_checked ); ?>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-calendar-week"></i>
+                        <div>
+                            <h3><?php esc_html_e('Day-wise Pricing', 'car-rental-manager'); ?></h3>
+                            <span class="desc"><?php esc_html_e('By default, day-wise discount rules are OFF, but you can turn them on by switching this option', 'car-rental-manager'); ?></span>
                         </div>
-                    </section>
-                    <section class="mpcrbm-price-content-container" id="mpcrbm_enable_day_wise_discount_holder" style="display: <?php echo esc_attr( $day_wise_display )?>">
+                        <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_day_wise_discount', $day_wise_checked ); ?>
+                    </div>
+                    <div class="mpcrbm-info-card-body" id="mpcrbm_enable_day_wise_discount_holder" style="display: <?php echo esc_attr( $day_wise_display )?>">
+                    <section>
                         <div>
                             <h6><?php esc_html_e('Specific Rates', 'car-rental-manager'); ?></h6>
                             <span class="desc"><?php esc_html_e( 'Set specific rates for each day of the week. Leave empty to use base daily price.', 'car-rental-manager' ); ?></span>
@@ -259,52 +182,158 @@
                             <?php endforeach; ?>
                         </div>
                     </section>
+                    </div>
                 </div>
 
-                <div class="mpcrbm-section">
-                    <section class="bg-light <?php echo esc_attr( $seasonal_toggle_class );?>">
-                        <h6><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></h6>
-                        <span class="desc"><?php esc_html_e('Seasonal Pricing Configuration', 'car-rental-manager'); ?></span>   
-                    </section>
+                <div class="mpcrbm-info-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <div>
+                            <h3><?php esc_html_e('Seasonal Pricing', 'car-rental-manager'); ?></h3>
+                            <span class="desc"><?php esc_html_e('By default, seasonal discount rules are OFF, but you can turn them on by switching this option', 'car-rental-manager'); ?></span>
+                        </div>
+                        <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_seasonal_discount', $seasonal_checked ); ?>
+                    </div>
+                    <div class="mpcrbm-info-card-body" id="mpcrbm_enable_seasonal_discount_holder" style="display: <?php echo esc_attr( $seasonal_display )?>">
                     <section>
-                        <div class="label">
-                            <div>
-                                <h6><?php esc_html_e('Enable Seasonal Discount Rules', 'car-rental-manager'); ?></h6>
-                                <span class="desc"><?php esc_html_e('By default seasonal discount rules is OFF but you can keep it on by switching this option', 'car-rental-manager'); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_enable_seasonal_discount', $seasonal_checked ); ?>
-                        </div>
-                    </section>
-                    <section class="mpcrbm-price-content-container" id="mpcrbm_enable_seasonal_discount_holder" style="display: <?php echo esc_attr( $seasonal_display )?>">
-                        <h6><?php esc_html_e('Seasonal Discount Rules', 'car-rental-manager'); ?></h6>
-                        <span class="desc"><?php esc_html_e('Create seasonal pricing rules that override base rates during specific date ranges. Choose between fixed prices or percentage adjustments.', 'car-rental-manager'); ?></span>
-                        <div class="mpcrbm-warning-banner">
-                            <i class="mi mi-info"></i>
-                            <?php esc_html_e( 'Set special pricing for holidays, peak seasons, and special events throughout the year.', 'car-rental-manager' ); ?>
-                        </div>
                         <div id="mpcrbm-season-rows" class="mpcrbm-list">
-                            <?php if ( isset( $seasonal[0] ) && is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) :
-                                foreach ( $seasonal as $s ) : ?>
-                                    <div class="mpcrbm-item mpcrbm-season-row">
-                                        <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($s['name']); ?>" placeholder="<?php esc_html_e('Name', 'car-rental-manager'); ?>">
-                                        <input type="date" name="mpcrbm_seasonal_pricing[start][]" value="<?php echo esc_attr($s['start']); ?>">
-                                        <input type="date" name="mpcrbm_seasonal_pricing[end][]" value="<?php echo esc_attr($s['end']); ?>">
-                                        <select name="mpcrbm_seasonal_pricing[type][]">
-                                            <option value="percentage_increase" <?php selected($s['type'], 'percentage_increase'); ?>><?php esc_html_e('% Increase', 'car-rental-manager'); ?></option>
-                                            <option value="percentage_decrease" <?php selected($s['type'], 'percentage_decrease'); ?>><?php esc_html_e('% Decrease', 'car-rental-manager'); ?></option>
-                                            <option value="fixed_increase" <?php selected($s['type'], 'fixed_increase'); ?>><?php esc_html_e('Fixed Increase', 'car-rental-manager'); ?></option>
-                                            <option value="fixed_decrease" <?php selected($s['type'], 'fixed_decrease'); ?>><?php esc_html_e('Fixed Decrease', 'car-rental-manager'); ?></option>
-                                        </select>
-                                        <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($s['value']); ?>" placeholder="<?php esc_html_e('Value', 'car-rental-manager'); ?>">
-                                        <button type="button" class="button mpcrbm-remove-row mpcrbm-remove-btn"><?php esc_html_e('Remove', 'car-rental-manager'); ?></button>
-                                    </div>
-                                <?php endforeach;
-                            endif; ?>
+                            <?php
+                            if ( isset( $seasonal[0] ) && is_array( $seasonal[0] ) && ! empty( $seasonal[0] ) ) {
+                                foreach ( $seasonal as $i => $s ) {
+                                    $this->render_season_row( $i, $s, $currency );
+                                }
+                            } else {
+                                $this->render_season_row( 0, array(), $currency );
+                            }
+                            ?>
                         </div>
                         <button type="button" id="mpcrbm-add-season" class="_themeButton_xs_mT_xs mpcrbm-price-add-btn"><i class="mi mi-plus"></i> <?php esc_html_e('Add Season', 'car-rental-manager'); ?></button>
                     </section>
+                    </div>
                 </div>
 
+                <?php
+            }
+
+            /**
+             * Render a single Tiered Discount rule row
+             */
+            private function render_tier_row( $ti, $t, $currency ) {
+                $min             = isset( $t['min'] ) ? $t['min'] : '';
+                $max             = isset( $t['max'] ) ? $t['max'] : '';
+                $type            = isset( $t['type'] ) ? $t['type'] : 'percent';
+                $percent         = isset( $t['percent'] ) ? $t['percent'] : '';
+                $fixed_discount  = isset( $t['fixed_discount'] ) ? $t['fixed_discount'] : '';
+                $fixed_price     = isset( $t['fixed_price'] ) ? $t['fixed_price'] : '';
+                $day_price       = isset( $t['day_price'] ) ? $t['day_price'] : '';
+                ?>
+                <div class="mpcrbm-item mpcrbm-price-discount-tier mpcrbm-season-row">
+                    <div class="mpcrbm-season-badge">
+                        <span class="mpcrbm-season-badge-label"><?php esc_html_e('Tier', 'car-rental-manager'); ?></span>
+                        <span class="mpcrbm-season-badge-num mpcrbm-tier-badge-num"><?php echo esc_html( str_pad( $ti + 1, 2, '0', STR_PAD_LEFT ) ); ?></span>
+                    </div>
+                    <div class="mpcrbm-season-fields mpcrbm-tier-fields">
+                        <div class="mpcrbm-season-field">
+                            <label><?php esc_html_e('Min Days', 'car-rental-manager'); ?></label>
+                            <input type="number" name="mpcrbm_tiered_discounts[min][]" value="<?php echo esc_attr($min); ?>" placeholder="<?php esc_attr_e('e.g. 3', 'car-rental-manager'); ?>">
+                        </div>
+                        <div class="mpcrbm-season-field">
+                            <label><?php esc_html_e('Max Days', 'car-rental-manager'); ?></label>
+                            <input type="number" name="mpcrbm_tiered_discounts[max][]" value="<?php echo esc_attr($max); ?>" placeholder="<?php esc_attr_e('e.g. 7', 'car-rental-manager'); ?>">
+                        </div>
+                        <div class="mpcrbm-season-field">
+                            <label><?php esc_html_e('Discount Type', 'car-rental-manager'); ?></label>
+                            <select name="mpcrbm_tiered_discounts[type][]" class="mpcrbm-discount-type">
+                                <option value="percent" <?php selected($type, 'percent'); ?>><?php esc_html_e('Percentage (%)', 'car-rental-manager'); ?></option>
+                                <option value="fixed_discount" <?php selected($type, 'fixed_discount'); ?>><?php esc_html_e('Fixed Discount', 'car-rental-manager'); ?></option>
+                                <option value="fixed_price" <?php selected($type, 'fixed_price'); ?>><?php esc_html_e('Fixed Total Price', 'car-rental-manager'); ?></option>
+                                <option value="day_price" <?php selected($type, 'day_price'); ?>><?php esc_html_e('Day-wise Price', 'car-rental-manager'); ?></option>
+                            </select>
+                        </div>
+                        <div class="mpcrbm-season-field mpcrbm-season-field-adjustment">
+                            <label><?php esc_html_e('Value', 'car-rental-manager'); ?></label>
+                            <div class="mpcrbm-season-adjustment mpcrbm-field mpcrbm-percent">
+                                <input type="number" step="0.01" name="mpcrbm_tiered_discounts[percent][]" value="<?php echo esc_attr($percent); ?>" class="mpcrbm-season-value" placeholder="<?php esc_attr_e('e.g. 15', 'car-rental-manager'); ?>">
+                                <span class="mpcrbm-season-unit">%</span>
+                            </div>
+                            <div class="mpcrbm-season-adjustment mpcrbm-field mpcrbm-fixed-discount" style="display:none;">
+                                <input type="number" step="0.01" name="mpcrbm_tiered_discounts[fixed_discount][]" value="<?php echo esc_attr($fixed_discount); ?>" class="mpcrbm-season-value" placeholder="<?php esc_attr_e('e.g. 20', 'car-rental-manager'); ?>">
+                                <span class="mpcrbm-season-unit"><?php echo esc_html($currency); ?></span>
+                            </div>
+                            <div class="mpcrbm-season-adjustment mpcrbm-field mpcrbm-fixed-price" style="display:none;">
+                                <input type="number" step="0.01" name="mpcrbm_tiered_discounts[fixed_price][]" value="<?php echo esc_attr($fixed_price); ?>" class="mpcrbm-season-value" placeholder="<?php esc_attr_e('e.g. 100', 'car-rental-manager'); ?>">
+                                <span class="mpcrbm-season-unit"><?php echo esc_html($currency); ?></span>
+                            </div>
+                            <div class="mpcrbm-season-adjustment mpcrbm-field mpcrbm-day-price" style="display:none;">
+                                <input type="number" step="0.01" name="mpcrbm_tiered_discounts[day_price][]" value="<?php echo esc_attr($day_price); ?>" class="mpcrbm-season-value" placeholder="<?php esc_attr_e('e.g. 10', 'car-rental-manager'); ?>">
+                                <span class="mpcrbm-season-unit"><?php echo esc_html($currency); ?>/<?php esc_html_e('day', 'car-rental-manager'); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="mpcrbm-remove-row mpcrbm-season-remove" title="<?php esc_attr_e('Remove', 'car-rental-manager'); ?>">
+                        <i class="mi mi-trash"></i>
+                    </button>
+                </div>
+                <?php
+            }
+
+            /**
+             * Render a single Seasonal Pricing rule row
+             */
+            private function render_season_row( $i, $s, $currency ) {
+                $name  = isset( $s['name'] ) ? $s['name'] : '';
+                $start = isset( $s['start'] ) ? $s['start'] : '';
+                $end   = isset( $s['end'] ) ? $s['end'] : '';
+                $type  = isset( $s['type'] ) ? $s['type'] : 'percentage_increase';
+                $value = isset( $s['value'] ) ? $s['value'] : '';
+
+                $is_decrease = strpos( $type, 'decrease' ) !== false;
+                $is_percent  = strpos( $type, 'percentage' ) !== false;
+                ?>
+                <div class="mpcrbm-item mpcrbm-season-row">
+                    <div class="mpcrbm-season-badge">
+                        <span class="mpcrbm-season-badge-label"><?php esc_html_e('Rule', 'car-rental-manager'); ?></span>
+                        <span class="mpcrbm-season-badge-num"><?php echo esc_html( str_pad( $i + 1, 2, '0', STR_PAD_LEFT ) ); ?></span>
+                    </div>
+                    <div class="mpcrbm-season-fields">
+                        <div class="mpcrbm-season-field mpcrbm-season-field-name">
+                            <label><?php esc_html_e('Rule Name', 'car-rental-manager'); ?> <span class="mpcrbm-season-req">*</span></label>
+                            <input type="text" name="mpcrbm_seasonal_pricing[name][]" value="<?php echo esc_attr($name); ?>" placeholder="<?php esc_attr_e('e.g. Summer Peak Season', 'car-rental-manager'); ?>">
+                            <small><?php esc_html_e('Internal identifier for this rule', 'car-rental-manager'); ?></small>
+                        </div>
+                        <div class="mpcrbm-season-field">
+                            <label><?php esc_html_e('Start Date', 'car-rental-manager'); ?></label>
+                            <div class="mpcrbm-season-date-wrap">
+                                <i class="mi mi-calendar"></i>
+                                <input type="date" name="mpcrbm_seasonal_pricing[start][]" value="<?php echo esc_attr($start); ?>">
+                            </div>
+                        </div>
+                        <div class="mpcrbm-season-field">
+                            <label><?php esc_html_e('End Date', 'car-rental-manager'); ?></label>
+                            <div class="mpcrbm-season-date-wrap">
+                                <i class="mi mi-calendar"></i>
+                                <input type="date" name="mpcrbm_seasonal_pricing[end][]" value="<?php echo esc_attr($end); ?>">
+                            </div>
+                        </div>
+                        <div class="mpcrbm-season-field mpcrbm-season-field-adjustment">
+                            <label><?php esc_html_e('Adjustment', 'car-rental-manager'); ?></label>
+                            <div class="mpcrbm-season-adjustment <?php echo $is_decrease ? 'is-decrease' : 'is-increase'; ?>">
+                                <i class="mi <?php echo $is_decrease ? 'mi-arrow-down' : 'mi-arrow-up'; ?> mpcrbm-season-arrow"></i>
+                                <input type="number" step="0.01" name="mpcrbm_seasonal_pricing[value][]" value="<?php echo esc_attr($value); ?>" class="mpcrbm-season-value" placeholder="15">
+                                <span class="mpcrbm-season-unit"><?php echo $is_percent ? '%' : esc_html( $currency ); ?></span>
+                                <select name="mpcrbm_seasonal_pricing[type][]" class="mpcrbm-season-type">
+                                    <option value="percentage_increase" <?php selected($type, 'percentage_increase'); ?>><?php esc_html_e('% Increase', 'car-rental-manager'); ?></option>
+                                    <option value="percentage_decrease" <?php selected($type, 'percentage_decrease'); ?>><?php esc_html_e('% Decrease', 'car-rental-manager'); ?></option>
+                                    <option value="fixed_increase" <?php selected($type, 'fixed_increase'); ?>><?php esc_html_e('Fixed Increase', 'car-rental-manager'); ?></option>
+                                    <option value="fixed_decrease" <?php selected($type, 'fixed_decrease'); ?>><?php esc_html_e('Fixed Decrease', 'car-rental-manager'); ?></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="mpcrbm-remove-row mpcrbm-season-remove" title="<?php esc_attr_e('Remove', 'car-rental-manager'); ?>">
+                        <i class="mi mi-trash"></i>
+                    </button>
+                </div>
                 <?php
             }
 
@@ -317,118 +346,39 @@
 				$location_terms        = get_terms( array( 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ) );
 				?>
                 <div class="tabsItem" data-tabs="#mpcrbm_settings_pricing">
-                    <h2><?php esc_html_e( 'Price Settings', 'car-rental-manager' ); ?></h2>
-                    <p><?php esc_html_e( 'here you can set initial price, Waiting Time price, price calculation model', 'car-rental-manager' ); ?></p>
-                    <section class="bg-light">
-                        <h6><?php esc_html_e( 'Price Settings', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Here you can set price', 'car-rental-manager' ); ?></span>
-                    </section>
+                    <div class="mpcrbm-info-card">
+                        <div class="mpcrbm-info-card-header">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <h3><?php esc_html_e( 'Price Settings', 'car-rental-manager' ); ?></h3>
+                        </div>
+                        <div class="mpcrbm-info-card-body">
                     <section>
                         <label class="label">
                             <div>
-                                <h6><?php esc_html_e( 'Price/Day', 'car-rental-manager' ); ?></h6>
+                                <h6><?php esc_html_e( 'Price/Day', 'car-rental-manager' ); ?> <span class="mpcrbm-required-mark">*</span></h6>
                                 <span class="desc"><?php MPCRBM_Settings::info_text( 'mpcrbm_day_price' ); ?></span>
                             </div>
-                            <input class="formControl price_validation" name="mpcrbm_day_price" value="<?php echo esc_attr( $time_price ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:10', 'car-rental-manager' ); ?>"/>
+                            <input class="formControl price_validation" name="mpcrbm_day_price" value="<?php echo esc_attr( $time_price ); ?>" type="text" placeholder="<?php esc_html_e( 'EX:10', 'car-rental-manager' ); ?>" required/>
                         </label>
                     </section>
 
-                    <!-- One-Way Fee -->
-                    <?php
-					$one_way_enabled  = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
-					$one_way_fee_val  = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true );
-					$one_way_fee_type = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
-					$one_way_fee_type = ( $one_way_fee_type === 'percentage' ) ? 'percentage' : 'fixed';
-					$one_way_checked  = $one_way_enabled ? 'checked' : '';
-					$one_way_display  = $one_way_enabled ? 'block' : 'none';
-					$ow_currency      = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
-					$ow_unit          = $one_way_fee_type === 'percentage' ? '%' : $ow_currency;
-					?>
-                    <style>
-                    .mpcrbm-ow-type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-                    .mpcrbm-ow-type-opt{position:relative;}
-                    .mpcrbm-ow-type-opt input[type=radio]{position:absolute;opacity:0;width:0;height:0;}
-                    .mpcrbm-ow-type-lbl{display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid #e5e9f0;border-radius:8px;cursor:pointer;transition:all .2s;background:#fafbfc;font-size:13px;}
-                    .mpcrbm-ow-type-lbl:hover{border-color:#93c5fd;background:#eff6ff;}
-                    .mpcrbm-ow-type-opt input[type=radio]:checked + .mpcrbm-ow-type-lbl{border-color:#2563eb;background:#eff6ff;font-weight:600;color:#1d4ed8;}
-                    .mpcrbm-ow-type-dot{width:16px;height:16px;border-radius:50%;border:2px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-                    .mpcrbm-ow-type-opt input[type=radio]:checked + .mpcrbm-ow-type-lbl .mpcrbm-ow-type-dot{border-color:#2563eb;background:#2563eb;}
-                    .mpcrbm-ow-type-dot::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff;display:none;}
-                    .mpcrbm-ow-type-opt input[type=radio]:checked + .mpcrbm-ow-type-lbl .mpcrbm-ow-type-dot::after{display:block;}
-                    .mpcrbm-ow-amount-wrap{display:flex;align-items:center;border:2px solid #e5e9f0;border-radius:8px;overflow:hidden;transition:border-color .2s;max-width:220px;}
-                    .mpcrbm-ow-amount-wrap:focus-within{border-color:#2563eb;}
-                    .mpcrbm-ow-amount-prefix{padding:20px 12px 0 12px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:40px;display:flex;align-items:center;font-weight:700;font-size:14px;color:#374151;min-width:40px;justify-content:center;}
-                    #mpcrbm_car_one_way_fee_input{border:none!important;outline:none!important;box-shadow:none!important;padding:0 12px;height:40px;font-size:14px;font-weight:600;color:#111827;width:100%;background:#fff;}
-                    </style>
-                    <section class="bg-light" style="margin-top: 20px;">
-                        <div style="display:flex;align-items:center;justify-content:space-between;">
-                            <div>
-                                <h6><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h6>
-                                <span class="desc"><?php esc_html_e( 'Charge an extra fee when pickup and drop-off locations differ.', 'car-rental-manager' ); ?></span>
-                            </div>
-                            <?php MPCRBM_Custom_Layout::switch_checkbox_button( 'mpcrbm_car_one_way_enabled', $one_way_checked ); ?>
                         </div>
-                    </section>
-                    <section style="display:<?php echo esc_attr( $one_way_display ); ?>;" id="mpcrbm_car_one_way_enabled_holder">
-                        <label class="label" style="margin-bottom:12px;">
-                            <div>
-                                <h6><?php esc_html_e( 'Fee Type', 'car-rental-manager' ); ?></h6>
-                                <span class="desc"><?php esc_html_e( 'Fixed: flat amount added. Percentage: % of the booking total.', 'car-rental-manager' ); ?></span>
-                            </div>
-                        </label>
-                        <div class="mpcrbm-ow-type-grid">
-                            <div class="mpcrbm-ow-type-opt">
-                                <input type="radio" name="mpcrbm_car_one_way_fee_type" value="fixed"
-                                       id="mpcrbm_ow_type_fixed" <?php checked( $one_way_fee_type, 'fixed' ); ?>>
-                                <label class="mpcrbm-ow-type-lbl" for="mpcrbm_ow_type_fixed">
-                                    <span class="mpcrbm-ow-type-dot"></span>
-                                    <?php esc_html_e( 'Fixed Amount', 'car-rental-manager' ); ?>
-                                </label>
-                            </div>
-                            <div class="mpcrbm-ow-type-opt">
-                                <input type="radio" name="mpcrbm_car_one_way_fee_type" value="percentage"
-                                       id="mpcrbm_ow_type_pct" <?php checked( $one_way_fee_type, 'percentage' ); ?>>
-                                <label class="mpcrbm-ow-type-lbl" for="mpcrbm_ow_type_pct">
-                                    <span class="mpcrbm-ow-type-dot"></span>
-                                    <?php esc_html_e( 'Percentage (%)', 'car-rental-manager' ); ?>
-                                </label>
-                            </div>
-                        </div>
-                        <label class="label">
-                            <div>
-                                <h6><?php esc_html_e( 'One-Way Fee Value', 'car-rental-manager' ); ?></h6>
-                                <span class="desc" id="mpcrbm_ow_desc_fixed" style="display:<?php echo $one_way_fee_type === 'fixed' ? 'inline' : 'none'; ?>"><?php esc_html_e( 'Flat fee added per booking (e.g. 50).', 'car-rental-manager' ); ?></span>
-                                <span class="desc" id="mpcrbm_ow_desc_pct" style="display:<?php echo $one_way_fee_type === 'percentage' ? 'inline' : 'none'; ?>"><?php esc_html_e( 'Percentage of booking total (e.g. 10 = 10%).', 'car-rental-manager' ); ?></span>
-                            </div>
-                            <div class="mpcrbm-ow-amount-wrap">
-                                <span class="mpcrbm-ow-amount-prefix" id="mpcrbm_ow_unit"><?php echo esc_html( $ow_unit ); ?></span>
-                                <input type="number" id="mpcrbm_car_one_way_fee_input" class="price_validation"
-                                       name="mpcrbm_car_one_way_fee" value="<?php echo esc_attr( $one_way_fee_val ); ?>"
-                                       min="0" step="0.01"
-                                       placeholder="<?php echo $one_way_fee_type === 'percentage' ? esc_attr__( 'e.g. 10', 'car-rental-manager' ) : esc_attr__( 'e.g. 50', 'car-rental-manager' ); ?>"/>
-                            </div>
-                        </label>
-                    </section>
-                    <script>
-                    (function($){
-                        var ow_currency = '<?php echo esc_js( $ow_currency ); ?>';
-                        $('[name="mpcrbm_car_one_way_fee_type"]').on('change', function(){
-                            var isPct = $(this).val() === 'percentage';
-                            $('#mpcrbm_ow_unit').text(isPct ? '%' : ow_currency);
-                            $('#mpcrbm_ow_desc_fixed').toggle(!isPct);
-                            $('#mpcrbm_ow_desc_pct').toggle(isPct);
-                            $('#mpcrbm_car_one_way_fee_input').attr('placeholder', isPct ? 'e.g. 10' : 'e.g. 50');
-                        });
-                    })(jQuery);
-                    </script>
+                    </div>
 
-                    <!-- Manual price -->
-                    <section class="bg-light" style="margin-top: 20px;" data-collapse="#mp_manual">
-                        <h6><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></h6>
-                        <span><?php esc_html_e( 'Manual Price Settings', 'car-rental-manager' ); ?></span>
-                    </section>
-
+                    <!-- Manual price: set_price_meta_box() renders its own Tiered/
+                         Day-wise/Seasonal cards below, each with its own header. -->
                     <?php echo $this->set_price_meta_box( $post_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+
+                    <?php
+                    // "Extra Service Options" card (MPCRBM_Extra_Service::ex_service_settings())
+                    // moved here, after Seasonal Pricing, and out of its own separate tab — see
+                    // the removed "Extra Service" <li> in MPCRBM_Settings.php's tab nav. Fired as
+                    // its own action (rather than just relocating the class's existing
+                    // mpcrbm_settings_tab_content hook) so the card renders at this exact
+                    // position within the Pricing tabsItem instead of as a whole separate
+                    // tabsItem div of its own.
+                    do_action( 'mpcrbm_pricing_tab_after_seasonal', $post_id );
+                    ?>
                 </div>
 				<?php
 			}
@@ -638,16 +588,6 @@ $day_price      = isset( $tiered_data['day_price'] )      ? map_deep( $tiered_da
                         $hour_price = 0;
                     }
                     update_post_meta( $post_id, 'mpcrbm_day_price', $hour_price );
-
-                    // One-way fee per car
-                    $one_way_enabled = isset( $_POST['mpcrbm_car_one_way_enabled'] ) ? '1' : '';
-                    update_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', $one_way_enabled );
-                    $ow_fee_type = ( isset( $_POST['mpcrbm_car_one_way_fee_type'] ) && $_POST['mpcrbm_car_one_way_fee_type'] === 'percentage' ) ? 'percentage' : 'fixed';
-                    update_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', $ow_fee_type );
-                    if ( isset( $_POST['mpcrbm_car_one_way_fee'] ) ) {
-                        $raw_fee = sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_one_way_fee'] ) );
-                        update_post_meta( $post_id, 'mpcrbm_car_one_way_fee', is_numeric( $raw_fee ) ? floatval( $raw_fee ) : 0 );
-                    }
 
                     if ( isset( $_POST['mpcrbm_set_price_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['mpcrbm_set_price_nonce'] ) ), 'mpcrbm_set_price_save' ) ) {
 

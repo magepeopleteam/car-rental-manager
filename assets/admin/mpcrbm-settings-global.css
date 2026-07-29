@@ -1,0 +1,234 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Global Settings — Admin Styles
+   Restyles the Global Settings screen (MPCRBM_Settings_Global):
+     - Header banner matches the gradient hero used by the Guideline/Status
+       pages (.mpcrbm-guide-hero / .mpcrbm-status-hero) — eyebrow dot, large
+       title, subtitle, on a soft blue gradient card.
+     - The tab strip and the active section's fields render as one
+       seamlessly attached unit (single white bordered/shadowed box, tabs
+       forming its own top edge) instead of two separate floating pieces —
+       see mpcrbm-shell.css's ".mpcrbm-card.global_settings .leftTabs" block
+       for the outer box/tab-strip styling; this file covers what's inside
+       it: the 2-column field grid (matching the .mpcrbm-info-grid pattern
+       used by the per-car metabox tabs — General Info, Pricing, Multi-
+       Location, etc.) instead of the native WP Settings API <table
+       class="form-table"> markup, plus the License tab's own content and
+       the footer save button.
+
+   The actual section-switching is untouched — MPCRBM_Setting_API::
+   show_navigation()/show_forms_grid() build a standard div.mpcrbm .leftTabs /
+   [data-tabs-target] / .tabsContent[data-tabs] tab set (shared, global JS in
+   mp_global/assets/mp_style/mpcrbm_global.js). Each tab is still its own
+   separate WP Settings API <form> (one options-group per section), so
+   rather than one single continuously-scrolling form, sections here are
+   switched by click, not scroll-anchored. Scoped under .global_settings
+   (the wrapper unique to this one page) so nothing here touches the tab
+   component's other reuse.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mpcrbm-settings-head {
+	background: linear-gradient(135deg, #eef4ff, #f5f8ff);
+	border: 1px solid #d7e3fb;
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+	padding: 32px;
+	margin: 4px 4px 24px;
+}
+
+.mpcrbm-settings-head-eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+	margin-bottom: 10px;
+}
+
+.mpcrbm-settings-head-eyebrow::before {
+	content: "";
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	flex-shrink: 0;
+}
+
+.mpcrbm-settings-head h2 {
+	display: block;
+	margin: 0 0 10px;
+	font-size: 26px !important;
+	font-weight: 700 !important;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-settings-head-subtitle {
+	margin: 0;
+	max-width: 640px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Extra ".mpcrbm-shell-body" prefix (3 classes) so this reliably beats
+   mpcrbm-shell.css's ".mpcrbm-shell-body .mpcrbm-card" (also 2 classes)
+   regardless of which stylesheet happens to print second. The outer
+   .global_settings wrapper stays a plain, unstyled layout box — the
+   .leftTabs element it contains (mpcrbm-shell.css) supplies the actual
+   white card/border/shadow around the attached tabs+content unit. */
+.mpcrbm-shell-body .mpcrbm-card.global_settings {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	padding: 0;
+	margin: 0 4px;
+}
+
+/* ── Section content — flattened: the tab strip directly above already
+   supplies the white/bordered/shadowed card chrome (mpcrbm-shell.css's
+   ".leftTabs"), so each active section's .mpcrbm-info-card here is just a
+   borderless continuation of that same box, not a second card of its own.
+   Its own title is skipped too (MPCRBM_Setting_API::show_forms_grid()
+   doesn't render one) — the active tab directly above already shows that
+   section's icon + label. ────────────────────────────────────────────── */
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-card {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	border-radius: 0;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-card-body {
+	padding: 24px;
+}
+
+/* ── Field grid — 2 columns of label-above-control fields, same shape as
+   the metabox's General Info / Multi-Location tabs. ─────────────────────── */
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px 24px;
+}
+
+@media (max-width: 900px) {
+	.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid section {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid .field-head {
+	margin-bottom: 8px;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid .field-head h6 {
+	margin: 0 0 4px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #39445A;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid .field-head .desc {
+	display: block;
+	font-size: 12.5px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: 1.5;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* callback_* methods (MPCRBM_Setting_API) wrap most controls in a plain
+   <label>, checkbox/multicheck/radio types in a <fieldset> — normalize both
+   to fill the grid cell and lay out any multiple sub-options with a wrap
+   instead of the old right-aligned row layout. */
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid section > label {
+	display: block;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid section > fieldset {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 18px;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-grid section .wp-picker-container {
+	display: block;
+}
+
+/* ── License tab — MPCRBM_Settings_Global::license_settings()'s own custom
+   markup (an intro paragraph + MPCRBM_Settings_Global::licence_area()'s
+   plugin/license <table>), inside the same .mpcrbm-info-card-body as
+   above. ──────────────────────────────────────────────────────────────── */
+.mpcrbm-license-intro {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding-bottom: 16px;
+	margin-bottom: 16px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-license-intro .fa-info-circle {
+	margin-top: 2px;
+	color: var(--mpcrbm-shell-primary, #1d7bff);
+}
+
+.mpcrbm-license-intro p {
+	margin: 0;
+}
+
+/* mp_global/assets/admin/mpcrbm_admin_settings.css's legacy
+   "div.global_settings table th {width:40%;min-width:300px}" rule (written
+   for the old field-table layout) would otherwise also catch this table's
+   <th> cells — previously cancelled via the ".mpcrbm_license_settings"
+   wrapper class this page used to have; re-cancelled here via
+   ".mpcrbm-license-table-wrap" (4 classes deep, so it wins regardless of
+   stylesheet load order) now that the markup uses a different wrapper. */
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-license-table-wrap table th {
+	width: inherit;
+	min-width: inherit;
+}
+
+/* ── Save button footer — bordered top divider, right-aligned pill button
+   in the shell's own primary accent, for consistency with the top tab bar's
+   active-state color. Still reads as part of the same attached box (shares
+   its rounded bottom corners via the .leftTabs "overflow:hidden" clip in
+   mpcrbm-shell.css). ────────────────────────────────────────────────────── */
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-card-footer {
+	display: flex;
+	justify-content: flex-end;
+	padding: 16px 24px;
+	border-top: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	background: #fafbfc;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-card-footer .submit {
+	margin: 0;
+	padding: 0;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-card-footer input.button-primary {
+	padding: 10px 24px !important;
+	height: auto;
+	border: none;
+	border-radius: 999px;
+	background: var(--mpcrbm-shell-primary, #667eea);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 600;
+	text-shadow: none;
+	box-shadow: none;
+}
+
+.mpcrbm-shell-body .mpcrbm-card.global_settings .mpcrbm-info-card-footer input.button-primary:hover {
+	background: #5568d3;
+}

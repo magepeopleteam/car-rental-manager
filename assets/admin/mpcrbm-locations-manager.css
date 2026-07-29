@@ -1,0 +1,568 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Locations Manager — Admin Styles
+   Uses the shell's own --mpcrbm-shell-* tokens (with fallbacks) so it stays
+   visually consistent with Car List / Taxonomies / Branch Manager without
+   needing shell.css itself to define these rules.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mpcrbm-locations-manager {
+	margin: 20px;
+}
+
+/* ── Header banner — dark hero, kept as a distinct treatment for this page,
+   but tinted with the plugin's own #667eea accent (rather than generic navy/
+   blue) so it reads as "the same brand, darker" instead of an off-palette
+   color, matching Car List / Taxonomies / FAQ / Branch Manager. ──────────── */
+.mpcrbm-locations-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-bottom: 20px;
+	padding: 26px 28px;
+	background: linear-gradient(135deg, #2f2c73 0%, #1c1a42 55%, #14132e 100%);
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+}
+
+.mpcrbm-locations-head-text {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	max-width: 640px;
+}
+
+.mpcrbm-locations-head-eyebrow {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .12em;
+	color: #a5b4fc;
+}
+
+.mpcrbm-locations-head-text h2 {
+	margin: 0;
+	font-size: 24px !important;
+	font-weight: 700 !important;
+	color: #fff;
+}
+
+.mpcrbm-locations-head-subtitle {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.6;
+	color: #b6c2d9;
+}
+
+p.mpcrbm-locations-head-subtitle {
+	color: #d3caca !important;
+}
+
+.mpcrbm-locations-add-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+	background: #667eea;
+	color: #fff;
+	border: none;
+	padding: 12px 20px;
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	cursor: pointer;
+	transition: background .15s ease, transform .15s ease;
+}
+
+.mpcrbm-locations-add-btn:hover {
+	background: #5568d3;
+	transform: translateY(-1px);
+}
+
+/* ── Card grid ───────────────────────────────────────────────────────── */
+.mpcrbm-locations-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+	gap: 16px;
+}
+
+.mpcrbm-location-card {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 18px;
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+	border-radius: var(--mpcrbm-shell-radius-sm, 12px);
+	transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+}
+
+.mpcrbm-location-card:hover {
+	box-shadow: 0 6px 16px rgba(17, 24, 39, .08);
+	border-color: #c7cbf5;
+	transform: translateY(-2px);
+}
+
+.mpcrbm-location-card-top {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.mpcrbm-location-name {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-location-card-icon-actions {
+	display: flex;
+	gap: 6px;
+	flex: 0 0 auto;
+}
+
+.mpcrbm-location-edit-btn,
+.mpcrbm-location-delete-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 7px;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	background: #f8fafc;
+	color: #9ca3af;
+	font-size: 12px;
+	cursor: pointer;
+	transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.mpcrbm-location-edit-btn:hover {
+	background: #eef2ff;
+	border-color: #c7cbf5;
+	color: #667eea;
+}
+
+.mpcrbm-location-delete-btn:hover {
+	background: #fef2f2;
+	border-color: #fecaca;
+	color: #ef4444;
+}
+
+.mpcrbm-location-region {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 12.5px;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+	margin-top: -6px;
+	overflow: hidden;
+}
+
+.mpcrbm-location-region i {
+	flex: 0 0 auto;
+	color: #93c5fd;
+	font-size: 11px;
+}
+
+.mpcrbm-location-region span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Vehicle Count stat box */
+.mpcrbm-location-stat {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 12px 14px;
+	background: var(--mpcrbm-shell-bg, #f8fafc);
+	border-radius: 10px;
+}
+
+.mpcrbm-location-stat-text {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.mpcrbm-location-stat-label {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	color: var(--mpcrbm-shell-text-faded, #94a3b8);
+}
+
+.mpcrbm-location-stat-value {
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-location-status-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 11px;
+	font-weight: 600;
+	padding: 4px 10px;
+	border-radius: 20px;
+	white-space: nowrap;
+}
+
+.mpcrbm-location-status-pill::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+.mpcrbm-location-status-pill.is-active {
+	background: #dcfce7;
+	color: #15803d;
+}
+
+.mpcrbm-location-status-pill.is-empty {
+	background: #f1f5f9;
+	color: #64748b;
+}
+
+/* View Cars — reuses mpcrbm-branch-manager.js's ".mpcrbm-view-branch-cars"
+   AJAX click handler (which already applies a #667eea background); the
+   compound selector here beats that single-class rule on specificity to
+   apply this page's dark-navy CTA instead, regardless of stylesheet order. */
+.mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	background: #667eea;
+	color: #fff;
+	border: none;
+	padding: 11px 14px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .15s ease;
+}
+
+.mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars:hover {
+	background: #5568d3;
+}
+
+.mpcrbm-location-view-cars-btn i {
+	font-size: 12px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.mpcrbm-locations-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 50px 20px;
+	color: #6b7280;
+	border: 1px dashed var(--mpcrbm-shell-border, #e5e7eb);
+	border-radius: var(--mpcrbm-shell-radius-sm, 12px);
+}
+
+.mpcrbm-locations-empty i {
+	font-size: 26px;
+	color: #c7cbf5;
+	margin-bottom: 10px;
+}
+
+.mpcrbm-locations-empty p {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	color: #374151;
+}
+
+.mpcrbm-locations-empty span {
+	margin-top: 4px;
+	font-size: 13px;
+}
+
+/* ── Add/Edit modal ──────────────────────────────────────────────────────
+   Header/body/footer layout: header + footer stay fixed, the body scrolls
+   internally when the hours table pushes content past the viewport, rather
+   than growing the whole page. Widened from the original 480px (which left
+   the 4-column hours table cramped) to a roomier, responsive width. */
+.mpcrbm-location-modal-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: rgba(15, 23, 42, .55);
+	z-index: 99999;
+	align-items: center;
+	justify-content: center;
+	padding: 30px 20px;
+}
+
+.mpcrbm-location-modal {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background: #fff;
+	border-radius: var(--mpcrbm-shell-radius, 16px);
+	width: 680px;
+	max-width: 100%;
+	max-height: calc(100vh - 60px);
+	box-shadow: 0 24px 60px rgba(0, 0, 0, .3);
+	overflow: hidden;
+}
+
+.mpcrbm-location-modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 20px 26px;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	flex: 0 0 auto;
+}
+
+/* !important throughout this modal's typography: mp_global's
+   mpcrbm_global.css has broad "div.mpcrbm h3/h4/label { ... }" rules (font-
+   size/weight/color, the latter via an undefined --mpl-secondary variable)
+   that outrank these single-class selectors on specificity — see the
+   .mpcrbm_taxonomies_head_title h2 fix earlier for the same root cause. */
+.mpcrbm-location-modal-header h3 {
+	margin: 0 !important;
+	font-size: 18px !important;
+	font-weight: 700 !important;
+	color: var(--mpcrbm-shell-text, #1f222b) !important;
+}
+
+.mpcrbm-location-modal-close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: none;
+	background: #f3f4f6;
+	color: #6b7280;
+	border-radius: 8px;
+	font-size: 20px;
+	line-height: 1;
+	cursor: pointer;
+	transition: background .15s ease, color .15s ease;
+}
+
+.mpcrbm-location-modal-close:hover {
+	background: #e5e7eb;
+	color: #1f222b;
+}
+
+.mpcrbm-location-modal-body {
+	padding: 22px 26px;
+	overflow-y: auto;
+	flex: 1 1 auto;
+}
+
+.mpcrbm-location-modal-section + .mpcrbm-location-modal-section {
+	margin-top: 22px;
+	padding-top: 22px;
+	border-top: 1px solid var(--mpcrbm-shell-border, #eef0f3);
+}
+
+.mpcrbm-location-modal-subhead {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	margin: 0 0 14px !important;
+	font-size: 12px !important;
+	font-weight: 700 !important;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: var(--mpcrbm-shell-text-faded, #64748b) !important;
+}
+
+.mpcrbm-location-modal-subhead i {
+	font-size: 13px;
+}
+
+.mpcrbm-location-modal-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+
+.mpcrbm-location-field {
+	margin-bottom: 14px;
+}
+
+.mpcrbm-location-modal-section > .mpcrbm-location-field:last-child,
+.mpcrbm-location-modal-row .mpcrbm-location-field {
+	margin-bottom: 0;
+}
+
+.mpcrbm-location-modal label {
+	display: block;
+	margin: 20px 0px !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: var(--mpcrbm-shell-text-faded, #64748b) !important;
+}
+
+.mpcrbm-location-modal input[type="text"],
+.mpcrbm-location-modal textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	border-radius: 8px;
+	font-size: 14px;
+	box-sizing: border-box;
+	outline: none;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.mpcrbm-location-modal input[type="text"]:focus,
+.mpcrbm-location-modal textarea:focus {
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-location-modal textarea {
+	min-height: 54px;
+	resize: vertical;
+}
+
+.mpcrbm-location-hours-wrap {
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	border-radius: 10px;
+	overflow-x: auto;
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table {
+	margin: 0;
+	max-width: none;
+	font-size: 13px;
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table th,
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table td {
+	border: none;
+	border-bottom: 1px solid var(--mpcrbm-shell-border, #eef0f3);
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table tr:last-child td {
+	border-bottom: none;
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table th {
+	background: var(--mpcrbm-shell-bg, #f8fafc);
+	text-transform: none;
+	letter-spacing: normal;
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text-faded, #64748b);
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table tbody tr:nth-child(even) {
+	background: #fafbfc;
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table tbody tr:hover {
+	background: #f3f4ff;
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table td:first-child {
+	font-weight: 700;
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table input[type="time"] {
+	padding: 6px 10px;
+	border: 1px solid var(--mpcrbm-shell-border, #d1d5db);
+	border-radius: 7px;
+	width: 130px;
+	font-size: 13px;
+	background: #fff;
+	color: var(--mpcrbm-shell-text, #374151);
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table input[type="time"]:focus {
+	outline: none;
+	border-color: #667eea;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table input[type="time"]:disabled {
+	background: var(--mpcrbm-shell-bg, #f8fafc);
+	border-color: var(--mpcrbm-shell-border, #eef0f3);
+	color: #b8bfc9;
+}
+
+.mpcrbm-location-hours-wrap .mpcrbm-hours-table input[type="checkbox"] {
+	width: 18px;
+	height: 18px;
+	accent-color: #667eea;
+	cursor: pointer;
+}
+
+.mpcrbm-location-modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 16px 26px;
+	border-top: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	flex: 0 0 auto;
+}
+
+.mpcrbm-location-save-btn {
+	background: #667eea;
+	color: #fff;
+	border: none;
+	padding: 10px 22px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .15s ease;
+}
+
+.mpcrbm-location-save-btn:hover {
+	background: #5568d3;
+}
+
+.mpcrbm-location-save-btn:disabled {
+	opacity: .6;
+	cursor: not-allowed;
+}
+
+.mpcrbm-location-cancel-btn {
+	background: #fff;
+	color: var(--mpcrbm-shell-text, #374151);
+	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	padding: 10px 22px;
+	border-radius: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.mpcrbm-location-cancel-btn:hover {
+	background: #f3f4f6;
+}
+
+@media (max-width: 640px) {
+	.mpcrbm-location-modal-row {
+		grid-template-columns: 1fr;
+	}
+}
