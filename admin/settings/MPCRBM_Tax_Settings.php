@@ -136,7 +136,7 @@
                             </div>
 							<?php if ( $total_count > 0 ) : ?>
                                 <div class="mpcrbm-faq-live-pill">
-                                    <span class="mpcrbm-faq-live-switch"></span>
+                                    <span class="mpcrbm-faq-live-switch<?php echo $selected_count > 0 ? '' : ' is-off'; ?>" id="mpcrbm_rr_live_switch"></span>
                                     <span>
                                         <span id="mpcrbm_rr_selected_count"><?php echo esc_html( $selected_count ); ?></span>
 										<?php esc_html_e( 'of', 'car-rental-manager' ); ?>
@@ -176,7 +176,9 @@
                                 var $grid = $('#mpcrbm_rr_grid');
                                 $grid.on('change', '.mpcrbm-rr-check-input', function () {
                                     $(this).closest('.mpcrbm-rr-item').toggleClass('is-selected', this.checked);
-                                    $('#mpcrbm_rr_selected_count').text($grid.find('.mpcrbm-rr-check-input:checked').length);
+                                    var checkedCount = $grid.find('.mpcrbm-rr-check-input:checked').length;
+                                    $('#mpcrbm_rr_selected_count').text(checkedCount);
+                                    $('#mpcrbm_rr_live_switch').toggleClass('is-off', checkedCount === 0);
                                 });
                             });
                             </script>

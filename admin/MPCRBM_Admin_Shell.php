@@ -277,8 +277,8 @@
 					// Managers / Global Settings below.
 					$items[] = [
 						'slug'  => 'mpcrbm_locations_manager',
-						'label' => esc_html__( 'Locations', 'car-rental-manager' ),
-						'icon'  => 'fas fa-map-marker-alt',
+						'label' => esc_html__( 'Branch Management', 'car-rental-manager' ),
+						'icon'  => 'fas fa-building',
 						'link'  => $base_url . '&page=mpcrbm_locations_manager',
 					];
 					$items[] = [
