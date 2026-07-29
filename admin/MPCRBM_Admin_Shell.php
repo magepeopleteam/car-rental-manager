@@ -18,7 +18,6 @@
 				'mpcrbm_rent_page_mpcrbm_branch_managers',
 				'mpcrbm_rent_page_mpcrbm_my_branch',
 				'mpcrbm_rent_page_mpcrbm_bm_bookings',
-				'mpcrbm_rent_page_mpcrbm_locations_manager',
 				'mpcrbm_rent_page_mpcrbm_ex_services_manager',
 			];
 
@@ -271,16 +270,8 @@
 				];
 
 				if ( current_user_can( 'manage_options' ) ) {
-					// Both render inside this shell (MPCRBM_Locations_Manager /
-					// MPCRBM_Extra_Services_Manager) rather than linking out to their
-					// native WP screens, so they get the same chrome as Branch
-					// Managers / Global Settings below.
-					$items[] = [
-						'slug'  => 'mpcrbm_locations_manager',
-						'label' => esc_html__( 'Branch Management', 'car-rental-manager' ),
-						'icon'  => 'fas fa-building',
-						'link'  => $base_url . '&page=mpcrbm_locations_manager',
-					];
+					// Branch Management is consolidated into the Car Rental tabs below.
+					// Extra Services remains a separate workspace in the shared shell.
 					$items[] = [
 						'slug'  => 'mpcrbm_ex_services_manager',
 						'label' => esc_html__( 'Extra Services', 'car-rental-manager' ),
@@ -358,7 +349,7 @@
 					[ 'target' => 'mpcrbm_car_feature', 'icon' => 'mi mi-list-timeline', 'label' => esc_html__( 'Car Feature', 'car-rental-manager' ) ],
 					[ 'target' => 'mpcrbm_manage_faq', 'icon' => 'mi mi-messages-question', 'label' => esc_html__( 'Manage Faq', 'car-rental-manager' ) ],
 					[ 'target' => 'mpcrbm_manage_term_condition', 'icon' => 'mi mi-blog-text', 'label' => esc_html__( 'Term & Condition', 'car-rental-manager' ) ],
-					[ 'target' => 'mpcrbm_branch_manager', 'icon' => 'mi mi-map-location-track', 'label' => esc_html__( 'Branch List', 'car-rental-manager' ) ],
+					[ 'target' => 'mpcrbm_branch_manager', 'icon' => 'mi mi-map-location-track', 'label' => esc_html__( 'Branch Management', 'car-rental-manager' ) ],
 				];
 			}
 

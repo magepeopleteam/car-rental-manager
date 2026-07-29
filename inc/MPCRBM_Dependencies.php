@@ -70,7 +70,11 @@
 				) );
 				wp_localize_script( 'mpcrbm_branch_manager', 'mpcrbmBranchAdmin', array(
 					'loadingText'         => __( 'Loading…', 'car-rental-manager' ),
+					'carText'             => __( 'car', 'car-rental-manager' ),
 					'carsText'            => __( 'cars', 'car-rental-manager' ),
+					'activeText'          => __( 'Active', 'car-rental-manager' ),
+					'emptyText'           => __( 'Empty', 'car-rental-manager' ),
+					'noCarsText'          => __( 'No cars currently at this branch.', 'car-rental-manager' ),
 					'transferText'        => __( 'Transfer', 'car-rental-manager' ),
 					'transferringText'    => __( 'Transferring…', 'car-rental-manager' ),
 					'selectBranchText'    => __( 'Please select a target branch.', 'car-rental-manager' ),
@@ -87,6 +91,8 @@
 					'networkError'      => __( 'Network error. Please try again.', 'car-rental-manager' ),
 					'deleteConfirmText' => __( 'Are you sure you want to delete this branch?', 'car-rental-manager' ),
 					'deleteFailed'      => __( 'Unable to delete the branch.', 'car-rental-manager' ),
+					'selectBranchTitle' => __( 'Select a branch to view and transfer cars.', 'car-rental-manager' ),
+					'selectBranchHint'  => __( 'Click any branch above to get started.', 'car-rental-manager' ),
 				) );
 				// Trigger the action hook to add additional scripts if needed
 				do_action( 'mpcrbm_admin_script' );

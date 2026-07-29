@@ -117,6 +117,19 @@ jQuery(document).ready(function ($) {
 		}
 	}
 
+	function resetBranchCarsPanel() {
+		var $prompt = $('<div>', { class: 'mpcrbm-select-prompt' });
+		var $copy = $('<div>');
+		$prompt.append($('<i>', { class: 'mi mi-map-location-track', 'aria-hidden': 'true' }));
+		$copy.append($('<p>').text(strings.selectBranchTitle || 'Select a branch to view and transfer cars.'));
+		$copy.append($('<span>').text(strings.selectBranchHint || 'Click any branch above to get started.'));
+		$prompt.append($copy);
+
+		$('.mpcrbm-branch-cars-panel-header').hide();
+		$('.mpcrbm-panel-branch-name, .mpcrbm-panel-car-count').empty();
+		$('.mpcrbm-branch-cars-panel-body').empty().append($prompt);
+	}
+
 	// ── Add ──────────────────────────────────────────────────────────────
 	$(document).on('click', '#mpcrbm_add_location_btn', function () {
 		$('#mpcrbm_location_modal_title').text(strings.addTitle || 'Add New Branch');
@@ -247,8 +260,9 @@ jQuery(document).ready(function ($) {
 
 	// ── Delete ───────────────────────────────────────────────────────────
 	$(document).on('click', '.mpcrbm-location-delete-btn', function () {
-		var $card = $(this).closest('.mpcrbm-location-card');
+		var $card = $(this).closest('.mpcrbm-location-card, .mpcrbm-branch-card');
 		var termId = $card.data('term-id');
+		var wasActive = $card.hasClass('is-active');
 
 		if (!confirm(strings.deleteConfirmText || 'Are you sure you want to delete this branch?')) {
 			return;
@@ -261,8 +275,13 @@ jQuery(document).ready(function ($) {
 			term_id: termId,
 		}, function (res) {
 			if (res.success) {
-				$('#mpcrbm_locations_list').html(res.data.html);
+				if ($('#mpcrbm_locations_list').length && res.data.html) {
+					$('#mpcrbm_locations_list').html(res.data.html);
+				}
 				refreshBranchSidebar(res.data.branch_html, 0);
+				if (wasActive) {
+					resetBranchCarsPanel();
+				}
 				notify(res.data.message || 'Branch deleted.', 'success');
 			} else {
 				notify((res.data && res.data.message) || strings.deleteFailed || 'Unable to delete the branch.', 'error');

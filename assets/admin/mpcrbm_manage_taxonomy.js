@@ -12,6 +12,18 @@
             var content_holder_id = currentType + '_holder';
             $('#' + content_holder_id).fadeIn();
 
+			// Keep refreshes, copied URLs, and browser history on the selected
+			// workspace tab. The default Car List keeps the shorter canonical URL.
+			if (window.history && window.history.replaceState && window.URL) {
+				var currentUrl = new URL(window.location.href);
+				if (currentType === 'mpcrbm_car_list') {
+					currentUrl.searchParams.delete('mpcrbm_tab');
+				} else {
+					currentUrl.searchParams.set('mpcrbm_tab', currentType);
+				}
+				window.history.replaceState({}, '', currentUrl.toString());
+			}
+
             // Fleet stat cards only make sense on the Car List tab.
             $('#mpcrbm_analytics_holder').toggle( currentType === 'mpcrbm_car_list' );
 
@@ -44,6 +56,14 @@
                 }
             }
         });
+
+		// PHP marks a validated deep-linked tab as active before first paint.
+		// Trigger its normal handler now so lazy content starts loading as soon
+		// as the DOM is ready instead of waiting for every image/window resource.
+		var $initialTab = $('.mpcrbm_taxonomies_tab.active').first();
+		if ($initialTab.length && $initialTab.data('target') !== 'mpcrbm_car_list') {
+			$initialTab.trigger('click');
+		}
 
         // Pro popup close — button
         $(document).on('click', '#mpcrbm-pro-upgrade-close', function () {

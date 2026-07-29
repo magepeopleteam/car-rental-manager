@@ -16,6 +16,65 @@ jQuery(document).ready(function ($) {
     function ajaxUrl()  { return dashboard().data('ajax') || (typeof ajaxurl !== 'undefined' ? ajaxurl : ''); }
     function nonce()    { return dashboard().data('nonce') || ''; }
 
+    function formatCarCount(count) {
+        count = parseInt(count, 10) || 0;
+        var label = count === 1
+            ? (mpcrbmBranchAdmin.carText || 'car')
+            : (mpcrbmBranchAdmin.carsText || 'cars');
+        return count + ' ' + label;
+    }
+
+    function branchCard(branchSlug) {
+        return $('.mpcrbm-branch-card').filter(function () {
+            return String($(this).data('branch-slug')) === String(branchSlug);
+        }).first();
+    }
+
+    function updateBranchCount(branchSlug, count) {
+        count = parseInt(count, 10) || 0;
+        var $badge = branchCard(branchSlug).find('.mpcrbm-car-count-badge');
+        if (!$badge.length) {
+            return;
+        }
+
+        $badge
+            .toggleClass('has-cars', count > 0)
+            .toggleClass('is-empty', count === 0);
+        $badge.find('.mpcrbm-car-count-value').text(count);
+        $badge.find('.mpcrbm-car-count-status').text(
+            count > 0
+                ? (mpcrbmBranchAdmin.activeText || 'Active')
+                : (mpcrbmBranchAdmin.emptyText || 'Empty')
+        );
+    }
+
+    function preferredCarsView() {
+        try {
+            return window.localStorage.getItem('mpcrbmBranchCarsView') === 'list' ? 'list' : 'grid';
+        } catch (error) {
+            return 'grid';
+        }
+    }
+
+    function applyCarsView(view, persist) {
+        view = view === 'list' ? 'list' : 'grid';
+        var $panel = $('.mpcrbm-branch-cars-panel');
+
+        $panel.toggleClass('is-list-view', view === 'list');
+        $('.mpcrbm-cars-view-button').each(function () {
+            var isActive = $(this).data('view') === view;
+            $(this).toggleClass('is-active', isActive).attr('aria-pressed', isActive ? 'true' : 'false');
+        });
+
+        if (persist) {
+            try {
+                window.localStorage.setItem('mpcrbmBranchCarsView', view);
+            } catch (error) {
+                // Storage may be unavailable in privacy-restricted browsers.
+            }
+        }
+    }
+
     function showToast(message, type) {
         type = type || 'success';
         var toast = $('<div class="mpcrbm-branch-toast is-' + type + '">' + $('<span>').text(message).html() + '</div>');
@@ -47,6 +106,7 @@ jQuery(document).ready(function ($) {
         var $panelHead = $panel.find('.mpcrbm-branch-cars-panel-header');
         var $panelBody = $panel.find('.mpcrbm-branch-cars-panel-body');
 
+        applyCarsView(preferredCarsView(), false);
         $panelHead.show().find('.mpcrbm-panel-branch-name').text(branchName);
         $panelHead.find('.mpcrbm-panel-car-count').text('…');
 
@@ -60,13 +120,20 @@ jQuery(document).ready(function ($) {
         }, function (res) {
             if (res.success) {
                 $panelBody.html(res.data.html);
-                $panelHead.find('.mpcrbm-panel-car-count').text(res.data.count + ' ' + (mpcrbmBranchAdmin.carsText || 'cars'));
+                updateBranchCount(branchSlug, res.data.count);
+                $panelHead.find('.mpcrbm-panel-car-count').text(formatCarCount(res.data.count));
             } else {
                 $panelBody.html('<p class="mpcrbm-no-cars">' + (res.data && res.data.message ? res.data.message : 'Error loading cars.') + '</p>');
             }
         }).fail(function () {
             $panelBody.html('<p class="mpcrbm-no-cars">Network error. Please try again.</p>');
         });
+    });
+
+    // ── Grid / List View ─────────────────────────────────────────────────
+
+    $(document).on('click', '.mpcrbm-cars-view-button', function () {
+        applyCarsView($(this).data('view'), true);
     });
 
     // ── Transfer Car ─────────────────────────────────────────────────────
@@ -100,14 +167,24 @@ jQuery(document).ready(function ($) {
         }, function (res) {
             if (res.success) {
                 showToast(res.data.message, 'success');
-                // Remove the card from the current panel (car is now at another branch)
-                $card.fadeOut(400, function () { $(this).remove(); });
-                // Update the sidebar badge count
-                var $currentActiveCard = $('.mpcrbm-branch-card.is-active .mpcrbm-car-count-badge');
-                var currentCount = parseInt($currentActiveCard.text(), 10) || 0;
-                if (currentCount > 0) {
-                    $currentActiveCard.text(currentCount - 1);
-                }
+                // Use authoritative counts returned after the database update so the
+                // source card, destination card and open panel cannot drift apart.
+                updateBranchCount(res.data.from, res.data.from_count);
+                updateBranchCount(res.data.to, res.data.to_count);
+                $('.mpcrbm-panel-car-count').text(formatCarCount(res.data.from_count));
+
+                // The current panel represents the source branch. Remove the moved
+                // vehicle immediately and show its empty state when the last car leaves.
+                $card.fadeOut(180, function () {
+                    $(this).remove();
+                    if (parseInt(res.data.from_count, 10) === 0) {
+                        $('.mpcrbm-branch-cars-panel-body').html(
+                            $('<p>', { class: 'mpcrbm-no-cars' }).text(
+                                mpcrbmBranchAdmin.noCarsText || 'No cars currently at this branch.'
+                            )
+                        );
+                    }
+                });
             } else {
                 showToast(res.data && res.data.message ? res.data.message : 'Transfer failed.', 'error');
                 $btn.prop('disabled', false).text(mpcrbmBranchAdmin.transferText || 'Transfer');

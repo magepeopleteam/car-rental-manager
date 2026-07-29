@@ -571,7 +571,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				$wpdb->prepare(
 					"SELECT
 						COALESCE( NULLIF( cb.meta_value, '' ), hb.meta_value ) AS effective_branch,
-						COUNT( p.ID ) AS cnt
+						COUNT( DISTINCT p.ID ) AS cnt
 					FROM {$wpdb->posts} p
 					LEFT JOIN {$wpdb->postmeta} cb
 						ON cb.post_id = p.ID AND cb.meta_key = 'mpcrbm_current_branch'
@@ -630,11 +630,20 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			}
 
 			$car_id    = absint( $_POST['car_id'] ?? 0 );
-			$to_branch = sanitize_text_field( wp_unslash( $_POST['to_branch'] ?? '' ) );
+			$to_branch = sanitize_title( wp_unslash( $_POST['to_branch'] ?? '' ) );
 			$reason    = sanitize_text_field( wp_unslash( $_POST['reason'] ?? '' ) );
 
 			if ( ! $car_id || ! $to_branch ) {
 				wp_send_json_error( [ 'message' => __( 'Car ID and target branch are required', 'car-rental-manager' ) ] );
+			}
+
+			$car           = get_post( $car_id );
+			$target_branch = get_term_by( 'slug', $to_branch, 'mpcrbm_locations' );
+			if ( ! $car || MPCRBM_Function::get_cpt() !== $car->post_type || 'publish' !== $car->post_status ) {
+				wp_send_json_error( [ 'message' => __( 'The selected car is unavailable.', 'car-rental-manager' ) ], 404 );
+			}
+			if ( ! $target_branch || is_wp_error( $target_branch ) ) {
+				wp_send_json_error( [ 'message' => __( 'The destination branch no longer exists.', 'car-rental-manager' ) ], 404 );
 			}
 
 			$from_branch = get_post_meta( $car_id, 'mpcrbm_current_branch', true );
@@ -646,11 +655,14 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				wp_send_json_error( [ 'message' => __( 'Car is already at that branch', 'car-rental-manager' ) ] );
 			}
 
-			update_post_meta( $car_id, 'mpcrbm_current_branch', $to_branch );
+			if ( false === update_post_meta( $car_id, 'mpcrbm_current_branch', $to_branch ) ) {
+				wp_send_json_error( [ 'message' => __( 'The car could not be transferred. Please try again.', 'car-rental-manager' ) ], 500 );
+			}
 			self::log_transfer( $car_id, $from_branch, $to_branch, $reason );
 
-			$to_name   = MPCRBM_Function::get_taxonomy_name_by_slug( $to_branch, 'mpcrbm_locations' );
+			$to_name   = $target_branch->name;
 			$from_name = MPCRBM_Function::get_taxonomy_name_by_slug( $from_branch, 'mpcrbm_locations' );
+			$counts    = self::get_branch_car_counts( MPCRBM_Function::get_cpt() );
 
 			wp_send_json_success( [
 				'message'   => sprintf(
@@ -660,11 +672,13 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 					$from_name,
 					$to_name
 				),
-				'car_id'    => $car_id,
-				'from'      => $from_branch,
-				'to'        => $to_branch,
-				'from_name' => $from_name,
-				'to_name'   => $to_name,
+				'car_id'     => $car_id,
+				'from'       => $from_branch,
+				'to'         => $to_branch,
+				'from_name'  => $from_name,
+				'to_name'    => $to_name,
+				'from_count' => (int) ( $counts[ $from_branch ] ?? 0 ),
+				'to_count'   => (int) ( $counts[ $to_branch ] ?? 0 ),
 			] );
 		}
 
@@ -685,24 +699,46 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			} else {
 				echo '<div class="mpcrbm-branch-cars-grid">';
 				foreach ( $cars as $car ) {
-					$home_slug  = get_post_meta( $car->ID, 'mpcrbm_home_branch', true );
-					$home_name  = MPCRBM_Function::get_taxonomy_name_by_slug( $home_slug, 'mpcrbm_locations' );
-					$thumb      = get_the_post_thumbnail_url( $car->ID, 'thumbnail' );
-					$day_price  = get_post_meta( $car->ID, 'mpcrbm_day_price', true );
-					$edit_link  = get_edit_post_link( $car->ID );
+					$home_slug       = (string) get_post_meta( $car->ID, 'mpcrbm_home_branch', true );
+					$current_slug    = (string) get_post_meta( $car->ID, 'mpcrbm_current_branch', true );
+					$home_name       = MPCRBM_Function::get_taxonomy_name_by_slug( $home_slug, 'mpcrbm_locations' );
+					$is_transferred  = '' !== $home_slug && '' !== $current_slug && $home_slug !== $current_slug;
+					$thumbnail_id    = get_post_thumbnail_id( $car->ID );
+					$thumbnail_html  = $thumbnail_id ? wp_get_attachment_image(
+						$thumbnail_id,
+						'medium_large',
+						false,
+						[
+							'alt'      => $car->post_title,
+							'loading'  => 'lazy',
+							'decoding' => 'async',
+							'sizes'    => '(max-width: 700px) 100vw, (max-width: 1200px) 50vw, 320px',
+						]
+					) : '';
+					$day_price = get_post_meta( $car->ID, 'mpcrbm_day_price', true );
+					$edit_link = get_edit_post_link( $car->ID );
 					?>
-					<div class="mpcrbm-branch-car-card" data-car-id="<?php echo esc_attr( $car->ID ); ?>">
+					<div class="mpcrbm-branch-car-card<?php echo $is_transferred ? ' is-transferred' : ''; ?>" data-car-id="<?php echo esc_attr( $car->ID ); ?>">
 						<div class="mpcrbm-car-thumb">
-							<?php if ( $thumb ) : ?>
-								<img src="<?php echo esc_url( $thumb ); ?>" alt="<?php echo esc_attr( $car->post_title ); ?>">
+							<?php if ( $thumbnail_html ) : ?>
+								<?php echo $thumbnail_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- generated and escaped by wp_get_attachment_image(). ?>
 							<?php else : ?>
 								<div class="mpcrbm-car-thumb-placeholder"><i class="mi mi-car"></i></div>
+							<?php endif; ?>
+							<?php if ( $is_transferred ) : ?>
+								<span class="mpcrbm-transferred-indicator" title="<?php echo esc_attr( sprintf( __( 'Transferred from %s', 'car-rental-manager' ), $home_name ) ); ?>">
+									<i class="mi mi-arrow-right" aria-hidden="true"></i>
+									<?php esc_html_e( 'Transferred', 'car-rental-manager' ); ?>
+								</span>
 							<?php endif; ?>
 						</div>
 						<div class="mpcrbm-car-info">
 							<strong><?php echo esc_html( $car->post_title ); ?></strong>
 							<?php if ( $home_name ) : ?>
-								<span class="mpcrbm-home-badge"><?php esc_html_e( 'Home:', 'car-rental-manager' ); ?> <?php echo esc_html( $home_name ); ?></span>
+								<span class="mpcrbm-home-badge mpcrbm-origin-badge">
+									<i class="mi mi-map-marker" aria-hidden="true"></i>
+									<?php esc_html_e( 'Origin:', 'car-rental-manager' ); ?> <?php echo esc_html( $home_name ); ?>
+								</span>
 							<?php endif; ?>
 							<?php if ( $day_price ) : ?>
 								<span class="mpcrbm-price-badge"><?php echo wc_price( $day_price ); ?>/<?php esc_html_e( 'day', 'car-rental-manager' ); ?></span>
@@ -795,7 +831,10 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								 data-hours='<?php echo esc_attr( wp_json_encode( $hours ) ); ?>'>
 								<div class="mpcrbm-branch-card-header">
 									<span class="mpcrbm-branch-eyebrow"><?php esc_html_e( 'Branch', 'car-rental-manager' ); ?></span>
-									<span class="mpcrbm-car-count-badge"><?php echo esc_html( $car_count ); ?></span>
+									<span class="mpcrbm-car-count-badge <?php echo $car_count > 0 ? 'has-cars' : 'is-empty'; ?>" aria-live="polite">
+										<span class="mpcrbm-car-count-value"><?php echo esc_html( $car_count ); ?></span>
+										<span class="mpcrbm-car-count-status"><?php echo $car_count > 0 ? esc_html__( 'Active', 'car-rental-manager' ) : esc_html__( 'Empty', 'car-rental-manager' ); ?></span>
+									</span>
 								</div>
 								<span class="mpcrbm-branch-name"><?php echo esc_html( $branch->name ); ?></span>
 								<?php if ( $address ) : ?>
@@ -814,15 +853,22 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								<div class="mpcrbm-branch-card-actions">
 									<button type="button" class="mpcrbm-view-branch-cars"
 											data-branch-slug="<?php echo esc_attr( $branch->slug ); ?>"
-											data-branch-name="<?php echo esc_attr( $branch->name ); ?>">
-										<i class="mi mi-car"></i>
-										<?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?>
+											data-branch-name="<?php echo esc_attr( $branch->name ); ?>"
+											aria-label="<?php echo esc_attr( sprintf( __( 'View cars at %s', 'car-rental-manager' ), $branch->name ) ); ?>">
+										<i class="mi mi-car" aria-hidden="true"></i>
+										<span><?php esc_html_e( 'View Cars', 'car-rental-manager' ); ?></span>
 									</button>
 									<button type="button"
 											class="mpcrbm-branch-edit-btn mpcrbm-location-edit-btn"
 											title="<?php esc_attr_e( 'Edit branch', 'car-rental-manager' ); ?>"
 											aria-label="<?php echo esc_attr( sprintf( __( 'Edit %s', 'car-rental-manager' ), $branch->name ) ); ?>">
 										<i class="mi mi-edit"></i>
+									</button>
+									<button type="button"
+											class="mpcrbm-branch-delete-btn mpcrbm-location-delete-btn"
+											title="<?php esc_attr_e( 'Delete branch', 'car-rental-manager' ); ?>"
+											aria-label="<?php echo esc_attr( sprintf( __( 'Delete %s', 'car-rental-manager' ), $branch->name ) ); ?>">
+										<i class="mi mi-trash"></i>
 									</button>
 								</div>
 							</div>
@@ -848,7 +894,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 			?>
 			<div class="mpcrbm-branch-manager-head">
 				<div class="mpcrbm-branch-manager-head-text">
-					<h2><?php esc_html_e( 'Branch Manager', 'car-rental-manager' ); ?></h2>
+					<h2><?php esc_html_e( 'Branch Management', 'car-rental-manager' ); ?></h2>
 					<p class="mpcrbm-branch-manager-head-subtitle"><?php esc_html_e( 'Manage your rental locations, assign vehicles to branches, and track transfers across your fleet.', 'car-rental-manager' ); ?></p>
 				</div>
 			</div>
@@ -862,9 +908,17 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				<div class="mpcrbm-branch-cars-panel">
 					<div class="mpcrbm-branch-cars-panel-header" style="display:none">
 						<h3 class="mpcrbm-panel-branch-name"></h3>
-						<span class="mpcrbm-panel-car-count"></span>
+						<span class="mpcrbm-panel-car-count" aria-live="polite"></span>
+						<div class="mpcrbm-cars-view-switcher" role="group" aria-label="<?php esc_attr_e( 'Vehicle display layout', 'car-rental-manager' ); ?>">
+							<button type="button" class="mpcrbm-cars-view-button is-active" data-view="grid" aria-controls="mpcrbm_branch_cars_results" aria-pressed="true" title="<?php esc_attr_e( 'Grid view', 'car-rental-manager' ); ?>">
+								<i class="mi mi-grid" aria-hidden="true"></i>
+							</button>
+							<button type="button" class="mpcrbm-cars-view-button" data-view="list" aria-controls="mpcrbm_branch_cars_results" aria-pressed="false" title="<?php esc_attr_e( 'List view', 'car-rental-manager' ); ?>">
+								<i class="mi mi-list" aria-hidden="true"></i>
+							</button>
+						</div>
 					</div>
-					<div class="mpcrbm-branch-cars-panel-body">
+					<div class="mpcrbm-branch-cars-panel-body" id="mpcrbm_branch_cars_results">
 						<div class="mpcrbm-select-prompt">
 							<i class="mi mi-map-location-track"></i>
 							<div>
