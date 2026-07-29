@@ -40,7 +40,7 @@
 				$cpt     = MPCRBM_Function::get_cpt();
 				$new_url = admin_url( 'post-new.php?post_type=' . $cpt );
 				$dash_url = admin_url( 'edit.php?post_type=' . $cpt . '&page=mpcrbm_car_rental' );
-				$loc_url  = admin_url( 'edit.php?post_type=' . $cpt . '&page=mpcrbm_locations_manager' );
+				$loc_url  = admin_url( 'edit.php?post_type=' . $cpt . '&page=mpcrbm_car_rental&mpcrbm_tab=mpcrbm_branch_manager' );
 				$ex_url   = admin_url( 'edit.php?post_type=' . $cpt . '&page=mpcrbm_ex_services_manager' );
 				$bm_url   = admin_url( 'edit.php?post_type=' . $cpt . '&page=mpcrbm_branch_managers' );
 				$sections = $this->sections();

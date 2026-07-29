@@ -3,10 +3,11 @@
  * @Author      MagePeople Team
  * Copyright:   mage-people.com
  *
- * In-shell "Locations" page — a full custom editor for the mpcrbm_locations
- * taxonomy (name/slug/description + the Branch Manager's address/phone/hours
- * term meta), rendered inside MPCRBM_Admin_Shell instead of linking out to
- * the native edit-tags.php screen. Saves go through wp_insert_term()/
+ * Shared branch editor for the mpcrbm_locations taxonomy
+ * (name/slug/description + address/phone/hours term meta). The visible UI is
+ * consolidated into the Car Rental > Branch Management tab; the old standalone
+ * page slug is redirected there for backward-compatible bookmarks. Saves go
+ * through wp_insert_term()/
  * wp_update_term(), which fire the created_mpcrbm_locations/
  * edited_mpcrbm_locations hooks MPCRBM_Branch_Manager::save_branch_meta()
  * is already listening on — as long as this page's AJAX POST includes the
@@ -22,22 +23,36 @@ if ( ! class_exists( 'MPCRBM_Locations_Manager' ) ) {
 	class MPCRBM_Locations_Manager {
 
 		public function __construct() {
-			add_action( 'admin_menu', [ $this, 'register_menu' ] );
+			add_action( 'admin_init', [ $this, 'redirect_legacy_page' ] );
 			add_action( 'wp_ajax_mpcrbm_save_location', [ $this, 'ajax_save_location' ] );
 			add_action( 'wp_ajax_mpcrbm_update_location', [ $this, 'ajax_update_location' ] );
 			add_action( 'wp_ajax_mpcrbm_delete_location', [ $this, 'ajax_delete_location' ] );
 		}
 
-		public function register_menu() {
-			$cpt = MPCRBM_Function::get_cpt();
-			add_submenu_page(
-				'edit.php?post_type=' . $cpt,
-				esc_html__( 'Locations', 'car-rental-manager' ),
-				esc_html__( 'Locations', 'car-rental-manager' ),
-				'manage_options',
-				'mpcrbm_locations_manager',
-				[ $this, 'render_page' ]
+		/** Redirect the retired standalone page to the consolidated workspace. */
+		public function redirect_legacy_page(): void {
+			$page      = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+			$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : '';
+
+			if ( 'mpcrbm_locations_manager' !== $page || MPCRBM_Function::get_cpt() !== $post_type ) {
+				return;
+			}
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'You do not have permission to manage branches.', 'car-rental-manager' ) );
+			}
+
+			$destination = add_query_arg(
+				[
+					'post_type'   => MPCRBM_Function::get_cpt(),
+					'page'        => 'mpcrbm_car_rental',
+					'mpcrbm_tab' => 'mpcrbm_branch_manager',
+				],
+				admin_url( 'edit.php' )
 			);
+
+			wp_safe_redirect( $destination );
+			exit;
 		}
 
 		// ═══════════════════════════════════════════════════════════════════
@@ -116,7 +131,7 @@ if ( ! class_exists( 'MPCRBM_Locations_Manager' ) ) {
 		}
 
 		/**
-		 * Shared Add/Edit modal used by both the Locations page and Branch List tab.
+		 * Shared Add/Edit modal used by the consolidated Branch Management tab.
 		 */
 		public static function render_location_modal(): void {
 			?>
@@ -223,9 +238,9 @@ if ( ! class_exists( 'MPCRBM_Locations_Manager' ) ) {
 					<?php echo self::render_locations_list(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from esc_html()/esc_attr()'d pieces above. ?>
 				</div>
 
-			<!-- Populated by the shared Branch Manager AJAX flow. The Locations
-			     stylesheet adds its standalone surface treatment because this panel
-			     is intentionally outside the Branch List dashboard container. -->
+			<!-- Legacy standalone renderer retained for backward compatibility with
+			     third-party callbacks; direct page requests now redirect to the
+			     consolidated Branch Management tab. -->
 			<div class="mpcrbm-branch-cars-panel">
 				<div class="mpcrbm-branch-cars-panel-header" style="display:none">
 					<h3 class="mpcrbm-panel-branch-name"></h3>
@@ -406,6 +421,43 @@ if ( ! class_exists( 'MPCRBM_Locations_Manager' ) ) {
 			$term_id = isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0;
 			if ( ! $term_id ) {
 				wp_send_json_error( [ 'message' => __( 'Invalid branch.', 'car-rental-manager' ) ], 400 );
+			}
+
+			$term = get_term( $term_id, 'mpcrbm_locations' );
+			if ( ! $term || is_wp_error( $term ) ) {
+				wp_send_json_error( [ 'message' => __( 'Branch not found.', 'car-rental-manager' ) ], 404 );
+			}
+
+			// Branch assignments use term slugs in post meta rather than taxonomy
+			// relationships. Refuse deletion while any non-trashed vehicle still
+			// references the branch as either its home or current location.
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			$assigned_cars = get_posts(
+				[
+					'post_type'      => MPCRBM_Function::get_cpt(),
+					'post_status'    => 'any',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_query'     => [
+						'relation' => 'OR',
+						[
+							'key'   => 'mpcrbm_home_branch',
+							'value' => $term->slug,
+						],
+						[
+							'key'   => 'mpcrbm_current_branch',
+							'value' => $term->slug,
+						],
+					],
+				]
+			);
+
+			if ( ! empty( $assigned_cars ) ) {
+				wp_send_json_error(
+					[ 'message' => __( 'This branch still has assigned vehicles. Transfer or unassign them before deleting the branch.', 'car-rental-manager' ) ],
+					409
+				);
 			}
 
 			$result = wp_delete_term( $term_id, 'mpcrbm_locations' );

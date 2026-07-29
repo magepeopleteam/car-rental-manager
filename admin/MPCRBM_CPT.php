@@ -69,12 +69,11 @@
 			}
 
 			// The mpcrbm_locations taxonomy and mpcrbm_ex_services post type (both
-			// registered in cpt() below) each keep show_ui/show_in_menu on, because
-			// MPCRBM_Locations_Manager / MPCRBM_Extra_Services_Manager still rely on
-			// their underlying terms/posts being creatable under the hood — but that
-			// also makes WordPress auto-add its own native "Locations" / "Extra
-			// Services" submenu, duplicating the fully custom shell page those two
-			// classes already render. Same "remove submenu added by register_post_type"
+			// registered in cpt() below) each keep show_ui/show_in_menu on because
+			// the consolidated Branch Management tab and Extra Services manager rely
+			// on their underlying terms/posts being creatable. WordPress consequently
+			// auto-adds native "Locations" / "Extra Services" submenus, duplicating
+			// the plugin's custom management surfaces. Same "remove submenu added by register_post_type"
 			// idiom already used by MPCRBM_Taxonomies::remove_registered_submenu().
 			public function remove_duplicate_native_submenus() {
 				$cpt = MPCRBM_Function::get_cpt();

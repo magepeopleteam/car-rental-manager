@@ -248,13 +248,21 @@
     flex-shrink: 0;
 }
 
-.mpcrbm-car-count-badge::after {
-    content: 'Active';
-}
-
-.mpcrbm-branch-card.is-active .mpcrbm-car-count-badge {
+.mpcrbm-car-count-badge.has-cars {
     background: #dcfce7;
     color: #15803d;
+}
+
+.mpcrbm-car-count-badge.is-empty {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.mpcrbm-car-count-value,
+.mpcrbm-car-count-status {
+    display: inline-block;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 /* Meta rows: address / phone */
@@ -313,37 +321,64 @@
 /* Action buttons row */
 .mpcrbm-branch-card-actions {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 7px;
     margin-top: 14px;
+    min-width: 0;
 }
 
 div.mpcrbm .mpcrbm-view-branch-cars {
-    flex: 1;
+    flex: 1 1 auto;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    background: #667eea;
-    color: #fff;
-    border: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 0 14px;
+    gap: 6px;
+    min-width: 0;
     height: 40px;
+    margin: 0;
+    padding: 0 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #586fdf 100%);
+    color: #fff;
+    border: 1px solid transparent;
     border-radius: 9px;
+    box-shadow: 0 3px 8px rgba(102, 126, 234, 0.2);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    text-transform: none;
+    white-space: nowrap;
     cursor: pointer;
-    transition: background 0.15s ease, transform 0.15s ease;
+    opacity: 1;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 div.mpcrbm .mpcrbm-view-branch-cars i {
+    flex: 0 0 auto;
     font-size: 13px;
+}
+
+div.mpcrbm .mpcrbm-view-branch-cars span {
+    min-width: 0;
+    white-space: nowrap;
 }
 
 div.mpcrbm .mpcrbm-view-branch-cars:hover,
 div.mpcrbm .mpcrbm-view-branch-cars:focus {
-    background: #5568d3;
+    background: linear-gradient(135deg, #5b72e4 0%, #4f64d1 100%);
+    box-shadow: 0 5px 12px rgba(79, 100, 209, 0.28);
     color: #fff;
+    transform: translateY(-1px);
     opacity: 1;
+}
+
+div.mpcrbm .mpcrbm-view-branch-cars:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 2px;
 }
 
 div.mpcrbm .mpcrbm-branch-edit-btn.mpcrbm-location-edit-btn {
@@ -370,6 +405,34 @@ div.mpcrbm .mpcrbm-branch-edit-btn.mpcrbm-location-edit-btn:focus {
     background: #e2e8f0;
     border-color: #cbd5e1;
     color: var(--bm-text);
+    opacity: 1;
+}
+
+div.mpcrbm .mpcrbm-branch-delete-btn.mpcrbm-location-delete-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    background: #fff7f7;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    color: #dc2626;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+div.mpcrbm .mpcrbm-branch-delete-btn.mpcrbm-location-delete-btn i {
+    font-size: 14px;
+}
+
+div.mpcrbm .mpcrbm-branch-delete-btn.mpcrbm-location-delete-btn:hover,
+div.mpcrbm .mpcrbm-branch-delete-btn.mpcrbm-location-delete-btn:focus {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
     opacity: 1;
 }
 
@@ -449,6 +512,47 @@ div.mpcrbm .mpcrbm-add-branch-link i {
     border: 1px solid rgba(255,255,255,0.3);
 }
 
+.mpcrbm-cars-view-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    padding: 4px;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 9px;
+}
+
+div.mpcrbm .mpcrbm-cars-view-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    color: rgba(255,255,255,0.75);
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+div.mpcrbm .mpcrbm-cars-view-button:hover,
+div.mpcrbm .mpcrbm-cars-view-button:focus,
+div.mpcrbm .mpcrbm-cars-view-button.is-active {
+    color: #26388f;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(15,23,42,0.18);
+    opacity: 1;
+}
+
+div.mpcrbm .mpcrbm-cars-view-button:focus-visible {
+    outline: 2px solid #bfdbfe;
+    outline-offset: 2px;
+}
+
 .mpcrbm-branch-cars-panel-body {
     padding: 20px 24px;
     flex: 1;
@@ -518,9 +622,11 @@ div.mpcrbm .mpcrbm-add-branch-link i {
 }
 
 .mpcrbm-car-thumb {
-    height: 140px;
+    position: relative;
+    height: auto;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    background: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -529,12 +635,40 @@ div.mpcrbm .mpcrbm-add-branch-link i {
 .mpcrbm-car-thumb img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
+    image-rendering: auto;
 }
 
 .mpcrbm-car-thumb-placeholder {
     color: #cbd5e1;
     font-size: 52px;
+}
+
+.mpcrbm-transferred-indicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    color: #92400e;
+    background: rgba(255, 247, 237, 0.96);
+    border: 1px solid #fdba74;
+    border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(146, 64, 14, 0.16);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    backdrop-filter: blur(4px);
+}
+
+.mpcrbm-transferred-indicator i {
+    font-size: 10px;
 }
 
 .mpcrbm-car-info {
@@ -553,13 +687,26 @@ div.mpcrbm .mpcrbm-add-branch-link i {
 
 .mpcrbm-home-badge {
     font-size: 11px;
-    color: var(--bm-text-sec);
-    background: var(--bm-bg);
-    padding: 2px 8px;
-    border-radius: 20px;
-    display: inline-block;
-    font-weight: 500;
-    border: 1px solid var(--bm-border);
+    color: #4338ca;
+    background: #eef2ff;
+    padding: 3px 9px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 5px;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-weight: 700;
+    line-height: 1.2;
+    border: 1px solid #c7d2fe;
+    white-space: nowrap;
+}
+
+.mpcrbm-home-badge i {
+    flex: 0 0 auto;
+    font-size: 10px;
 }
 
 .mpcrbm-price-badge {
@@ -618,6 +765,139 @@ div.mpcrbm .mpcrbm-add-branch-link i {
 .mpcrbm-do-transfer.button-primary:hover {
     background: var(--bm-primary-dark) !important;
     border-color: var(--bm-primary-dark) !important;
+}
+
+/* ── Vehicle List View ──────────────────────────────────────────────── */
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-branch-cars-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-branch-car-card {
+    display: grid;
+    grid-template-columns: 112px minmax(190px, 1fr) minmax(540px, 640px);
+    align-items: center;
+    min-height: 104px;
+    padding: 0 10px;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-thumb {
+    width: 112px;
+    height: 84px;
+    min-height: 0;
+    margin: 10px 0;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--bm-border);
+    border-radius: 9px;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-info {
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+    padding: 12px 16px;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-info strong {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-home-badge {
+    align-self: center;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-transfer-form {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.2fr) minmax(150px, 1fr) 96px 88px;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border-top: 0;
+    border-left: 1px solid var(--bm-border);
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-transfer-target,
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-transfer-reason {
+    height: 38px;
+    margin: 0;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-transfer-form .button {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 38px !important;
+    margin: 0 !important;
+    padding: 0 10px !important;
+    line-height: 1 !important;
+    white-space: nowrap;
+}
+
+.mpcrbm-branch-cars-panel.is-list-view .mpcrbm-transferred-indicator {
+    top: 5px;
+    left: 5px;
+    gap: 4px;
+    padding: 4px 6px;
+    font-size: 9px;
+}
+
+@media (max-width: 1200px) {
+    .mpcrbm-branch-cars-panel.is-list-view .mpcrbm-branch-car-card {
+        grid-template-columns: 112px minmax(180px, 1fr);
+    }
+
+    .mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-transfer-form {
+        grid-column: 1 / -1;
+        margin: 0 -10px;
+        border-top: 1px solid var(--bm-border);
+        border-left: 0;
+    }
+}
+
+@media (max-width: 700px) {
+    .mpcrbm-branch-cars-panel-header {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+    }
+
+    .mpcrbm-cars-view-switcher {
+        margin-left: auto;
+    }
+
+    .mpcrbm-branch-cars-panel-body {
+        padding: 16px;
+    }
+
+    .mpcrbm-branch-cars-panel.is-list-view .mpcrbm-branch-car-card {
+        display: block;
+        min-height: 0;
+        padding: 0;
+    }
+
+    .mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-thumb {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        margin: 0;
+        aspect-ratio: 4 / 3;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-info {
+        padding: 12px 14px 8px;
+    }
+
+    .mpcrbm-branch-cars-panel.is-list-view .mpcrbm-car-transfer-form {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 10px 14px 14px;
+    }
 }
 
 /* ── Transfer Log Table (car edit page) ─────────────────────────────── */

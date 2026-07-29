@@ -510,6 +510,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
             if ( ! in_array( $requested_tab, wp_list_pluck( MPCRBM_Admin_Shell::get_car_rental_taxonomy_tabs(), 'target' ), true ) ) {
                 $requested_tab = '';
             }
+			$active_tab = $requested_tab ?: 'mpcrbm_car_list';
 
             $car_result_data = MPCRBM_Global_Function::mpcrbm_get_car_data();
             $total_publish_car = count( $car_result_data['cars'] );
@@ -524,7 +525,8 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             ob_start();
             foreach ( MPCRBM_Admin_Shell::get_car_rental_taxonomy_tabs() as $i => $tab ) {
-                $classes = 'mpcrbm_taxonomies_tab' . ( 0 === $i ? ' mpcrbm_car_list_tab active' : '' );
+				$is_active = $active_tab === $tab['target'];
+				$classes   = 'mpcrbm_taxonomies_tab' . ( 0 === $i ? ' mpcrbm_car_list_tab' : '' ) . ( $is_active ? ' active' : '' );
                 ?>
                 <li><button class="<?php echo esc_attr( $classes ); ?>" data-target="<?php echo esc_attr( $tab['target'] ); ?>"><i class="<?php echo esc_attr( $tab['icon'] ); ?>"></i> <span><?php echo esc_html( $tab['label'] ); ?></span></button></li>
                 <?php
@@ -533,7 +535,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
 
             MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Car Rental', 'car-rental-manager' ), null, $sidebar_submenu_html );
             ?>
-                <div class="mpcrbm_analytics" id="mpcrbm_analytics_holder">
+				<div class="mpcrbm_analytics" id="mpcrbm_analytics_holder"<?php echo 'mpcrbm_car_list' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                         <div class="mpcrbm_stat-card total">
                             <div class="mpcrbm_stat-left">
                                 <i class="mi mi-cars"></i>
@@ -580,52 +582,52 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     </div>
 
                     <div class="mpcrbm_taxonomies_content">
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_list_holder">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_list_holder"<?php echo 'mpcrbm_car_list' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 include( MPCRBM_Function::template_path( 'car_list/car_lists.php' ) );
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_type_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_type_holder"<?php echo 'mpcrbm_car_type' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_car_type' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_fuel_type_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_fuel_type_holder"<?php echo 'mpcrbm_fuel_type' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_fuel_type' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_seating_capacity_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_seating_capacity_holder"<?php echo 'mpcrbm_seating_capacity' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_seating_capacity' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_brand_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_brand_holder"<?php echo 'mpcrbm_car_brand' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_car_brand' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_make_year_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_make_year_holder"<?php echo 'mpcrbm_make_year' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_make_year' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_feature_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_car_feature_holder"<?php echo 'mpcrbm_car_feature' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 echo self::load_taxonomies( 'mpcrbm_car_feature' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_faq_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_faq_holder"<?php echo 'mpcrbm_manage_faq' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 MPCRBM_Manage_Faq::faq_display();    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_term_condition_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_manage_term_condition_holder"<?php echo 'mpcrbm_manage_term_condition' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <?php
                                 MPCRBM_Manage_Faq::term_and_condition_display(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                             ?>
                         </div>
-                        <div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_branch_manager_holder" style="display: none">
+						<div class="mpcrbm_taxonomies_content_holder" id="mpcrbm_branch_manager_holder"<?php echo 'mpcrbm_branch_manager' === $active_tab ? '' : ' style="display:none"'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- fixed attribute. ?>>
                             <div class="mpcrbm-branch-lazy-placeholder"></div>
                         </div>
                     </div>
@@ -688,28 +690,6 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 </div>
 
             <?php
-            if ( $requested_tab ) :
-                // Reuses the existing click handler (mpcrbm_manage_taxonomy.js)
-                // instead of duplicating its hide/show logic here — every tab's
-                // content is already server-rendered into the DOM above, this
-                // just clicks the matching button once on load.
-                //
-                // Bound to window "load", not jQuery(document).ready()/jQuery(fn):
-                // mpcrbm_manage_taxonomy.js is footer-enqueued and ALSO binds its
-                // click delegation inside its own $(document).ready() — since this
-                // inline block sits earlier in the page than that footer script,
-                // a document-ready callback here would run BEFORE that handler is
-                // bound (ready callbacks run in registration order), so .trigger()
-                // would fire into a void and silently do nothing every time. "load"
-                // fires strictly after every ready() callback has already run.
-                ?>
-                <script>
-                jQuery(window).on('load', function () {
-                    jQuery('.mpcrbm_taxonomies_tab[data-target="<?php echo esc_js( $requested_tab ); ?>"]').trigger('click');
-                });
-                </script>
-                <?php
-            endif;
             MPCRBM_Admin_Shell::render_shell_close();
         }
 
