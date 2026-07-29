@@ -236,6 +236,21 @@
 .mpcrbm-mb-badge--refunded   { background: #f1f5f9; color: #475569; }
 .mpcrbm-mb-badge--failed     { background: #fce7f3; color: #9d174d; }
 
+.mpcrbm-mb-vehicle-updated {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    background: #fef3c7;
+    color: #92400e;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
 .mpcrbm-mb-card-price {
     font-size: 16px;
     font-weight: 700;

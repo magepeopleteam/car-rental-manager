@@ -745,6 +745,8 @@
                 $pickup_time = $pickup_dt ? MPCRBM_Global_Function::date_format( $pickup_dt, 'time' ) : '';
                 $return_date = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt ) : '—';
                 $return_time = $return_dt ? MPCRBM_Global_Function::date_format( $return_dt, 'time' ) : '';
+                $replacement_log = get_post_meta( $id, 'mpcrbm_replacement_log', true );
+                $vehicle_updated = ! empty( $replacement_log ) && is_array( $replacement_log );
 
                 ob_start(); ?>
                 <div class="mpcrbm-mb-card" data-id="<?php echo esc_attr( $id ); ?>">
@@ -757,7 +759,7 @@
                     </div>
                     <div class="mpcrbm-mb-card-body">
                         <div class="mpcrbm-mb-card-info">
-                            <h3 class="mpcrbm-mb-card-title"><?php echo esc_html( $car_title ); ?></h3>
+                            <h3 class="mpcrbm-mb-card-title"><?php echo esc_html( $car_title ); ?><?php if ( $vehicle_updated ) : ?> <span class="mpcrbm-mb-vehicle-updated" title="<?php esc_attr_e( 'The vehicle for this booking was updated by the agency.', 'car-rental-manager' ); ?>"><?php esc_html_e( 'Vehicle updated', 'car-rental-manager' ); ?></span><?php endif; ?></h3>
                             <span class="mpcrbm-mb-card-num">#<?php echo esc_html( $order_id ?: $id ); ?></span>
                         </div>
                         <div class="mpcrbm-mb-card-dates">
