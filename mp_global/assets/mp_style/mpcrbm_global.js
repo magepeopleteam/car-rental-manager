@@ -388,6 +388,14 @@ function mpcrbm_sticky_management() {
 //============================================================================Tabs================//
 (function ($) {
     "use strict";
+    // Key the remembered tab per-post (and per ".mpcrbm_tabs" block, in case a
+    // page ever renders more than one) so re-opening a different post doesn't
+    // restore a tab left active on another one. Returns null on the "Add New"
+    // screen (no #post_ID yet), where there's nothing meaningful to persist.
+    function mpcrbm_active_tab_storage_key(tabsIndex) {
+        let postId = $('#post_ID').val();
+        return postId ? 'mpcrbm_active_tab_' + postId + '_' + tabsIndex : null;
+    }
     function active_next_tab(parent, targetTab) {
         parent.height(parent.height());
         let tabsContent = parent.find('.tabsContentNext:first');
@@ -455,9 +463,12 @@ function mpcrbm_sticky_management() {
         active_next_tab(parent, targetTab);
     });
     $(document).ready(function () {
-        $('.mpcrbm .mpcrbm_tabs').each(function () {
+        $('.mpcrbm .mpcrbm_tabs').each(function (tabsIndex) {
             let tabLists = $(this).find('.tabLists:first');
-            let activeTab = tabLists.find('[data-tabs-target].active');
+            let storageKey = mpcrbm_active_tab_storage_key(tabsIndex);
+            let savedTarget = storageKey ? window.localStorage.getItem(storageKey) : null;
+            let savedTab = savedTarget ? tabLists.find('[data-tabs-target="' + savedTarget + '"]') : $();
+            let activeTab = savedTab.length > 0 ? savedTab : tabLists.find('[data-tabs-target].active');
             let targetTab = activeTab.length > 0 ? activeTab : tabLists.find('[data-tabs-target]').first();
             targetTab.trigger('click');
         });
@@ -475,6 +486,11 @@ function mpcrbm_sticky_management() {
         if (!$(this).hasClass('active')) {
             let tabsTarget = $(this).data('tabs-target');
             let parent = $(this).closest('.mpcrbm_tabs');
+            let tabsIndex = $('.mpcrbm .mpcrbm_tabs').index(parent);
+            let storageKey = mpcrbm_active_tab_storage_key(tabsIndex);
+            if (storageKey) {
+                window.localStorage.setItem(storageKey, tabsTarget);
+            }
             parent.height(parent.height());
             let tabLists = $(this).closest('.tabLists');
             let tabsContent = parent.find('.tabsContent:first');

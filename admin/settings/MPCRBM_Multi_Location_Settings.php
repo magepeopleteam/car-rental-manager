@@ -42,7 +42,7 @@
 						<div class="mpcrbm-info-card-header">
 							<i class="fas fa-map-pin"></i>
 							<div>
-								<h3><?php esc_html_e( 'Multi-Location Settings', 'car-rental-manager' ); ?></h3>
+								<h3><?php esc_html_e( 'Multi-Location Fee', 'car-rental-manager' ); ?></h3>
 								<span class="desc"><?php esc_html_e( 'Allow this vehicle to be rented from multiple pickup and drop-off locations', 'car-rental-manager' ); ?></span>
 							</div>
 							<?php MPCRBM_Custom_Layout::switch_button( 'mpcrbm_multi_location_enabled', $enabled_checked ); ?>

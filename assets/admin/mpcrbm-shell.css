@@ -16,7 +16,7 @@
    (dashboard pages + the car edit screen) — not applied anywhere else in
    wp-admin. */
 html.wp-toolbar {
-	padding-top: 10px;
+	padding-top: 0px;
 }
 
 body.mpcrbm-admin {
@@ -1743,31 +1743,34 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	background-color: var(--mpcrbm-shell-primary, #1d7bff);
 }
 
-/* Loading state on a round-switch toggle while its AJAX save is in flight
-   (mpcrbm_admin.js's ".mpcrbm_switch_checkbox" click handler) — shown BEFORE
-   the corresponding "#<id>_holder" card body reveals/hides, since that only
-   happens once the request's success callback actually runs. */
-.roundSwitchLabel.mpcrbm-switch-loading {
+/* Loading state on a card body while its toggle's AJAX save is in flight
+   (mpcrbm_admin.js's ".mpcrbm_switch_checkbox" click handler) — the spinner
+   is centered on the "#<id>_holder" content panel itself (not the switch),
+   since that's the area about to expand/collapse once the request's success
+   callback reveals/hides it. Content is hidden rather than removed so the
+   panel keeps its layout/height while loading. */
+.mpcrbm-info-card-body.mpcrbm-content-loading {
 	position: relative;
-	pointer-events: none;
+	min-height: 60px;
 }
 
-.roundSwitchLabel.mpcrbm-switch-loading .roundSwitch {
-	opacity: .5;
+.mpcrbm-info-card-body.mpcrbm-content-loading > * {
+	visibility: hidden;
 }
 
-.roundSwitchLabel.mpcrbm-switch-loading::after {
+.mpcrbm-info-card-body.mpcrbm-content-loading::after {
 	content: "";
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	width: 14px;
-	height: 14px;
-	margin: -7px 0 0 -7px;
-	border: 2px solid rgba(0, 0, 0, .15);
+	width: 22px;
+	height: 22px;
+	margin: -11px 0 0 -11px;
+	border: 3px solid rgba(0, 0, 0, .15);
 	border-top-color: var(--mpcrbm-shell-primary, #1d7bff);
 	border-radius: 50%;
 	animation: mpcrbm-switch-spin .6s linear infinite;
+	visibility: visible;
 }
 
 @keyframes mpcrbm-switch-spin {
@@ -1784,6 +1787,28 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 		width: 100%;
 		margin-top: 16px;
 	}
+
+	/* Tab nav bar (General Info / Pricing / .../ Advanced): the base rule's
+	   "flex-flow: row wrap" (~line 1357) wraps 9 chip-style tabs into several
+	   ragged, sticky-pinned rows on narrow screens — eating vertical space and
+	   squishing long labels like "Operation Area & Date Time". Below this
+	   width it becomes a single horizontally-scrollable row instead, same
+	   convention as any other overflowing tab/pill strip. */
+	#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		padding: 8px 10px;
+		gap: 4px;
+	}
+
+	#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target] {
+		flex: 0 0 auto;
+		white-space: nowrap;
+		padding: 8px 12px;
+		font-size: 13px;
+	}
 }
 
 /* ==========================================================================
@@ -1796,8 +1821,17 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
    (only this card, only the Car edit screen), never the bare utility classes.
    ========================================================================== */
 
+/* Each row's inputs carry a 100px min-width (further down), so the row as a
+   whole doesn't fit narrow/mobile viewports — scroll the table horizontally
+   within its own box instead of letting it force the whole admin page wider. */
+.mpcrbm_extra_service_area {
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
 .mpcrbm_extra_service_area table {
 	width: 100%;
+	min-width: 560px;
 	border-collapse: separate;
 	border-spacing: 0;
 	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
@@ -2605,6 +2639,17 @@ body.mpcrbm-admin.post-new-php #submitdiv .submitdelete {
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-body {
 	padding: 18px 20px;
+	transition: opacity .35s ease;
+}
+
+/* Paired with the "mpcrbm-fade-in" class toggled in mpcrbm_admin.js's
+   ".mpcrbm_switch_checkbox" success handler: the class is applied right
+   before slideDown() starts (so the panel opens at opacity:0) and removed a
+   frame later, letting this transition fade it in while the height is still
+   animating open — a plain slideDown alone snaps the content in at full
+   opacity as soon as there's any height to show. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-info-card-body.mpcrbm-fade-in {
+	opacity: 0;
 }
 
 #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .tabsItem .mpcrbm-info-grid {
@@ -3236,6 +3281,7 @@ input.formControl.mpcrbm-list-search {
 	display: flex;
 	align-items: flex-start;
 	justify-content: space-between;
+	flex-wrap: wrap;
 	gap: 24px;
 	padding-bottom: 18px;
 	margin-bottom: 18px;
