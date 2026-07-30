@@ -26,6 +26,12 @@
 				add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_shell_assets' ] );
 				add_action( 'wp_ajax_mpcrbm_set_menu_layout_style', [ $this, 'ajax_set_menu_layout_style' ] );
 				add_action( 'in_admin_header', [ $this, 'render_edit_screen_chrome' ] );
+				// Printed on admin_footer (not in_admin_header like the chrome above)
+				// so it lands after <form id="post"> in the document rather than
+				// before it — the bar is position:fixed either way, but this keeps
+				// its controls last in the tab order instead of ahead of the form
+				// they navigate.
+				add_action( 'admin_footer', [ $this, 'render_edit_screen_stepnav' ] );
 				add_filter( 'wp_editor_settings', [ $this, 'simplify_content_editor_toolbar' ], 10, 2 );
 				add_action( 'admin_head', [ $this, 'print_metabox_reveal_style' ] );
 			}
@@ -226,6 +232,68 @@
 				<?php
 			}
 
+			// Floating "wizard" footer for the Add/Edit Car screen: Back / Next
+			// across the Information Settings tabs, a progress read-out, and a
+			// final Publish/Update action — with the current step's required
+			// fields validated before Next moves on (see the "floating step
+			// navigator" block in mpcrbm-shell.js).
+			//
+			// Only the chrome is rendered here; the step list itself is read from
+			// the live DOM (.tabLists li[data-tabs-target]) by that script, NOT
+			// duplicated in PHP — the tab strip is extensible via the
+			// 'mpcrbm_settings_tab_navigation' action (car-rental-manager-pro adds
+			// "Driver and Branch Assignment" and "Advanced" through it), so any
+			// hardcoded copy here would silently fall out of sync with add-ons.
+			//
+			// Every control is type="button": this markup is printed on
+			// admin_footer, i.e. OUTSIDE <form id="post">, so a submit button here
+			// would belong to no form at all. The Publish/Update button instead
+			// proxy-clicks the top bar's own Update control (which in turn
+			// proxy-clicks WP's real #publish) — same pattern documented in
+			// render_edit_screen_chrome().
+			//
+			// Starts with the "hidden" attribute and is revealed by the script
+			// once it has actually found two or more steps to navigate, so a
+			// filtered-down tab strip can never leave an inert bar on screen.
+			public function render_edit_screen_stepnav(): void {
+				if ( ! self::is_metabox_screen() ) {
+					return;
+				}
+				?>
+				<div class="mpcrbm-stepnav" id="mpcrbm-stepnav" hidden>
+					<div class="mpcrbm-stepnav__bar">
+						<span class="mpcrbm-stepnav__bar-fill"></span>
+					</div>
+					<div class="mpcrbm-stepnav__inner">
+						<div class="mpcrbm-stepnav__ring" aria-hidden="true">
+							<span class="mpcrbm-stepnav__ring-num">1</span>
+						</div>
+						<div class="mpcrbm-stepnav__labels">
+							<span class="mpcrbm-stepnav__eyebrow"></span>
+							<span class="mpcrbm-stepnav__title"></span>
+						</div>
+						<ol class="mpcrbm-stepnav__dots" aria-label="<?php esc_attr_e( 'Car setup steps', 'car-rental-manager' ); ?>"></ol>
+						<div class="mpcrbm-stepnav__actions">
+							<button type="button" class="mpcrbm-stepnav__btn mpcrbm-stepnav__btn--ghost" data-mpcrbm-step="prev">
+								<i class="fas fa-arrow-left" aria-hidden="true"></i><?php esc_html_e( 'Back', 'car-rental-manager' ); ?>
+							</button>
+							<button type="button" class="mpcrbm-stepnav__btn mpcrbm-stepnav__btn--primary" data-mpcrbm-step="next">
+								<?php esc_html_e( 'Next', 'car-rental-manager' ); ?><i class="fas fa-arrow-right" aria-hidden="true"></i>
+							</button>
+							<button type="button" class="mpcrbm-stepnav__btn mpcrbm-stepnav__btn--finish" data-mpcrbm-step="finish" hidden>
+								<i class="fas fa-check-circle" aria-hidden="true"></i>
+								<span class="mpcrbm-stepnav__finish-label"><?php esc_html_e( 'Publish', 'car-rental-manager' ); ?></span>
+							</button>
+						</div>
+					</div>
+					<div class="mpcrbm-stepnav__alert" role="alert" aria-live="polite">
+						<i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+						<span class="mpcrbm-stepnav__alert-text"></span>
+					</div>
+				</div>
+				<?php
+			}
+
 			public function enqueue_shell_assets() {
 				if ( ! self::is_plugin_screen() && ! self::is_metabox_screen() ) {
 					return;
@@ -240,6 +308,22 @@
 				wp_localize_script( 'mpcrbm-shell', 'mpcrbmShell', [
 					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 					'nonce'   => wp_create_nonce( 'mpcrbm_shell_nonce' ),
+					// Strings for the floating step navigator (render_edit_screen_stepnav()).
+					// Singular and plural variants are passed as separate strings rather
+					// than using _n() with a count decided in PHP — the count is only known
+					// client-side, and picking a form in JS from a single _n() result would
+					// be wrong in every locale with more than two plural forms.
+					'i18n'    => [
+						'stepOf'         => __( 'Step %1$s of %2$s', 'car-rental-manager' ),
+						'fieldRequired'  => __( '“%s” is required before you can continue.', 'car-rental-manager' ),
+						'fieldsRequired' => __( 'This step still has %s required fields to fill in.', 'car-rental-manager' ),
+						// No count in this one on purpose: it names the step that is
+						// holding things up, which keeps it free of plural forms.
+						'stepLocked'     => __( 'Finish “%s” first before moving ahead.', 'car-rental-manager' ),
+						'stepBlocked'    => __( 'Cannot save yet — “%1$s” has a required field to fill in.', 'car-rental-manager' ),
+						'stepsBlocked'   => __( 'Cannot save yet — “%1$s” has %2$s required fields to fill in.', 'car-rental-manager' ),
+						'thisField'      => __( 'This field', 'car-rental-manager' ),
+					],
 				] );
 			}
 

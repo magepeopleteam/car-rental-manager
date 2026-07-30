@@ -303,6 +303,576 @@
 jQuery(function ($) {
 	'use strict';
 
+	/* ======================================================================
+	   Add/Edit Car screen — floating step navigator (Back / Next) with
+	   per-step required-field validation.
+
+	   Markup: MPCRBM_Admin_Shell::render_edit_screen_stepnav() (printed on
+	   admin_footer). Styling: the "floating step navigator" section of
+	   mpcrbm-shell.css.
+
+	   Navigation is performed by TRIGGERING A CLICK on the existing
+	   ".tabLists li[data-tabs-target]" item, never by showing/hiding panels
+	   directly — mp_global/assets/mp_style/mpcrbm_global.js owns the real tab
+	   switcher, and going through it keeps everything it does intact: the
+	   slideUp/slideDown animation, the per-post "remember the active tab"
+	   localStorage entry, the scroll-into-view, mpcrbm_all_content_change(),
+	   and the TinyMCE re-layout nudge the General Info tab needs. Duplicating
+	   any of that here would mean two code paths to keep in sync.
+
+	   The step list is read from the DOM for the same reason the PHP side
+	   doesn't hardcode it: add-ons extend the tab strip through the
+	   'mpcrbm_settings_tab_navigation' action.
+	   ====================================================================== */
+	var mpcrbmStepNav = (function () {
+		var $bar     = $('#mpcrbm-stepnav');
+		var $tabList = $('#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists');
+		var $tabs    = $tabList.children('li[data-tabs-target]');
+		var total    = $tabs.length;
+
+		// Nothing to step through (no bar on this screen, or a single tab) —
+		// leave the bar hidden rather than showing inert Back/Next controls.
+		if (!$bar.length || total < 2) {
+			return null;
+		}
+
+		var $panels  = $('#mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent');
+		var i18n     = (typeof mpcrbmShell !== 'undefined' && mpcrbmShell.i18n) ? mpcrbmShell.i18n : {};
+
+		var $fill      = $bar.find('.mpcrbm-stepnav__bar-fill');
+		var $ring      = $bar.find('.mpcrbm-stepnav__ring');
+		var $ringNum   = $bar.find('.mpcrbm-stepnav__ring-num');
+		var $eyebrow   = $bar.find('.mpcrbm-stepnav__eyebrow');
+		var $title     = $bar.find('.mpcrbm-stepnav__title');
+		var $dots      = $bar.find('.mpcrbm-stepnav__dots');
+		var $prev      = $bar.find('[data-mpcrbm-step="prev"]');
+		var $next      = $bar.find('[data-mpcrbm-step="next"]');
+		var $finish    = $bar.find('[data-mpcrbm-step="finish"]');
+		var $alertText = $bar.find('.mpcrbm-stepnav__alert-text');
+
+		// visited[i]: the user has actually been on step i (or tried to leave
+		// it). errored[i]: that step's last validation found empty required
+		// fields. A step is only ever flagged red once visited — on a brand-new
+		// car every step is empty, and lighting all of them up on load would be
+		// noise, not information.
+		var visited = [];
+		var errored = [];
+		var current = 0;
+		var alertTimer = null;
+		// False until the initial tab restore has settled — see the note where
+		// it's flipped, at the bottom of this module.
+		var booted = false;
+		// True only for the duration of a programmatic navigate() — see there.
+		var bypass = false;
+
+		// Minimal printf for the localized strings above: handles the %1$s /
+		// %2$s / %s forms actually used, nothing more.
+		function fmt(template, a, b) {
+			if (!template) {
+				return '';
+			}
+			return String(template)
+				.replace(/%1\$s/g, a)
+				.replace(/%2\$s/g, b)
+				.replace(/%s/g, a);
+		}
+
+		// The <li> is "<span class="mi mi-..."></span>Label" — the icon span is
+		// empty, so .text() already yields just the label.
+		function stepLabel(index) {
+			return $.trim($tabs.eq(index).text());
+		}
+
+		function panelFor(index) {
+			var target = $tabs.eq(index).attr('data-tabs-target');
+			return target ? $panels.children('[data-tabs="' + target + '"]') : $();
+		}
+
+		// True when anything BETWEEN the field and its tab panel is hidden —
+		// a collapsed "[data-collapse]" section (the framework only reveals
+		// those by adding .mActive) or a ".hidden_content" repeater template.
+		// The panel itself is excluded from the walk on purpose: inactive
+		// panels are display:none, and this same check has to work while
+		// validating a step the user isn't currently looking at.
+		// getComputedStyle reports an element's OWN cascaded display even
+		// inside a display:none subtree, so the ancestor walk stays accurate
+		// for hidden panels.
+		function isHiddenWithinPanel(el, panel) {
+			var node = el;
+			while (node && node !== panel && node.nodeType === 1) {
+				var style = window.getComputedStyle(node);
+				if (style && (style.display === 'none' || style.visibility === 'hidden')) {
+					return true;
+				}
+				node = node.parentNode;
+			}
+			return false;
+		}
+
+		// Required fields in a step that constraint validation actually applies
+		// to. Mirrors the HTML spec's "barred from constraint validation" list
+		// (disabled / readonly / type=hidden) — which is what keeps, for
+		// example, MPCRBM_Date_Settings' hidden+readonly "Repeated Start Date"
+		// pair from being reported as an unfillable blocker — plus the
+		// hidden-by-UI cases above.
+		function requiredFields(index) {
+			var $panel = panelFor(index);
+			if (!$panel.length) {
+				return $();
+			}
+			var panel = $panel[0];
+
+			return $panel.find('[required]').filter(function () {
+				if (this.disabled || this.readOnly || this.type === 'hidden') {
+					return false;
+				}
+				return !isHiddenWithinPanel(this, panel);
+			});
+		}
+
+		function isFieldValid(el) {
+			if (typeof el.checkValidity === 'function') {
+				return el.checkValidity();
+			}
+			return $.trim($(el).val() || '') !== '';
+		}
+
+		// Field's own label, for the "“Price/Day” is required" message. Most
+		// fields sit inside "<section><label class="label"><div><h6>"; the
+		// relocated post title is the exception — mpcrbm-shell.js puts its
+		// <h6> as a SIBLING before #titlediv rather than an ancestor's child.
+		function fieldLabel(el) {
+			var $el    = $(el);
+			var $label = $el.closest('label, section').find('h6').first();
+
+			if (!$label.length) {
+				$label = $el.closest('#titlediv').prevAll('h6').first();
+			}
+			if (!$label.length) {
+				return i18n.thisField || 'This field';
+			}
+
+			// Drop the "*" span (and any icon span) before reading the text.
+			var text = $.trim($label.clone().children('span').remove().end().text());
+
+			return text || i18n.thisField || 'This field';
+		}
+
+		function markInvalid($field) {
+			// mpcrbm_required is the framework's own red-border class (see
+			// mpcrbm_check_required() in mpcrbm_global.js, which also toggles it
+			// on keyup/change) — reused so the two agree on how an empty
+			// required field looks. mpcrbm-step-invalid adds this feature's own
+			// glow/pulse and is what the "clear as you type" handler keys off.
+			$field.addClass('mpcrbm-step-invalid mpcrbm_required').attr('aria-invalid', 'true');
+		}
+
+		function clearInvalid($field) {
+			// Drops mpcrbm_required too — markInvalid() is what put it there, and
+			// the framework's own keyup/change handler would reach the same
+			// conclusion for a field that now has a value.
+			$field.removeClass('mpcrbm-step-invalid mpcrbm_required').removeAttr('aria-invalid');
+		}
+
+		// Validates one step and records the result in errored[]. Returns the
+		// array of offending elements (empty when the step is complete).
+		function validateStep(index) {
+			var invalid = [];
+
+			requiredFields(index).each(function () {
+				if (isFieldValid(this)) {
+					clearInvalid($(this));
+				} else {
+					invalid.push(this);
+					markInvalid($(this));
+				}
+			});
+
+			errored[index] = invalid.length > 0;
+
+			return invalid;
+		}
+
+		function focusField(el) {
+			try {
+				el.focus({ preventScroll: true });
+			} catch (err) {
+				el.focus();
+			}
+			// The framework's tab switcher ends with a 1000ms jQuery scroll
+			// animation on html/body (mpcrbm_page_scroll_to). Left running it
+			// would drag the viewport straight back off the field this is trying
+			// to reveal, so hand scroll control over explicitly.
+			$('html, body').stop(true);
+
+			if (el.scrollIntoView) {
+				el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			}
+		}
+
+		function notify(message) {
+			$alertText.text(message);
+			$bar.addClass('has-alert');
+			window.clearTimeout(alertTimer);
+			alertTimer = window.setTimeout(hideAlert, 8000);
+		}
+
+		function hideAlert() {
+			window.clearTimeout(alertTimer);
+			$bar.removeClass('has-alert');
+		}
+
+		function shake() {
+			$bar.removeClass('is-shaking');
+			// Force a reflow so re-adding the class restarts the animation
+			// instead of being coalesced into a no-op.
+			void $bar[0].offsetWidth;
+			$bar.addClass('is-shaking');
+			window.setTimeout(function () {
+				$bar.removeClass('is-shaking');
+			}, 500);
+		}
+
+		function buildDots() {
+			$dots.empty();
+
+			for (var i = 0; i < total; i++) {
+				var label = stepLabel(i);
+				var $button = $('<button type="button"></button>')
+					.attr({ 'data-mpcrbm-goto': i, title: label, 'aria-label': label })
+					.append($('<span class="mpcrbm-stepnav__dot-num"></span>').text(i + 1))
+					.append($('<i class="fas fa-check mpcrbm-stepnav__dot-check" aria-hidden="true"></i>'));
+
+				$('<li class="mpcrbm-stepnav__dot"></li>').append($button).appendTo($dots);
+			}
+		}
+
+		function render() {
+			var isFirst = current === 0;
+			var isLast  = current === total - 1;
+			var percent = Math.round(((current + 1) / total) * 100);
+
+			$ringNum.text(current + 1);
+			// setProperty, not .css(): jQuery only learned to write CSS custom
+			// properties in 3.2, and WP has shipped older jQuery on sites that
+			// haven't updated.
+			$ring[0].style.setProperty('--mpcrbm-stepnav-pct', percent + '%');
+			$fill.css('width', percent + '%');
+			$eyebrow.text(fmt(i18n.stepOf, current + 1, total));
+			$title.text(stepLabel(current));
+
+			$prev.prop('disabled', isFirst);
+			$next.prop('hidden', isLast);
+			$finish.prop('hidden', !isLast);
+
+			$dots.children().each(function (index) {
+				$(this)
+					.toggleClass('is-current', index === current)
+					.toggleClass('is-error', !!errored[index])
+					.toggleClass('is-done', index !== current && !errored[index] && !!visited[index]);
+			});
+		}
+
+		// Re-checks every step already flagged red and clears the ones that are
+		// now complete, so dots stop lying as soon as the user fills a field in.
+		function refreshErrored() {
+			var changed   = false;
+			var remaining = 0;
+
+			for (var i = 0; i < total; i++) {
+				if (errored[i]) {
+					if (validateStep(i).length) {
+						remaining++;
+					} else {
+						changed = true;
+					}
+				}
+			}
+			if (changed) {
+				render();
+			}
+			// Retract the message once nothing is blocking any more, rather than
+			// leaving a stale "X is required" sitting there until its timeout.
+			if (!remaining) {
+				hideAlert();
+			}
+		}
+
+		// Moves to a step unconditionally. The bypass flag tells the click handler
+		// below that this move has already been vetted (or is a deliberate jump
+		// to a blocking step), so it only syncs state instead of re-gating it —
+		// without it, every programmatic move would recurse back through the gate.
+		function navigate(index) {
+			if (index === current) {
+				return;
+			}
+			bypass = true;
+			// The framework's switcher (delegated on document) performs the actual
+			// switch; trigger() is synchronous, so bypass is back to false before
+			// anything else can observe it.
+			$tabs.eq(index).trigger('click');
+			bypass = false;
+		}
+
+		// The wizard invariant: step N can only be entered once steps 0..N-1 are
+		// all complete. Moving BACKWARD is always allowed — you can always return
+		// to something you've already seen, including to fix it.
+		//
+		// Every user-initiated move funnels through here (Back, Next, a dot, a
+		// click on the tab strip), so the rule can't be sidestepped by picking a
+		// different control. Returns true when the move happened.
+		function requestStep(index) {
+			index = Math.max(0, Math.min(total - 1, index));
+
+			if (index === current) {
+				return true;
+			}
+			if (index < current) {
+				hideAlert();
+				navigate(index);
+
+				return true;
+			}
+
+			// Forward: find the first step at or before the target that still has
+			// empty required fields. Validating as we go is what paints those
+			// fields red, so the user can see the actual blockers, not just a
+			// message about them.
+			var block   = -1;
+			var invalid = [];
+
+			for (var i = 0; i < index; i++) {
+				var bad = validateStep(i);
+				// Mark it evaluated either way: a step we've just proved complete
+				// should read as done in the rail even if the user never opened it
+				// (skipping ahead over already-filled steps is a normal thing to do
+				// when editing an existing car). The loop stops at the blocker, so
+				// steps beyond it stay unevaluated and keep their neutral look.
+				visited[i] = true;
+				if (bad.length) {
+					block   = i;
+					invalid = bad;
+					break;
+				}
+			}
+
+			visited[current] = true;
+			render();
+
+			if (block < 0) {
+				hideAlert();
+				navigate(index);
+
+				return true;
+			}
+
+			// Land the user on the blocker, then explain — navigate() syncs through
+			// the click handler, which clears any standing message, so notifying
+			// first would only flash it.
+			if (block === current) {
+				focusField(invalid[0]);
+				notify(invalid.length === 1
+					? fmt(i18n.fieldRequired, fieldLabel(invalid[0]))
+					: fmt(i18n.fieldsRequired, invalid.length));
+			} else {
+				navigate(block);
+				// The switcher slides panels for 350ms; focusing before that
+				// settles would target a still-hidden field.
+				window.setTimeout(function () {
+					focusField(invalid[0]);
+				}, 400);
+				notify(fmt(i18n.stepLocked, stepLabel(block)));
+			}
+
+			shake();
+
+			return false;
+		}
+
+		// Validates every step. Returns true when all are complete; otherwise
+		// jumps to the first incomplete one, focuses its first empty field and
+		// explains why in the bar.
+		//
+		// This also fixes a real failure mode of the plain HTML5 path: required
+		// fields living in a NON-active tab panel are display:none, and browsers
+		// refuse to submit a form containing an invalid control they can't focus
+		// — silently, with only a console warning. Switching to the offending
+		// tab first is what makes the message visible at all.
+		function validateAll() {
+			var firstBad = -1;
+			var invalid  = [];
+
+			for (var i = 0; i < total; i++) {
+				var bad = validateStep(i);
+				if (bad.length && firstBad < 0) {
+					firstBad = i;
+					invalid  = bad;
+				}
+			}
+
+			render();
+
+			if (firstBad < 0) {
+				hideAlert();
+				return true;
+			}
+
+			// navigate(), not requestStep(): this jump is deliberately ungated —
+			// its whole purpose is to land on the blocking step, which the gate
+			// would otherwise refuse to enter. Jump FIRST, then speak, since
+			// navigate() syncs through the click handler and that clears any
+			// standing message.
+			if (firstBad === current) {
+				focusField(invalid[0]);
+			} else {
+				navigate(firstBad);
+				// The switcher slides panels for 350ms; focusing before that
+				// settles would target a still-hidden field.
+				window.setTimeout(function () {
+					focusField(invalid[0]);
+				}, 400);
+			}
+
+			notify(invalid.length === 1
+				? fmt(i18n.stepBlocked, stepLabel(firstBad))
+				: fmt(i18n.stepsBlocked, stepLabel(firstBad), invalid.length));
+			shake();
+
+			return false;
+		}
+
+		// ── Wiring ──────────────────────────────────────────────────────────
+
+		// Records the new position after a switch that has already been allowed.
+		function syncTo(index) {
+			if (booted && visited[current]) {
+				validateStep(current);
+			}
+			current = index;
+			visited[index] = true;
+			hideAlert();
+			render();
+		}
+
+		// Single choke point for the tab strip. Bound on the <ul> rather than on
+		// document so it runs BEFORE the framework's document-delegated switcher,
+		// which is what makes stopPropagation() able to veto a move.
+		$tabList.on('click', 'li[data-tabs-target]', function (e) {
+			var index = $tabs.index(this);
+
+			if (index < 0 || index === current) {
+				return;
+			}
+
+			// Two cases must never be gated:
+			//  - bypass: navigate() already vetted this move.
+			//  - !booted: mpcrbm_global.js restores the remembered tab by
+			//    triggering a click on it from its own ready handler. Vetoing that
+			//    would stop the framework's switcher from ever running and leave
+			//    the panel area blank — and there is nothing to gate on load
+			//    anyway, since the user hasn't asked to go anywhere yet.
+			if (bypass || !booted) {
+				syncTo(index);
+
+				return;
+			}
+
+			// User-initiated: hold the framework's switcher back and let
+			// requestStep() decide, then perform the move itself via navigate().
+			e.preventDefault();
+			e.stopPropagation();
+			requestStep(index);
+		});
+
+		$dots.on('click', 'button[data-mpcrbm-goto]', function (e) {
+			e.preventDefault();
+			requestStep(parseInt($(this).attr('data-mpcrbm-goto'), 10));
+		});
+
+		$prev.on('click', function (e) {
+			e.preventDefault();
+			requestStep(current - 1);
+		});
+
+		$next.on('click', function (e) {
+			e.preventDefault();
+			// No separate validation pass here — requestStep() already refuses to
+			// enter current+1 until every step up to and including this one is
+			// complete, and reports the offending field when the blocker is the
+			// step you're standing on.
+			requestStep(current + 1);
+		});
+
+		// Last step: hand off to the top bar's own Update button, which already
+		// owns the validate-then-proxy-click-#publish path (see below) — so
+		// there's one save route, not two.
+		$finish.on('click', function (e) {
+			e.preventDefault();
+
+			var $update = $('#mpcrbm-edit-topbar-update');
+
+			if ($update.length) {
+				$update.trigger('click');
+			} else if ($('#publish').length) {
+				$('#publish')[0].click();
+			}
+		});
+
+		// Clear a field's error state as soon as it becomes valid. Delegated on
+		// document (the class is added long after load) and scoped to the class
+		// itself so it costs nothing until something is actually invalid.
+		$(document).on('input change', '.mpcrbm-step-invalid', function () {
+			if (isFieldValid(this)) {
+				clearInvalid($(this));
+				refreshErrored();
+			}
+		});
+
+		// The framework's ready handler activates a tab by triggering a click on
+		// it, and whether that has already happened by the time this runs
+		// depends on script enqueue order. Both orders are covered: if it ran
+		// first, the active <li> is already marked and read here; if it runs
+		// after, its click lands on the sync handler above.
+		var $active = $tabs.filter('.active').first();
+		current = $active.length ? $tabs.index($active) : 0;
+		visited[current] = true;
+
+		// Mirror whatever WP decided the real publish button says (Publish /
+		// Update / Schedule / Submit for Review) instead of a fixed label.
+		var publishLabel = $('#publish').val();
+		if (publishLabel) {
+			$bar.find('.mpcrbm-stepnav__finish-label').text(publishLabel);
+		}
+
+		buildDots();
+		render();
+
+		// Every jQuery ready callback for this page runs in the same tick, so a
+		// zero-delay timeout lands after mpcrbm_global.js's own ready handler has
+		// restored the remembered tab. Until then `booted` stays false and the
+		// sync handler skips its "validate the step being left" pass — otherwise
+		// re-opening a half-finished car on, say, the Pricing tab would flag
+		// General Info red before the user had touched anything.
+		window.setTimeout(function () {
+			booted = true;
+		}, 0);
+
+		$bar.removeAttr('hidden');
+		// One-shot entrance class, dropped again once it has played — see the
+		// note on .is-entering in mpcrbm-shell.css for why it can't just live on
+		// the base rule.
+		$bar.addClass('is-entering');
+		window.setTimeout(function () {
+			$bar.removeClass('is-entering');
+		}, 400);
+
+		// Drives the matching padding-bottom on #wpbody-content so the last
+		// card in the form can still be scrolled clear of this bar.
+		$('body').addClass('mpcrbm-stepnav-active');
+
+		return { validateAll: validateAll };
+	})();
+
 	// Edit-screen top bar: Update/Preview proxy-click the real native controls
 	// (WP's #publish submit input and #post-preview link) rather than moving
 	// them — #publish lives inside <form id="post">, and the top bar is
@@ -319,6 +889,17 @@ jQuery(function ($) {
 		$topbarUpdate.text($realPublish.val());
 		$topbarUpdate.on('click', function (e) {
 			e.preventDefault();
+
+			// Publishing/updating is gated on every step's required fields being
+			// filled in — the browser would refuse this submit anyway (see
+			// validateAll()'s note on non-focusable controls in hidden tabs), but
+			// silently; this switches to the offending tab and says what's wrong.
+			// Deliberately NOT applied to "Save Draft" further down: a draft is
+			// allowed to be incomplete, which is the point of one.
+			if (mpcrbmStepNav && !mpcrbmStepNav.validateAll()) {
+				return;
+			}
+
 			$realPublish[0].click();
 		});
 	}
