@@ -125,7 +125,50 @@ Please report security bugs found in the source code of the Car Rental Manager f
 == Changelog ==
 
 = 1.4.0 =
-* Security: Fixed a PHP Object Injection vulnerability (Patchstack) reachable by users with the Editor role. Serialized post meta is now unserialized with `allowed_classes => false`, so no class is ever instantiated and no `__wakeup()`/`__destruct()` magic method can run. Object placeholders are stripped recursively, which also closes the nested-object bypass. The date/time settings sanitizer and the vehicle-duplication meta copier, previously unpatched, are now covered as well.
+Major release: a rebuilt admin experience, a single Branch Management workspace, customer-side booking self-service, and a redesigned front end.
+
+**New Features**
+* Vehicle replacement with customer approval — when the agency proposes a different vehicle for a confirmed booking, the customer now sees the proposed change (old vehicle, new vehicle and the stated reason) inside **My Bookings** and can accept or decline it, optionally with a note. Approval is ownership-checked and nonce-protected, and resolving a request clears its pending approval timeout.
+* Booking activity timeline — cancellation and refund requests, modification requests and vehicle changes are now shown as activity on the booking card, so customers can follow the status of every request they raised.
+* Step-by-step car setup wizard — the Add/Edit Car screen is now driven as an ordered wizard with a floating bottom bar: Back/Next, a progress ring, a "Step N of N" read-out, a clickable numbered rail and a Publish/Update action on the final step. Forward navigation is gated on required fields; a blocked step highlights the offending fields and names the step holding things up. Save Draft stays ungated.
+* New `[mpcrbm_car_list]` shortcode — a standalone vehicle listing with grid/list layouts, paging and an optional left filter sidebar, e.g. `[mpcrbm_car_list mpcrbm_left_filter='yes' style='grid' show='6']`.
+* New `[mpcrbm_branch_search]` shortcode — lets visitors find and browse rental branches from any page.
+* Multi-Location Fee settings — per-location pickup/drop-off fee configuration now has its own settings module, moved out of Price Settings so location pricing is managed in one place.
+* Guideline page — an in-admin reference covering setup steps, shortcodes and their attributes, reachable from the plugin's own sidebar.
+
+**Admin Redesign**
+* New admin shell — every plugin screen now renders inside a unified layout: plugin sidebar navigation, screen header, publish/update top bar with live post status, and a consistent card-based content area.
+* Branch Management workspace — branches, locations and their taxonomies are consolidated into one screen instead of separate menu items, with a modern list view and inline actions. The sidebar item was renamed from "Locations" to **Branch Management**.
+* Branch Managers — creating a branch manager account now happens in a redesigned modal with inline validation, so a user and their branch assignment are created in a single step.
+* Extra Services manager — rebuilt with a modern list, search and add/edit flow, and clearer per-service pricing controls.
+* Status page — the system status screen was rebuilt with grouped environment cards (WordPress & site, server, PHP limits, uploads, WooCommerce mail configuration) and actionable recommendations instead of a flat table.
+* Demo data importer — reworked for reliability and clearer progress feedback while importing sample vehicles, branches and settings.
+* Vehicle taxonomies (Car Type, Fuel Type, Seating Capacity, Brand, Make Year, Features) now share the same tabbed management UI as the rest of the plugin.
+
+**Front-end Redesign**
+* Car details page rebuilt with a scoped CSS-variable design system and a fully responsive layout — no theme overrides required.
+* Car list, branch cards, branch search, registration form and My Bookings restyled to match the new design language.
+
+**Improvements**
+* Mobile: the settings tab bar now scrolls horizontally instead of wrapping, the Extra Service Options table scrolls instead of overflowing the page, and a legacy fixed width that broke card panels below 900px was removed.
+* The active settings tab is remembered per vehicle across page reloads.
+* Toggle switches show a centered loading state and an eased open/close animation while their panel loads.
+* The shared FAQ / Terms & Conditions / Related Rental toolbar wraps instead of clipping its actions, and the Related Rental indicator now reflects the real selection count.
+* Clearer labels: "Multi-Location Settings" is now "Multi-Location Fee".
+
+**Fixes**
+* Fixed a fatal error on add-to-cart when another MagePeople booking plugin was active. The `woocommerce_add_cart_item_data` callback returned `null` on its early exits, which every later callback on that filter received in place of the cart-item array — producing a 500 response and a generic booking failure. Both exits now return the cart item data unchanged.
+* Fixed publishing a car silently doing nothing when a required field sat in an inactive (hidden) tab: browsers refuse to submit a form containing an invalid control they cannot focus, so the save failed with no message. All steps are now validated up front and the offending step is opened.
+
+**Security**
+* Fixed a PHP Object Injection vulnerability (Patchstack) reachable by users with the Editor role. Serialized post meta is now unserialized with `allowed_classes => false`, so no class is ever instantiated and no `__wakeup()`/`__destruct()` magic method can run. Object placeholders are stripped recursively, which also closes the nested-object bypass. The date/time settings sanitizer and the vehicle-duplication meta copier, previously unpatched, are now covered as well.
+
+= 1.3.9 =
+* Admin: Redesigned the Car Rental status dashboard with grouped environment cards and setup recommendations.
+* Admin: UI polish — mobile-friendly settings tabs, persisted active tab, toggle loading state and clearer setting labels.
+
+= 1.3.8 =
+* Security: Plugin-wide hardening pass (SQLi / XSS / CSRF / access control / file handling audit). Blocked an arbitrary post-meta write in Price Settings by validating the target meta key against an allow-list and requiring `manage_options` plus a nonce; added the missing capability checks to the feature handler and the FAQ / Terms save and delete handlers; added nonce verification to the cart-empty action to close a CSRF hole; and removed an unauthenticated AJAX registration on the extra-service endpoint.
 
 = 1.3.7 =
 * Security: Fixed a Broken Access Control vulnerability (Patchstack) in the front-end review handlers. Unauthenticated visitors could edit or delete guest-submitted reviews by supplying a comment ID and the public review nonce. Edit/delete are now restricted to comment moderators and the logged-in review author.
