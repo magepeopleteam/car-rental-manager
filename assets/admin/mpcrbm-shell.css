@@ -4038,6 +4038,494 @@ body.mpcrbm-admin .mpcrbm-faq-status-badge.is-off {
 }
 
 /* ==========================================================================
+   Add/Edit Car screen — floating step navigator.
+
+   Markup: MPCRBM_Admin_Shell::render_edit_screen_stepnav() (printed on
+   admin_footer). Behavior: the "floating step navigator" block in
+   mpcrbm-shell.js, which drives it by triggering clicks on the existing
+   .tabLists items rather than switching panels itself.
+
+   Rendered as a DETACHED floating card (bottom/left/right insets + radius +
+   blur), not a full-bleed docked bar, per explicit request. The left inset
+   tracks the fixed sidebar so the card never slides under it, and the
+   .mpcrbm-stepnav-active body class (added by the script only once it has
+   actually found steps) pays for the clearance the card needs at the bottom
+   of the form.
+
+   z-index sits between the fixed top bar (9980) and the fixed sidebar (9990):
+   above all page content, but never over the sidebar the card is inset from —
+   and far below WP's media modal (~160000), which must stay on top.
+   ========================================================================== */
+
+body.mpcrbm-admin.mpcrbm-stepnav-active.post-php #wpbody-content,
+body.mpcrbm-admin.mpcrbm-stepnav-active.post-new-php #wpbody-content {
+	padding-bottom: 130px;
+}
+
+.mpcrbm-stepnav {
+	position: fixed;
+	z-index: 9985;
+	bottom: 20px;
+	left: calc(var(--mpcrbm-shell-sidebar-width, 240px) + 30px);
+	right: 30px;
+	overflow: hidden;
+	border: 1px solid rgba(219, 227, 239, .95);
+	/* Matches --mpcrbm-shell-radius (16px) so the bar reads as part of the same
+	   card family as the panels above it. */
+	border-radius: 16px;
+	background: rgba(255, 255, 255, .9);
+	-webkit-backdrop-filter: saturate(180%) blur(14px);
+	backdrop-filter: saturate(180%) blur(14px);
+	box-shadow: 0 18px 40px -18px rgba(15, 23, 42, .32), 0 2px 6px rgba(15, 23, 42, .05);
+}
+
+/* Entrance is a one-shot class the script strips again, NOT a declaration on
+   the base rule: with it on the base rule, every removal of .is-shaking below
+   would swap animation-name back to this one and re-run the slide-up — the bar
+   would visibly re-enter after every failed validation. */
+.mpcrbm-stepnav.is-entering {
+	animation: mpcrbm-stepnav-rise .35s cubic-bezier(.22, .61, .36, 1) both;
+}
+
+/* The bar and the last-step/first-step buttons are toggled with the "hidden"
+   attribute, whose UA default (display:none) loses to the display declared by
+   the class rules below — so it has to be restated at matching specificity. */
+.mpcrbm-stepnav[hidden] {
+	display: none;
+}
+
+@keyframes mpcrbm-stepnav-rise {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Hairline progress track across the very top edge of the card. */
+.mpcrbm-stepnav__bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: #eef1f7;
+}
+
+.mpcrbm-stepnav__bar-fill {
+	display: block;
+	width: 0;
+	height: 100%;
+	border-radius: 0 3px 3px 0;
+	background: linear-gradient(90deg, var(--mpcrbm-shell-primary, #667eea), #8b9bf7);
+	transition: width .35s cubic-bezier(.22, .61, .36, 1);
+}
+
+.mpcrbm-stepnav__inner {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	padding: 14px 20px;
+}
+
+/* Step counter as a progress ring: a conic-gradient sweep with a white disc
+   punched out of the middle by the ::before, so no SVG or JS geometry is
+   needed — render() just writes the --mpcrbm-stepnav-pct custom property. */
+.mpcrbm-stepnav__ring {
+	--mpcrbm-stepnav-pct: 0%;
+	position: relative;
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 50%;
+	/* Track is #dce4f1, not a near-white tint: on step 1 the sweep is only ~11%
+	   of the circle, and against a paler track the whole thing read as a broken
+	   arc rather than a ring with a little progress in it. */
+	background: conic-gradient(var(--mpcrbm-shell-primary, #667eea) var(--mpcrbm-stepnav-pct), #dce4f1 0);
+	transition: background .35s ease;
+}
+
+/* 5px inset (a 5px-thick ring) rather than 4px — thin enough to stay light,
+   thick enough that the sweep is legible at a single step of nine. */
+.mpcrbm-stepnav__ring::before {
+	content: '';
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	bottom: 5px;
+	left: 5px;
+	border-radius: 50%;
+	background: #fff;
+}
+
+.mpcrbm-stepnav__ring-num {
+	position: relative;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -.01em;
+	color: var(--mpcrbm-shell-primary, #667eea);
+}
+
+.mpcrbm-stepnav__labels {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 0 1 auto;
+	min-width: 0;
+}
+
+.mpcrbm-stepnav__eyebrow {
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: .09em;
+	text-transform: uppercase;
+	color: #94a1b5;
+}
+
+.mpcrbm-stepnav__title {
+	/* 600, not 650: WP admin runs on a system font stack, and a non-variable
+	   face rounds 650 straight up to 700 — heavier than the card headings this
+	   sits alongside. */
+	font-size: 14.5px;
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: -.005em;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Numbered step rail. Each dot is a real button (jump straight to that step);
+   the connector between two dots is the ::before of the right-hand one, which
+   is why "the previous dot is done" is expressed as an adjacent-sibling rule.
+
+   Sits in its own soft pill so the rail reads as one deliberate component
+   instead of nine loose glyphs — a lighter echo of the tab strip's own
+   #E9EFF7 pill at the top of the screen. "flex: 0 1 auto" (not 1 1 auto) is
+   what makes the pill hug its dots and stay centered by the auto margins,
+   rather than stretching across all the leftover width. */
+.mpcrbm-stepnav__dots {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 1 auto;
+	gap: 0;
+	margin: 0 auto;
+	/* 7px, not less: the current dot is scaled up AND carries a 4px halo, and
+	   this pill clips its overflow — tighter padding shaves the halo off. */
+	padding: 7px 12px;
+	border: 1px solid #e4eaf3;
+	border-radius: 999px;
+	background: #f4f7fc;
+	list-style: none;
+	overflow: hidden;
+}
+
+.mpcrbm-stepnav__dot {
+	display: flex;
+	align-items: center;
+	margin: 0;
+	padding: 0;
+}
+
+.mpcrbm-stepnav__dot + .mpcrbm-stepnav__dot::before {
+	content: '';
+	flex: 0 0 auto;
+	width: 14px;
+	height: 2px;
+	border-radius: 2px;
+	background: #dde4ef;
+	transition: background .25s ease;
+}
+
+.mpcrbm-stepnav__dot.is-done + .mpcrbm-stepnav__dot::before {
+	background: var(--mpcrbm-shell-primary, #667eea);
+}
+
+.mpcrbm-stepnav__dot > button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: 1.5px solid #dbe3ef;
+	border-radius: 50%;
+	background: #fff;
+	color: #94a1b5;
+	font-family: inherit;
+	font-size: 10.5px;
+	font-weight: 700;
+	line-height: 1;
+	cursor: pointer;
+	transition: transform .18s ease, background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.mpcrbm-stepnav__dot > button:hover {
+	border-color: var(--mpcrbm-shell-primary, #667eea);
+	color: var(--mpcrbm-shell-primary, #667eea);
+}
+
+/* IMPORTANT: the two display rules below carry the ".mpcrbm-stepnav__dot >
+   button >" prefix purely for specificity. Font Awesome 5's own
+   ".fa,.fas,.far,...{display:inline-block}" (mp_global/assets/font_awesome/
+   css/all.min.css) is a single class selector — exactly TIED with a bare
+   ".mpcrbm-stepnav__dot-check", and FA loads after this file, so source order
+   handed it the win: every dot rendered its number AND a tick. Anything that
+   toggles display on an element carrying an .fa* class on these screens needs
+   to out-specify that rule, not just declare display. */
+.mpcrbm-stepnav__dot > button > .mpcrbm-stepnav__dot-check {
+	display: none;
+	font-size: 10px;
+}
+
+/* Completed: the tick replaces the number in place, so the rail keeps its
+   rhythm instead of shifting when a step flips state. */
+.mpcrbm-stepnav__dot.is-done > button {
+	border-color: var(--mpcrbm-shell-primary, #667eea);
+	background: var(--mpcrbm-shell-primary, #667eea);
+	color: #fff;
+}
+
+.mpcrbm-stepnav__dot.is-done > button > .mpcrbm-stepnav__dot-num {
+	display: none;
+}
+
+.mpcrbm-stepnav__dot.is-done > button > .mpcrbm-stepnav__dot-check {
+	display: block;
+}
+
+/* Current: outlined rather than filled, so it stays clearly distinct from the
+   solid-filled completed dots next to it. */
+.mpcrbm-stepnav__dot.is-current > button {
+	border-width: 2px;
+	border-color: var(--mpcrbm-shell-primary, #667eea);
+	background: #fff;
+	color: var(--mpcrbm-shell-primary, #667eea);
+	transform: scale(1.12);
+	box-shadow: 0 0 0 4px rgba(102, 126, 234, .16);
+}
+
+.mpcrbm-stepnav__dot.is-error > button,
+.mpcrbm-stepnav__dot.is-error.is-current > button {
+	border-color: var(--mpcrbm-red, #d91e1e);
+	background: var(--mpcrbm-red-light, #f6dada);
+	color: var(--mpcrbm-red, #d91e1e);
+	box-shadow: none;
+}
+
+.mpcrbm-stepnav__dot.is-error.is-current > button {
+	box-shadow: 0 0 0 4px rgba(217, 30, 30, .14);
+}
+
+/* render() keeps is-done and is-error mutually exclusive, but state these
+   anyway so a flagged step can never inherit the completed tick. Same
+   specificity prefix as the rules above — see the Font Awesome note there. */
+.mpcrbm-stepnav__dot.is-error > button > .mpcrbm-stepnav__dot-num {
+	display: block;
+}
+
+.mpcrbm-stepnav__dot.is-error > button > .mpcrbm-stepnav__dot-check {
+	display: none;
+}
+
+.mpcrbm-stepnav__actions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 0 0 auto;
+}
+
+.mpcrbm-stepnav__btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	height: 38px;
+	padding: 0 18px;
+	border: 1px solid transparent;
+	border-radius: 10px;
+	/* Browsers give <button> the system UI font rather than inheriting, and WP
+	   admin's forms.css only normalizes input/select/textarea — so without this
+	   these read in a different typeface than the rest of the screen. */
+	font-family: inherit;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease, color .16s ease;
+}
+
+.mpcrbm-stepnav__btn[hidden] {
+	display: none;
+}
+
+.mpcrbm-stepnav__btn:disabled {
+	opacity: .45;
+	cursor: not-allowed;
+	transform: none;
+	box-shadow: none;
+}
+
+.mpcrbm-stepnav__btn--ghost {
+	background: #fff;
+	border-color: var(--mpcrbm-shell-border, #e7e7ea);
+	color: var(--mpcrbm-shell-text, #1f222b);
+}
+
+.mpcrbm-stepnav__btn--ghost:hover:not(:disabled) {
+	background: var(--mpcrbm-shell-bg, #f5f6fa);
+	border-color: #cfd6e4;
+}
+
+.mpcrbm-stepnav__btn--primary {
+	background: linear-gradient(135deg, var(--mpcrbm-shell-primary, #667eea), #8b9bf7);
+	color: #fff;
+	box-shadow: 0 6px 16px -8px rgba(102, 126, 234, .95);
+}
+
+.mpcrbm-stepnav__btn--primary:hover {
+	color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 10px 22px -10px rgba(102, 126, 234, 1);
+}
+
+/* Terminal action on the last step — deeper indigo→violet so it reads as
+   "this one saves", while staying inside the same brand family as Next. */
+.mpcrbm-stepnav__btn--finish {
+	background: linear-gradient(135deg, #5566d8, #7c5cd6);
+	color: #fff;
+	box-shadow: 0 6px 16px -8px rgba(85, 102, 216, .95);
+}
+
+.mpcrbm-stepnav__btn--finish:hover {
+	color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 10px 22px -10px rgba(85, 102, 216, 1);
+}
+
+.mpcrbm-stepnav__btn:focus-visible,
+.mpcrbm-stepnav__dot > button:focus-visible {
+	outline: 2px solid var(--mpcrbm-shell-primary, #667eea);
+	outline-offset: 2px;
+}
+
+/* Validation message strip — folded out of the bottom of the card only while
+   there's something to say (the .has-alert class). */
+.mpcrbm-stepnav__alert {
+	display: none;
+	align-items: center;
+	gap: 9px;
+	padding: 10px 20px 11px;
+	border-top: 1px solid #f6dcdc;
+	background: #fdf3f3;
+	color: #b3261e;
+	font-size: 12.5px;
+	font-weight: 500;
+}
+
+.mpcrbm-stepnav.has-alert .mpcrbm-stepnav__alert {
+	display: flex;
+}
+
+.mpcrbm-stepnav.is-shaking {
+	animation: mpcrbm-stepnav-shake .5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes mpcrbm-stepnav-shake {
+	10%, 90% { transform: translateX(-1px); }
+	20%, 80% { transform: translateX(2px); }
+	30%, 50%, 70% { transform: translateX(-4px); }
+	40%, 60% { transform: translateX(4px); }
+}
+
+/* Empty required field flagged by the step validator. The high-specificity
+   variants are needed because both the framework's ".formControl" border and
+   WP core's "#titlediv #title" rule would otherwise win — see the note on
+   ID-tier specificity in the "Per-car metabox" section above. Kept free of
+   !important so a theme/add-on can still override deliberately. */
+#mpcrbm_meta_box_panel .mpcrbm-step-invalid,
+#mpcrbm_meta_box_panel .mpcrbm-step-invalid:focus,
+#titlediv #title.mpcrbm-step-invalid,
+#titlediv #title.mpcrbm-step-invalid:focus {
+	border-color: var(--mpcrbm-red, #d91e1e);
+	box-shadow: 0 0 0 3px rgba(217, 30, 30, .13);
+	animation: mpcrbm-field-pulse .6s ease;
+}
+
+@keyframes mpcrbm-field-pulse {
+	0% { box-shadow: 0 0 0 0 rgba(217, 30, 30, .35); }
+	100% { box-shadow: 0 0 0 3px rgba(217, 30, 30, .13); }
+}
+
+/* Wide-but-not-huge screens: the numbered rail is the first thing to go —
+   the ring, the "Step 3 of 9" read-out and the buttons all still convey
+   position, so losing the rail costs nothing but the horizontal room. */
+@media (max-width: 1280px) {
+	.mpcrbm-stepnav__dots {
+		display: none;
+	}
+
+	.mpcrbm-stepnav__labels {
+		flex: 1 1 auto;
+	}
+}
+
+/* Matches the sidebar going off-canvas below 960px (see the block below this
+   one) — with no sidebar taking up room, the card spans the full width. */
+@media (max-width: 960px) {
+	.mpcrbm-stepnav {
+		left: 14px;
+		right: 14px;
+		bottom: 14px;
+	}
+}
+
+@media (max-width: 600px) {
+	.mpcrbm-stepnav__inner {
+		gap: 12px;
+		padding: 12px;
+	}
+
+	.mpcrbm-stepnav__labels {
+		display: none;
+	}
+
+	.mpcrbm-stepnav__actions {
+		flex: 1 1 auto;
+		justify-content: flex-end;
+	}
+
+	.mpcrbm-stepnav__btn {
+		padding: 0 14px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mpcrbm-stepnav.is-entering,
+	.mpcrbm-stepnav.is-shaking,
+	#mpcrbm_meta_box_panel .mpcrbm-step-invalid,
+	#titlediv #title.mpcrbm-step-invalid {
+		animation: none;
+	}
+
+	.mpcrbm-stepnav__bar-fill,
+	.mpcrbm-stepnav__btn,
+	.mpcrbm-stepnav__dot > button,
+	.mpcrbm-stepnav__ring {
+		transition: none;
+	}
+}
+
+/* ==========================================================================
    Add/Edit Car screen — mobile/tablet fix.
    .mpcrbm-shell-sidebar.mpcrbm-shell-fixed and .mpcrbm-shell-topbar.mpcrbm-shell-fixed
    (~line 1960) pin the sidebar open and #wpcontent's 240px margin (~line 1954)
