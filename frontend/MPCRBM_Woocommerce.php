@@ -54,14 +54,24 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             }
         }
 
+        /**
+         * woocommerce_add_cart_item_data FILTER callback.
+         *
+         * It must always hand back the value it was given. The early exits below
+         * used a bare `return;`, which passed NULL down the rest of the filter
+         * chain -- and every MagePeople booking plugin hooks this same filter at
+         * priority 90, so whichever one ran after this plugin received null
+         * instead of the cart-item array and fataled the add-to-cart request
+         * ("array_merge(): Argument #1 must be of type array, null given").
+         */
         public function cart_item_data( $cart_item_data, $product_id ) {
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
-                return;
+                return $cart_item_data;
             }
             // Sanitize and verify the nonce
             $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
             if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
-                return;
+                return $cart_item_data;
             }
             $linked_id = MPCRBM_Global_Function::get_post_info( $product_id, 'link_mpcrbm_id', $product_id );
             $post_id = is_string( get_post_status( $linked_id ) ) ? $linked_id : $product_id;
