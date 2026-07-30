@@ -102,6 +102,16 @@ jQuery(function ($) {
 
         if (target === 'mpcrbm-mod-date-form' && typeof flatpickr !== 'undefined') {
             setTimeout(function () {
+                // Booked dates for this car (excluding this booking's own current dates)
+                // — same idea as the main booking calendar's off-dates disable list
+                // (mp_global/assets/date-picker/date-picker.js), computed server-side
+                // in MPCRBM_Shortcodes::mpcrbm_mb_render_detail().
+                var unavailableRaw = $form.data('unavailable-dates') || '';
+                var unavailableDates = String(unavailableRaw).split(',')
+                    .map(function (d) { return d.trim(); })
+                    .filter(function (d) { return d; })
+                    .map(function (d) { return new Date(d); });
+
                 $form.find('.mpcrbm-mod-datepicker').each(function () {
                     if (this._flatpickr) { this._flatpickr.destroy(); }
                     var defaultVal = this.getAttribute('data-default') || null;
@@ -112,7 +122,8 @@ jQuery(function ($) {
                         minDate:     'today',
                         allowInput:  true,
                         defaultDate: defaultVal,
-                        appendTo:    document.body
+                        appendTo:    document.body,
+                        disable:     unavailableDates
                     });
                 });
             }, 100);

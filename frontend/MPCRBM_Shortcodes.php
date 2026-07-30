@@ -922,6 +922,10 @@
                 $bill_name  = (string) get_post_meta( $booking_id, 'mpcrbm_billing_name', true );
                 $bill_email = (string) get_post_meta( $booking_id, 'mpcrbm_billing_email', true );
                 $bill_phone = (string) get_post_meta( $booking_id, 'mpcrbm_billing_phone', true );
+                // Dates already booked (on this car, excluding this booking's own current
+                // dates) — fed into the date-change picker below so customers can't
+                // request a date that's already unavailable.
+                $mb_unavailable_dates = $car_id ? MPCRBM_Frontend::mpcrbm_get_unavailable_dates_by_stock( (int) $car_id, $booking_id ) : [];
                 $car_img    = $car_id ? get_the_post_thumbnail_url( (int) $car_id, 'medium' ) : '';
                 $car_title  = $car_id ? get_the_title( (int) $car_id ) : __( 'Car Rental', 'car-rental-manager' );
 
@@ -1091,7 +1095,9 @@
                                 <div class="mpcrbm-mb-mod-result"></div>
                             </form>
 
-                            <form class="mpcrbm-mb-mod-form" id="mpcrbm-mod-date-form" data-type="date_change" style="display:none;">
+                            <form class="mpcrbm-mb-mod-form" id="mpcrbm-mod-date-form" data-type="date_change"
+                                  data-unavailable-dates="<?php echo esc_attr( implode( ',', $mb_unavailable_dates ) ); ?>"
+                                  style="display:none;">
                                 <div class="mpcrbm-mb-mod-date-row">
                                     <div class="mpcrbm-mb-mod-form-field">
                                         <label><?php esc_html_e( 'New Pickup Date & Time', 'car-rental-manager' ); ?></label>

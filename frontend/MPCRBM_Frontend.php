@@ -244,7 +244,7 @@
 
                 return $all_dates;
             }
-            public static function mpcrbm_get_unavailable_dates_by_stock( $post_id ) {
+            public static function mpcrbm_get_unavailable_dates_by_stock( $post_id, $exclude_booking_id = 0 ) {
 
                 $stock = (int) MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
 
@@ -282,6 +282,10 @@
                 if ( ! empty( $query->posts ) ) {
 
                     foreach ( $query->posts as $booking_id ) {
+
+                        if ( $exclude_booking_id && (int) $booking_id === (int) $exclude_booking_id ) {
+                            continue;
+                        }
 
                         $start_datetime = get_post_meta( $booking_id, 'mpcrbm_date', true );
                         $end_datetime   = get_post_meta( $booking_id, 'return_date_time', true );
