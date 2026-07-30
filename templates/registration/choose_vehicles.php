@@ -409,7 +409,7 @@ if( $is_redirect === 'yes' ){
                         <div class="divider"></div>
                         <div class="justifyBetween">
                             <span><?php echo esc_html( $mpcrbm_dc_row_label ); ?></span>
-                            <span class="_textTheme"></span>
+                            <span class="_textTheme" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_display"></span>
                         </div>
                     </div>
                 <?php endforeach; ?>

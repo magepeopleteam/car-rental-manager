@@ -704,7 +704,7 @@ if ( $deposit_enable === 'on' ) {
                                         <div class="divider"></div>
                                         <div class="justifyBetween">
                                             <span><?php echo esc_html( $mpcrbm_dc_row_label ); ?></span>
-                                            <span class="_textTheme"><?php echo wp_kses_post( $mpcrbm_dc_row_text ); ?></span>
+                                            <span class="_textTheme" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_display"><?php echo wp_kses_post( $mpcrbm_dc_row_text ); ?></span>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>

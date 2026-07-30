@@ -1182,7 +1182,7 @@ jQuery(document).ready(function($) {
                     if (fee > 0) {
                         total = total + fee * number_of_car;
                         if ($row.length) {
-                            $row.find('span').last().html(mpcrbm_price_format(fee));
+                            $('#mpcrbm_car_' + kind + '_fee_display').html(mpcrbm_price_format(fee));
                             $row.show();
                         }
                     } else if ($row.length) {
@@ -1254,7 +1254,7 @@ jQuery(document).ready(function($) {
                     let fee = $box.data('fee-type') === 'percentage' ? (basePerCar * feeVal / 100) : feeVal;
                     if (fee > 0) {
                         total = total + fee * number_of_car;
-                        $row.find('span').last().html(mpcrbm_price_format(fee));
+                        $('#mpcrbm_car_' + kind + '_fee_display').html(mpcrbm_price_format(fee));
                         $row.show();
                     } else {
                         $row.hide();
