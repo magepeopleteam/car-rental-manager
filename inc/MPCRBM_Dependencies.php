@@ -38,6 +38,12 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Locations_Manager.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Extra_Services_Manager.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Branch_Search.php';
+				// Loaded unconditionally (not just admin-side) because its static
+				// read helpers (is_enabled()/get_fee()) are called from frontend
+				// checkout code (MPCRBM_Woocommerce.php, car_details.php) — its
+				// admin-only render/save methods only ever fire from their own
+				// admin-only action hooks, so defining the class here is safe.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Delivery_Collection_Settings.php';
 			}
 
 			public function global_enqueue() {

@@ -992,6 +992,13 @@ jQuery(document).ready(function($) {
         checkAndToggleBookNowButton(parent);
     });
 
+    // Handle delivery/collection checkbox toggle in the search-result "choose vehicle"
+    // flow (registration/extra_service.php, AJAX-loaded into .mpcrbm_transport_search_area)
+    $(document).on('change', '.mpcrbm_transport_search_area .mpcrbm_dc_checkbox', function () {
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
+        mpcrbm_price_calculation(parent);
+    });
+
     // Handle extra service quantity changes
     $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service_qty[]"]', function () {
         $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service[]"]').trigger('change');
@@ -1063,6 +1070,13 @@ jQuery(document).ready(function($) {
         let $qty_input = parent.find('[name="mpcrbm_get_car_qty"]').val();
         let qty = parseInt($qty_input) || 1;
         // mpcrbm_price_calculation( parent );
+        mpcrbm_price_calculation_car_details_page(parent, qty);
+    });
+
+    // Handle delivery/collection checkbox toggle (registration/delivery_collection_display.php)
+    $(document).on('change', '.mpcrbm_car_details .mpcrbm_dc_checkbox', function () {
+        let parent = $(this).closest('.mpcrbm_car_details');
+        let qty = parseInt(parent.find('[name="mpcrbm_get_car_qty"]').val()) || 1;
         mpcrbm_price_calculation_car_details_page(parent, qty);
     });
 
@@ -1157,6 +1171,27 @@ jQuery(document).ready(function($) {
             if (oneWayFee > 0) {
                 total = total + oneWayFee * number_of_car;
             }
+
+            let basePerCar = total / number_of_car - (oneWayFee > 0 ? oneWayFee : 0);
+            ['delivery', 'collection'].forEach(function (kind) {
+                let $box = parent.find('[name="mpcrbm_' + kind + '_requested"]');
+                let $row = $('#mpcrbm_car_' + kind + '_fee_row');
+                if ($box.length && $box.is(':checked')) {
+                    let feeVal = parseFloat($box.data('fee')) || 0;
+                    let fee = $box.data('fee-type') === 'percentage' ? (basePerCar * feeVal / 100) : feeVal;
+                    if (fee > 0) {
+                        total = total + fee * number_of_car;
+                        if ($row.length) {
+                            $row.find('span').last().html(mpcrbm_price_format(fee));
+                            $row.show();
+                        }
+                    } else if ($row.length) {
+                        $row.hide();
+                    }
+                } else if ($row.length) {
+                    $row.hide();
+                }
+            });
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
@@ -1180,6 +1215,7 @@ jQuery(document).ready(function($) {
             total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
 
             total = total * number_of_car;
+            let basePerCar = total / number_of_car;
 
             parent.find(".mpcrbm_extra_service_item").each(function () {
                 let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
@@ -1209,6 +1245,24 @@ jQuery(document).ready(function($) {
                     $feeDisplay.html(mpcrbm_price_format(oneWayFee) + ' &times; ' + number_of_car + ' = ' + mpcrbm_price_format(oneWayTotal));
                 }
             }
+
+            ['delivery', 'collection'].forEach(function (kind) {
+                let $box = parent.find('[name="mpcrbm_' + kind + '_requested"]');
+                let $row = parent.find('#mpcrbm_car_' + kind + '_fee_row');
+                if ($box.length && $box.is(':checked')) {
+                    let feeVal = parseFloat($box.data('fee')) || 0;
+                    let fee = $box.data('fee-type') === 'percentage' ? (basePerCar * feeVal / 100) : feeVal;
+                    if (fee > 0) {
+                        total = total + fee * number_of_car;
+                        $row.find('span').last().html(mpcrbm_price_format(fee));
+                        $row.show();
+                    } else {
+                        $row.hide();
+                    }
+                } else {
+                    $row.hide();
+                }
+            });
         }
         target_summary.find(".mpcrbm_product_total_price").html(mpcrbm_price_format(total));
     }
@@ -1278,6 +1332,10 @@ jQuery(document).ready(function($) {
                     mpcrbm_extra_service: extra_service_name,
                     mpcrbm_extra_service_qty: extra_service_qty,
                     mpcrbm_car_quantity: car_quantity,
+                    mpcrbm_delivery_requested: parent.find('[name="mpcrbm_delivery_requested"]').is(':checked') ? '1' : '',
+                    mpcrbm_delivery_address: parent.find('[name="mpcrbm_delivery_address"]').val(),
+                    mpcrbm_collection_requested: parent.find('[name="mpcrbm_collection_requested"]').is(':checked') ? '1' : '',
+                    mpcrbm_collection_address: parent.find('[name="mpcrbm_collection_address"]').val(),
                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
                 beforeSend: function() {
@@ -1433,6 +1491,10 @@ jQuery(document).ready(function($) {
                     mpcrbm_extra_service: extra_service_name,
                     mpcrbm_extra_service_qty: extra_service_qty,
                     mpcrbm_car_quantity: car_quantity,
+                    mpcrbm_delivery_requested: parent.find('[name="mpcrbm_delivery_requested"]').is(':checked') ? '1' : '',
+                    mpcrbm_delivery_address: parent.find('[name="mpcrbm_delivery_address"]').val(),
+                    mpcrbm_collection_requested: parent.find('[name="mpcrbm_collection_requested"]').is(':checked') ? '1' : '',
+                    mpcrbm_collection_address: parent.find('[name="mpcrbm_collection_address"]').val(),
                     mpcrbm_transportation_type_nonce: mpcrbm_ajax.nonce
                 },
                 beforeSend: function() {

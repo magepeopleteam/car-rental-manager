@@ -404,6 +404,15 @@ if( $is_redirect === 'yes' ){
                     </p>
                 </div>
                 <div class="mpcrbm_extra_service_summary"></div>
+                <?php foreach ( [ 'delivery' => __( 'Delivery Fee:', 'car-rental-manager' ), 'collection' => __( 'Collection Fee:', 'car-rental-manager' ) ] as $mpcrbm_dc_kind => $mpcrbm_dc_row_label ) : ?>
+                    <div class="mpcrbm_dc_fee_summary" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_row" style="display: none">
+                        <div class="divider"></div>
+                        <div class="justifyBetween">
+                            <span><?php echo esc_html( $mpcrbm_dc_row_label ); ?></span>
+                            <span class="_textTheme"></span>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
                 <div class="justifyBetween total">
                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
                     <?php

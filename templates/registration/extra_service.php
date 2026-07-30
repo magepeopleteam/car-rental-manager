@@ -27,6 +27,7 @@ if (!$post_id || !get_post($post_id)) {
 $mpcrbm_extra_service_class = 'mpcrbm_extra_service_layout';
 
 include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );
+include( MPCRBM_Function::template_path( 'registration/delivery_collection_display.php' ) );
 // Get service data
 // Book Now itself now lives in templates/registration/summary_new.php as a
 // single persistent button, always visible on the page instead of only

@@ -133,6 +133,16 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         : $ow_value;
                 }
                 $cart_item_data['mpcrbm_branch_one_way_fee'] = $one_way_fee;
+                foreach ( [ 'delivery', 'collection' ] as $mpcrbm_dc_kind ) {
+                    $dc_requested = isset( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] ) && $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] === '1';
+                    $dc_address   = isset( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ) : '';
+                    $dc_fee       = ( $dc_requested && class_exists( 'MPCRBM_Delivery_Collection_Settings' ) )
+                        ? MPCRBM_Delivery_Collection_Settings::get_fee( $post_id, $mpcrbm_dc_kind, $raw_price )
+                        : 0;
+                    $cart_item_data[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] = ( $dc_requested && $dc_fee > 0 ) ? '1' : '';
+                    $cart_item_data[ "mpcrbm_{$mpcrbm_dc_kind}_address" ]   = ( $dc_requested && $dc_fee > 0 ) ? $dc_address : '';
+                    $cart_item_data[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ]       = $dc_fee;
+                }
                 $rental_days = $return_date_time ? MPCRBM_Function::get_days_from_start_end_date( $start_time, $return_date_time ) : 1;
                 $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id, $rental_days );
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
@@ -314,6 +324,20 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     $item->add_meta_data( esc_html__( 'One-Way Return Fee', 'car-rental-manager' ), wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $one_way_fee_total ) ) );
                 }
                 $item->add_meta_data( '_mpcrbm_branch_one_way_fee', $one_way_fee );
+                foreach ( [ 'delivery' => __( 'Delivery Fee', 'car-rental-manager' ), 'collection' => __( 'Collection Fee', 'car-rental-manager' ) ] as $mpcrbm_dc_kind => $mpcrbm_dc_label ) {
+                    $dc_fee     = isset( $values[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ] ) ? floatval( $values[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ] ) : 0;
+                    $dc_address = isset( $values[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ? $values[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] : '';
+                    if ( $dc_fee > 0 ) {
+                        $dc_fee_total = $dc_fee * intval( $car_quantity );
+                        $item->add_meta_data( $mpcrbm_dc_label, wp_kses_post( wc_price( $dc_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $dc_fee_total ) ) );
+                        if ( $dc_address ) {
+                            $address_label = 'delivery' === $mpcrbm_dc_kind ? __( 'Delivery Address', 'car-rental-manager' ) : __( 'Collection Address', 'car-rental-manager' );
+                            $item->add_meta_data( $address_label, sanitize_textarea_field( $dc_address ) );
+                        }
+                    }
+                    $item->add_meta_data( "_mpcrbm_{$mpcrbm_dc_kind}_fee", $dc_fee );
+                    $item->add_meta_data( "_mpcrbm_{$mpcrbm_dc_kind}_address", sanitize_textarea_field( $dc_address ) );
+                }
                 if ( sizeof( $extra_service ) > 0 ) {
                     $item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
                     foreach ( $extra_service as $service ) {
@@ -459,6 +483,12 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             $security_deposit_order = $security_deposit_order ? floatval( MPCRBM_Global_Function::data_sanitize( $security_deposit_order ) ) : 0;
                             $one_way_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_branch_one_way_fee' );
                             $one_way_fee_order = $one_way_fee_order !== '' && $one_way_fee_order !== false ? floatval( $one_way_fee_order ) : 0;
+                            $mpcrbm_dc_meta = [];
+                            foreach ( [ 'delivery', 'collection' ] as $mpcrbm_dc_kind ) {
+                                $dc_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, "_mpcrbm_{$mpcrbm_dc_kind}_fee" );
+                                $mpcrbm_dc_meta[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ]     = ( $dc_fee_order !== '' && $dc_fee_order !== false ) ? floatval( $dc_fee_order ) : 0;
+                                $mpcrbm_dc_meta[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] = MPCRBM_Global_Function::get_order_item_meta( $item_id, "_mpcrbm_{$mpcrbm_dc_kind}_address" );
+                            }
                             // Add meta array data to the $data array
                             $data = array_merge( $meta_array, [
                                 'mpcrbm_id'                          => $post_id,
@@ -487,7 +517,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 'mpcrbm_security_deposit_amount'     => $security_deposit_order,
                                 'mpcrbm_branch_one_way_fee'          => $one_way_fee_order,
                                 'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
-                            ] );
+                            ], $mpcrbm_dc_meta );
                             $booking_data = apply_filters( 'mpcrbm_add_booking_data', $data, $post_id );
                             self::mpcrbm_cpt_data( 'mpcrbm_booking', $booking_data['mpcrbm_billing_name'], $booking_data );
                             if ( sizeof( $service_info ) > 0 ) {
@@ -674,6 +704,18 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 <span>(<?php echo wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $one_way_fee_total ) ); ?></span>
                             </li>
                         <?php } ?>
+                        <?php foreach ( [ 'delivery' => [ 'fa fa-truck', __( 'Delivery Fee : ', 'car-rental-manager' ) ], 'collection' => [ 'fa fa-truck-loading', __( 'Collection Fee : ', 'car-rental-manager' ) ] ] as $mpcrbm_dc_kind => $mpcrbm_dc_row ) :
+                            $dc_fee = array_key_exists( "mpcrbm_{$mpcrbm_dc_kind}_fee", $cart_item ) ? floatval( $cart_item[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ] ) : 0;
+                            if ( $dc_fee > 0 ) :
+                                $dc_fee_total = $dc_fee * intval( $car_quantity );
+                                ?>
+                                <li>
+                                    <span class="<?php echo esc_attr( $mpcrbm_dc_row[0] ); ?>"></span>
+                                    <h6 class="_mR_xs"><?php echo esc_html( $mpcrbm_dc_row[1] ); ?></h6>
+                                    <span>(<?php echo wp_kses_post( wc_price( $dc_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $dc_fee_total ) ); ?></span>
+                                </li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                         <?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
                     </ul>
                 </div>
@@ -840,16 +882,27 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $price            = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
             $wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
             $raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
+            $base_per_car = $raw_price / max( 1, intval( $car_quantity ) );
             $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
             if ( $one_way_enabled && $start_place !== $end_place ) {
                 $ow_value    = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
                 $ow_type     = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
-                $base_per_car = $raw_price / max( 1, intval( $car_quantity ) );
                 $one_way_fee  = ( $ow_type === 'percentage' )
                     ? round( $base_per_car * $ow_value / 100, 2 )
                     : $ow_value;
                 if ( $one_way_fee > 0 ) {
                     $raw_price += $one_way_fee * intval( $car_quantity );
+                }
+            }
+            // Delivery/Collection — flat or % fee per car, requested via checkboxes
+            // on the single car booking page (registration/delivery_collection_display.php).
+            foreach ( [ 'delivery', 'collection' ] as $mpcrbm_dc_kind ) {
+                $requested = isset( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] ) && $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] === '1';
+                if ( $requested && class_exists( 'MPCRBM_Delivery_Collection_Settings' ) ) {
+                    $dc_fee = MPCRBM_Delivery_Collection_Settings::get_fee( $post_id, $mpcrbm_dc_kind, $base_per_car );
+                    if ( $dc_fee > 0 ) {
+                        $raw_price += $dc_fee * intval( $car_quantity );
+                    }
                 }
             }
             $service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];

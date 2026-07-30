@@ -690,6 +690,24 @@ if ( $deposit_enable === 'on' ) {
                                         <span class="mpcrbm_one_way_fee_price _textTheme" id="mpcrbm_car_one_way_fee_display"></span>
                                     </div>
                                 </div>
+                                <?php foreach ( [ 'delivery' => __( 'Delivery Fee:', 'car-rental-manager' ), 'collection' => __( 'Collection Fee:', 'car-rental-manager' ) ] as $mpcrbm_dc_kind => $mpcrbm_dc_row_label ) :
+                                    if ( ! class_exists( 'MPCRBM_Delivery_Collection_Settings' ) || ! MPCRBM_Delivery_Collection_Settings::is_enabled( $mpcrbm_post_id, $mpcrbm_dc_kind ) ) {
+                                        continue;
+                                    }
+                                    $mpcrbm_dc_row_type = get_post_meta( $mpcrbm_post_id, "mpcrbm_{$mpcrbm_dc_kind}_fee_type", true );
+                                    $mpcrbm_dc_row_val  = floatval( get_post_meta( $mpcrbm_post_id, "mpcrbm_{$mpcrbm_dc_kind}_fee", true ) );
+                                    $mpcrbm_dc_row_text = ( $mpcrbm_dc_row_type === 'percentage' )
+                                        ? sprintf( /* translators: %s: percentage number */ esc_html__( '%s%% of total', 'car-rental-manager' ), $mpcrbm_dc_row_val )
+                                        : wp_kses_post( wc_price( $mpcrbm_dc_row_val ) );
+                                    ?>
+                                    <div class="mpcrbm_dc_fee_summary" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_row" style="display: none">
+                                        <div class="divider"></div>
+                                        <div class="justifyBetween">
+                                            <span><?php echo esc_html( $mpcrbm_dc_row_label ); ?></span>
+                                            <span class="_textTheme"><?php echo wp_kses_post( $mpcrbm_dc_row_text ); ?></span>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                                 <div class="justifyBetween total">
                                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
                                     <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price + $deposit_price ) );?></h3>
@@ -699,6 +717,8 @@ if ( $deposit_enable === 'on' ) {
                             <?php
                             // Get service data
                             include( MPCRBM_Function::template_path( 'registration/extra_service_display.php' ) );?>
+
+                            <?php include( MPCRBM_Function::template_path( 'registration/delivery_collection_display.php' ) ); ?>
 
                             <button style="display: <?php echo esc_attr( $mpcrbm_booking_btn_show );?>" data-car-id="<?php echo esc_attr( $mpcrbm_post_id );?>" data-wc_link_id="<?php echo esc_attr( $mpcrbm_link_wc_product );?>" class="mpcrbm_car_details_continue_btn" id="mpcrbm_car_details_continue_btn"><?php esc_attr_e( 'Continue', 'car-rental-manager' );?> →</button>
                             <div class="mpcrbm_already_booked" id="mpcrbm_car_already_booked" style="display: <?php echo esc_attr( $mpcrbm_is_already_booked );?>"><span class="">On this day the car is already booked, please select another day.</span></div>
