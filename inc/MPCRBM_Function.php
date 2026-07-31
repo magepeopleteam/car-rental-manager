@@ -195,6 +195,38 @@
 			}
 
 			/**
+			 * Statuses a booking can be set to, as slug => label.
+			 *
+			 * WooCommerce owns this list when it is active, so a WooCommerce booking keeps
+			 * offering exactly the statuses its orders support (including any a payment
+			 * plugin registered). In Custom Payment mode there are no WooCommerce order
+			 * statuses at all — and returning an empty list there left the Booking List's
+			 * status dropdown rendering as an empty box with nothing to pick.
+			 *
+			 * Slugs keep the "wc-" prefix in BOTH modes on purpose: every caller already
+			 * does str_replace( 'wc-', '', $slug ) before storing to mpcrbm_order_status,
+			 * and existing bookings are stored unprefixed. Matching the shape means the
+			 * two modes stay interchangeable and no stored value has to be migrated.
+			 *
+			 * @return array<string,string>
+			 */
+			public static function get_booking_statuses(): array {
+				if ( self::is_wc_active() && function_exists( 'wc_get_order_statuses' ) ) {
+					return (array) wc_get_order_statuses();
+				}
+
+				return array(
+					'wc-pending'    => __( 'Pending payment', 'car-rental-manager' ),
+					'wc-processing' => __( 'Processing', 'car-rental-manager' ),
+					'wc-on-hold'    => __( 'On hold', 'car-rental-manager' ),
+					'wc-completed'  => __( 'Completed', 'car-rental-manager' ),
+					'wc-cancelled'  => __( 'Cancelled', 'car-rental-manager' ),
+					'wc-refunded'   => __( 'Refunded', 'car-rental-manager' ),
+					'wc-failed'     => __( 'Failed', 'car-rental-manager' ),
+				);
+			}
+
+			/**
 			 * Convert the plugin's decimal clock notation into a real "HH:MM" time.
 			 *
 			 * Times move through the booking form as decimals — "10.3" or "10.30" meaning
