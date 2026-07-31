@@ -156,6 +156,50 @@
 					$is_woo   = ( $wc_order instanceof WC_Order );
 					$total    = $is_woo ? (float) $wc_order->get_total() : (float) get_post_meta( $id, 'mpcrbm_tp', true );
 
+					// What makes up that total. A bare grand total tells an admin nothing
+					// about WHY a booking costs what it does — whether the customer added
+					// extras, or the figure is just the rental. Each part is only listed
+					// when it is actually charged, so a plain booking stays a single line.
+					$quantity  = max( 1, absint( get_post_meta( $id, 'mpcrbm_car_quantity', true ) ) );
+					$base      = (float) get_post_meta( $id, 'mpcrbm_base_price', true );
+					$deposit   = (float) get_post_meta( $id, 'mpcrbm_security_deposit_amount', true );
+					$one_way   = (float) get_post_meta( $id, 'mpcrbm_branch_one_way_fee', true );
+					$services  = get_post_meta( $id, 'mpcrbm_service_info', true );
+					// The WooCommerce flow nests this one level deeper than the standalone
+					// checkout does, so unwrap a wrapper array before reading it.
+					if ( is_array( $services ) && isset( $services[0] ) && is_array( $services[0] ) && ! isset( $services[0]['service_name'] ) ) {
+						$services = $services[0];
+					}
+					$services = is_array( $services ) ? $services : array();
+
+					$parts = array();
+					if ( $base > 0 ) {
+						$parts[] = array(
+							'label'  => $quantity > 1
+								/* translators: %d: number of vehicles booked. */
+								? sprintf( __( 'Rental × %d', 'car-rental-manager' ), $quantity )
+								: __( 'Rental', 'car-rental-manager' ),
+							'amount' => $base * $quantity,
+						);
+					}
+					foreach ( $services as $service ) {
+						if ( ! is_array( $service ) || empty( $service['service_name'] ) ) {
+							continue;
+						}
+						$service_qty = max( 1, absint( $service['service_quantity'] ?? 1 ) );
+						$parts[]     = array(
+							'label'  => $service['service_name'] . ( $service_qty > 1 ? ' × ' . $service_qty : '' ),
+							'amount' => (float) ( $service['service_price'] ?? 0 ) * $service_qty,
+							'extra'  => true,
+						);
+					}
+					if ( $one_way > 0 ) {
+						$parts[] = array( 'label' => __( 'One-way fee', 'car-rental-manager' ), 'amount' => $one_way * $quantity );
+					}
+					if ( $deposit > 0 ) {
+						$parts[] = array( 'label' => __( 'Deposit', 'car-rental-manager' ), 'amount' => $deposit );
+					}
+
 					$rows[] = array(
 						'ID'       => $id,
 						'is_woo'   => $is_woo,
@@ -169,6 +213,7 @@
 						'status'   => get_post_meta( $id, 'mpcrbm_order_status', true ) ?: 'pending',
 						'payment'  => get_post_meta( $id, 'mpcrbm_payment_method', true ),
 						'total'    => $this->format_price( $total ),
+						'parts'    => $parts,
 					);
 				}
 				wp_reset_postdata();
@@ -354,7 +399,19 @@
 												<span class="mpcrbm-cell-strong"><?php echo esc_html( $row['pickup'] ?: '—' ); ?></span>
 												<?php if ( $row['ret'] ) : ?><span class="mpcrbm-cell-sub"><?php echo esc_html( $row['ret'] ); ?></span><?php endif; ?>
 											</td>
-											<td><span class="mpcrbm-cell-strong"><?php echo wp_kses_post( $row['total'] ); ?></span></td>
+											<td>
+												<span class="mpcrbm-cell-strong"><?php echo wp_kses_post( $row['total'] ); ?></span>
+												<?php if ( ! empty( $row['parts'] ) ) : ?>
+													<ul class="mpcrbm-total-parts">
+														<?php foreach ( $row['parts'] as $part ) : ?>
+															<li<?php echo ! empty( $part['extra'] ) ? ' class="is-extra"' : ''; ?>>
+																<span><?php echo esc_html( $part['label'] ); ?></span>
+																<em><?php echo wp_kses_post( $this->format_price( $part['amount'] ) ); ?></em>
+															</li>
+														<?php endforeach; ?>
+													</ul>
+												<?php endif; ?>
+											</td>
 											<td><?php echo esc_html( $row['payment'] ?: '—' ); ?></td>
 											<td><span class="mpcrbm-status-pill is-<?php echo esc_attr( $status_class ); ?>"><?php echo esc_html( $status_label ); ?></span></td>
 											<td class="mpcrbm-col-actions">
@@ -472,6 +529,16 @@
 				.mpcrbm-bookings-table tbody tr:last-child td{border-bottom:none;}
 				.mpcrbm-bookings-table tbody tr:hover{background:#fbfcfe;}
 				.mpcrbm-cell-strong{display:block;font-weight:600;}
+
+				/* What makes up the total. Deliberately quiet — the grand total stays the
+				   headline and the parts read as supporting detail rather than competing
+				   with it. Extras are tinted so an admin can spot at a glance which
+				   bookings actually had services added. */
+				.mpcrbm-total-parts{list-style:none;margin:6px 0 0;padding:0;border-top:1px dashed #e7e7ea;padding-top:6px;}
+				.mpcrbm-total-parts li{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11.5px;line-height:1.6;color:var(--mpcrbm-shell-text-faded,#788291);white-space:nowrap;}
+				.mpcrbm-total-parts li.is-extra{color:#4f5bd5;}
+				.mpcrbm-total-parts li span{overflow:hidden;text-overflow:ellipsis;}
+				.mpcrbm-total-parts li em{font-style:normal;font-weight:600;flex:0 0 auto;}
 				.mpcrbm-cell-sub{display:block;font-size:12px;color:var(--mpcrbm-shell-text-faded,#788291);margin-top:2px;}
 				.mpcrbm-booking-ref{display:block;font-size:14px;}
 				.mpcrbm-source-tag{display:inline-block;margin-top:5px;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;}
