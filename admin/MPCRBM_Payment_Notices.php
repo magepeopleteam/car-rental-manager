@@ -32,6 +32,10 @@
 
 			public function __construct() {
 				add_action( 'admin_notices', array( $this, 'render_notices' ) );
+				// The shell pages (Car List, Extra Services, Global Settings, Status, ...)
+				// paint their own notice slot inside .mpcrbm-shell-body — see
+				// render_shell_notices() for why admin_notices alone isn't enough there.
+				add_action( 'mpcrbm_shell_notices', array( $this, 'render_shell_notices' ) );
 				add_action( 'wp_ajax_mpcrbm_dismiss_pro_payment_notice', array( $this, 'ajax_dismiss_pro_notice' ) );
 			}
 
@@ -73,7 +77,39 @@
 			 * Rendering
 			 * ------------------------------------------------------------ */
 
+			/**
+			 * WordPress's own notice slot. Used on the screens WP renders itself — the
+			 * CPT list table and the Add/Edit Car screen.
+			 *
+			 * Deliberately stands down on the shell pages: there, admin_notices output is
+			 * emitted as a direct child of #wpbody-content, i.e. OUTSIDE .mpcrbm-shell,
+			 * which mpcrbm-shell.css hides outright (and on the Car List page
+			 * MPCRBM_Dependencies removes every admin_notices callback as well). Printing
+			 * here anyway would put a second, invisible copy of the notice in the DOM,
+			 * and the live state sync targets these by attribute — it would then update
+			 * the hidden copy and leave the visible one stale.
+			 */
 			public function render_notices() {
+				if ( class_exists( 'MPCRBM_Admin_Shell' ) && MPCRBM_Admin_Shell::is_plugin_screen() ) {
+					return;
+				}
+				$this->output_notices();
+			}
+
+			/**
+			 * The shell pages' own notice slot, fired from inside .mpcrbm-shell-body by
+			 * MPCRBM_Admin_Shell::render_shell_open().
+			 */
+			public function render_shell_notices() {
+				$this->output_notices( true );
+			}
+
+			/**
+			 * @param bool $inline True when rendering inside the shell body, which sets its
+			 *                     own page rhythm — the notice drops the wp-admin gutter
+			 *                     margins and sits flush with the cards below it.
+			 */
+			private function output_notices( $inline = false ) {
 				if ( ! current_user_can( 'manage_options' ) || ! $this->is_our_screen() ) {
 					return;
 				}
@@ -86,8 +122,8 @@
 				// upsell — see the class docblock — which is why render_pro_notice() is
 				// given its visibility rather than being skipped entirely: it too has to be
 				// present in the DOM for the sync to swap between them.
-				$showing_setup = $this->render_setup_notice();
-				$this->render_pro_notice( $showing_setup );
+				$showing_setup = $this->render_setup_notice( $inline );
+				$this->render_pro_notice( $showing_setup, $inline );
 			}
 
 			/**
@@ -142,27 +178,27 @@
 				);
 			}
 
-			private function render_setup_notice(): bool {
+			private function render_setup_notice( $inline = false ): bool {
 				$content = self::get_setup_notice_content();
 				if ( null === $content ) {
 					// Still emit the (hidden) shell so the live sync has something to fill
 					// in if the admin disables their last gateway without leaving the page.
 					$this->print_notice_styles();
-					$this->render_setup_notice_shell( '', '', '', true );
+					$this->render_setup_notice_shell( '', '', '', true, $inline );
 
 					return false;
 				}
 
 				$this->print_notice_styles();
-				$this->render_setup_notice_shell( $content['title'], $content['body'], $content['cta'], false );
+				$this->render_setup_notice_shell( $content['title'], $content['body'], $content['cta'], false, $inline );
 
 				return true;
 			}
 
 			/** The setup notice markup. Rendered hidden when there is currently no problem. */
-			private function render_setup_notice_shell( $title, $body, $cta, $hidden ) {
+			private function render_setup_notice_shell( $title, $body, $cta, $hidden, $inline = false ) {
 				?>
-				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--setup" data-mpcrbm-setup-notice<?php echo $hidden ? ' style="display:none;"' : ''; ?>>
+				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--setup<?php echo $inline ? ' mpcrbm-pay-notice--inline' : ''; ?>" data-mpcrbm-setup-notice<?php echo $hidden ? ' style="display:none;"' : ''; ?>>
 					<div class="mpcrbm-pay-notice-icon" aria-hidden="true">
 						<span class="dashicons dashicons-warning"></span>
 					</div>
@@ -189,7 +225,7 @@
 			 *                                   hidden and the live sync reveals it the
 			 *                                   moment the setup problem is resolved.
 			 */
-			private function render_pro_notice( $setup_notice_showing = false ) {
+			private function render_pro_notice( $setup_notice_showing = false, $inline = false ) {
 				if ( class_exists( 'MPCRBM_Plugin_Pro' ) ) {
 					return;
 				}
@@ -202,7 +238,7 @@
 
 				$this->print_notice_styles();
 				?>
-				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--pro" data-mpcrbm-pro-notice<?php echo $setup_notice_showing ? ' style="display:none;"' : ''; ?>
+				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--pro<?php echo $inline ? ' mpcrbm-pay-notice--inline' : ''; ?>" data-mpcrbm-pro-notice<?php echo $setup_notice_showing ? ' style="display:none;"' : ''; ?>
 					data-nonce="<?php echo esc_attr( wp_create_nonce( 'mpcrbm_dismiss_pro_payment_notice' ) ); ?>">
 					<div class="mpcrbm-pay-notice-icon mpcrbm-pay-notice-icon--pro" aria-hidden="true">
 						<span class="dashicons dashicons-star-filled"></span>
@@ -262,7 +298,14 @@
 				.mpcrbm-pay-notice-btn--pro{background:var(--mpcrbm-shell-primary,#667eea);box-shadow:0 2px 6px rgba(102,126,234,.3);}
 				.mpcrbm-pay-notice-btn--pro:hover{background:#5568d3;box-shadow:0 5px 14px rgba(102,126,234,.34);}
 				.mpcrbm-pay-notice-dismiss{top:12px;right:8px;}
-				@media (max-width:782px){.mpcrbm-pay-notice{margin-right:12px;}.mpcrbm-pay-notice-actions{flex:1 1 100%;}.mpcrbm-pay-notice-btn{width:100%;justify-content:center;}}
+				/* Inside the shell body the page supplies its own gutters, so the notice
+				   drops the wp-admin margins and sits flush with the cards below it.
+				   Specificity 0,3,0 deliberately: mpcrbm-shell.css flattens every .notice
+				   it finds in the shell body (0,2,0) down to a plain bar, which would strip
+				   this card's padding, radius and shadow. */
+				.mpcrbm-shell-body .mpcrbm-pay-notice.mpcrbm-pay-notice--inline{margin:0 0 20px;padding:18px 22px;border-radius:var(--mpcrbm-shell-radius,16px);box-shadow:0 5px 15px -5px rgba(115,125,146,.11),0 1px 2px 0 rgba(160,170,185,.6);}
+				.mpcrbm-shell-body .mpcrbm-pay-notice.mpcrbm-pay-notice--pro{padding-right:44px;}
+				@media (max-width:782px){.mpcrbm-pay-notice{margin-right:12px;}.mpcrbm-shell-body .mpcrbm-pay-notice.mpcrbm-pay-notice--inline{margin-right:0;}.mpcrbm-pay-notice-actions{flex:1 1 100%;}.mpcrbm-pay-notice-btn{width:100%;justify-content:center;}}
 				</style>
 				<?php
 			}

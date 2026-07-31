@@ -516,6 +516,15 @@
 								</div>
 							</div>
 							<div class="mpcrbm-shell-body mpcrbm">
+								<?php
+									// Notice slot for the shell pages. WordPress's own
+									// admin_notices output lands outside .mpcrbm-shell (as a
+									// direct child of #wpbody-content) where mpcrbm-shell.css
+									// hides it, so anything that must actually be seen on these
+									// pages — e.g. the payment-setup notice — renders here
+									// instead. See MPCRBM_Payment_Notices::render_shell_notices().
+									do_action( 'mpcrbm_shell_notices' );
+								?>
 				<?php
 			}
 
