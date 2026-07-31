@@ -3,19 +3,19 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	
-Car Rental Manager – ready-to-use WordPress car rental booking plugin. Manage vehicles, WooCommerce payments, and bookings effortlessly for your business.
+Car Rental Manager – ready-to-use WordPress car rental booking plugin. Manage vehicles, payments, and bookings effortlessly, with or without WooCommerce.
 
 
 == Description ==
 
 Launch your car rental business effortlessly with Car Rental Manager, a powerful and free WordPress plugin that lets you create a professional car rental booking system in just a few steps!
-Whether you're renting cars, scooters, vans, or any other vehicles, Car Rental Manager offers a robust and user-friendly solution to manage your rental business directly from your WordPress website. Perfect for entrepreneurs, small businesses, or web agencies, this plugin empowers you to set up a seamless booking system without coding expertise. With WooCommerce integration, your customers can enjoy a smooth booking process and secure payments, making your rental business both accessible and trustworthy.
+Whether you're renting cars, scooters, vans, or any other vehicles, Car Rental Manager offers a robust and user-friendly solution to manage your rental business directly from your WordPress website. Perfect for entrepreneurs, small businesses, or web agencies, this plugin empowers you to set up a seamless booking system without coding expertise. Take payments either through WooCommerce or through the plugin's own built-in Custom Payment checkout — WooCommerce is optional, so you can launch with Offline Payment (bank transfer, cash or pay-on-pickup) and add a cart later if you need one.
 The free version of Car Rental Manager includes a comprehensive set of features to get you started, with the option to upgrade to the Pro version for advanced functionality directly from your WordPress admin panel. Compatible with any WordPress theme, this plugin ensures a polished and professional booking experience that blends seamlessly into your website.
 
 Car rental manager is an easy-to-use car rental booking management system that simplifies and streamlines car rental operations.
@@ -26,7 +26,9 @@ Let's look at the key features that make the plugin more acceptable in its categ
 
 * ⚡ **Effortless Setup** – Launch your rental system in minutes with a simple guided setup—no coding skills required.  
 
-* 🛒 **WooCommerce Integration** – Seamlessly manage bookings and accept secure payments via popular gateways.  
+* 🛒 **WooCommerce Integration (optional)** – Seamlessly manage bookings and accept secure payments via popular gateways.  
+
+* 💳 **Works Without WooCommerce** – Switch Booking Mode to Custom Payment and take bookings through the plugin's own checkout, with free Offline Payment built in (PayPal and Stripe in Pro).  
 
 * 💵 **Flexible Pricing Options**  
    - Tiered Discounts: Automatic discounts by rental duration or booking volume.  
@@ -43,7 +45,7 @@ Let's look at the key features that make the plugin more acceptable in its categ
 
 * 📆 **Availability Calendar** – Show real-time availability with an interactive monthly calendar.  
 
-* ✅ **Streamlined Booking Flow** – User-friendly, customizable front-end booking process powered by WooCommerce.  
+* ✅ **Streamlined Booking Flow** – User-friendly, customizable front-end booking process, powered by WooCommerce or by the plugin's own checkout.  
 
 * 📦 **Order & Admin Management** – Track and manage reservations with an intuitive back-end dashboard.  
 
@@ -87,14 +89,14 @@ This is a shortcode to display the car list with a left filter.
 With **Car Rental Manager**, you can transform your WordPress site into a fully functional car rental platform in just a few steps:
 
 1. Install the free plugin from the WordPress repository.  
-2. Add your vehicles, set pricing rules, and configure WooCommerce for secure payments.  
+2. Add your vehicles, set pricing rules, then pick a Booking Mode under Payments — WooCommerce, or Custom Payment with no WooCommerce required.  
 3. Embed the booking system on your site using shortcodes.  
 4. Start accepting bookings and managing your rental business with ease!  
 
 This free plugin provides all the tools you need to kickstart your car rental business at no cost.  
 
 * Features like **tiered discounts**, **day-wise pricing**, and **seasonal pricing** give you the flexibility to compete in any market.  
-* **WooCommerce integration** ensures secure and reliable transactions.  
+* **Flexible payments** — WooCommerce's gateways, or the built-in Custom Payment checkout, whichever suits your business.  
 * For advanced features like **PDF export** and **form support**, the Pro version is available directly from your WordPress dashboard.
 
 
@@ -123,6 +125,37 @@ Yes you can offer extra services along with the car
 Please report security bugs found in the source code of the Car Rental Manager for WordPress plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/b1431560-8325-44d1-9a15-6f0ccfb485d4). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
 == Changelog ==
+
+= 1.5.0 =
+WooCommerce is now optional. The plugin can take bookings either through the WooCommerce cart and checkout, or through its own built-in Custom Payment checkout — chosen with a single Booking Mode setting.
+
+**New Features**
+* Booking Mode — one explicit setting decides which checkout owns a booking: **WooCommerce** (cart, checkout and orders as before) or **Custom Payment** (the plugin's own standalone checkout, no WooCommerce required). Previously the plugin refused to load at all without WooCommerce active.
+* Payments settings tab — Booking Mode selector, a WooCommerce payment-gateway manager that renders each gateway's own native settings inline, and gateway cards for PayPal, Stripe and Offline Payment with their own Configure dialogs.
+* Offline Payment (free) — accept bank transfer, cash or pay-on-pickup bookings with no payment processor at all. Includes its own checkout page, a booking confirmation page and a customer confirmation email. PayPal and Stripe remain Pro.
+* Currency Settings tab — symbol, position, decimals and separators used to format prices when Booking Mode is Custom Payment. In WooCommerce mode WooCommerce's own currency settings continue to apply.
+* Bookings list — free installs can now see their bookings in wp-admin. Shows bookings from both checkouts with a source tag; statistics, filtering, booking details and status management remain Pro.
+* Payment Method card on the car add/edit screen — shows the live booking mode and enabled gateway(s), with a popup to change either without leaving the car you are editing.
+* Payment setup notices — a notice that names the one action that will actually fix the site's situation (choose a mode, enable a WooCommerce gateway, or enable Offline Payment), and updates itself the moment a gateway is enabled rather than waiting for a page reload.
+
+**Improvements**
+* The WooCommerce installer is no longer a blocking popup on every admin page. It appears only on this plugin's own screens, is dismissible, and offers "No thanks — I'll use Custom Payment instead" as a real answer that switches the mode for you.
+* Activating WooCommerce later automatically backfills the hidden mirror products for any vehicle added while it was inactive, so those vehicles stay bookable through the cart.
+* A site already taking Offline bookings is no longer silently switched to WooCommerce when WooCommerce is activated — the chosen mode is remembered.
+* The standalone booking search panel is no longer confined to a block theme's narrow content column.
+* Vehicle photos on the checkout and confirmation pages are served at a higher resolution and cropped to a consistent banner instead of being upscaled.
+* The booking confirmation page now offers "Book this vehicle again", "Browse vehicles" and "Back to home" instead of being a dead end.
+
+**Fixes**
+* Fixed "Book Now" and "Continue" doing nothing at all when WooCommerce was inactive. Both were keyed on the hidden WooCommerce product id, which does not exist in Custom Payment mode, so the request was skipped silently. The vehicle itself is now the booking's identity.
+* Fixed a fatal error ("Call to undefined function wc_price()") on the vehicle taxonomies screen, and the same class of error across roughly ninety calls into WooCommerce (`wc_price`, `wc_get_order`, `wc_get_orders`, `WC_Tax`, `wc_clean`, currency helpers) that only became reachable once WooCommerce could be absent. All now degrade instead of crashing.
+* Fixed vehicle stock never being checked when booking from the search results — the vehicle id was computed but never sent, so a fully booked vehicle could still be added to the cart.
+* Fixed a fully booked vehicle producing a silent failure rather than telling the customer why.
+* Fixed return times being stored in the booking's raw decimal form (for example "0.5"), which displayed as nonsense on the confirmation page and, because that value is compared as a date, made standalone bookings invisible to availability checks.
+
+**Security**
+* Booking confirmation pages are now guarded by a random per-booking token. They previously used a value derived from sequential user, order and post ids, which could be guessed to read another customer's booking.
+* Payment credentials entered in the gateway dialogs are preserved when the settings form is saved, so they can never be blanked by an unrelated save.
 
 = 1.4.0 =
 Major release: a rebuilt admin experience, a single Branch Management workspace, customer-side booking self-service, and a redesigned front end.
