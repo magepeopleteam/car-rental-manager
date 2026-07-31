@@ -320,6 +320,32 @@
                     'map_meta_cap'    => true,
 				);
 
+				// Booking records. Both post types have been written to since long before
+				// they were registered here (see MPCRBM_Woocommerce::mpcrbm_cpt_data()) —
+				// registering them makes the data a first-class post type: get_post_type()
+				// checks, capability mapping, and the booking lists can all rely on it. In
+				// Custom Payment mode MPCRBM_Offline_Checkout writes the SAME schema, so
+				// one list covers WooCommerce and standalone bookings alike.
+				$booking_args = array(
+					'label'               => esc_html__( 'Car Rental Bookings', 'car-rental-manager' ),
+					'public'              => false,
+					'publicly_queryable'  => false,
+					'show_ui'             => false,
+					'show_in_menu'        => false,
+					'show_in_rest'        => false,
+					'exclude_from_search' => true,
+					'show_in_nav_menus'   => false,
+					'has_archive'         => false,
+					'supports'            => array( 'title' ),
+					'capability_type'     => 'post',
+					'rewrite'             => false,
+				);
+				register_post_type( 'mpcrbm_booking', $booking_args );
+
+				$service_booking_args              = $booking_args;
+				$service_booking_args['label']     = esc_html__( 'Car Rental Extra-service Bookings', 'car-rental-manager' );
+				register_post_type( 'mpcrbm_service_booking', $service_booking_args );
+
 				register_taxonomy( 'mpcrbm_locations', $cpt, $taxonomy_args );  // Updated taxonomy name
 //				register_post_type( 'crm_extra_services', $ex_args );
 				register_post_type( 'mpcrbm_ex_services', $ex_args );

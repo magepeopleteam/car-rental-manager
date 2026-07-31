@@ -839,7 +839,17 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             return $extra_service;
         }
 
-        public function mpcrbm_get_cart_total_price( $post_id ) {
+        /**
+         * Server-side total for the booking described by the current $_POST.
+         *
+         * Static so the standalone Custom Payment checkout
+         * (MPCRBM_Offline_Checkout) can reuse the exact same calculation without
+         * instantiating this class — a second `new MPCRBM_Woocommerce()` would
+         * re-register every WooCommerce hook in the constructor and double-apply
+         * cart pricing. The body never touched $this, so existing `$this->`
+         * callers keep working unchanged.
+         */
+        public static function mpcrbm_get_cart_total_price( $post_id ) {
             //Validate nonce before processing
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
                 return;
@@ -946,6 +956,11 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 update_post_meta( $post_id, 'mpcrbm_pin', $mpcrbm_pin );
                 update_post_meta( $post_id, 'mpcrbm_order_post_id', $post_id );
             }
+
+            // Returning the id lets callers act on the record they just created (the
+            // standalone checkout needs it for the confirmation URL and the customer
+            // email). Existing callers ignore the return value, so this is additive.
+            return $post_id;
         }
 
         public static function mpcrbm_find_bookings_by_date( $given_date, $post_id = null ) {
@@ -1017,7 +1032,43 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 
             if( $already_booked === 0 ){
                 return 0;
-            }else {
+            }
+
+            // The explicit Booking Mode setting (MPCRBM_Booking_Mode) is the single
+            // source of truth for which flow owns a booking, so a booking has one
+            // deterministic path instead of two handlers racing for it.
+            $use_wc_payment = class_exists( 'MPCRBM_Booking_Mode' ) && MPCRBM_Booking_Mode::is_woocommerce();
+
+            if ( ! $use_wc_payment ) {
+                // WooCommerce doesn't own this booking: hand off to whichever custom
+                // payment flow is registered (the free Offline checkout, or Pro's
+                // richer native checkout). If nothing handles it, return a visible
+                // error rather than an empty response, so the frontend shows a message
+                // instead of hanging on a spinner forever.
+                $response = apply_filters( 'mpcrbm_custom_payment_add_to_cart', '', $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified at the top of this method.
+                if ( '' === $response ) {
+                    ob_start();
+                    ?>
+                    <div class="dLayout mpcrbm-cart-error">
+                        <p class="mpcrbm-error-message"><?php esc_html_e( 'No payment method is currently available. Please contact the site admin.', 'car-rental-manager' ); ?></p>
+                    </div>
+                    <?php
+                    $response = ob_get_clean();
+                }
+                echo wp_kses_post( $response );
+                die();
+            }
+
+            // A car published while WooCommerce was inactive (Custom Payment mode) has
+            // no hidden mirror product, so $link_id arrives empty or points at a post
+            // that no longer exists — add_to_cart() would then silently fail and the
+            // customer would just see "Cart error". Self-heal the link instead of dying.
+            if ( class_exists( 'MPCRBM_Hidden_Product' ) && $post_id
+                && ( ! $link_id || 'product' !== get_post_type( $link_id ) ) ) {
+                $link_id = MPCRBM_Hidden_Product::ensure_hidden_product( $post_id );
+            }
+
+            {
                 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
                 $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
                 $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;

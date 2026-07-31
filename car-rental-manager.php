@@ -41,18 +41,22 @@
                 }
 				require_once MPCRBM_PLUGIN_DIR . '/mp_global/MPCRBM_Global_File_Load.php';
 
-				// Dependency installer popup: shows a blocking popup on every admin page
-				// while WooCommerce is missing and installs/activates it (chunked) via AJAX.
-				// It also handles the post-activation redirect to the car list.
-				if ( is_admin() ) {
+				// WooCommerce is OPTIONAL. The plugin always boots: the CPT, settings,
+				// search and pricing engine work either way. Which flow actually takes a
+				// booking is decided by the explicit Booking Mode setting
+				// (inc/MPCRBM_Booking_Mode.php) — WooCommerce cart/checkout, or the
+				// plugin's own standalone "Custom Payment" checkout.
+				//
+				// The installer is only offered while WooCommerce is genuinely missing,
+				// and it is non-blocking: an admin who intends to run Custom Payment can
+				// dismiss it and never see it again.
+				if ( is_admin() && MPCRBM_Global_Function::check_woocommerce() !== 1 ) {
 					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Woo_Installer.php';
 				}
 
-				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
-					self::on_activation_page_create();
-					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Dependencies.php';
-                	add_action('init', array($this, 'mpcrbm_register_cpt'));
-				}
+				self::on_activation_page_create();
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Dependencies.php';
+				add_action( 'init', array( $this, 'mpcrbm_register_cpt' ) );
 			}
 
 			/**

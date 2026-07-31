@@ -1,0 +1,421 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Standalone (Custom Payment) checkout + booking confirmation.
+
+   Used only when Booking Mode is "Custom Payment" — WooCommerce mode keeps
+   WooCommerce's own checkout templates and never loads this file. Styling
+   follows the plugin's frontend look (rounded cards, soft borders, the
+   --mpcrbm-* accent) rather than WooCommerce's, since there is no
+   WooCommerce on the page to inherit from.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mpcrbm-checkout {
+	--mpcrbm-co-accent: var(--color_theme, #667eea);
+	--mpcrbm-co-border: #e7e7ea;
+	--mpcrbm-co-text: #1f222b;
+	--mpcrbm-co-faded: #788291;
+	--mpcrbm-co-radius: 16px;
+	max-width: 1080px;
+	margin: 0 auto;
+	padding: 8px 0 40px;
+	color: var(--mpcrbm-co-text);
+	box-sizing: border-box;
+}
+
+.mpcrbm-checkout *,
+.mpcrbm-checkout *::before,
+.mpcrbm-checkout *::after {
+	box-sizing: border-box;
+}
+
+.mpcrbm-checkout-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+	gap: 28px;
+	align-items: start;
+}
+
+@media (max-width: 860px) {
+	.mpcrbm-checkout-grid {
+		grid-template-columns: 1fr;
+	}
+
+	/* Summary first on mobile: customers want to confirm WHAT they're buying
+	   before they start typing their details into a long form. */
+	.mpcrbm-checkout-summary {
+		order: -1;
+	}
+}
+
+.mpcrbm-checkout-title {
+	margin: 0 0 16px;
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--mpcrbm-co-text);
+}
+
+/* ── Customer details form ─────────────────────────────────────────────── */
+
+.mpcrbm-checkout-form {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-co-border);
+	border-radius: var(--mpcrbm-co-radius);
+	padding: 26px;
+	box-shadow: 0 5px 15px -5px rgba(115, 125, 146, .11);
+}
+
+.mpcrbm-checkout-fields {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-bottom: 28px;
+}
+
+@media (max-width: 560px) {
+	.mpcrbm-checkout-fields {
+		grid-template-columns: 1fr;
+	}
+}
+
+.mpcrbm-field {
+	margin: 0;
+}
+
+.mpcrbm-field--full {
+	grid-column: 1 / -1;
+}
+
+.mpcrbm-field label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #39445A;
+}
+
+.mpcrbm-field label span {
+	color: #dc2626;
+}
+
+.mpcrbm-field input,
+.mpcrbm-field textarea {
+	width: 100%;
+	padding: 11px 14px;
+	border: 1.5px solid #d9dce3;
+	border-radius: 10px;
+	font-size: 14px;
+	font-family: inherit;
+	color: var(--mpcrbm-co-text);
+	background: #fafbfc;
+	transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.mpcrbm-field input:focus,
+.mpcrbm-field textarea:focus {
+	border-color: var(--mpcrbm-co-accent);
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .14);
+	background: #fff;
+	outline: none;
+}
+
+.mpcrbm-field textarea {
+	resize: vertical;
+	min-height: 84px;
+}
+
+/* ── Payment method card(s) ────────────────────────────────────────────────
+   Free renders a single non-interactive Offline card; Pro renders one radio
+   per enabled gateway. Both use .mpcrbm-pay-method so the styling is shared. */
+
+.mpcrbm-pay-methods {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.mpcrbm-pay-method {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	padding: 16px 18px;
+	border: 1.5px solid var(--mpcrbm-co-border);
+	border-radius: 12px;
+	background: #fafbfc;
+}
+
+/* Only the Pro (multi-gateway) variant is clickable. */
+.mpcrbm-pay-methods .mpcrbm-pay-method {
+	cursor: pointer;
+	transition: border-color .15s ease, background .15s ease;
+}
+
+.mpcrbm-pay-methods .mpcrbm-pay-method:hover {
+	border-color: #c7cbf0;
+}
+
+/* The real radio stays in the DOM for keyboard + form semantics, but is visually
+   replaced by .mpcrbm-pay-method-radio. */
+.mpcrbm-pay-method input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.mpcrbm-pay-method input[type="radio"]:focus-visible ~ .mpcrbm-pay-method-radio {
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .3);
+}
+
+.mpcrbm-pay-method.is-selected {
+	border-color: var(--mpcrbm-co-accent);
+	background: #f6f7ff;
+}
+
+.mpcrbm-pay-method-radio {
+	flex: 0 0 auto;
+	width: 20px;
+	height: 20px;
+	margin-top: 2px;
+	border-radius: 50%;
+	border: 2px solid var(--mpcrbm-co-accent);
+	position: relative;
+}
+
+.mpcrbm-pay-method.is-selected .mpcrbm-pay-method-radio::after {
+	content: "";
+	position: absolute;
+	inset: 3px;
+	border-radius: 50%;
+	background: var(--mpcrbm-co-accent);
+}
+
+.mpcrbm-pay-method-text {
+	display: block;
+	min-width: 0;
+}
+
+.mpcrbm-pay-method-text strong {
+	display: block;
+	font-size: 14.5px;
+	font-weight: 700;
+	margin-bottom: 3px;
+}
+
+.mpcrbm-pay-method-text span {
+	display: block;
+	font-size: 13px;
+	line-height: 1.55;
+	color: var(--mpcrbm-co-faded);
+}
+
+/* ── Errors + submit ───────────────────────────────────────────────────── */
+
+.mpcrbm-checkout-error {
+	margin: 18px 0 0;
+	padding: 12px 15px;
+	border-radius: 10px;
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	color: #b42318;
+	font-size: 13.5px;
+	line-height: 1.55;
+}
+
+.mpcrbm-checkout-submit {
+	display: block;
+	width: 100%;
+	margin-top: 22px;
+	padding: 15px 24px;
+	border: none;
+	border-radius: 12px;
+	background: var(--mpcrbm-co-accent);
+	color: #fff;
+	font-size: 15.5px;
+	font-weight: 700;
+	font-family: inherit;
+	cursor: pointer;
+	transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+	box-shadow: 0 4px 14px rgba(102, 126, 234, .28);
+}
+
+.mpcrbm-checkout-submit:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 8px 20px rgba(102, 126, 234, .34);
+}
+
+.mpcrbm-checkout-submit:disabled {
+	opacity: .65;
+	cursor: progress;
+	transform: none;
+}
+
+/* ── Booking summary ───────────────────────────────────────────────────── */
+
+.mpcrbm-checkout-summary {
+	position: sticky;
+	top: 24px;
+}
+
+@media (max-width: 860px) {
+	.mpcrbm-checkout-summary {
+		position: static;
+	}
+}
+
+.mpcrbm-summary-card {
+	background: #fff;
+	border: 1px solid var(--mpcrbm-co-border);
+	border-radius: var(--mpcrbm-co-radius);
+	padding: 22px;
+	box-shadow: 0 5px 15px -5px rgba(115, 125, 146, .11);
+}
+
+.mpcrbm-summary-thumb {
+	margin: -22px -22px 18px;
+	overflow: hidden;
+	border-radius: var(--mpcrbm-co-radius) var(--mpcrbm-co-radius) 0 0;
+	line-height: 0;
+}
+
+.mpcrbm-summary-thumb img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.mpcrbm-summary-car {
+	margin: 0 0 16px;
+	font-size: 17px;
+	font-weight: 700;
+}
+
+.mpcrbm-summary-rows {
+	list-style: none;
+	margin: 0 0 18px;
+	padding: 0;
+}
+
+.mpcrbm-summary-rows li {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 9px 0;
+	border-bottom: 1px dashed #eceef2;
+	font-size: 13.5px;
+}
+
+.mpcrbm-summary-rows li:last-child {
+	border-bottom: none;
+}
+
+.mpcrbm-summary-rows span {
+	color: var(--mpcrbm-co-faded);
+	min-width: 0;
+}
+
+.mpcrbm-summary-rows strong {
+	font-weight: 600;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.mpcrbm-summary-total {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding-top: 16px;
+	border-top: 2px solid var(--mpcrbm-co-border);
+	font-size: 16px;
+}
+
+.mpcrbm-summary-total strong {
+	font-size: 21px;
+	font-weight: 800;
+	color: var(--mpcrbm-co-accent);
+}
+
+.mpcrbm-summary-note {
+	margin: 10px 0 0;
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--mpcrbm-co-faded);
+}
+
+/* ── Confirmation page ─────────────────────────────────────────────────── */
+
+.mpcrbm-confirmation {
+	max-width: 640px;
+}
+
+.mpcrbm-confirm-head {
+	text-align: center;
+	margin-bottom: 28px;
+}
+
+.mpcrbm-confirm-tick {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 64px;
+	height: 64px;
+	margin-bottom: 16px;
+	border-radius: 50%;
+	background: #dcfce7;
+	color: #16a34a;
+}
+
+.mpcrbm-confirm-tick svg {
+	width: 30px;
+	height: 30px;
+}
+
+.mpcrbm-confirm-head h2 {
+	margin: 0 0 8px;
+	font-size: 24px;
+	font-weight: 700;
+}
+
+.mpcrbm-confirm-head p {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--mpcrbm-co-faded);
+}
+
+.mpcrbm-confirm-instructions {
+	margin-top: 24px;
+	padding: 18px 20px;
+	border: 1px solid #bfdbfe;
+	border-radius: 12px;
+	background: #eff6ff;
+}
+
+.mpcrbm-confirm-instructions h3 {
+	margin: 0 0 6px;
+	font-size: 15px;
+	font-weight: 700;
+	color: #1e40af;
+}
+
+.mpcrbm-confirm-instructions p {
+	margin: 0;
+	font-size: 13.5px;
+	line-height: 1.6;
+	color: #1e3a8a;
+}
+
+/* ── Expired-session / not-found notice ────────────────────────────────── */
+
+.mpcrbm-checkout-notice {
+	max-width: 640px;
+	margin: 32px auto;
+	padding: 18px 22px;
+	border: 1px solid #fed7aa;
+	border-radius: 12px;
+	background: #fff7ed;
+	color: #9a3412;
+	font-size: 14px;
+	line-height: 1.6;
+	text-align: center;
+}

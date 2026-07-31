@@ -24,7 +24,13 @@
 			private function load_file(): void {
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Shortcodes.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Transport_Search.php';
+				// Holds mpcrbm_add_to_cart(), the single entry point for "Book Now" in
+				// BOTH booking modes, so it loads whether or not WooCommerce is active.
+				// Its WooCommerce hooks simply never fire without WooCommerce.
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Woocommerce.php';
+				// Free standalone checkout for the built-in Offline method. Stands down on
+				// its own when the Pro plugin (MPCRBM_Native_Checkout) is active.
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Offline_Checkout.php';
 			}
 			public function load_single_template($template): string {
 				global $post;

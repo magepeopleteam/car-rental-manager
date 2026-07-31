@@ -31,6 +31,11 @@
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Function.php';
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Query.php';
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Layout.php';
+				// Which checkout owns a booking (WooCommerce vs standalone Custom Payment)
+				// and whether that checkout has a usable gateway. Loaded before Admin and
+				// Frontend because both gate on them.
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Booking_Mode.php';
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Payment_Status_Checker.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';

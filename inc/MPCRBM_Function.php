@@ -170,6 +170,69 @@
 			}
 
 			//************************//
+			/**
+			 * Is WooCommerce active right now?
+			 *
+			 * WooCommerce is OPTIONAL: when Booking Mode is "Custom Payment" the plugin
+			 * takes bookings through its own standalone checkout instead. Anything that
+			 * touches a WC function from always-loaded code must gate on this.
+			 *
+			 * @see MPCRBM_Booking_Mode
+			 */
+			public static function is_wc_active(): bool {
+				return class_exists( 'MPCRBM_Global_Function' ) && MPCRBM_Global_Function::check_woocommerce() === 1;
+			}
+
+			/**
+			 * Is the built-in Offline payment method switched on?
+			 *
+			 * Offline is a FREE standalone gateway (see MPCRBM_Offline_Checkout) — unlike
+			 * PayPal/Stripe, which are Pro-only. Kept here so both the settings screen and
+			 * the payment-status checker read the same flag.
+			 */
+			public static function offline_payment_enabled(): bool {
+				return MPCRBM_Global_Function::get_settings( 'mpcrbm_payment_settings', 'mpcrbm_offline_enable', 'off' ) === 'on';
+			}
+
+			/**
+			 * Mint the random token that guards a booking's public pages.
+			 *
+			 * The standalone checkout's confirmation page and the payment-gateway return
+			 * URLs both have to work for a logged-out customer, so they can only be
+			 * protected by something in the URL. That something must be UNGUESSABLE:
+			 * `mpcrbm_pin` is derived from user id + order id + car id + post id, all of
+			 * which are small sequential integers, so anyone could enumerate other
+			 * customers' bookings with it. This mints a real random secret instead.
+			 *
+			 * Generated once per booking and reused, so a customer can revisit their
+			 * confirmation link (or refresh a gateway return) without it breaking.
+			 */
+			public static function issue_booking_access_token( $booking_id ): string {
+				$booking_id = absint( $booking_id );
+				if ( ! $booking_id ) {
+					return '';
+				}
+				$token = (string) get_post_meta( $booking_id, '_mpcrbm_access_token', true );
+				if ( '' === $token ) {
+					$token = wp_generate_password( 32, false, false );
+					update_post_meta( $booking_id, '_mpcrbm_access_token', $token );
+				}
+
+				return $token;
+			}
+
+			/** Constant-time check of a booking access token. */
+			public static function verify_booking_access_token( $booking_id, $token ): bool {
+				$booking_id = absint( $booking_id );
+				$token      = (string) $token;
+				if ( ! $booking_id || '' === $token ) {
+					return false;
+				}
+				$stored = (string) get_post_meta( $booking_id, '_mpcrbm_access_token', true );
+
+				return '' !== $stored && hash_equals( $stored, $token );
+			}
+
 			public static function get_general_settings( $key, $default = '' ) {
 				return MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', $key, $default );
 			}

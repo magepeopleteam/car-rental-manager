@@ -1506,11 +1506,23 @@ jQuery(document).ready(function($) {
                         alert( 'This Day Is Already Booked Select Another Date');
                         mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                     }else {
-                        if (data) {
-                            window.location.href = mpcrbm_ajax.site_url+'/checkout/';
+                        var mpcrbm_response = $.trim(data);
+
+                        // The server decides where a booking goes next, because that
+                        // depends on the Booking Mode: WooCommerce returns its checkout
+                        // URL, Custom Payment returns the standalone checkout URL, and an
+                        // unpayable site returns an HTML error block to show in place.
+                        // Hard-coding "/checkout/" here used to break both of those, and
+                        // any store whose checkout page isn't at that slug.
+                        if (mpcrbm_response.charAt(0) === '<') {
+                            mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                            var $mpcrbm_target = parent.find('.mpcrbm_order_proceed_area');
+                            if (!$mpcrbm_target.length) { $mpcrbm_target = parent; }
+                            $mpcrbm_target.html(mpcrbm_response);
+                        } else if (mpcrbm_response) {
+                            window.location.href = mpcrbm_response;
                         } else {
                             mpcrbm_loader_remove(parent.find('.tabsContentNext'));
-                            window.location.href = data;
                         }
                     }
                 },
