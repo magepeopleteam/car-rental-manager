@@ -208,6 +208,41 @@ div.header-text h2 {
    button markup from this same site-wide-loaded file, so every rule below is
    scoped under that class — none of it touches the car-details price box.
    ========================================================================== */
+/* ===== Panel width =====
+   The card is width:100% of its container, so on a block theme with a narrow
+   content column it rendered as a cramped strip marooned in a very wide page.
+
+   The fix belongs on the plugin's OUTERMOST wrapper — a plain block div sitting
+   directly in the theme's content flow — not on the card itself. Block themes
+   constrain children with "max-width: var(--wp--style--global--content-size);
+   margin-inline: auto", so raising that same max-width here is exactly how their
+   own .alignwide works: predictable, and it stays centred for free.
+
+   An earlier attempt used position/transform on the card to break out of the
+   container. Don't: the card's offset parent varies with the form variant
+   (manual pricing renders a different wrapper chain), so the shift resolved
+   against the wrong box and threw the panel off-centre.
+
+   The doubled class (0,2,0) outranks the theme's own ":where()"-based content
+   rule (0,1,0) without needing !important. */
+.mpcrbm.mpcrbm_transport_search_area {
+    /* Retune the panel width from a child theme by overriding this one value.
+       900px sits deliberately between a block theme's two standard tiers — the
+       content column (Twenty Twenty-Five: 645px, too cramped for a booking
+       panel) and its "wide" size (1340px, which would stretch a single Pick-Up
+       select across the whole screen). Wide enough to read as a proper panel,
+       never full-bleed. */
+    --mpcrbm-sw-max-width: 900px;
+}
+
+@media (min-width: 960px) {
+    .mpcrbm.mpcrbm_transport_search_area {
+        max-width: var(--mpcrbm-sw-max-width, 900px);
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
 .mpcrbm-search-widget-modern {
     --mpcrbm-sw-radius: 16px;
     --mpcrbm-sw-radius-sm: 10px;

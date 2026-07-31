@@ -723,7 +723,82 @@
 				}
 			}
 
+			/**
+			 * The currency symbol to show beside a bare number.
+			 *
+			 * WooCommerce owns the symbol when it is active; otherwise it comes from the
+			 * plugin's own Currency Settings tab. Callers used to reach straight for
+			 * get_woocommerce_currency_symbol(), which is a fatal error in Custom Payment
+			 * mode where WooCommerce isn't loaded at all.
+			 */
+			public static function currency_symbol( $currency = '' ): string {
+				if ( self::check_woocommerce() === 1 && function_exists( 'get_woocommerce_currency_symbol' ) ) {
+					return get_woocommerce_currency_symbol( $currency );
+				}
+
+				return self::native_currency_config()['symbol'];
+			}
+
+			/**
+			 * The ISO currency CODE (USD, EUR, …) — what payment gateways need, as opposed
+			 * to the display symbol above. WooCommerce owns it when active; otherwise it
+			 * comes from the plugin's Currency Settings tab.
+			 */
+			public static function currency_code(): string {
+				if ( self::check_woocommerce() === 1 && function_exists( 'get_woocommerce_currency' ) ) {
+					return get_woocommerce_currency();
+				}
+
+				return strtoupper( self::native_currency_config()['currency_code'] );
+			}
+
+			/**
+			 * WooCommerce-safe wc_get_order().
+			 *
+			 * In Custom Payment (standalone) mode there is no WooCommerce, and bookings
+			 * store mpcrbm_order_id = 0 — so any code that reaches for the "linked order"
+			 * has to cope with there not being one, and with wc_get_order() itself not
+			 * existing. Returns null in both cases instead of fataling.
+			 *
+			 * @return WC_Order|WC_Order_Refund|null
+			 */
+			public static function safe_wc_order( $order_id ) {
+				$order_id = absint( $order_id );
+				if ( ! $order_id || ! function_exists( 'wc_get_order' ) ) {
+					return null;
+				}
+				$order = wc_get_order( $order_id );
+
+				return $order ? $order : null;
+			}
+
+			/**
+			 * WooCommerce-safe wc_get_order_statuses(). Empty array when WooCommerce is
+			 * inactive, so status dropdowns render empty rather than crashing the screen.
+			 */
+			public static function safe_wc_order_statuses(): array {
+				return function_exists( 'wc_get_order_statuses' ) ? (array) wc_get_order_statuses() : array();
+			}
+
+			/**
+			 * WooCommerce-safe wc_get_orders(). Returns an empty array when WooCommerce is
+			 * inactive, so screens that list a customer's or branch's WooCommerce orders
+			 * simply come up empty in Custom Payment mode instead of fataling.
+			 */
+			public static function safe_wc_orders( $args = array() ): array {
+				if ( ! function_exists( 'wc_get_orders' ) ) {
+					return array();
+				}
+
+				return (array) wc_get_orders( $args );
+			}
+
 			public static function get_order_item_meta( $item_id, $key ): string {
+				// Order items only exist inside WooCommerce. In Custom Payment mode there
+				// is no order to read from, and the function itself is undefined.
+				if ( ! function_exists( 'wc_get_order_item_meta' ) ) {
+					return '';
+				}
 				// wc_get_order_item_meta handles caching and the database query for you
 				$value = wc_get_order_item_meta( $item_id, $key, true );
 				return is_string( $value ) ? $value : '';
@@ -744,7 +819,7 @@
 			}
 
 			public static function wc_product_sku( $product_id ) {
-				if ( $product_id ) {
+				if ( $product_id && class_exists( 'WC_Product' ) ) {
 					return new WC_Product( $product_id );
 				}
 
@@ -752,22 +827,31 @@
 			}
 
 			//***********************************//
-public static function all_tax_list(): array {
-    // 1. Get the raw tax classes from WooCommerce settings
-    $tax_classes = WC_Tax::get_tax_classes();
-    
-    // 2. Format them into the [slug => name] array you need
-    $tax_list = [];
-    
-    // Standard tax rate is always available but not in the tax_classes list
-    $tax_list['standard'] = __( 'Standard rate', 'car-rental-manager' );
+			/**
+			 * Tax classes offered on the per-car Tax settings tab.
+			 *
+			 * WooCommerce owns tax classes, and WC_Tax simply does not exist in Custom
+			 * Payment mode — calling it there fataled the whole car add/edit screen. The
+			 * tab is still rendered (so a site that later switches to WooCommerce keeps
+			 * its saved value), just with only the standard rate to choose from.
+			 */
+			public static function all_tax_list(): array {
+				// Standard rate is always offered: it is WooCommerce's implicit default and
+				// never appears in get_tax_classes().
+				$tax_list = array(
+					'standard' => __( 'Standard rate', 'car-rental-manager' ),
+				);
 
-    foreach ( $tax_classes as $class ) {
-        $tax_list[ sanitize_title( $class ) ] = $class;
-    }
+				if ( ! class_exists( 'WC_Tax' ) ) {
+					return $tax_list;
+				}
 
-    return $tax_list;
-}
+				foreach ( WC_Tax::get_tax_classes() as $class ) {
+					$tax_list[ sanitize_title( $class ) ] = $class;
+				}
+
+				return $tax_list;
+			}
 
 			public static function week_day(): array {
 				return [

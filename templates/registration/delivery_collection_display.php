@@ -9,7 +9,7 @@ if ( ! class_exists( 'MPCRBM_Delivery_Collection_Settings' ) ) {
     return;
 }
 $post_id            = $mpcrbm_post_id ?? $post_id ?? get_the_id();
-$mpcrbm_dc_currency = get_woocommerce_currency_symbol();
+$mpcrbm_dc_currency = MPCRBM_Global_Function::currency_symbol();
 
 $mpcrbm_dc_kinds = array(
     'delivery'   => array(
@@ -46,7 +46,7 @@ if ( $mpcrbm_dc_any_enabled ) : ?>
             $mpcrbm_dc_fee_val  = floatval( get_post_meta( $post_id, "mpcrbm_{$mpcrbm_dc_kind}_fee", true ) );
             $mpcrbm_dc_fee_note = ( $mpcrbm_dc_fee_type === 'percentage' )
                 ? sprintf( /* translators: %s: percentage number */ esc_html__( '+%s%%', 'car-rental-manager' ), $mpcrbm_dc_fee_val )
-                : wp_kses_post( wc_price( $mpcrbm_dc_fee_val ) );
+                : wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_dc_fee_val ) );
             ?>
             <div class="mpcrbm_dc_item">
                 <div class="dFlex mpcrbm_extra_service_item mpcrbm_dc_row">

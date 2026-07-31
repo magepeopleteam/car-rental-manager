@@ -269,17 +269,37 @@
 	box-shadow: 0 5px 15px -5px rgba(115, 125, 146, .11);
 }
 
+/* Vehicle photos are supplied at wildly different aspect ratios, and most are
+   product shots with a lot of empty background above and below the car. Letting
+   the image set its own height made the card open with a tall, washed-out block.
+   A fixed banner ratio + object-fit:cover crops that dead space away, so every
+   vehicle presents identically regardless of how its photo was shot. */
 .mpcrbm-summary-thumb {
 	margin: -22px -22px 18px;
 	overflow: hidden;
 	border-radius: var(--mpcrbm-co-radius) var(--mpcrbm-co-radius) 0 0;
 	line-height: 0;
+	background: #f2f3f7;
 }
 
 .mpcrbm-summary-thumb img {
 	width: 100%;
 	height: auto;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	object-position: center;
 	display: block;
+	/* Stops a small source being blown up into a soft mess on hi-dpi screens. */
+	image-rendering: auto;
+}
+
+/* aspect-ratio is unsupported on older Safari/Firefox — fall back to a fixed
+   height there so the card still gets a consistent banner rather than a
+   full-bleed image. */
+@supports not (aspect-ratio: 16 / 9) {
+	.mpcrbm-summary-thumb img {
+		height: 210px;
+	}
 }
 
 .mpcrbm-summary-car {
@@ -405,6 +425,69 @@
 	color: #1e3a8a;
 }
 
+/* ── Confirmation-page navigation ──────────────────────────────────────────
+   The confirmation used to be a cul-de-sac: nothing to click, so the only way
+   out was the browser's back button — which re-posts the checkout. These give
+   the customer a deliberate next step. */
+
+.mpcrbm-confirm-actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 28px;
+	padding-top: 24px;
+	border-top: 1px solid var(--mpcrbm-co-border);
+}
+
+.mpcrbm-btn-primary,
+.mpcrbm-btn-ghost {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 12px 22px;
+	border-radius: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	text-decoration: none;
+	line-height: 1.3;
+	transition: background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+.mpcrbm-btn-primary {
+	background: var(--mpcrbm-co-accent);
+	color: #fff !important;
+	border: 1px solid var(--mpcrbm-co-accent);
+	box-shadow: 0 3px 10px rgba(102, 126, 234, .25);
+}
+
+.mpcrbm-btn-primary:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 6px 16px rgba(102, 126, 234, .3);
+	color: #fff !important;
+}
+
+.mpcrbm-btn-ghost {
+	background: #fff;
+	color: var(--mpcrbm-co-text) !important;
+	border: 1px solid var(--mpcrbm-co-border);
+}
+
+.mpcrbm-btn-ghost:hover {
+	border-color: var(--mpcrbm-co-accent);
+	color: var(--mpcrbm-co-accent) !important;
+}
+
+@media (max-width: 560px) {
+	.mpcrbm-confirm-actions {
+		flex-direction: column;
+	}
+
+	.mpcrbm-confirm-actions a {
+		width: 100%;
+	}
+}
+
 /* ── Expired-session / not-found notice ────────────────────────────────── */
 
 .mpcrbm-checkout-notice {
@@ -418,4 +501,12 @@
 	font-size: 14px;
 	line-height: 1.6;
 	text-align: center;
+}
+
+.mpcrbm-checkout-notice p {
+	margin: 0;
+}
+
+.mpcrbm-checkout-notice-actions {
+	margin-top: 16px !important;
 }

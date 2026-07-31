@@ -575,7 +575,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                                 <i class="mi mi-coins"></i>
                                 <div>
                                     <div class="mpcrbm_stat-label"><?php esc_attr_e( 'Daily Revenue', 'car-rental-manager' );?></div>
-                                    <div class="mpcrbm_stat-value"><?php echo wp_kses_post( wc_price( $total_revenue ) );?></div>
+                                    <div class="mpcrbm_stat-value"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $total_revenue ) );?></div>
                                 </div>
                             </div>
                             <div class="mpcrbm_stat-change positive" style="display: none">↑ $10/day <?php esc_attr_e( 'avg', 'car-rental-manager' );?></div>

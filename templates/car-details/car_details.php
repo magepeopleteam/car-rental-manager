@@ -448,7 +448,7 @@ if ( $deposit_enable === 'on' ) {
                                                 <div class="mpcrbm_similar_rental_info">
                                                     <h4><a href="<?php echo esc_url( $mpcrbm_related_link ); ?>"><?php echo esc_html( get_the_title( $mpcrbm_related_car ) ); ?></a></h4>
                                                     <?php if ( $mpcrbm_related_price ) : ?>
-                                                        <div class="mpcrbm_similar_rental_price"><?php echo wp_kses_post( wc_price( $mpcrbm_related_price ) ); ?> / <?php esc_html_e( 'Day', 'car-rental-manager' ); ?></div>
+                                                        <div class="mpcrbm_similar_rental_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_related_price ) ); ?> / <?php esc_html_e( 'Day', 'car-rental-manager' ); ?></div>
                                                     <?php endif; ?>
                                                     <a href="<?php echo esc_url( $mpcrbm_related_link ); ?>" class="mpcrbm_similar_rental_btn"><?php esc_html_e( 'View Details', 'car-rental-manager' ); ?></a>
                                                 </div>
@@ -607,7 +607,7 @@ if ( $deposit_enable === 'on' ) {
                                     $mpcrbm_pricing_rules = isset( $mpcrbm_pricing_rule_data['pricing_rules'] ) ? $mpcrbm_pricing_rule_data['pricing_rules'] : '';
                                     ?>
                                     <div class="mpcrbm_car_price_holder" style="display: flex; justify-content: space-between">
-                                        <div class="mpcrbm_price-breakdown mpcrbm_line_through"><?php echo wp_kses_post( wc_price($mpcrbm_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                        <div class="mpcrbm_price-breakdown mpcrbm_line_through"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price($mpcrbm_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                                         <div class="mpcrbm_price_hover_wrap">
                                             <span class="mpcrbm_price_info">
                                                 ℹ Price Rules
@@ -617,8 +617,8 @@ if ( $deposit_enable === 'on' ) {
                                     </div>
                                 <?php }?>
                                 <h3><?php esc_attr_e( 'Price', 'car-rental-manager' );?>:
-                                    <span id="mpcrbm_total_day_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?>
-                                    <!--                                    <span id="mpcrbm_total_day_price">--><?php //echo wp_kses_post( wc_price( $mpcrbm_day_price + $deposit_price ) ); ?><!--</span> / --><?php //esc_attr_e( 'Day', 'car-rental-manager' );?>
+                                    <span id="mpcrbm_total_day_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price ) ); ?></span> / <?php esc_attr_e( 'Day', 'car-rental-manager' );?>
+                                    <!--                                    <span id="mpcrbm_total_day_price">--><?php //echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price + $deposit_price ) ); ?><!--</span> / --><?php //esc_attr_e( 'Day', 'car-rental-manager' );?>
                                 </h3>
                                 <?php if( $booking_period > 0 ){?>
                                     <p class="mpcrbm_minimum_booking">
@@ -671,7 +671,7 @@ if ( $deposit_enable === 'on' ) {
                                             <span class="mpcrbm_car_day_unit"><?php esc_html_e( 'Day', 'car-rental-manager' ); ?></span>
                                         </span>
                                     </p>
-                                    <p class="mpcrbm_product_price _textTheme" id="mpcrbm_selected_car_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ) );?></p>
+                                    <p class="mpcrbm_product_price _textTheme" id="mpcrbm_selected_car_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price ) );?></p>
                                 </div>
                                 <div class="mpcrbm_extra_service_summary"></div>
                                 <?php if ( $deposit_price > 0 ) : ?>
@@ -679,7 +679,7 @@ if ( $deposit_enable === 'on' ) {
                                         <div class="divider"></div>
                                         <div class="justifyBetween">
                                             <span><?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?></span>
-                                            <span class="mpcrbm_security_deposit_price _textTheme"><?php echo wp_kses_post( wc_price( $deposit_price ) ); ?></span>
+                                            <span class="mpcrbm_security_deposit_price _textTheme"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $deposit_price ) ); ?></span>
                                         </div>
                                     </div>
                                 <?php endif; ?>
@@ -698,7 +698,7 @@ if ( $deposit_enable === 'on' ) {
                                     $mpcrbm_dc_row_val  = floatval( get_post_meta( $mpcrbm_post_id, "mpcrbm_{$mpcrbm_dc_kind}_fee", true ) );
                                     $mpcrbm_dc_row_text = ( $mpcrbm_dc_row_type === 'percentage' )
                                         ? sprintf( /* translators: %s: percentage number */ esc_html__( '%s%% of total', 'car-rental-manager' ), $mpcrbm_dc_row_val )
-                                        : wp_kses_post( wc_price( $mpcrbm_dc_row_val ) );
+                                        : wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_dc_row_val ) );
                                     ?>
                                     <div class="mpcrbm_dc_fee_summary" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_row" style="display: none">
                                         <div class="divider"></div>
@@ -710,7 +710,7 @@ if ( $deposit_enable === 'on' ) {
                                 <?php endforeach; ?>
                                 <div class="justifyBetween total">
                                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
-                                    <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price + $deposit_price ) );?></h3>
+                                    <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price + $deposit_price ) );?></h3>
                                 </div>
                             </div>
 

@@ -149,6 +149,9 @@
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'nonce'    => wp_create_nonce( 'mpcrbm_transportation_type_nonce' ),
                     'site_url' => get_site_url(),
+					// Shown when add-to-cart bails (car fully booked for the chosen dates),
+					// so the customer gets a reason instead of a button that does nothing.
+					'i18n_unavailable' => __( 'This vehicle is not available for the selected dates. Please choose another date or vehicle.', 'car-rental-manager' ),
 				) );
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbmL10n', array(
 					'nameLabel'  => __( 'Name : ', 'car-rental-manager' ),

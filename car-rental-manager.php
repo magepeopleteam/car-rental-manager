@@ -204,6 +204,42 @@
 				];
 
 				register_post_type( $cpt, $args );
+
+				// Booking records. Both post types have been written to since long before
+				// they were registered (see MPCRBM_Woocommerce::mpcrbm_cpt_data()) —
+				// registering them makes the data a first-class post type that
+				// get_post_type() checks and capability mapping can rely on.
+				//
+				// Registered HERE rather than in MPCRBM_CPT because that class only loads
+				// in wp-admin, while the standalone Custom Payment checkout creates and
+				// reads bookings on the frontend. In Custom Payment mode
+				// MPCRBM_Offline_Checkout (free) / MPCRBM_Native_Checkout (Pro) write the
+				// SAME meta schema the WooCommerce bridge does, so one booking list covers
+				// both flows.
+				$booking_args = [
+					'label'               => esc_html__( 'Car Rental Bookings', 'car-rental-manager' ),
+					'public'              => false,
+					'publicly_queryable'  => false,
+					'show_ui'             => false,
+					'show_in_menu'        => false,
+					'show_in_rest'        => false,
+					'exclude_from_search' => true,
+					'show_in_nav_menus'   => false,
+					'has_archive'         => false,
+					'supports'            => [ 'title' ],
+					'capability_type'     => 'post',
+					'rewrite'             => false,
+				];
+				register_post_type( 'mpcrbm_booking', $booking_args );
+
+				// The sibling extra-service records use the post type "mpcrbm_service_booking",
+				// which is 22 characters — over WordPress's 20-character limit, so
+				// register_post_type() rejects it with a _doing_it_wrong() notice. It is
+				// deliberately NOT registered: every existing site already has rows stored
+				// under that exact name, and renaming it would orphan their historical
+				// extra-service data. wp_insert_post()/WP_Query both work fine with an
+				// unregistered type, which is how those records have always been read and
+				// written (see MPCRBM_Woocommerce::checkout_order_processed()).
 			}
 
 		}

@@ -225,11 +225,22 @@
 
 				$refreshed = $this->get_gateway( $gateway_id );
 				wp_send_json_success(
-					array(
-						'message' => __( 'Settings saved successfully!', 'car-rental-manager' ),
-						'enabled' => ( $refreshed && 'yes' === $refreshed->enabled ) ? 'yes' : 'no',
+					array_merge(
+						array(
+							'message' => __( 'Settings saved successfully!', 'car-rental-manager' ),
+							'enabled' => ( $refreshed && 'yes' === $refreshed->enabled ) ? 'yes' : 'no',
+						),
+						$this->payment_state()
 					)
 				);
+			}
+
+			/**
+			 * Current payment-readiness state, for the browser to sync notices/cards with.
+			 * Guarded because this class is loaded before MPCRBM_Payment_Settings.
+			 */
+			private function payment_state(): array {
+				return class_exists( 'MPCRBM_Payment_Settings' ) ? MPCRBM_Payment_Settings::get_payment_state() : array();
 			}
 
 			// ---------------------------------------------------------------
@@ -260,7 +271,7 @@
 					WC()->payment_gateways()->init();
 				}
 
-				wp_send_json_success( array( 'enabled' => $enabled ) );
+				wp_send_json_success( array_merge( array( 'enabled' => $enabled ), $this->payment_state() ) );
 			}
 
 			// ---------------------------------------------------------------

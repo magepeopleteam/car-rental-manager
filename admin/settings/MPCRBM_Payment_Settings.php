@@ -40,6 +40,9 @@
 				add_filter( 'mpcrbm_settings_sec_reg', array( $this, 'register_section' ), 15 );
 				add_filter( 'mpcrbm_settings_sec_fields', array( $this, 'register_fields' ), 15 );
 
+				// Printed early (admin_head) rather than in the footer: the sync function has
+				// to exist before the gateway modals and Booking Mode selector bind to it.
+				add_action( 'admin_head', array( $this, 'print_payment_state_sync_script' ), 99 );
 				add_action( 'admin_footer', array( $this, 'render_wc_warning_modal' ) );
 				add_action( 'admin_footer', array( $this, 'render_gateway_modals' ) );
 				add_action( 'admin_footer', array( $this, 'payment_tabs_script' ) );
@@ -95,10 +98,41 @@
 				return class_exists( 'MPCRBM_Plugin_Pro' );
 			}
 
-			private function opt( $key, $default = '' ) {
+			private static function opt( $key, $default = '' ) {
 				$o = get_option( self::OPTION, array() );
 
 				return isset( $o[ $key ] ) ? $o[ $key ] : $default;
+			}
+
+			/**
+			 * The complete payment-readiness picture, as the server currently sees it.
+			 *
+			 * Every AJAX handler that can change payment state returns this, so the browser
+			 * never has to guess what a save implied. Without it, enabling Offline Payment
+			 * in the car-edit popup left two "no payment method" notices and the sidebar
+			 * card all still claiming the site couldn't take bookings until a reload —
+			 * which reads as "the save didn't work".
+			 *
+			 * Static so MPCRBM_WC_Payment_Manager's handlers can return the same shape.
+			 *
+			 * @return array
+			 */
+			public static function get_payment_state(): array {
+				$has_gateway = class_exists( 'MPCRBM_Booking_Mode' ) ? MPCRBM_Booking_Mode::has_gateway_for_active_mode() : false;
+				$names       = self::get_active_gateway_names();
+				$notice      = class_exists( 'MPCRBM_Payment_Notices' ) ? MPCRBM_Payment_Notices::get_setup_notice_content() : null;
+
+				return array(
+					'has_gateway'   => $has_gateway,
+					'mode'          => class_exists( 'MPCRBM_Booking_Mode' ) ? MPCRBM_Booking_Mode::get_mode() : '',
+					'mode_label'    => self::get_booking_mode_label(),
+					'gateway_names' => $names,
+					'gateway_text'  => $names ? implode( ', ', $names ) : __( 'None', 'car-rental-manager' ),
+					'setup_notice'  => $notice, // null once nothing is wrong.
+					// The Pro upsell may only surface once the setup problem is gone.
+					'show_pro_notice' => ( null === $notice ) && ! class_exists( 'MPCRBM_Plugin_Pro' )
+						&& class_exists( 'MPCRBM_Booking_Mode' ) && MPCRBM_Booking_Mode::is_custom(),
+				);
 			}
 
 			private function settings_url() {
@@ -108,7 +142,7 @@
 			}
 
 			/** Human-readable label for the currently active booking mode. */
-			private function get_booking_mode_label() {
+			private static function get_booking_mode_label() {
 				if ( ! class_exists( 'MPCRBM_Booking_Mode' ) ) {
 					return __( 'Not set', 'car-rental-manager' );
 				}
@@ -128,7 +162,7 @@
 			 *
 			 * @return string[]
 			 */
-			private function get_active_gateway_names() {
+			private static function get_active_gateway_names() {
 				if ( ! class_exists( 'MPCRBM_Booking_Mode' ) ) {
 					return array();
 				}
@@ -149,7 +183,7 @@
 						'mpcrbm_stripe_enable' => __( 'Stripe', 'car-rental-manager' ),
 					);
 					foreach ( $map as $key => $label ) {
-						if ( 'on' === $this->opt( $key ) ) {
+						if ( 'on' === self::opt( $key ) ) {
 							$names[] = $label;
 						}
 					}
@@ -512,6 +546,9 @@
 									var msg = ( mode === 'woocommerce' ) ? i18n.wcWarn : i18n.customWarn;
 									$slot.append( '<div class="mpcrbm-bm-gateway-warning"><span class="dashicons dashicons-warning"></span><p>' + msg + '</p></div>' );
 								}
+								// Switching mode changes which gateways count, so the notices
+								// and sidebar card need the same refresh a gateway save gets.
+								if ( window.mpcrbmSyncPaymentState ) { window.mpcrbmSyncPaymentState( res.data ); }
 							} else {
 								$status.show().text( ( res && res.data ) ? res.data : i18n.error ).css( 'color', '#d63638' );
 							}
@@ -620,11 +657,182 @@
 				<?php
 			}
 
+			/**
+			 * Defines window.mpcrbmSyncPaymentState(state) — the single place that reflects
+			 * a payment-state change into every affected piece of UI at once.
+			 *
+			 * Everything it touches (both admin notices, the Booking Mode warning, and the
+			 * car-edit sidebar card) is rendered by a DIFFERENT class at a DIFFERENT hook,
+			 * so there is no shared render pass to re-run. Rather than have each AJAX
+			 * callback poke at selectors it doesn't own, they all hand the server's
+			 * authoritative state to this one function.
+			 */
+			public function print_payment_state_sync_script() {
+				if ( ! $this->is_settings_or_car_edit_screen() ) {
+					return;
+				}
+				?>
+				<script>
+				window.mpcrbmSyncPaymentState = function ( state ) {
+					if ( ! state || typeof state !== 'object' ) { return; }
+					var $ = window.jQuery;
+					if ( ! $ ) { return; }
+
+					// --- The big setup notice --------------------------------------
+					var $setup = $( '[data-mpcrbm-setup-notice]' );
+					if ( $setup.length ) {
+						if ( state.setup_notice ) {
+							$setup.find( '.mpcrbm-pay-notice-body h3' ).text( state.setup_notice.title );
+							$setup.find( '.mpcrbm-pay-notice-body p' ).text( state.setup_notice.body );
+							$setup.find( '.mpcrbm-pay-notice-btn' ).text( state.setup_notice.cta );
+							$setup.show();
+						} else {
+							$setup.hide();
+						}
+					}
+
+					// --- The slim car-edit notice ----------------------------------
+					var $edit = $( '#mpcrbm-edit-payment-notice' );
+					if ( $edit.length ) { $edit.toggle( ! state.has_gateway ); }
+
+					// --- Pro upsell: only once the site can actually take bookings --
+					var $pro = $( '[data-mpcrbm-pro-notice]' );
+					if ( $pro.length && ! $pro.data( 'mpcrbm-dismissed' ) ) {
+						$pro.toggle( !! state.show_pro_notice );
+					}
+
+					// --- Booking Mode gateway warning ------------------------------
+					if ( state.has_gateway ) { $( '.mpcrbm-bm-gateway-warning' ).remove(); }
+
+					// --- Car edit screen sidebar card ------------------------------
+					$( '[data-mpcrbm-mode-label]' ).text( state.mode_label || '' );
+					$( '[data-mpcrbm-gateway-text]' ).text( state.gateway_text || '' );
+					$( '[data-mpcrbm-settings-link]' ).toggle( !! ( state.gateway_names && state.gateway_names.length ) );
+					$( '[data-mpcrbm-configure-link]' ).toggle( ! state.has_gateway );
+				};
+				</script>
+				<?php
+			}
+
 			/** WooCommerce native payment-methods manager. */
 			public function render_wc_payment_manager() {
 				if ( class_exists( 'WooCommerce' ) && class_exists( 'MPCRBM_WC_Payment_Manager' ) ) {
+					$this->wc_manager_styles();
 					MPCRBM_WC_Payment_Manager::instance()->render();
 				}
+			}
+
+			/**
+			 * Styling for the WooCommerce gateway cards.
+			 *
+			 * Printed here, alongside the markup, rather than with the rest of the screen
+			 * CSS in payment_tabs_script(). That runs on admin_footer, but this manager is
+			 * also rendered inside the car edit screen's Payment Method popup at
+			 * edit_form_top — so anything that aborts the page between the two (another
+			 * plugin's fatal, a die() in a metabox) left the popup completely unstyled.
+			 * CSS travels with its markup.
+			 */
+			private function wc_manager_styles() {
+				static $printed = false;
+				if ( $printed ) {
+					return;
+				}
+				$printed = true;
+				?>
+				<style>
+				.mpcrbm-wc-payment-manager{display:block;width:100%;box-sizing:border-box;margin-top:8px;}
+				.mpcrbm-wc-pm-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+				.mpcrbm-wc-pm-heading{margin:0;font-size:15px;font-weight:700;color:var(--mpcrbm-shell-text,#1f222b);}
+				.mpcrbm-wc-pm-wc-link{font-size:12.5px;font-weight:600;color:var(--mpcrbm-shell-primary,#667eea);text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+				.mpcrbm-wc-pm-wc-link:hover{text-decoration:underline;}
+				.mpcrbm-wc-pm-wc-link .dashicons{font-size:14px;width:14px;height:14px;line-height:1.4;}
+				.mpcrbm-gw-card{border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:var(--mpcrbm-shell-radius-sm,12px);background:#fff;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 2px rgba(31,34,43,.04);transition:box-shadow .18s ease;}
+				.mpcrbm-gw-card:hover{box-shadow:0 4px 14px rgba(31,34,43,.08);}
+				.mpcrbm-gw-card.is-enabled{border-left:3px solid var(--mpcrbm-shell-primary,#667eea);}
+				.mpcrbm-gw-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;}
+				.mpcrbm-gw-head-main{display:flex;align-items:center;gap:12px;}
+				.mpcrbm-gw-title{font-size:14px;font-weight:600;color:var(--mpcrbm-shell-text,#1f222b);}
+				.mpcrbm-gw-badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;padding:2px 8px;border-radius:9px;background:#f1f2f6;color:#788291;}
+				.mpcrbm-gw-card.is-enabled .mpcrbm-gw-badge{background:#e6f4ea;color:#0a7c2f;}
+				.mpcrbm-gw-desc{padding:0 16px 12px;color:#788291;font-size:13px;}
+				.mpcrbm-gw-desc p{margin:0 0 6px;}
+				.mpcrbm-gw-configure-btn,.mpcrbm-gw-save-btn{cursor:pointer;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);background:#fff;color:#39445A;font-size:13px;font-weight:600;border-radius:var(--mpcrbm-shell-radius-xs,8px);padding:7px 15px;line-height:1.4;transition:border-color .15s,background .15s;}
+				.mpcrbm-gw-configure-btn:hover{border-color:var(--mpcrbm-shell-primary,#667eea);color:var(--mpcrbm-shell-primary,#667eea);}
+				.mpcrbm-gw-save-btn{background:var(--mpcrbm-shell-primary,#667eea);border-color:var(--mpcrbm-shell-primary,#667eea);color:#fff;}
+				.mpcrbm-gw-save-btn:hover{background:#5568d3;border-color:#5568d3;}
+				.mpcrbm-gw-body{padding:6px 16px 16px;border-top:1px solid #f1f2f6;background:#fafbfc;}
+				.mpcrbm-gw-form-table{width:100%;background:transparent;}
+				.mpcrbm-gw-form-table th{width:200px;padding:14px 10px 14px 0;background:transparent;font-weight:600;vertical-align:top;}
+				.mpcrbm-gw-form-table td{padding:12px 0;background:transparent;}
+				.mpcrbm-gw-form-table input[type=text],.mpcrbm-gw-form-table input[type=password],
+				.mpcrbm-gw-form-table input[type=email],.mpcrbm-gw-form-table input[type=number],
+				.mpcrbm-gw-form-table textarea,.mpcrbm-gw-form-table select{min-width:320px;max-width:100%;}
+				.mpcrbm-gw-form-footer{display:flex;align-items:center;gap:12px;margin-top:8px;padding-top:12px;border-top:1px solid #f1f2f6;}
+				.mpcrbm-gw-status{font-size:13px;}
+				.mpcrbm-gw-status.is-success{color:#0a7c2f;}
+				.mpcrbm-gw-status.is-error{color:#d63638;}
+				.mpcrbm-gw-toggle{position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex:0 0 auto;}
+				.mpcrbm-gw-toggle-input{position:absolute;inset:0;margin:0;padding:0;width:100%;height:100%;min-width:0 !important;min-height:0 !important;opacity:0 !important;cursor:pointer;z-index:1;-webkit-appearance:none !important;-moz-appearance:none !important;appearance:none !important;background:none !important;border:none !important;box-shadow:none !important;}
+				.mpcrbm-gw-toggle-input::before,.mpcrbm-gw-toggle-input::after{content:none !important;display:none !important;}
+				.mpcrbm-gw-toggle-slider{position:absolute;inset:0;background:#c3c6ce;border-radius:24px;transition:background .2s;}
+				.mpcrbm-gw-toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
+				.mpcrbm-gw-toggle-input:checked + .mpcrbm-gw-toggle-slider{background:var(--mpcrbm-shell-primary,#667eea);}
+				.mpcrbm-gw-toggle-input:checked + .mpcrbm-gw-toggle-slider::before{transform:translateX(18px);}
+				.mpcrbm-gw-toggle-input:disabled + .mpcrbm-gw-toggle-slider{opacity:.5;cursor:not-allowed;}
+				.mpcrbm_toast{position:fixed;right:24px;bottom:24px;z-index:1000000;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:var(--mpcrbm-shell-radius-sm,12px);background:#1f222b;color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 12px 30px rgba(31,34,43,.28);opacity:0;transform:translateY(12px);transition:opacity .25s ease,transform .25s ease;}
+				.mpcrbm_toast.is-show{opacity:1;transform:translateY(0);}
+				.mpcrbm_toast_icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;flex:0 0 auto;}
+				.mpcrbm_toast_success .mpcrbm_toast_icon{background:#16a34a;}
+				.mpcrbm_toast_error .mpcrbm_toast_icon{background:#dc2626;}
+				</style>
+				<?php
+			}
+
+			/**
+			 * Styling for the PayPal / Stripe / Offline cards. Printed with the cards for
+			 * the same reason as wc_manager_styles() above — they render inside the car
+			 * edit screen's popup long before admin_footer runs.
+			 */
+			private function gateway_cards_styles() {
+				static $printed = false;
+				if ( $printed ) {
+					return;
+				}
+				$printed = true;
+				?>
+				<style>
+				.mpcrbm-gw-intro{margin:4px 0 18px;}
+				.mpcrbm-gw-intro h3{margin:0 0 6px;font-size:16px;font-weight:700;color:var(--mpcrbm-shell-text,#1f222b);}
+				.mpcrbm-gw-intro p{margin:0;font-size:13px;color:var(--mpcrbm-shell-text-faded,#788291);max-width:680px;line-height:1.6;}
+				.gateway-card{position:relative;background:#fff;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:var(--mpcrbm-shell-radius,16px);margin-bottom:13px;box-shadow:0 1px 2px rgba(31,34,43,.04);width:100%;box-sizing:border-box;color:var(--mpcrbm-shell-text,#1f222b);overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
+				.gateway-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(31,34,43,.10);}
+				.gateway-card .gateway-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 20px;}
+				.gateway-card .gateway-id{display:flex;align-items:center;gap:14px;min-width:0;flex:1 1 0;}
+				.gateway-card .gateway-icon{flex:0 0 auto;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 10px rgba(31,34,43,.13);}
+				.gateway-card .gateway-meta{display:flex;flex-direction:column;min-width:0;}
+				.gateway-card .gateway-name{font-size:15px;font-weight:700;color:var(--mpcrbm-shell-text,#1f222b);line-height:1.3;}
+				.gateway-card .gateway-sub{font-size:12px;color:var(--mpcrbm-shell-text-faded,#788291);line-height:1.4;}
+				.gateway-card .gateway-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex:0 0 auto;}
+				.gateway-card .gateway-status{display:inline-block;min-width:74px;text-align:center;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;padding:4px 11px;border-radius:20px;background:#f1f2f6;color:#788291;border:1px solid #e5e6ea;font-weight:700;}
+				.gateway-card .gateway-status.active{background:#dcfce7;color:#15803d;border-color:#bbf7d0;}
+				.gateway-card.paypal-card{background:#f4f9fe;}
+				.gateway-card.paypal-card .gateway-icon{background:linear-gradient(135deg,#0079C1,#003087);}
+				.gateway-card.stripe-card{background:#f6f5ff;}
+				.gateway-card.stripe-card .gateway-icon{background:linear-gradient(135deg,#7a73ff,#4f46e5);}
+				.gateway-card.offline-card{background:#f0faf8;}
+				.gateway-card.offline-card .gateway-icon{background:linear-gradient(135deg,#14b8a6,#0f766e);}
+				.gateway-card .gateway-configure-btn{cursor:pointer;color:#fff !important;border:none !important;font-weight:600 !important;font-size:13px !important;border-radius:var(--mpcrbm-shell-radius-xs,8px) !important;padding:8px 16px !important;line-height:1.4 !important;box-shadow:0 2px 6px rgba(31,34,43,.14) !important;transition:transform .15s ease,opacity .15s ease;}
+				.gateway-card.paypal-card .gateway-configure-btn{background:#0070ba !important;}
+				.gateway-card.stripe-card .gateway-configure-btn{background:#635bff !important;}
+				.gateway-card.offline-card .gateway-configure-btn{background:#0f766e !important;}
+				.gateway-card .gateway-configure-btn:hover{transform:translateY(-1px);opacity:.94;}
+				.mpcrbm-gw-pro-badge{display:inline-block;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;padding:5px 12px;border-radius:20px;font-weight:800;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 2px 6px rgba(245,158,11,.3);white-space:nowrap;}
+				@media (max-width:600px){
+					.gateway-card .gateway-header{flex-wrap:wrap;}
+					.gateway-card .gateway-actions{flex:1 1 100%;justify-content:flex-start;}
+				}
+				</style>
+				<?php
 			}
 
 			/* --------------------------------------------------------------
@@ -636,7 +844,7 @@
 				$this->render_gateway_cards_list();
 
 				$is_pro    = $this->is_pro();
-				$conf_page = absint( $this->opt( 'mpcrbm_confirmation_page_id', 0 ) );
+				$conf_page = absint( self::opt( 'mpcrbm_confirmation_page_id', 0 ) );
 				$pro_badge = '<span class="mpcrbm-gw-pro-badge" title="' . esc_attr__( 'Available in Pro version', 'car-rental-manager' ) . '">PRO</span>';
 				?>
 				<!-- Booking Confirmation Page -->
@@ -659,7 +867,7 @@
 				</div>
 
 				<!-- Require customer login (Pro custom booking flow + portal) -->
-				<?php $require_login = $this->opt( 'mpcrbm_require_login', 'no' ); ?>
+				<?php $require_login = self::opt( 'mpcrbm_require_login', 'no' ); ?>
 				<div class="mpcrbm-conf-page">
 					<div class="mpcrbm-conf-page-label">
 						<label><?php esc_html_e( 'Require Customer Login', 'car-rental-manager' ); ?></label>
@@ -688,13 +896,15 @@
 			 */
 			public function render_gateway_cards_list() {
 				$is_pro      = $this->is_pro();
-				$pp_enabled  = 'on' === $this->opt( 'mpcrbm_paypal_enable' );
-				$st_enabled  = 'on' === $this->opt( 'mpcrbm_stripe_enable' );
+				$pp_enabled  = 'on' === self::opt( 'mpcrbm_paypal_enable' );
+				$st_enabled  = 'on' === self::opt( 'mpcrbm_stripe_enable' );
 				$off_enabled = class_exists( 'MPCRBM_Function' ) && MPCRBM_Function::offline_payment_enabled();
 
 				$enabled_txt  = __( 'Enabled', 'car-rental-manager' );
 				$disabled_txt = __( 'Disabled', 'car-rental-manager' );
 				$pro_badge    = '<span class="mpcrbm-gw-pro-badge" title="' . esc_attr__( 'Available in Pro version', 'car-rental-manager' ) . '">PRO</span>';
+
+				$this->gateway_cards_styles();
 				?>
 				<div class="mpcrbm-gw-intro">
 					<h3><?php esc_html_e( 'Custom Payment Gateways', 'car-rental-manager' ); ?></h3>
@@ -801,31 +1011,28 @@
 
 			/** Shows the live booking mode + enabled gateway(s), and links out to configure them. */
 			public function render_payment_sidebar_card() {
-				$mode_label    = $this->get_booking_mode_label();
-				$gateway_names = $this->get_active_gateway_names();
+				$mode_label    = self::get_booking_mode_label();
+				$gateway_names = self::get_active_gateway_names();
 				$has_gateway   = class_exists( 'MPCRBM_Booking_Mode' ) ? MPCRBM_Booking_Mode::has_gateway_for_active_mode() : false;
 				?>
 				<div class="mpcrbm_payment_method_card">
 					<div class="mpcrbm_payment_info_row">
 						<span><?php esc_html_e( 'Active Method', 'car-rental-manager' ); ?></span>
-						<strong><?php echo esc_html( $mode_label ); ?></strong>
+						<strong data-mpcrbm-mode-label><?php echo esc_html( $mode_label ); ?></strong>
 					</div>
 					<div class="mpcrbm_payment_info_row">
 						<span><?php esc_html_e( 'Active Gateway', 'car-rental-manager' ); ?></span>
-						<strong><?php echo esc_html( $gateway_names ? implode( ', ', $gateway_names ) : __( 'None', 'car-rental-manager' ) ); ?></strong>
+						<strong data-mpcrbm-gateway-text><?php echo esc_html( $gateway_names ? implode( ', ', $gateway_names ) : __( 'None', 'car-rental-manager' ) ); ?></strong>
 					</div>
 
-					<?php if ( $gateway_names ) : ?>
-						<p class="mpcrbm_payment_link">
-							<a href="#" data-mpcrbm-payment-modal-open><?php esc_html_e( 'Payment Settings', 'car-rental-manager' ); ?></a>
-						</p>
-					<?php endif; ?>
+					<?php // Both links are always in the DOM so the live sync can swap them without a reload. ?>
+					<p class="mpcrbm_payment_link" data-mpcrbm-settings-link<?php echo $gateway_names ? '' : ' style="display:none;"'; ?>>
+						<a href="#" data-mpcrbm-payment-modal-open><?php esc_html_e( 'Payment Settings', 'car-rental-manager' ); ?></a>
+					</p>
 
-					<?php if ( ! $has_gateway ) : ?>
-						<p class="mpcrbm_payment_warning">
-							<a href="#" data-mpcrbm-payment-modal-open><?php esc_html_e( 'Configure payment method', 'car-rental-manager' ); ?></a>
-						</p>
-					<?php endif; ?>
+					<p class="mpcrbm_payment_warning" data-mpcrbm-configure-link<?php echo $has_gateway ? ' style="display:none;"' : ''; ?>>
+						<a href="#" data-mpcrbm-payment-modal-open><?php esc_html_e( 'Configure payment method', 'car-rental-manager' ); ?></a>
+					</p>
 				</div>
 				<style>
 				.mpcrbm_payment_method_card .mpcrbm_payment_info_row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;font-size:12.5px;border-bottom:1px solid #f0f0f1;}
@@ -1237,18 +1444,18 @@
 				if ( ! $this->is_settings_or_car_edit_screen() ) {
 					return;
 				}
-				$pp_enabled  = 'on' === $this->opt( 'mpcrbm_paypal_enable' );
-				$pp_sandbox  = 'on' === $this->opt( 'mpcrbm_paypal_sandbox' );
-				$pp_client   = $this->opt( 'mpcrbm_paypal_client_id' );
-				$pp_secret   = $this->opt( 'mpcrbm_paypal_secret' );
-				$st_enabled  = 'on' === $this->opt( 'mpcrbm_stripe_enable' );
-				$st_sandbox  = 'on' === $this->opt( 'mpcrbm_stripe_sandbox' );
-				$st_test_pub = $this->opt( 'mpcrbm_stripe_test_pub' );
-				$st_test_sec = $this->opt( 'mpcrbm_stripe_test_sec' );
-				$st_live_pub = $this->opt( 'mpcrbm_stripe_live_pub' );
-				$st_live_sec = $this->opt( 'mpcrbm_stripe_live_sec' );
+				$pp_enabled  = 'on' === self::opt( 'mpcrbm_paypal_enable' );
+				$pp_sandbox  = 'on' === self::opt( 'mpcrbm_paypal_sandbox' );
+				$pp_client   = self::opt( 'mpcrbm_paypal_client_id' );
+				$pp_secret   = self::opt( 'mpcrbm_paypal_secret' );
+				$st_enabled  = 'on' === self::opt( 'mpcrbm_stripe_enable' );
+				$st_sandbox  = 'on' === self::opt( 'mpcrbm_stripe_sandbox' );
+				$st_test_pub = self::opt( 'mpcrbm_stripe_test_pub' );
+				$st_test_sec = self::opt( 'mpcrbm_stripe_test_sec' );
+				$st_live_pub = self::opt( 'mpcrbm_stripe_live_pub' );
+				$st_live_sec = self::opt( 'mpcrbm_stripe_live_sec' );
 				$off_enabled = class_exists( 'MPCRBM_Function' ) && MPCRBM_Function::offline_payment_enabled();
-				$off_label   = $this->opt( 'mpcrbm_offline_label', __( 'Offline Payment', 'car-rental-manager' ) );
+				$off_label   = self::opt( 'mpcrbm_offline_label', __( 'Offline Payment', 'car-rental-manager' ) );
 				$nonce       = wp_create_nonce( 'mpcrbm_save_gateway' );
 				$is_pro      = $this->is_pro();
 				?>
@@ -1394,7 +1601,7 @@
 							</div>
 							<div class="mpcrbm-gw-field">
 								<label class="mpcrbm-gw-label"><?php esc_html_e( 'Payment Instructions', 'car-rental-manager' ); ?></label>
-								<input type="text" data-field="mpcrbm_offline_instructions" value="<?php echo esc_attr( $this->opt( 'mpcrbm_offline_instructions' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. Pay the driver in cash at pickup', 'car-rental-manager' ); ?>">
+								<input type="text" data-field="mpcrbm_offline_instructions" value="<?php echo esc_attr( self::opt( 'mpcrbm_offline_instructions' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. Pay the driver in cash at pickup', 'car-rental-manager' ); ?>">
 								<p style="margin:8px 0 0;font-size:12px;color:#788291;"><?php esc_html_e( 'Shown on the confirmation page and in the booking email.', 'car-rental-manager' ); ?></p>
 							</div>
 						</div>
@@ -1433,15 +1640,21 @@
 							data:{ action:'mpcrbm_save_gateway_settings', nonce:mpcrbmGateway.nonce, gateway:gateway, fields:fields },
 							success: function(res){
 								if(res.success){
-									$msg.css({'color':'#0f5132','background':'#d1e7dd','border':'1px solid #badbcc'}).text(res.data).fadeIn(200);
+									var data = res.data || {};
+									$msg.css({'color':'#0f5132','background':'#d1e7dd','border':'1px solid #badbcc'}).text(data.message || '').fadeIn(200);
 									setTimeout(function(){ $msg.fadeOut(400); }, 1200);
 									var isEnabled = fields['mpcrbm_'+gateway+'_enable']==='on';
 									$('.'+gateway+'-card .gateway-status').text(isEnabled?mpcrbmGateway.enabled:mpcrbmGateway.disabled).toggleClass('active',isEnabled);
-									// The Booking Mode warning ("no gateway enabled yet") is
-									// now stale — re-evaluate it against the change just saved.
-									$(document).trigger('mpcrbm:custom-gateways-changed');
+									// Both "no payment method" notices, the Booking Mode
+									// warning and the sidebar card are all stale now. Reflect
+									// the server's recomputed state so enabling Offline shows
+									// its effect immediately, instead of leaving a page that
+									// still insists bookings can't be taken.
+									if (window.mpcrbmSyncPaymentState) { window.mpcrbmSyncPaymentState(data); }
 								} else {
-									$msg.css({'color':'#842029','background':'#f8d7da','border':'1px solid #f5c2c7'}).text(res.data).fadeIn(200);
+									// wp_send_json_error() still sends a bare string.
+									var err = (res.data && res.data.message) ? res.data.message : res.data;
+									$msg.css({'color':'#842029','background':'#f8d7da','border':'1px solid #f5c2c7'}).text(err).fadeIn(200);
 									setTimeout(function(){ $msg.fadeOut(400); }, 1500);
 								}
 							},
@@ -1453,15 +1666,10 @@
 						});
 					});
 
-					// Once any gateway toggle changes, the "no gateway is enabled" warning
-					// beside the Booking Mode cards may no longer be true. Clearing it only
-					// when a gateway was just ENABLED keeps the warning honest — disabling
-					// the last one still leaves it (a reload re-derives the real state).
-					$(document).on('mpcrbm:custom-gateways-changed mpcrbm:wc-gateways-changed', function(){
-						if ($('.gateway-status.active').length || $('.mpcrbm-gw-card.is-enabled').length) {
-							$('.mpcrbm-bm-gateway-warning').remove();
-						}
-					});
+					// (The old DOM-guessing listener that lived here was replaced by
+					// window.mpcrbmSyncPaymentState(), which every gateway/mode save calls
+					// with the server's own recomputed state — no inferring "is a gateway
+					// enabled?" from whatever classes happen to be on screen.)
 				});
 				</script>
 				<?php
@@ -1499,36 +1707,6 @@
 				.mpcrbm-wc-callout-btn:active{transform:translateY(0);}
 				.mpcrbm-wc-callout-btn svg{width:16px;height:16px;display:block;}
 
-				/* Custom Payment intro */
-				.mpcrbm-gw-intro{margin:4px 0 18px;}
-				.mpcrbm-gw-intro h3{margin:0 0 6px;font-size:16px;font-weight:700;color:var(--mpcrbm-shell-text,#1f222b);}
-				.mpcrbm-gw-intro p{margin:0;font-size:13px;color:var(--mpcrbm-shell-text-faded,#788291);max-width:680px;line-height:1.6;}
-
-				/* Gateway cards (Custom Payment) */
-				.gateway-card{position:relative;background:#fff;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:var(--mpcrbm-shell-radius,16px);margin-bottom:13px;box-shadow:0 1px 2px rgba(31,34,43,.04);width:100%;box-sizing:border-box;color:var(--mpcrbm-shell-text,#1f222b);overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;}
-				.gateway-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(31,34,43,.10);}
-				.gateway-card .gateway-header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 20px;}
-				.gateway-card .gateway-id{display:flex;align-items:center;gap:14px;min-width:0;flex:1 1 0;}
-				.gateway-card .gateway-icon{flex:0 0 auto;width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 10px rgba(31,34,43,.13);}
-				.gateway-card .gateway-meta{display:flex;flex-direction:column;min-width:0;}
-				.gateway-card .gateway-name{font-size:15px;font-weight:700;color:var(--mpcrbm-shell-text,#1f222b);line-height:1.3;}
-				.gateway-card .gateway-sub{font-size:12px;color:var(--mpcrbm-shell-text-faded,#788291);line-height:1.4;}
-				.gateway-card .gateway-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex:1 1 0;}
-				.gateway-card .gateway-status{display:inline-block;min-width:74px;text-align:center;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;padding:4px 11px;border-radius:20px;background:#f1f2f6;color:#788291;border:1px solid #e5e6ea;font-weight:700;}
-				.gateway-card .gateway-status.active{background:#dcfce7;color:#15803d;border-color:#bbf7d0;}
-				.gateway-card.paypal-card{background:#f4f9fe;}
-				.gateway-card.paypal-card .gateway-icon{background:linear-gradient(135deg,#0079C1,#003087);}
-				.gateway-card.stripe-card{background:#f6f5ff;}
-				.gateway-card.stripe-card .gateway-icon{background:linear-gradient(135deg,#7a73ff,#4f46e5);}
-				.gateway-card.offline-card{background:#f0faf8;}
-				.gateway-card.offline-card .gateway-icon{background:linear-gradient(135deg,#14b8a6,#0f766e);}
-				.gateway-card .gateway-configure-btn{cursor:pointer;color:#fff !important;border:none !important;font-weight:600 !important;font-size:13px !important;border-radius:var(--mpcrbm-shell-radius-xs,8px) !important;padding:8px 16px !important;line-height:1.4 !important;box-shadow:0 2px 6px rgba(31,34,43,.14) !important;transition:transform .15s ease,opacity .15s ease;}
-				.gateway-card.paypal-card .gateway-configure-btn{background:#0070ba !important;}
-				.gateway-card.stripe-card .gateway-configure-btn{background:#635bff !important;}
-				.gateway-card.offline-card .gateway-configure-btn{background:#0f766e !important;}
-				.gateway-card .gateway-configure-btn:hover{transform:translateY(-1px);opacity:.94;}
-				.mpcrbm-gw-pro-badge{display:inline-block;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;padding:5px 12px;border-radius:20px;font-weight:800;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;box-shadow:0 2px 6px rgba(245,158,11,.3);}
-
 				/* Booking confirmation page / require-login rows */
 				.mpcrbm-conf-page{margin-top:12px;padding:20px 22px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;background:#fff;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:var(--mpcrbm-shell-radius,16px);box-shadow:0 1px 2px rgba(31,34,43,.04);transition:border-color .18s ease,box-shadow .18s ease;}
 				.mpcrbm-conf-page:hover{border-color:#d5d7dd;box-shadow:0 4px 14px rgba(31,34,43,.06);}
@@ -1549,57 +1727,6 @@
 				.mpcrbm-acc-arrow{transition:transform .2s ease;color:#788291;line-height:1;}
 				.mpcrbm-acc-bar.open .mpcrbm-acc-arrow{transform:rotate(180deg);color:var(--mpcrbm-shell-primary,#667eea);}
 
-				/* The accordion header already names the section, so hide the manager's own
-				   duplicate heading but keep its bar (it holds the "Open in WooCommerce" link). */
-				.mpcrbm-wc-payment-manager{display:block;width:100%;box-sizing:border-box;margin-top:8px;}
-				.mpcrbm-wc-pm-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
-				.mpcrbm-wc-pm-heading{margin:0;font-size:15px;font-weight:700;color:var(--mpcrbm-shell-text,#1f222b);}
-				.mpcrbm-wc-pm-wc-link{font-size:12.5px;font-weight:600;color:var(--mpcrbm-shell-primary,#667eea);text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
-				.mpcrbm-wc-pm-wc-link:hover{text-decoration:underline;}
-				.mpcrbm-wc-pm-wc-link .dashicons{font-size:14px;width:14px;height:14px;line-height:1.4;}
-
-				.mpcrbm-gw-card{border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:var(--mpcrbm-shell-radius-sm,12px);background:#fff;margin-bottom:14px;overflow:hidden;box-shadow:0 1px 2px rgba(31,34,43,.04);transition:box-shadow .18s ease;}
-				.mpcrbm-gw-card:hover{box-shadow:0 4px 14px rgba(31,34,43,.08);}
-				.mpcrbm-gw-card.is-enabled{border-left:3px solid var(--mpcrbm-shell-primary,#667eea);}
-				.mpcrbm-gw-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;}
-				.mpcrbm-gw-head-main{display:flex;align-items:center;gap:12px;}
-				.mpcrbm-gw-title{font-size:14px;font-weight:600;color:var(--mpcrbm-shell-text,#1f222b);}
-				.mpcrbm-gw-badge{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;padding:2px 8px;border-radius:9px;background:#f1f2f6;color:#788291;}
-				.mpcrbm-gw-card.is-enabled .mpcrbm-gw-badge{background:#e6f4ea;color:#0a7c2f;}
-				.mpcrbm-gw-desc{padding:0 16px 12px;color:#788291;font-size:13px;}
-				.mpcrbm-gw-desc p{margin:0 0 6px;}
-				.mpcrbm-gw-configure-btn,.mpcrbm-gw-save-btn{cursor:pointer;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);background:#fff;color:#39445A;font-size:13px;font-weight:600;border-radius:var(--mpcrbm-shell-radius-xs,8px);padding:7px 15px;line-height:1.4;transition:border-color .15s,background .15s;}
-				.mpcrbm-gw-configure-btn:hover{border-color:var(--mpcrbm-shell-primary,#667eea);color:var(--mpcrbm-shell-primary,#667eea);}
-				.mpcrbm-gw-save-btn{background:var(--mpcrbm-shell-primary,#667eea);border-color:var(--mpcrbm-shell-primary,#667eea);color:#fff;}
-				.mpcrbm-gw-save-btn:hover{background:#5568d3;border-color:#5568d3;}
-				.mpcrbm-gw-body{padding:6px 16px 16px;border-top:1px solid #f1f2f6;background:#fafbfc;}
-				.mpcrbm-gw-form-table{width:100%;background:transparent;}
-				.mpcrbm-gw-form-table th{width:200px;padding:14px 10px 14px 0;background:transparent;font-weight:600;vertical-align:top;}
-				.mpcrbm-gw-form-table td{padding:12px 0;background:transparent;}
-				.mpcrbm-gw-form-table input[type=text],.mpcrbm-gw-form-table input[type=password],
-				.mpcrbm-gw-form-table input[type=email],.mpcrbm-gw-form-table input[type=number],
-				.mpcrbm-gw-form-table textarea,.mpcrbm-gw-form-table select{min-width:320px;max-width:100%;}
-				.mpcrbm-gw-form-footer{display:flex;align-items:center;gap:12px;margin-top:8px;padding-top:12px;border-top:1px solid #f1f2f6;}
-				.mpcrbm-gw-status{font-size:13px;}
-				.mpcrbm-gw-status.is-success{color:#0a7c2f;}
-				.mpcrbm-gw-status.is-error{color:#d63638;}
-
-				/* Toggle switch on each WooCommerce gateway card */
-				.mpcrbm-gw-toggle{position:relative;display:inline-block;width:42px;height:24px;cursor:pointer;flex:0 0 auto;}
-				.mpcrbm-gw-toggle-input{position:absolute;inset:0;margin:0;padding:0;width:100%;height:100%;min-width:0 !important;min-height:0 !important;opacity:0 !important;cursor:pointer;z-index:1;-webkit-appearance:none !important;-moz-appearance:none !important;appearance:none !important;background:none !important;border:none !important;box-shadow:none !important;}
-				.mpcrbm-gw-toggle-input::before,.mpcrbm-gw-toggle-input::after{content:none !important;display:none !important;}
-				.mpcrbm-gw-toggle-slider{position:absolute;inset:0;background:#c3c6ce;border-radius:24px;transition:background .2s;}
-				.mpcrbm-gw-toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);}
-				.mpcrbm-gw-toggle-input:checked + .mpcrbm-gw-toggle-slider{background:var(--mpcrbm-shell-primary,#667eea);}
-				.mpcrbm-gw-toggle-input:checked + .mpcrbm-gw-toggle-slider::before{transform:translateX(18px);}
-				.mpcrbm-gw-toggle-input:disabled + .mpcrbm-gw-toggle-slider{opacity:.5;cursor:not-allowed;}
-
-				/* Bottom-right AJAX confirmation toast */
-				.mpcrbm_toast{position:fixed;right:24px;bottom:24px;z-index:1000000;display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:var(--mpcrbm-shell-radius-sm,12px);background:#1f222b;color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 12px 30px rgba(31,34,43,.28);opacity:0;transform:translateY(12px);transition:opacity .25s ease,transform .25s ease;}
-				.mpcrbm_toast.is-show{opacity:1;transform:translateY(0);}
-				.mpcrbm_toast_icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;flex:0 0 auto;}
-				.mpcrbm_toast_success .mpcrbm_toast_icon{background:#16a34a;}
-				.mpcrbm_toast_error .mpcrbm_toast_icon{background:#dc2626;}
 				</style>
 				<script>
 				jQuery(function($){
@@ -1738,7 +1865,13 @@
 				}
 
 				update_option( self::OPTION, $existing );
-				wp_send_json_success( __( 'Settings saved successfully!', 'car-rental-manager' ) );
+
+				// Hand back the recomputed state, not just "ok" — the caller uses it to
+				// update the notices/sidebar in place (see print_payment_state_sync_script).
+				wp_send_json_success( array_merge(
+					array( 'message' => __( 'Settings saved successfully!', 'car-rental-manager' ) ),
+					self::get_payment_state()
+				) );
 			}
 
 			/** AJAX: save the Booking Mode selector (real-time, no page reload). */
@@ -1756,10 +1889,9 @@
 					wp_send_json_error( __( 'Invalid booking mode.', 'car-rental-manager' ) );
 				}
 
-				wp_send_json_success( array(
-					'message'     => __( 'Booking mode saved.', 'car-rental-manager' ),
-					'mode'        => $mode,
-					'has_gateway' => MPCRBM_Booking_Mode::has_gateway_for_active_mode(),
+				wp_send_json_success( array_merge(
+					array( 'message' => __( 'Booking mode saved.', 'car-rental-manager' ) ),
+					self::get_payment_state()
 				) );
 			}
 

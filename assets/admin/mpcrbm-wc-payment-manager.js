@@ -102,7 +102,10 @@
 						var isOn = res.data.enabled === 'yes';
 						applyEnabledState( $card, isOn );
 						showToast( 'success', gatewayTitle + ' ' + ( isOn ? ( i18n.enabled || 'Enabled' ) : ( i18n.disabled || 'Disabled' ) ) + '.' );
-						$( document ).trigger( 'mpcrbm:wc-gateways-changed' );
+						// Enabling/disabling a WooCommerce gateway changes whether the site
+						// can take bookings at all, so refresh the payment notices and the
+						// car-edit sidebar card from the server's recomputed state.
+						if ( window.mpcrbmSyncPaymentState ) { window.mpcrbmSyncPaymentState( res.data ); }
 					} else {
 						$input.prop( 'checked', ! $input.is( ':checked' ) );
 						showToast( 'error', ( res && res.data ) || i18n.error );
@@ -145,7 +148,10 @@
 						$status.addClass( 'is-success' ).text( res.data.message || i18n.saved );
 						applyEnabledState( $card, res.data.enabled === 'yes' );
 						$card.find( '.mpcrbm-gw-toggle-input' ).prop( 'checked', res.data.enabled === 'yes' );
-						$( document ).trigger( 'mpcrbm:wc-gateways-changed' );
+						// Enabling/disabling a WooCommerce gateway changes whether the site
+						// can take bookings at all, so refresh the payment notices and the
+						// car-edit sidebar card from the server's recomputed state.
+						if ( window.mpcrbmSyncPaymentState ) { window.mpcrbmSyncPaymentState( res.data ); }
 						setTimeout( function () {
 							$status.removeClass( 'is-success' ).text( '' );
 						}, 2500 );

@@ -52,7 +52,7 @@ if ($mpcrbm_display_extra_services == 'on' && is_array( $mpcrbm_extra_services )
                     <div class="mpcrbm-ex-quantity-box">
                         <div class="price-quantity-box">
                             <div class="mpcrbm-price">
-                                <?php echo wp_kses_post(wc_price($mpcrbm_service_price)); ?>
+                                <?php echo wp_kses_post(MPCRBM_Global_Function::format_price($mpcrbm_service_price)); ?>
                                 <?php if ( $mpcrbm_service_price_type === 'day' ) { ?>
                                     <span class="mpcrbm-price-per-day"><?php esc_html_e( '/ day', 'car-rental-manager' ); ?></span>
                                 <?php } ?>

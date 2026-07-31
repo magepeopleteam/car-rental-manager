@@ -20,7 +20,7 @@ if ( ! class_exists( 'MPCRBM_Delivery_Collection_Settings' ) ) {
 
         public function delivery_collection_settings( $post_id ) {
             wp_nonce_field( 'mpcrbm_save_delivery_collection', 'mpcrbm_delivery_collection_nonce' );
-            $currency = get_woocommerce_currency_symbol();
+            $currency = MPCRBM_Global_Function::currency_symbol();
 
             $this->render_fee_card(
                 'delivery',

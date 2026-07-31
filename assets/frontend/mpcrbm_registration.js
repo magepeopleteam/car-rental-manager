@@ -1288,16 +1288,21 @@ jQuery(document).ready(function($) {
         let return_target_date = parent.find("#mpcrbm_map_return_date").val();
         let return_target_time = parent.find("#mpcrbm_map_return_time").val();
         let mpcrbm_fixed_hours = parent.find('[name="mpcrbm_fixed_hours"]').val();
-        let post_id = parent.find('[name="mpcrbm_post_id"]').val();
+        // The CAR is the booking's identity; link_id is the hidden WooCommerce mirror
+        // product, which simply does not exist in Custom Payment mode. Fall back to the
+        // car id the Book Now button carries so a missing hidden field can't strand us.
+        let post_id = parent.find('[name="mpcrbm_post_id"]').val() || $(this).attr('data-car-id') || '';
         let date = parent.find('[name="mpcrbm_date"]').val();
-        let link_id = $(this).attr('data-wc_link_id');
+        let link_id = $(this).attr('data-wc_link_id') || '';
 
         let car_quantity = parent.find('[name="mpcrbm_selected_car_quantity"]').val();
         if( car_quantity == 0 ){
             car_quantity = 1;
         }
 
-        if (start_place !== '' && end_place !== '' && link_id && post_id) {
+        // Deliberately NOT requiring link_id: without WooCommerce there is no mirror
+        // product, and demanding one here made "Book Now" silently do nothing at all.
+        if (start_place !== '' && end_place !== '' && post_id) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
@@ -1321,6 +1326,9 @@ jQuery(document).ready(function($) {
                 data: {
                     action: "mpcrbm_add_to_cart",
                     link_id: link_id,
+                    // Always sent now. Previously only link_id went along, so in Custom
+                    // Payment mode the server had no way to tell which car was booked.
+                    post_id: post_id,
                     mpcrbm_start_place: start_place,
                     mpcrbm_end_place: end_place,
                     mpcrbm_waiting_time: mpcrbm_waiting_time,
@@ -1342,6 +1350,23 @@ jQuery(document).ready(function($) {
                     mpcrbm_loader(parent.find('.tabsContentNext'));
                 },
                 success: function(data) {
+                    var mpcrbm_trimmed = $.trim(data);
+
+                    // "0" is admin-ajax's bare response when the handler bails — here that
+                    // means the car is fully booked for the chosen dates. It must be caught
+                    // before the redirect branch below, or we'd navigate to a page named "0".
+                    if (mpcrbm_trimmed === '0' || mpcrbm_trimmed === '') {
+                        mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                        alert(mpcrbm_ajax.i18n_unavailable || 'This vehicle is not available for the selected dates. Please choose another date or vehicle.');
+                        return;
+                    }
+
+                    // A URL response means "go here" (WooCommerce checkout, or the
+                    // standalone Custom Payment checkout) — only HTML renders in place.
+                    if (mpcrbm_trimmed.charAt(0) !== '<') {
+                        window.location.href = mpcrbm_trimmed;
+                        return;
+                    }
                     if ($('<div />', { html: data }).find("div").length > 0) {
                         var mpcrbmTemplateExists = $(".mpcrbm-show-search-result").length;
                         if (mpcrbmTemplateExists) {
@@ -1436,7 +1461,9 @@ jQuery(document).ready(function($) {
         let return_target_time = parent.find("#mpcrbm_map_return_time").val();
         let mpcrbm_fixed_hours = parent.find('[name="mpcrbm_fixed_hours"]').val();
         // let date = parent.find('[name="mpcrbm_date"]').val();
-        let link_id = $(this).attr('data-wc_link_id');
+        // link_id is the hidden WooCommerce mirror product. It is absent in Custom
+        // Payment mode, so it must never be treated as required — see the guard below.
+        let link_id = $(this).attr('data-wc_link_id') || '';
         let post_id = $(this).attr('data-car-id');
 
         let [hour, minute] = mpcrbm_start_time.split(".");
@@ -1455,7 +1482,10 @@ jQuery(document).ready(function($) {
 
         let car_quantity = parent.find('[name="mpcrbm_get_car_qty"]').val();
 
-        if ( link_id && post_id) {
+        // Only the car id is required. Requiring link_id here is what made "Continue"
+        // do nothing at all — with WooCommerce inactive there is no mirror product, so
+        // the whole request was skipped without any message to the customer.
+        if ( post_id ) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
@@ -1873,6 +1903,10 @@ function checkAndToggleBookNowButton(parent) {
 
     $bookNowButton.prop('disabled', !hasSelectedVehicle);
     $bookNowButton.attr('data-wc_link_id', hasSelectedVehicle ? ($activeSelect.attr('data-wc_link_id') || '') : '');
+    // Carry the CAR id across too. data-wc_link_id is the hidden WooCommerce product,
+    // which is empty in Custom Payment mode — without this the click handler had no
+    // usable identifier for the selected vehicle and gave up silently.
+    $bookNowButton.attr('data-car-id', hasSelectedVehicle ? ($activeSelect.attr('data-post-id') || '') : '');
 }
 
 function gm_authFailure() {

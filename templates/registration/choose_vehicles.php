@@ -422,7 +422,7 @@ if( $is_redirect === 'yes' ){
                     // handler (assets/frontend/mpcrbm_registration.js) overwrites this the
                     // moment a car is picked.
                     ?>
-                    <h3 class="mpcrbm_product_total_price"><?php echo wp_kses_post( wc_price( 0 ) ); ?></h3>
+                    <h3 class="mpcrbm_product_total_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( 0 ) ); ?></h3>
                 </div>
             </div>
 

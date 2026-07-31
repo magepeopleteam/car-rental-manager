@@ -256,6 +256,31 @@
     margin-top: 1px;
 }
 
+/* Which checkout produced the booking. WooCommerce bookings have an order screen
+   to open; Custom Payment (standalone) bookings don't, so the difference has to be
+   visible at a glance rather than inferred from a missing action. */
+.mpcrbm-source-tag {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    white-space: nowrap;
+}
+
+.mpcrbm-source-tag.is-woo {
+    background: #f3ecfa;
+    color: #7f54b3;
+}
+
+.mpcrbm-source-tag.is-native {
+    background: #eef1fe;
+    color: #4f5bd5;
+}
+
 /* Extra service toggle */
 .pcrbm_order_extra_service_btn {
     display: inline-block;

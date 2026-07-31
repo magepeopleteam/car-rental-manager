@@ -40,7 +40,7 @@
                     return null;
                 }
                 $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
-                $order_obj = $order_id ? wc_get_order( $order_id ) : null;
+                $order_obj = $order_id ? MPCRBM_Global_Function::safe_wc_order( $order_id ) : null;
                 if ( ! $order_obj || (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
                     return null;
                 }
@@ -260,7 +260,7 @@
                                 <div class="mpcrbm_car_list_price">
                                     <h3>
                                         <span class="woocommerce-Price-amount amount">
-                                            <?php echo wp_kses_post( wc_price( $car['day_price'] ) );?>
+                                            <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $car['day_price'] ) );?>
                                         </span>
                                         <small>/ day</small>
                                     </h3>
@@ -653,7 +653,7 @@
                 $per_page = 20;
                 $user_id  = get_current_user_id();
 
-                $order_ids = wc_get_orders( [
+                $order_ids = MPCRBM_Global_Function::safe_wc_orders( [
                     'customer_id' => $user_id,
                     'limit'       => -1,
                     'return'      => 'ids',
@@ -735,7 +735,7 @@
                 $page      = isset( $_POST['page'] ) ? absint( $_POST['page'] ) : 1;
                 $user_id   = get_current_user_id();
 
-                $order_ids = wc_get_orders( [
+                $order_ids = MPCRBM_Global_Function::safe_wc_orders( [
                     'customer_id' => $user_id,
                     'limit'       => -1,
                     'return'      => 'ids',
@@ -790,7 +790,7 @@
                 }
 
                 $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
-                $order_obj = $order_id ? wc_get_order( $order_id ) : null;
+                $order_obj = $order_id ? MPCRBM_Global_Function::safe_wc_order( $order_id ) : null;
                 if ( $order_obj && (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
                     wp_send_json_error( [ 'message' => __( 'Access denied.', 'car-rental-manager' ) ] );
                 }
@@ -895,7 +895,7 @@
                         <?php endif; ?>
                         <div class="mpcrbm-mb-card-footer">
                             <span class="mpcrbm-mb-badge mpcrbm-mb-badge--<?php echo esc_attr( $status ); ?>"><?php echo esc_html( ucfirst( $status ) ); ?></span>
-                            <span class="mpcrbm-mb-card-price"><?php echo $total ? wp_kses_post( wc_price( (float) $total ) ) : ''; ?></span>
+                            <span class="mpcrbm-mb-card-price"><?php echo $total ? wp_kses_post( MPCRBM_Global_Function::format_price( (float) $total ) ) : ''; ?></span>
                             <button class="mpcrbm-mb-view-btn js-mpcrbm-mb-view" data-id="<?php echo esc_attr( $id ); ?>">
                                 <?php esc_html_e( 'View Details', 'car-rental-manager' ); ?>
                             </button>
@@ -1004,24 +1004,24 @@
                                 <?php if ( $base_price > 0 ) : ?>
                                 <div class="mpcrbm-mb-detail-price-row">
                                     <span><?php echo esc_html( sprintf( __( 'Base Price × %d', 'car-rental-manager' ), $quantity ) ); ?></span>
-                                    <span><?php echo wp_kses_post( wc_price( $base_price * $quantity ) ); ?></span>
+                                    <span><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price * $quantity ) ); ?></span>
                                 </div>
                                 <?php endif; ?>
                                 <?php if ( $one_way > 0 ) : ?>
                                 <div class="mpcrbm-mb-detail-price-row">
                                     <span><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></span>
-                                    <span><?php echo wp_kses_post( wc_price( $one_way ) ); ?></span>
+                                    <span><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $one_way ) ); ?></span>
                                 </div>
                                 <?php endif; ?>
                                 <?php if ( $deposit > 0 ) : ?>
                                 <div class="mpcrbm-mb-detail-price-row">
                                     <span><?php esc_html_e( 'Security Deposit', 'car-rental-manager' ); ?></span>
-                                    <span><?php echo wp_kses_post( wc_price( $deposit ) ); ?></span>
+                                    <span><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $deposit ) ); ?></span>
                                 </div>
                                 <?php endif; ?>
                                 <div class="mpcrbm-mb-detail-price-row mpcrbm-mb-detail-price-total">
                                     <span><?php esc_html_e( 'Total', 'car-rental-manager' ); ?></span>
-                                    <span><?php echo wp_kses_post( wc_price( $total ) ); ?></span>
+                                    <span><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $total ) ); ?></span>
                                 </div>
                             </div>
                         </div>
@@ -1156,7 +1156,7 @@
                 }
 
                 $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
-                $order_obj = $order_id ? wc_get_order( $order_id ) : null;
+                $order_obj = $order_id ? MPCRBM_Global_Function::safe_wc_order( $order_id ) : null;
                 if ( ! $order_obj || (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
                     wp_send_json_error( [ 'message' => __( 'Access denied.', 'car-rental-manager' ) ] );
                 }

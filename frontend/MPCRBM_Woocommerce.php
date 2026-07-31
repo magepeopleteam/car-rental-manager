@@ -311,17 +311,17 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $item->add_meta_data( '_return_date_time', $return_date_time );
                 $item->add_meta_data( '_mpcrbm_car_quantity', $car_quantity );
                 $item->add_meta_data( esc_html__( 'Car Quantity ', 'car-rental-manager' ), wp_kses_post( $car_quantity ) );
-                $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ) );
+                $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ).' X '.$car_quantity ) );
                 if ( $security_deposit > 0 ) {
                     $security_deposit_total = $security_deposit * intval( $car_quantity );
-                    $item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( wc_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $security_deposit_total ) ) );
+                    $item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $security_deposit_total ) ) );
                     $item->add_meta_data( 'mpcrbm_security_deposit_amount', $security_deposit_total );
                 } else {
                     $item->add_meta_data( 'mpcrbm_security_deposit_amount', 0 );
                 }
                 if ( $one_way_fee > 0 ) {
                     $one_way_fee_total = $one_way_fee * intval( $car_quantity );
-                    $item->add_meta_data( esc_html__( 'One-Way Return Fee', 'car-rental-manager' ), wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $one_way_fee_total ) ) );
+                    $item->add_meta_data( esc_html__( 'One-Way Return Fee', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $one_way_fee_total ) ) );
                 }
                 $item->add_meta_data( '_mpcrbm_branch_one_way_fee', $one_way_fee );
                 foreach ( [ 'delivery' => __( 'Delivery Fee', 'car-rental-manager' ), 'collection' => __( 'Collection Fee', 'car-rental-manager' ) ] as $mpcrbm_dc_kind => $mpcrbm_dc_label ) {
@@ -329,7 +329,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     $dc_address = isset( $values[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ? $values[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] : '';
                     if ( $dc_fee > 0 ) {
                         $dc_fee_total = $dc_fee * intval( $car_quantity );
-                        $item->add_meta_data( $mpcrbm_dc_label, wp_kses_post( wc_price( $dc_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $dc_fee_total ) ) );
+                        $item->add_meta_data( $mpcrbm_dc_label, wp_kses_post( MPCRBM_Global_Function::format_price( $dc_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $dc_fee_total ) ) );
                         if ( $dc_address ) {
                             $address_label = 'delivery' === $mpcrbm_dc_kind ? __( 'Delivery Address', 'car-rental-manager' ) : __( 'Collection Address', 'car-rental-manager' );
                             $item->add_meta_data( $address_label, sanitize_textarea_field( $dc_address ) );
@@ -345,10 +345,10 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         $item->add_meta_data( esc_html__( 'Services Quantity ', 'car-rental-manager' ), $service['service_quantity'] );
                         $service_days = $service['service_days'] ?? 1;
                         if ( ( $service['service_price_type'] ?? 'flat' ) === 'day' && $service_days > 1 ) {
-                            $unit_per_day = wc_price( $service['service_price'] / $service_days );
-                            $price_line   = esc_html( ' ( ' ) . wp_kses_post( $unit_per_day ) . esc_html( '/day X ' . $service_days . ' days X ' . $service['service_quantity'] . ' ) = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                            $unit_per_day = MPCRBM_Global_Function::format_price( $service['service_price'] / $service_days );
+                            $price_line   = esc_html( ' ( ' ) . wp_kses_post( $unit_per_day ) . esc_html( '/day X ' . $service_days . ' days X ' . $service['service_quantity'] . ' ) = ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                         } else {
-                            $price_line = esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ') = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                            $price_line = esc_html( ' ( ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ') = ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                         }
                         $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), $price_line );
                     }
@@ -680,7 +680,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         <li>
                             <span class="fa fa-tag"></span>
                             <h6 class="_mR_xs"><?php esc_html_e( 'Base Price : ', 'car-rental-manager' ); ?></h6>
-                            <span>(<?php echo wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ); ?>) = <?php echo wp_kses_post( wc_price( $base_price * $car_quantity ) )?></span>
+                            <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ).' X '.$car_quantity ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price * $car_quantity ) )?></span>
                         </li>
                         <?php
                         $security_deposit = array_key_exists( 'mpcrbm_security_deposit', $cart_item ) ? floatval( $cart_item['mpcrbm_security_deposit'] ) : 0;
@@ -690,7 +690,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             <li>
                                 <span class="fa fa-shield-alt"></span>
                                 <h6 class="_mR_xs"><?php esc_html_e( 'Security Deposit : ', 'car-rental-manager' ); ?></h6>
-                                <span>(<?php echo wp_kses_post( wc_price( $security_deposit ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $security_deposit_total ) ); ?></span>
+                                <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit_total ) ); ?></span>
                             </li>
                         <?php } ?>
                         <?php
@@ -701,7 +701,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             <li>
                                 <span class="fa fa-exchange-alt"></span>
                                 <h6 class="_mR_xs"><?php esc_html_e( 'One-Way Return Fee : ', 'car-rental-manager' ); ?></h6>
-                                <span>(<?php echo wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $one_way_fee_total ) ); ?></span>
+                                <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $one_way_fee_total ) ); ?></span>
                             </li>
                         <?php } ?>
                         <?php foreach ( [ 'delivery' => [ 'fa fa-truck', __( 'Delivery Fee : ', 'car-rental-manager' ) ], 'collection' => [ 'fa fa-truck-loading', __( 'Collection Fee : ', 'car-rental-manager' ) ] ] as $mpcrbm_dc_kind => $mpcrbm_dc_row ) :
@@ -712,7 +712,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 <li>
                                     <span class="<?php echo esc_attr( $mpcrbm_dc_row[0] ); ?>"></span>
                                     <h6 class="_mR_xs"><?php echo esc_html( $mpcrbm_dc_row[1] ); ?></h6>
-                                    <span>(<?php echo wp_kses_post( wc_price( $dc_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $dc_fee_total ) ); ?></span>
+                                    <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $dc_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $dc_fee_total ) ); ?></span>
                                 </li>
                             <?php endif; ?>
                         <?php endforeach; ?>
@@ -737,9 +737,9 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                     <span>
                                         <?php if ( ( $service['service_price_type'] ?? 'flat' ) === 'day' && ( $service['service_days'] ?? 1 ) > 1 ) {
                                             $unit_per_day = $service['service_quantity'] > 0 ? $service['service_price'] / $service['service_days'] : 0;
-                                            echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $unit_per_day ) ) . esc_html( '/day X ' . $service['service_days'] . ' days X ' . $service['service_quantity'] . ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                                            echo esc_html( ' ( ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $unit_per_day ) ) . esc_html( '/day X ' . $service['service_days'] . ' days X ' . $service['service_quantity'] . ' ) =' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                                         } else {
-                                            echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                                            echo esc_html( ' ( ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ' ) =' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                                         } ?>
                                     </span>
                                 </li>
@@ -946,6 +946,13 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 'post_type'     => $cpt_name
             );
             $post_id = wp_insert_post( $new_post );
+            // wp_insert_post() returns WP_Error on failure; passing that straight into
+            // update_post_meta() below would throw. Bail with the error so callers (which
+            // all check is_wp_error) can report a real failure instead of half-writing a
+            // booking whose meta silently went nowhere.
+            if ( is_wp_error( $post_id ) || ! $post_id ) {
+                return $post_id;
+            }
             if ( sizeof( $meta_data ) > 0 ) {
                 foreach ( $meta_data as $key => $value ) {
                     update_post_meta( $post_id, $key, $value );
@@ -1055,7 +1062,15 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     <?php
                     $response = ob_get_clean();
                 }
-                echo wp_kses_post( $response );
+
+                // A handler returns EITHER a redirect URL or an HTML block, and the two
+                // need opposite escaping: running a URL through wp_kses_post() turns every
+                // "&" into "&#038;", which silently breaks a multi-parameter checkout link.
+                if ( 0 === strpos( ltrim( $response ), '<' ) ) {
+                    echo wp_kses_post( $response );
+                } else {
+                    echo esc_url_raw( $response );
+                }
                 die();
             }
 
@@ -1068,27 +1083,25 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $link_id = MPCRBM_Hidden_Product::ensure_hidden_product( $post_id );
             }
 
-            {
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
-                $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
-                $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
+            $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
+            $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 
-                // Empty the cart BEFORE validating the new add: otherwise, when a customer goes
-                // back and re-books with a changed selection, WooCommerce's own "already in your
-                // cart" check still sees the previous booking sitting in the cart and rejects the
-                // new add_to_cart() call outright, silently leaving the old selection in place.
-                WC()->cart->empty_cart();
+            // Empty the cart BEFORE validating the new add: otherwise, when a customer goes
+            // back and re-books with a changed selection, WooCommerce's own "already in your
+            // cart" check still sees the previous booking sitting in the cart and rejects the
+            // new add_to_cart() call outright, silently leaving the old selection in place.
+            WC()->cart->empty_cart();
 
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-                $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
-                $product_status = get_post_status($product_id);
-                ob_start();
-                if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
-                    echo esc_url(wc_get_checkout_url());
-                }
-                echo wp_kses_post(ob_get_clean());
-                die();
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+            $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
+            $product_status = get_post_status($product_id);
+            ob_start();
+            if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
+                echo esc_url(wc_get_checkout_url());
             }
+            echo wp_kses_post(ob_get_clean());
+            die();
         }
     }
     new MPCRBM_Woocommerce();

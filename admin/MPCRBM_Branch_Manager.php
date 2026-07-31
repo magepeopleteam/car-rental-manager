@@ -741,7 +741,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 								</span>
 							<?php endif; ?>
 							<?php if ( $day_price ) : ?>
-								<span class="mpcrbm-price-badge"><?php echo wc_price( $day_price ); ?>/<?php esc_html_e( 'day', 'car-rental-manager' ); ?></span>
+								<span class="mpcrbm-price-badge"><?php echo MPCRBM_Global_Function::format_price( $day_price ); ?>/<?php esc_html_e( 'day', 'car-rental-manager' ); ?></span>
 							<?php endif; ?>
 						</div>
 						<div class="mpcrbm-car-transfer-form">

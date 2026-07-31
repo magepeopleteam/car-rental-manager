@@ -31,7 +31,7 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             $amount          = ( $amount !== '' && $amount !== false ) ? floatval( $amount ) : '';
 
             wp_nonce_field( 'mpcrbm_save_security_deposit', 'mpcrbm_security_deposit_nonce' );
-            $currency = get_woocommerce_currency_symbol();
+            $currency = MPCRBM_Global_Function::currency_symbol();
             $unit     = $type === 'percentage' ? '%' : $currency;
             ?>
             <style>

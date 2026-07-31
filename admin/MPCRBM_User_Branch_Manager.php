@@ -427,8 +427,8 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			}
 
 			// Primary: orders tagged with _mpcrbm_order_branch at checkout.
-			// wc_get_orders() is HPOS-compatible and avoids direct DB queries.
-			$tagged = wc_get_orders( [
+			// MPCRBM_Global_Function::safe_wc_orders() is HPOS-compatible and avoids direct DB queries.
+			$tagged = MPCRBM_Global_Function::safe_wc_orders( [
 				'limit'      => -1,
 				'return'     => 'ids',
 				'meta_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
@@ -444,7 +444,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			// WooCommerce has no API for filtering by order item meta, so we fetch
 			// only untagged orders and check items in PHP. This set shrinks over time
 			// as new orders are tagged at checkout via tag_order_with_branch().
-			$untagged = wc_get_orders( [
+			$untagged = MPCRBM_Global_Function::safe_wc_orders( [
 				'limit'      => -1,
 				'return'     => 'ids',
 				'meta_query' => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
@@ -457,7 +457,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 
 			$via_item = [];
 			foreach ( $untagged as $order_id ) {
-				$order = wc_get_order( $order_id );
+				$order = MPCRBM_Global_Function::safe_wc_order( $order_id );
 				if ( ! $order ) {
 					continue;
 				}
@@ -1082,7 +1082,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 						<?php endif; ?>
 						<?php if ( ! empty( $meta['one_way_fee'] ) && (float) $meta['one_way_fee'] > 0 ) : ?>
 						<div class="mpcrbm-bm-stat-box">
-							<div class="mpcrbm-bm-stat-num"><?php echo wp_kses_post( wc_price( (float) $meta['one_way_fee'] ) ); ?></div>
+							<div class="mpcrbm-bm-stat-num"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( (float) $meta['one_way_fee'] ) ); ?></div>
 							<div class="mpcrbm-bm-stat-lbl"><?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></div>
 						</div>
 						<?php endif; ?>
@@ -1200,7 +1200,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 						</thead>
 						<tbody>
 							<?php foreach ( $page_ids as $oid ) :
-								$order = wc_get_order( $oid );
+								$order = MPCRBM_Global_Function::safe_wc_order( $oid );
 								if ( ! $order ) { continue; }
 								$items = $order->get_items();
 								$item  = ! empty( $items ) ? reset( $items ) : null;

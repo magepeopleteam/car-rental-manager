@@ -81,11 +81,13 @@
 					return;
 				}
 
-				// The setup notice wins outright — see the class docblock.
-				if ( $this->render_setup_notice() ) {
-					return;
-				}
-				$this->render_pro_notice();
+				// The setup notice always renders (hidden when there's nothing wrong) so the
+				// live sync can reveal it without a reload. It still wins outright over the
+				// upsell — see the class docblock — which is why render_pro_notice() is
+				// given its visibility rather than being skipped entirely: it too has to be
+				// present in the DOM for the sync to swap between them.
+				$showing_setup = $this->render_setup_notice();
+				$this->render_pro_notice( $showing_setup );
 			}
 
 			/**
@@ -93,34 +95,74 @@
 			 *
 			 * @return bool True when a notice was printed (so the upsell stands down).
 			 */
-			private function render_setup_notice(): bool {
+			/**
+			 * The setup notice's current wording, or null when there is nothing wrong.
+			 *
+			 * Public + static so the AJAX handlers that change payment state
+			 * (MPCRBM_Payment_Settings::get_payment_state()) can hand the freshly-derived
+			 * copy back to the browser. That lets the notice update itself the instant a
+			 * gateway is enabled or disabled, instead of lying until the next page load.
+			 *
+			 * @return array{title:string,body:string,cta:string}|null
+			 */
+			public static function get_setup_notice_content() {
+				if ( ! class_exists( 'MPCRBM_Booking_Mode' ) ) {
+					return null;
+				}
 				$needs_choice = MPCRBM_Booking_Mode::needs_selection();
 				$has_gateway  = MPCRBM_Booking_Mode::has_gateway_for_active_mode();
 
 				// Everything is configured and a mode is chosen: nothing to say.
 				if ( ! $needs_choice && $has_gateway ) {
-					return false;
+					return null;
 				}
 
 				if ( $needs_choice ) {
-					$title = __( 'Choose how bookings are paid for', 'car-rental-manager' );
-					$body  = __( 'Both WooCommerce and the built-in Custom Payment checkout are available. Pick one as your Booking Mode so the two flows never both try to handle the same booking.', 'car-rental-manager' );
-					$cta   = __( 'Choose Booking Mode', 'car-rental-manager' );
-				} elseif ( MPCRBM_Booking_Mode::is_woocommerce() ) {
-					$title = __( 'No WooCommerce payment gateway is enabled', 'car-rental-manager' );
-					$body  = __( 'Your Booking Mode is WooCommerce, but every WooCommerce payment gateway is currently disabled — customers cannot complete a rental booking. Enable at least one gateway to start taking payments.', 'car-rental-manager' );
-					$cta   = __( 'Enable a Payment Gateway', 'car-rental-manager' );
-				} else {
-					$title = __( 'No payment method is enabled', 'car-rental-manager' );
-					$body  = class_exists( 'MPCRBM_Plugin_Pro' )
+					return array(
+						'title' => __( 'Choose how bookings are paid for', 'car-rental-manager' ),
+						'body'  => __( 'Both WooCommerce and the built-in Custom Payment checkout are available. Pick one as your Booking Mode so the two flows never both try to handle the same booking.', 'car-rental-manager' ),
+						'cta'   => __( 'Choose Booking Mode', 'car-rental-manager' ),
+					);
+				}
+
+				if ( MPCRBM_Booking_Mode::is_woocommerce() ) {
+					return array(
+						'title' => __( 'No WooCommerce payment gateway is enabled', 'car-rental-manager' ),
+						'body'  => __( 'Your Booking Mode is WooCommerce, but every WooCommerce payment gateway is currently disabled — customers cannot complete a rental booking. Enable at least one gateway to start taking payments.', 'car-rental-manager' ),
+						'cta'   => __( 'Enable a Payment Gateway', 'car-rental-manager' ),
+					);
+				}
+
+				return array(
+					'title' => __( 'No payment method is enabled', 'car-rental-manager' ),
+					'body'  => class_exists( 'MPCRBM_Plugin_Pro' )
 						? __( 'Your Booking Mode is Custom Payment, but none of PayPal, Stripe or Offline Payment is enabled — customers cannot complete a rental booking. Enable at least one gateway to start taking payments.', 'car-rental-manager' )
-						: __( 'Your Booking Mode is Custom Payment, but no gateway is enabled — customers cannot complete a rental booking. Enable Offline Payment (included free) to accept bank transfer, cash, or pay-on-pickup bookings.', 'car-rental-manager' );
-					$cta   = __( 'Enable a Payment Method', 'car-rental-manager' );
+						: __( 'Your Booking Mode is Custom Payment, but no gateway is enabled — customers cannot complete a rental booking. Enable Offline Payment (included free) to accept bank transfer, cash, or pay-on-pickup bookings.', 'car-rental-manager' ),
+					'cta'   => __( 'Enable a Payment Method', 'car-rental-manager' ),
+				);
+			}
+
+			private function render_setup_notice(): bool {
+				$content = self::get_setup_notice_content();
+				if ( null === $content ) {
+					// Still emit the (hidden) shell so the live sync has something to fill
+					// in if the admin disables their last gateway without leaving the page.
+					$this->print_notice_styles();
+					$this->render_setup_notice_shell( '', '', '', true );
+
+					return false;
 				}
 
 				$this->print_notice_styles();
+				$this->render_setup_notice_shell( $content['title'], $content['body'], $content['cta'], false );
+
+				return true;
+			}
+
+			/** The setup notice markup. Rendered hidden when there is currently no problem. */
+			private function render_setup_notice_shell( $title, $body, $cta, $hidden ) {
 				?>
-				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--setup">
+				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--setup" data-mpcrbm-setup-notice<?php echo $hidden ? ' style="display:none;"' : ''; ?>>
 					<div class="mpcrbm-pay-notice-icon" aria-hidden="true">
 						<span class="dashicons dashicons-warning"></span>
 					</div>
@@ -135,12 +177,19 @@
 					</div>
 				</div>
 				<?php
-
-				return true;
 			}
 
-			/** Dismissible "PayPal & Stripe are in Pro" upsell for a working Custom Payment site. */
-			private function render_pro_notice() {
+			/**
+			 * Dismissible "PayPal & Stripe are in Pro" upsell for a working Custom Payment
+			 * site.
+			 *
+			 * @param bool $setup_notice_showing True when the setup notice is visible — an
+			 *                                   admin who can't take bookings at all must
+			 *                                   not be sold an upgrade, so this renders
+			 *                                   hidden and the live sync reveals it the
+			 *                                   moment the setup problem is resolved.
+			 */
+			private function render_pro_notice( $setup_notice_showing = false ) {
 				if ( class_exists( 'MPCRBM_Plugin_Pro' ) ) {
 					return;
 				}
@@ -153,7 +202,7 @@
 
 				$this->print_notice_styles();
 				?>
-				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--pro" data-mpcrbm-pro-notice
+				<div class="notice mpcrbm-pay-notice mpcrbm-pay-notice--pro" data-mpcrbm-pro-notice<?php echo $setup_notice_showing ? ' style="display:none;"' : ''; ?>
 					data-nonce="<?php echo esc_attr( wp_create_nonce( 'mpcrbm_dismiss_pro_payment_notice' ) ); ?>">
 					<div class="mpcrbm-pay-notice-icon mpcrbm-pay-notice-icon--pro" aria-hidden="true">
 						<span class="dashicons dashicons-star-filled"></span>
@@ -175,6 +224,9 @@
 				jQuery(function($){
 					$(document).on('click', '.mpcrbm-pay-notice-dismiss', function(){
 						var $notice = $(this).closest('[data-mpcrbm-pro-notice]');
+						// Remembered client-side too, so a later live state sync can't
+						// re-show a notice the admin just dismissed on this page load.
+						$notice.data('mpcrbm-dismissed', true);
 						$notice.fadeOut(200);
 						$.post(ajaxurl, {
 							action: 'mpcrbm_dismiss_pro_payment_notice',

@@ -195,6 +195,47 @@
 			}
 
 			/**
+			 * Convert the plugin's decimal clock notation into a real "HH:MM" time.
+			 *
+			 * Times move through the booking form as decimals — "10.3" or "10.30" meaning
+			 * 10:30 — where the fractional part is tenths-of-an-hour-in-minutes normally,
+			 * but literal minutes when the pickup interval is 5 or 15. Concatenating that
+			 * raw value into a datetime produces strings like "2026-08-09 0.5", which
+			 * display as nonsense to the customer AND break the availability queries that
+			 * compare `return_date_time` as a MySQL DATETIME.
+			 *
+			 * @param string $decimal_time e.g. "0.5", "10.30", "14".
+			 *
+			 * @return string "HH:MM"
+			 */
+			public static function decimal_time_to_hi( $decimal_time ): string {
+				$decimal_time = trim( (string) $decimal_time );
+				if ( '' === $decimal_time ) {
+					return '00:00';
+				}
+				// Already a real clock time — leave it alone.
+				if ( false !== strpos( $decimal_time, ':' ) ) {
+					$parts = array_pad( explode( ':', $decimal_time ), 2, '0' );
+
+					return sprintf( '%02d:%02d', (int) $parts[0], (int) $parts[1] );
+				}
+
+				list( $hours, $decimal_part ) = array_pad( explode( '.', $decimal_time ), 2, '0' );
+
+				$interval_time = self::get_general_settings( 'pickup_interval_time' );
+				$multiplier    = ( '5' === (string) $interval_time || '15' === (string) $interval_time ) ? 1 : 10;
+				$minutes       = (int) $decimal_part * $multiplier;
+
+				// A trailing ".3" means 30 minutes, not 3 — but ".30" already means 30, so
+				// the ×10 must not run twice. Clamp rather than overflow into the hour.
+				if ( $minutes > 59 ) {
+					$minutes = (int) $decimal_part;
+				}
+
+				return sprintf( '%02d:%02d', (int) $hours, max( 0, min( 59, $minutes ) ) );
+			}
+
+			/**
 			 * Mint the random token that guards a booking's public pages.
 			 *
 			 * The standalone checkout's confirmation page and the payment-gateway return
@@ -700,7 +741,7 @@
                 <div class="mpcrbm_display_pricing_rules">
 
                     <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
-                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( wc_price( $base_price ) ); ?></strong></p>
+                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ) ); ?></strong></p>
 
                     <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
                         $is_discount = true;
@@ -731,10 +772,10 @@
                                         echo esc_html( '-' . abs( $value ) . '% discount' );
 
                                     } elseif ( 'fixed_increase' === $type ) {
-                                        echo wp_kses_post( '+' . wc_price( abs( $value ) ) . ' increase' );
+                                        echo wp_kses_post( '+' . MPCRBM_Global_Function::format_price( abs( $value ) ) . ' increase' );
 
                                     } elseif ( 'fixed_decrease' === $type ) {
-                                        echo wp_kses_post( '-' . wc_price( abs( $value ) ) . ' discount' );
+                                        echo wp_kses_post( '-' . MPCRBM_Global_Function::format_price( abs( $value ) ) . ' discount' );
                                     }
                                     ?>
                                 </li>
@@ -753,7 +794,7 @@
 //                                $diff = $day_price - $base_price;
 
                                 if ( $day_price > 0 ) {
-                                    $label =  wc_price( abs( $day_price ) );
+                                    $label =  MPCRBM_Global_Function::format_price( abs( $day_price ) );
                                     $class = 'increase';
                                 } else {
                                     $label = 'Same as base price';
@@ -804,17 +845,17 @@
                                     } elseif ( 'fixed_discount' === $type && isset( $rule['fixed_discount'] ) ) {
 
                                         $fixed_discount = floatval( $rule['fixed_discount'] );
-                                        echo esc_html__( 'Fixed Discount:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_discount ) ) );
+                                        echo esc_html__( 'Fixed Discount:', 'car-rental-manager' ) . ' ' . wp_kses_post( MPCRBM_Global_Function::format_price( abs( $fixed_discount ) ) );
 
                                     } elseif ( 'fixed_price' === $type && isset( $rule['fixed_price'] ) ) {
 
                                         $fixed_price = floatval( $rule['fixed_price'] );
-                                        echo esc_html__( 'Fixed Total Price:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_price ) ) );
+                                        echo esc_html__( 'Fixed Total Price:', 'car-rental-manager' ) . ' ' . wp_kses_post( MPCRBM_Global_Function::format_price( abs( $fixed_price ) ) );
 
                                     } elseif ( 'day_price' === $type && isset( $rule['day_price'] ) ) {
 
                                         $day_price = floatval( $rule['day_price'] );
-                                        echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $day_price ) ) );
+                                        echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( MPCRBM_Global_Function::format_price( abs( $day_price ) ) );
 
                                     }
                                     ?>

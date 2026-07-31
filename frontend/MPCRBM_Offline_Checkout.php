@@ -229,7 +229,10 @@
 				$return_date      = $get( 'mpcrbm_return_date' );
 				$return_time      = $get( 'mpcrbm_return_time' );
 				$car_quantity     = isset( $post['mpcrbm_car_quantity'] ) ? max( 1, absint( $post['mpcrbm_car_quantity'] ) ) : 1;
-				$return_date_time = $return_date ? trim( $return_date . ' ' . $return_time ) : '';
+				// The form posts times as decimals ("0.5" = 00:30). Storing that raw would
+				// both read as gibberish on the confirmation page and break the DATETIME
+				// comparisons that availability checks run against return_date_time.
+				$return_date_time = $return_date ? trim( $return_date . ' ' . MPCRBM_Function::decimal_time_to_hi( $return_time ) ) : '';
 				$rental_days      = ( $return_date_time && class_exists( 'MPCRBM_Function' ) )
 					? MPCRBM_Function::get_days_from_start_end_date( $start_date, $return_date_time )
 					: 1;
@@ -383,7 +386,19 @@
 
 			/** Booking summary block, shared by the checkout page and the confirmation page. */
 			private function render_summary( array $draft, $car_id ): string {
-				$thumb    = get_the_post_thumbnail( $car_id, 'medium' );
+				// 'large', not 'medium': the card is up to ~600px wide, so a 300px "medium"
+				// crop was being upscaled and looked blurry. WordPress emits srcset for a
+				// registered size automatically, and the `sizes` hint keeps phones from
+				// downloading the biggest file for a full-width card.
+				$thumb    = get_the_post_thumbnail(
+					$car_id,
+					'large',
+					array(
+						'sizes'   => '(max-width: 860px) 100vw, 600px',
+						'alt'     => get_the_title( $car_id ),
+						'loading' => 'eager',
+					)
+				);
 				$services = isset( $draft['mpcrbm_service_info'] ) && is_array( $draft['mpcrbm_service_info'] ) ? $draft['mpcrbm_service_info'] : array();
 
 				ob_start();
@@ -435,7 +450,53 @@
 			}
 
 			private function notice_html( $message ): string {
-				return '<div class="mpcrbm-checkout-notice">' . esc_html( $message ) . '</div>';
+				// Always give the customer a way onward. A bare "session expired" message
+				// with no link is a dead end on a page they cannot go back from (the
+				// booking draft is gone), leaving them stuck on the site.
+				return '<div class="mpcrbm-checkout-notice">'
+					. '<p>' . esc_html( $message ) . '</p>'
+					. '<p class="mpcrbm-checkout-notice-actions">'
+					. '<a class="mpcrbm-btn-ghost" href="' . esc_url( self::browse_url() ) . '">'
+					. esc_html__( 'Browse vehicles', 'car-rental-manager' ) . '</a>'
+					. '</p></div>';
+			}
+
+			/**
+			 * Where "browse / book another" should lead when no specific car applies.
+			 *
+			 * Prefers the plugin's own search page (created on activation) over the site
+			 * home page, since a customer who just booked wants the fleet, not the blog.
+			 */
+			public static function browse_url(): string {
+				$search = get_page_by_path( 'mpcrbm-search' );
+				$url    = $search ? get_permalink( $search ) : home_url( '/' );
+
+				return apply_filters( 'mpcrbm_browse_vehicles_url', $url );
+			}
+
+			/**
+			 * "Book this again" / "Browse vehicles" / "Home" links for the confirmation
+			 * page. Without them the confirmation is a cul-de-sac — the customer has
+			 * nowhere to go but the browser's back button, which re-posts the checkout.
+			 */
+			public static function render_confirmation_actions( $car_id ) {
+				$car_id   = absint( $car_id );
+				$car_link = ( $car_id && 'publish' === get_post_status( $car_id ) ) ? get_permalink( $car_id ) : '';
+				?>
+				<div class="mpcrbm-confirm-actions">
+					<?php if ( $car_link ) : ?>
+						<a class="mpcrbm-btn-primary" href="<?php echo esc_url( $car_link ); ?>">
+							<?php esc_html_e( 'Book this vehicle again', 'car-rental-manager' ); ?>
+						</a>
+					<?php endif; ?>
+					<a class="mpcrbm-btn-ghost" href="<?php echo esc_url( self::browse_url() ); ?>">
+						<?php esc_html_e( 'Browse vehicles', 'car-rental-manager' ); ?>
+					</a>
+					<a class="mpcrbm-btn-ghost" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+						<?php esc_html_e( 'Back to home', 'car-rental-manager' ); ?>
+					</a>
+				</div>
+				<?php
 			}
 
 			/* --------------------------------------------------------------
@@ -658,6 +719,8 @@
 							<p><?php echo esc_html( $instructions ); ?></p>
 						</div>
 					<?php endif; ?>
+
+					<?php self::render_confirmation_actions( $car_id ); ?>
 				</div>
 				<?php
 

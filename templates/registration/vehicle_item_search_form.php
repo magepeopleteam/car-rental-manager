@@ -203,7 +203,7 @@ if ($post_id) {
                         <?php
                         $mpcrbm_discount_text = $mpcrbm_early_bird_info['discount_type'] === 'percentage'
                             ? $mpcrbm_early_bird_info['discount_value'] . '%'
-                            : wc_price($mpcrbm_early_bird_info['discount_value']);
+                            : MPCRBM_Global_Function::format_price($mpcrbm_early_bird_info['discount_value']);
                         echo esc_html(sprintf(
                         // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
                             __('Save %s', 'car-rental-manager'),
@@ -273,7 +273,7 @@ if ($post_id) {
                                 // shows regardless, since that's explaining a *different* number
                                 // (the original rate vs. the discounted one), not repeating this one.
                                 if ( $mpcrbm_price_breakdown_differs || ( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ) ) : ?>
-                                    <div class="mpcrbm_price-breakdown <?php echo esc_attr( $mpcrbm_line_through );?>"><?php echo wp_kses_post( wc_price($mpcrbm_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                    <div class="mpcrbm_price-breakdown <?php echo esc_attr( $mpcrbm_line_through );?>"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price($mpcrbm_price_per_day ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                                 <?php endif; ?>
                                 <?php if( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ){
                                     $mpcrbm_pricing_rules = isset( $mpcrbm_pricing_rule_data['pricing_rules'] ) ? $mpcrbm_pricing_rule_data['pricing_rules'] : '';
@@ -290,7 +290,7 @@ if ($post_id) {
                             </div>
                             <?php
                             if( $mpcrbm_is_discount && $mpcrbm_base_price !== $mpcrbm_day_price ){ ?>
-                                <div class="mpcrbm_price-main"><?php echo wp_kses_post( wc_price( $mpcrbm_day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
+                                <div class="mpcrbm_price-main"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price ).'/ '.esc_html__('Day','car-rental-manager') );?></div>
                             <?php } ?>
                         </div>
                         <div class="mpcrbm_booking_items">
@@ -313,14 +313,14 @@ if ($post_id) {
                             <div class="mpcrbm-price-container">
                                 <?php if ($mpcrbm_early_bird_discount > 0): ?>
                                     <div class="mpcrbm-original-price">
-                                        <?php echo wp_kses_post(wc_price($mpcrbm_raw_price)); ?>
+                                        <?php echo wp_kses_post(MPCRBM_Global_Function::format_price($mpcrbm_raw_price)); ?>
                                     </div>
                                     <div class="mpcrbm-discounted-price">
-                                        <?php echo wp_kses_post(wc_price($mpcrbm_discounted_price)); ?>
+                                        <?php echo wp_kses_post(MPCRBM_Global_Function::format_price($mpcrbm_discounted_price)); ?>
                                     </div>
                                 <?php else: ?>
                                     <div class="mpcrbm-price">
-                                        <?php echo wp_kses_post(wc_price($mpcrbm_raw_price)); ?>
+                                        <?php echo wp_kses_post(MPCRBM_Global_Function::format_price($mpcrbm_raw_price)); ?>
                                     </div>
                                 <?php endif; ?>
 
@@ -338,7 +338,7 @@ if ($post_id) {
                                     <div class="mpcrbm_discount-info" style="color: #d26e4b; font-weight: bold; margin-top: 2px;">
                                         <?php echo sprintf(
                                         // phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-                                            esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(wc_price($mpcrbm_total_save))
+                                            esc_html__('You saved %s', 'car-rental-manager'), wp_kses_post(MPCRBM_Global_Function::format_price($mpcrbm_total_save))
                                         ); ?>
                                     </div>
                                 <?php endif; ?>
@@ -361,7 +361,7 @@ if ($post_id) {
                             <div class="mpcrbm_security_deposit_info" style="margin-top: 6px; font-size: 0.9em; color: #555;">
                                 <span class="fa fa-shield-alt" style="margin-right: 4px;"></span>
                                 <?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?>
-                                <strong><?php echo wp_kses_post( wc_price( $mpcrbm_security_deposit_result ) ); ?></strong>
+                                <strong><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_security_deposit_result ) ); ?></strong>
                             </div>
                         <?php } ?>
                     </div>
