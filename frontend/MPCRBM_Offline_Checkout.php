@@ -204,12 +204,13 @@
 				// Recompute the fare from the request server-side. mpcrbm_get_cart_total_price()
 				// re-verifies the nonce itself and reads only $_POST, so a tampered price in
 				// the browser can never reach a stored booking.
-				$total = (float) MPCRBM_Woocommerce::mpcrbm_get_cart_total_price( $car_id );
+				$breakdown = array();
+				$total     = (float) MPCRBM_Woocommerce::mpcrbm_get_cart_total_price( $car_id, $breakdown );
 				if ( $total <= 0 ) {
 					return $this->error_html( __( 'Sorry, we could not calculate a price for this booking. Please search again.', 'car-rental-manager' ) );
 				}
 
-				$draft = $this->build_draft( $car_id, $total, $post );
+				$draft = $this->build_draft( $car_id, $total, $post, $breakdown );
 				$token = wp_generate_password( 32, false, false );
 				set_transient( 'mpcrbm_checkout_' . $token, $draft, self::DRAFT_TTL );
 
@@ -220,7 +221,7 @@
 			 * Normalise the add-to-cart request into the meta shape the booking record
 			 * uses, so step 4 only has to add customer details and save.
 			 */
-			private function build_draft( $car_id, $total, array $post ): array {
+			private function build_draft( $car_id, $total, array $post, array $breakdown = array() ): array {
 				$get = static function ( $key ) use ( $post ) {
 					return isset( $post[ $key ] ) ? sanitize_text_field( wp_unslash( $post[ $key ] ) ) : '';
 				};
@@ -244,7 +245,15 @@
 				$delivery_requested   = isset( $post['mpcrbm_delivery_requested'] ) && '1' === $post['mpcrbm_delivery_requested'];
 				$collection_requested = isset( $post['mpcrbm_collection_requested'] ) && '1' === $post['mpcrbm_collection_requested'];
 
-				$base_per_car = $car_quantity > 0 ? ( $total / $car_quantity ) : $total;
+				// The VEHICLE rate per car, not the grand total. Deriving it from $total was
+				// wrong twice over: it stored the whole booking's price as mpcrbm_base_price
+				// (so the vehicle line on the PDF/order list showed the full amount and the
+				// itemised subtotal exceeded the real total), and it inflated every
+				// percentage-based fee below - deposit, one-way and delivery were all being
+				// charged on total-including-extras rather than on the rate.
+				$base_per_car = isset( $breakdown['base_per_car'] )
+					? (float) $breakdown['base_per_car']
+					: ( $car_quantity > 0 ? ( $total / $car_quantity ) : $total );
 				$dc_meta      = array();
 				foreach ( array( 'delivery', 'collection' ) as $kind ) {
 					$requested = ( 'delivery' === $kind ) ? $delivery_requested : $collection_requested;
@@ -256,15 +265,12 @@
 					$dc_meta[ 'mpcrbm_' . $kind . '_address' ] = $requested ? $get( 'mpcrbm_' . $kind . '_address' ) : '';
 				}
 
-				$security_deposit = 0;
-				if ( 'on' === get_post_meta( $car_id, 'mpcrbm_security_deposit_enable', true ) ) {
-					$amount = (float) get_post_meta( $car_id, 'mpcrbm_security_deposit', true );
-					if ( $amount > 0 ) {
-						$security_deposit = ( 'percentage' === get_post_meta( $car_id, 'mpcrbm_security_deposit_type', true ) )
-							? round( $base_per_car * $amount / 100, 2 )
-							: $amount;
-					}
-				}
+				// Same rule the WooCommerce cart uses, from the same method, computed off
+				// the vehicle rate. Stored × quantity because that is what the WooCommerce
+				// flow writes to mpcrbm_security_deposit_amount and what every consumer
+				// (PDF, order list) renders as a single line.
+				$security_deposit       = (float) MPCRBM_Woocommerce::calculate_security_deposit( $car_id, $base_per_car );
+				$security_deposit_total = $security_deposit * $car_quantity;
 
 				$one_way_fee = 0;
 				$start_place = $get( 'mpcrbm_start_place' );
@@ -288,11 +294,17 @@
 					'mpcrbm_fixed_hours'                 => $get( 'mpcrbm_fixed_hours' ),
 					'mpcrbm_distance'                    => $get( 'mpcrbm_distance' ),
 					'mpcrbm_duration'                    => $get( 'mpcrbm_duration' ),
-					'mpcrbm_base_price'                  => $total,
-					'mpcrbm_tp'                          => $total,
+					// base = vehicle rate per car; tp = grand total including extra
+					// services and fees. Consumers itemise from base + service_info and
+					// show tp as the total, so these must not be the same number.
+					'mpcrbm_base_price'                  => $base_per_car,
+					// Grand total, matching WooCommerce's contract: rental (vehicle + fees
+					// + extra services) plus the refundable deposit. Consumers itemise
+					// base + services + deposit and expect that sum to equal this.
+					'mpcrbm_tp'                          => $total + $security_deposit_total,
 					'mpcrbm_car_quantity'                => $car_quantity,
 					'mpcrbm_service_info'                => is_array( $service_info ) ? array_values( $service_info ) : array(),
-					'mpcrbm_security_deposit_amount'     => $security_deposit,
+					'mpcrbm_security_deposit_amount'     => $security_deposit_total,
 					'mpcrbm_branch_one_way_fee'          => $one_way_fee,
 					'mpcrbm_rental_days'                 => $rental_days,
 					'mpcrbm_target_pickup_interval_time' => class_exists( 'MPCRBM_Function' ) ? MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' ) : '30',

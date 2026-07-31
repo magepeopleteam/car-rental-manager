@@ -11,7 +11,15 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
         private $custom_order_data = array(); // Property to store the data
         private $ordered_item_name;
 
-        private static function calculate_security_deposit( $post_id, $base_price = 0 ) {
+        /**
+         * Public so the standalone Custom Payment checkout computes the deposit with the
+         * exact same rule as the WooCommerce cart. Duplicating the percentage/flat logic
+         * there meant the two flows could quietly disagree on what a customer owes.
+         *
+         * @param float $base_price The VEHICLE rate per car - never the grand total, or a
+         *                          percentage deposit would be charged on the extras too.
+         */
+        public static function calculate_security_deposit( $post_id, $base_price = 0 ) {
             $enable = get_post_meta( $post_id, 'mpcrbm_security_deposit_enable', true );
             if ( $enable !== 'on' ) {
                 return 0;
@@ -849,7 +857,23 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
          * cart pricing. The body never touched $this, so existing `$this->`
          * callers keep working unchanged.
          */
-        public static function mpcrbm_get_cart_total_price( $post_id ) {
+        public static function mpcrbm_get_cart_total_price( $post_id, &$breakdown = null ) {
+            // $breakdown is an optional out-param exposing the parts this method already
+            // works out internally (base rate per car, one-way fee, delivery/collection
+            // fees, extra-service total). The standalone checkout needs the BASE rate to
+            // store as mpcrbm_base_price - storing the grand total there instead made the
+            // vehicle line on the PDF/order list show the whole booking's price, so the
+            // itemised subtotal came out higher than the real total. Recomputing it at the
+            // call site would have been a second copy of this arithmetic, free to drift.
+            $breakdown = array(
+                'base_per_car' => 0.0,
+                'one_way_fee'  => 0.0,
+                'delivery_fee' => 0.0,
+                'collection_fee' => 0.0,
+                'services'     => 0.0,
+                'rental_days'  => 1,
+                'total'        => 0.0,
+            );
             //Validate nonce before processing
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
                 return;
@@ -893,6 +917,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
             $raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
             $base_per_car = $raw_price / max( 1, intval( $car_quantity ) );
+            $breakdown['base_per_car'] = (float) $base_per_car;
             $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
             if ( $one_way_enabled && $start_place !== $end_place ) {
                 $ow_value    = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
@@ -902,6 +927,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     : $ow_value;
                 if ( $one_way_fee > 0 ) {
                     $raw_price += $one_way_fee * intval( $car_quantity );
+                    $breakdown['one_way_fee'] = (float) $one_way_fee;
                 }
             }
             // Delivery/Collection — flat or % fee per car, requested via checkboxes
@@ -912,28 +938,35 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                     $dc_fee = MPCRBM_Delivery_Collection_Settings::get_fee( $post_id, $mpcrbm_dc_kind, $base_per_car );
                     if ( $dc_fee > 0 ) {
                         $raw_price += $dc_fee * intval( $car_quantity );
+                        $breakdown[ $mpcrbm_dc_kind . '_fee' ] = (float) $dc_fee;
                     }
                 }
             }
             $service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];
             $service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'absint', $_POST['mpcrbm_extra_service_qty'] ) : [];
             $rental_days      = $return_date_time ? MPCRBM_Function::get_days_from_start_end_date( $start_time, $return_date_time ) : 1;
+            $breakdown['rental_days'] = $rental_days;
 
             if ( sizeof( $service_name ) > 0 ) {
                 for ( $i = 0; $i < count( $service_name ); $i ++ ) {
                     if ( $service_name[ $i ] ) {
                         if ( array_key_exists( $i, $service_quantity ) && isset( $service_quantity[ $i ] ) ) {
-                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days ) * $service_quantity[ $i ];
+                            $mpcrbm_service_amount = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days ) * $service_quantity[ $i ];
                         } else {
-                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days );
+                            $mpcrbm_service_amount = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days );
                         }
+                        $raw_price               = $raw_price + $mpcrbm_service_amount;
+                        $breakdown['services'] += (float) $mpcrbm_service_amount;
                     }
                 }
             }
 
             $wc_price = MPCRBM_Global_Function::wc_price( $post_id, $raw_price );
 
-            return MPCRBM_Global_Function::price_convert_raw( $wc_price );
+            $mpcrbm_total       = MPCRBM_Global_Function::price_convert_raw( $wc_price );
+            $breakdown['total'] = (float) $mpcrbm_total;
+
+            return $mpcrbm_total;
         }
 
         public static function mpcrbm_cpt_data( $cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array() ) {
