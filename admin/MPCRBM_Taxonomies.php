@@ -639,7 +639,7 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                         <div class="mpcrbm_taxonomies_popup_header">
                             <div class="mpcrbm_taxonomies_popup_header_text">
                                 <i class="fas fa-tags"></i>
-                                <h3><?php esc_attr_e( 'Add New Taxonomy', 'car-rental-manager' );?></h3>
+                                <h3 id="mpcrbm_taxonomies_popup_title" data-add-label="<?php esc_attr_e( 'Add New', 'car-rental-manager' ); ?>" data-edit-label="<?php esc_attr_e( 'Edit', 'car-rental-manager' ); ?>"><?php esc_html_e( 'Add New Item', 'car-rental-manager' ); ?></h3>
                             </div>
                             <button type="button" class="mpcrbm_taxonomies_popup_close" aria-label="<?php esc_attr_e( 'Close', 'car-rental-manager' );?>">&times;</button>
                         </div>
