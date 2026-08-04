@@ -625,34 +625,39 @@
 						</div>
 					</div>
 					<div class="mpcrbm-card-content">
-						<p class="mpcrbm-guide-intro"><?php esc_html_e( 'The Pricing tab starts with a base Price/Day, then layers on optional rules — later rules apply on top of the base price, not instead of the earlier ones:', 'car-rental-manager' ); ?></p>
+						<p class="mpcrbm-guide-intro"><?php esc_html_e( 'The Pricing tab starts with a base Price/Day, then runs the optional rules in a fixed order. Each rule works on the result of the one before it, so when several are switched on at once the LAST one to run has the final say:', 'car-rental-manager' ); ?></p>
 						<div class="mpcrbm-guide-grid">
+							<div class="mpcrbm-guide-block">
+								<h4><i class="fas fa-calendar-week"></i> <?php esc_html_e( '1. Day-wise Pricing', 'car-rental-manager' ); ?></h4>
+								<ul>
+									<li><?php esc_html_e( 'Set a specific rate for any day of the week (e.g. pricier weekends)', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Replaces the base total — every date of the stay is charged at its own weekday rate', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Leave a day blank (or at 0) to keep using the base price for that weekday', 'car-rental-manager' ); ?></li>
+								</ul>
+							</div>
+							<div class="mpcrbm-guide-block">
+								<h4><i class="fas fa-umbrella-beach"></i> <?php esc_html_e( '2. Seasonal Pricing', 'car-rental-manager' ); ?></h4>
+								<ul>
+									<li><?php esc_html_e( 'Override rates for specific date ranges — holidays, peak season, events', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Increase or decrease the price, by a fixed amount or a percentage', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Matched on the pick-up date only, and only the first matching season is used', 'car-rental-manager' ); ?></li>
+								</ul>
+							</div>
+							<div class="mpcrbm-guide-block">
+								<h4><i class="fas fa-layer-group"></i> <?php esc_html_e( '3. Tiered Discount Rules', 'car-rental-manager' ); ?></h4>
+								<ul>
+									<li><?php esc_html_e( 'Reward longer rentals — e.g. 15% off for 7–14 days', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Runs last, on whatever the two rules above produced', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Choose percentage, fixed discount, fixed total price, or a day-wise rate per tier', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Fixed total price and price per day replace the total outright, discarding steps 1 and 2', 'car-rental-manager' ); ?></li>
+								</ul>
+							</div>
 							<div class="mpcrbm-guide-block">
 								<h4><i class="fas fa-route"></i> <?php esc_html_e( 'One-Way Fee', 'car-rental-manager' ); ?></h4>
 								<ul>
 									<li><?php esc_html_e( 'Extra charge when pickup and drop-off locations differ', 'car-rental-manager' ); ?></li>
 									<li><?php esc_html_e( 'Set as a flat amount or a percentage of the total', 'car-rental-manager' ); ?></li>
-								</ul>
-							</div>
-							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-layer-group"></i> <?php esc_html_e( 'Tiered Discount Rules', 'car-rental-manager' ); ?></h4>
-								<ul>
-									<li><?php esc_html_e( 'Reward longer rentals — e.g. 15% off for 7–14 days', 'car-rental-manager' ); ?></li>
-									<li><?php esc_html_e( 'Choose percentage, fixed discount, fixed total price, or a day-wise rate per tier', 'car-rental-manager' ); ?></li>
-								</ul>
-							</div>
-							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-calendar-week"></i> <?php esc_html_e( 'Day-wise Pricing', 'car-rental-manager' ); ?></h4>
-								<ul>
-									<li><?php esc_html_e( 'Set a specific rate for any day of the week (e.g. pricier weekends)', 'car-rental-manager' ); ?></li>
-									<li><?php esc_html_e( 'Leave a day blank to keep using the base price', 'car-rental-manager' ); ?></li>
-								</ul>
-							</div>
-							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-umbrella-beach"></i> <?php esc_html_e( 'Seasonal Pricing', 'car-rental-manager' ); ?></h4>
-								<ul>
-									<li><?php esc_html_e( 'Override rates for specific date ranges — holidays, peak season, events', 'car-rental-manager' ); ?></li>
-									<li><?php esc_html_e( 'Increase or decrease the price, by a fixed amount or a percentage', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Not part of the day-rate chain above — it is added to the final total, alongside extra services and the security deposit', 'car-rental-manager' ); ?></li>
 								</ul>
 							</div>
 						</div>
@@ -798,14 +803,14 @@
 						<p class="mpcrbm-guide-intro"><?php esc_html_e( 'FAQs and Terms & Conditions are each a single shared library — you write a question/term once, then pick which ones apply to each car.', 'car-rental-manager' ); ?></p>
 						<div class="mpcrbm-guide-grid">
 							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-circle-question"></i> <?php esc_html_e( 'Manage FAQ tab', 'car-rental-manager' ); ?></h4>
+								<h4><i class="fas fa-circle-question"></i> <?php esc_html_e( 'Manage FAQ section', 'car-rental-manager' ); ?></h4>
 								<ul>
 									<li><?php esc_html_e( 'Click a question in the list to add it to this car — click again to remove it', 'car-rental-manager' ); ?></li>
 									<li><?php esc_html_e( '"Add New FAQ" writes a brand new question straight from this screen', 'car-rental-manager' ); ?></li>
 								</ul>
 							</div>
 							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-file-contract"></i> <?php esc_html_e( 'Term & Condition tab', 'car-rental-manager' ); ?></h4>
+								<h4><i class="fas fa-file-contract"></i> <?php esc_html_e( 'Term & Condition section', 'car-rental-manager' ); ?></h4>
 								<ul>
 									<li><?php esc_html_e( 'Works the same way — click to select which terms show for this car', 'car-rental-manager' ); ?></li>
 									<li><?php esc_html_e( 'Selections are saved instantly; no need to hit Update', 'car-rental-manager' ); ?></li>
@@ -816,7 +821,7 @@
 							<i class="fas fa-location-arrow"></i>
 							<?php
 							/* translators: %s: the plugin's configurable "Car" label */
-							echo wp_kses_post( sprintf( __( 'Find it: editing a %s &rarr; <b>Manage FAQ</b> / <b>Term & Condition</b> tabs.', 'car-rental-manager' ), strtolower( $label ) ) );
+							echo wp_kses_post( sprintf( __( 'Find it: editing a %s &rarr; <b>Content &amp; Policies</b> tab.', 'car-rental-manager' ), strtolower( $label ) ) );
 							?>
 						</div>
 					</div>

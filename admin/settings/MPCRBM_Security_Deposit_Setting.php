@@ -31,7 +31,11 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             $amount          = ( $amount !== '' && $amount !== false ) ? floatval( $amount ) : '';
 
             wp_nonce_field( 'mpcrbm_save_security_deposit', 'mpcrbm_security_deposit_nonce' );
-            $currency = MPCRBM_Global_Function::currency_symbol();
+            // _text(): the symbol is handed to jQuery .text() further down (the
+            // Fixed/Percentage toggle), where WooCommerce's raw "&#36;" entity would
+            // appear literally. Decoded once here so the initial render and the
+            // toggled one can't disagree.
+            $currency = MPCRBM_Global_Function::currency_symbol_text();
             $unit     = $type === 'percentage' ? '%' : $currency;
             ?>
             <style>
@@ -41,7 +45,12 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             .mpcrbm-sd-type-label{display:flex;align-items:center;gap:10px;padding:12px 14px;border:2px solid #e5e9f0;border-radius:10px;cursor:pointer;transition:all .2s;background:#fafbfc;}
             .mpcrbm-sd-type-label:hover{border-color:#93c5fd;background:#eff6ff;}
             .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label{border-color:#2563eb;background:#eff6ff;}
-            .mpcrbm-sd-type-dot{width:18px;height:18px;border-radius:50%;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+            /* IMPORTANT — <span> rules are written as ".mpcrbm span.<class>"
+               (specificity 0,2,1) because mp_global/assets/mp_style/mpcrbm_global.css
+               has ".mpcrbm span {display:inline-block}" (0,1,1), which outranks a bare
+               class selector and throws away "display:flex" along with its
+               align-items/justify-content centring. */
+            .mpcrbm span.mpcrbm-sd-type-dot{width:18px;height:18px;border-radius:50%;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
             .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot{border-color:#2563eb;background:#2563eb;display:flex;}
             .mpcrbm-sd-type-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;display:none;}
             .mpcrbm-sd-type-option input[type=radio]:checked + .mpcrbm-sd-type-label .mpcrbm-sd-type-dot::after{display:block;}
@@ -50,7 +59,13 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
             .mpcrbm-sd-amount-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;display:block;}
             .mpcrbm-sd-amount-wrap{display:flex;align-items:center;border:2px solid #e5e9f0;border-radius:10px;overflow:hidden;transition:border-color .2s;max-width:280px;}
             .mpcrbm-sd-amount-wrap:focus-within{border-color:#2563eb;}
-            .mpcrbm-sd-amount-prefix{padding:10px 14px 0px 14px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:44px;display:flex;align-items:center;font-weight:700;font-size:15px;color:#374151;min-width:44px;justify-content:center;}
+            /* flex:0 0 auto + nowrap so a multi-character symbol ("CHF", "Rp") isn't
+               shrunk and clipped by the wrapper's overflow:hidden. The old asymmetric
+               "padding:10px 14px 0 14px" was compensating for the lost flex centring
+               described above by pushing the glyph down by hand — now that
+               display:flex actually applies, symmetric padding + align-items:center
+               do it properly at any font size. */
+            .mpcrbm span.mpcrbm-sd-amount-prefix{padding:0 14px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:44px;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:700;font-size:15px;color:#374151;min-width:44px;flex:0 0 auto;white-space:nowrap;}
             #mpcrbm_security_deposit{border:none!important;outline:none!important;box-shadow:none!important;padding:0 14px;height:44px;font-size:15px;font-weight:600;color:#111827;width:100%;background:#fff;}
             .mpcrbm-sd-hint{font-size:12px;color:#9ca3af;margin-top:6px;}
             .mpcrbm-sd-hint b{color:#6b7280;}
@@ -114,7 +129,7 @@ if ( ! class_exists( 'MPCRBM_Security_Deposit_Setting' ) ) {
                             <span id="mpcrbm_deposit_desc_percentage" style="display:<?php echo $type === 'percentage' ? 'inline' : 'none'; ?>"><?php esc_html_e( 'Deposit Percentage', 'car-rental-manager' ); ?></span>
                         </label>
                         <div class="mpcrbm-sd-amount-wrap">
-                            <span class="mpcrbm-sd-amount-prefix" id="mpcrbm_deposit_unit"><?php echo wp_kses_post( $unit ); ?></span>
+                            <span class="mpcrbm-sd-amount-prefix" id="mpcrbm_deposit_unit"><?php echo esc_html( $unit ); ?></span>
                             <input type="number"
                                    id="mpcrbm_security_deposit"
                                    name="mpcrbm_security_deposit"

@@ -99,6 +99,42 @@ function mpcrbmCreateMarker(place) {
 }
 jQuery(document).ready(function($) {
 
+    /* ===== "Hide Time Input Field From Search Form" support =====
+       When that global setting is on, get_details_new.php /
+       single_car_search_details.php render the two time pickers with
+       display:none and expose #mpcrbm_time_input_hidden="yes".
+
+       Every time-related branch below was written around a *visible* picker: it
+       blanks #mpcrbm_map_start_time so the customer re-picks from the freshly
+       filtered slot list, gates the search / "Book Now" on a real pick, and
+       reveals the car-details Return step from the time-slot click. None of that
+       can ever complete while the picker is hidden — the search button silently
+       did nothing and the Return date never appeared. These helpers let those
+       branches fall back on the server-rendered default time instead. */
+    function mpcrbm_time_input_is_hidden(parent) {
+        let $flag = (parent && parent.length) ? parent.find('#mpcrbm_time_input_hidden') : $();
+        if (!$flag.length) {
+            $flag = $('#mpcrbm_time_input_hidden');
+        }
+        return $flag.first().val() === 'yes';
+    }
+
+    // Returns a usable value for one of the hidden time inputs, re-applying the
+    // server-rendered default (data-default-time) if something blanked it.
+    // "0" (midnight) is a legitimate value, so only null/undefined/'' fall back.
+    function mpcrbm_ensure_time_value($input) {
+        if (!$input || !$input.length) {
+            return '';
+        }
+        let value = $input.first().val();
+        if (value === undefined || value === null || value === '') {
+            value = $input.first().attr('data-default-time');
+            value = (value === undefined || value === null) ? '' : value;
+            $input.first().val(value);
+        }
+        return value;
+    }
+
     // Multi-location support functionality
     function updateDropoffLocations(pickupLocation) {
         if (!pickupLocation) return;
@@ -465,12 +501,16 @@ jQuery(document).ready(function($) {
         }
         let start_date = target_date.val();
         let return_date = return_target_date.val();
-        let return_time = return_target_time.val();
-
-        let start_time = target_time.val();
+        let time_input_hidden = mpcrbm_time_input_is_hidden(parent);
+        // With the pickers hidden there is no dropdown to open and no pick to wait
+        // for, so a missing time has to be resolved from the server default here —
+        // otherwise the two "open the time list" branches below dead-end on an
+        // invisible element and clicking Search appears to do nothing at all.
+        let return_time = time_input_hidden ? mpcrbm_ensure_time_value(return_target_time) : return_target_time.val();
+        let start_time = time_input_hidden ? mpcrbm_ensure_time_value(target_time) : target_time.val();
         if (!start_date) {
             target_date.trigger("click");
-        } else if (!start_time) {
+        } else if (!start_time && !time_input_hidden) {
             parent
                 .find("#mpcrbm_map_start_time")
                 .closest(".input_select")
@@ -480,7 +520,7 @@ jQuery(document).ready(function($) {
             if (mpcrbm_enable_return_in_different_date == 'yes' && two_way != 1) {
                 return_target_date.trigger("click");
             }
-        } else if (!return_time) {
+        } else if (!return_time && !time_input_hidden) {
             if (mpcrbm_enable_return_in_different_date == 'yes' && two_way != 1) {
                 parent
                     .find("#mpcrbm_map_return_time")
@@ -775,9 +815,16 @@ jQuery(document).ready(function($) {
 
     // Handle date and time changes
     $(document).on("change", "#mpcrbm_map_start_date", function() {
-        // Clear the time slots list
-        $('#mpcrbm_map_start_time').siblings('.start_time_list').empty();
-        $('.start_time_input,#mpcrbm_map_start_time').val('');
+        let mpcrbm_start_time_hidden = mpcrbm_time_input_is_hidden($(this).closest(".mpcrbm_transport_search_area"));
+        // Clear the time slots list.
+        // Skipped entirely when the time picker is hidden: blanking the pick-up time
+        // there is unrecoverable (no visible list to re-pick from), and it left the
+        // search button dead on every date change — the value stays as rendered and
+        // is only nudged forward below when "today" makes it a past time.
+        if (!mpcrbm_start_time_hidden) {
+            $('#mpcrbm_map_start_time').siblings('.start_time_list').empty();
+            $('.start_time_input,#mpcrbm_map_start_time').val('');
+        }
         let mpcrbm_enable_return_in_different_date = $('[name="mpcrbm_enable_return_in_different_date"]').val();
         let mpcrbm_buffer_end_minutes = $('[name="mpcrbm_buffer_end_minutes"]').val();
         let mpcrbm_first_calendar_date = $('[name="mpcrbm_first_calendar_date"]').val();
@@ -801,22 +848,33 @@ jQuery(document).ready(function($) {
 
             // Combine hours and formatted minutes
             var currentTimeFormatted = currentHour + '.' + formattedMinutes;
-            $('.start_time_list-no-dsiplay li').each(function () {
-                const timeValue = parseFloat($(this).attr('data-value'));
-                if (timeValue > parseFloat(currentTimeFormatted) && timeValue >= mpcrbm_buffer_end_minutes / 60) {
-                    $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
-                }
-            });
-        } else {
-            if(selectedDate  == mpcrbm_first_calendar_date){
-                console.log(mpcrbm_first_calendar_date);
+            if (mpcrbm_start_time_hidden) {
+                // No list to filter — instead keep the rendered pick-up time honest:
+                // if picking "today" made it a past (or inside-buffer) time, move it to
+                // the first slot that is still bookable, exactly like the visible list
+                // would have offered.
+                mpcrbm_shift_hidden_start_time_forward(parseFloat(currentTimeFormatted), mpcrbm_buffer_end_minutes);
+            } else {
                 $('.start_time_list-no-dsiplay li').each(function () {
                     const timeValue = parseFloat($(this).attr('data-value'));
-                    if (timeValue >= mpcrbm_buffer_end_minutes / 60) {
+                    if (timeValue > parseFloat(currentTimeFormatted) && timeValue >= mpcrbm_buffer_end_minutes / 60) {
                         $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
                     }
                 });
-            }else{
+            }
+        } else {
+            if(selectedDate  == mpcrbm_first_calendar_date){
+                if (mpcrbm_start_time_hidden) {
+                    mpcrbm_shift_hidden_start_time_forward(null, mpcrbm_buffer_end_minutes);
+                } else {
+                    $('.start_time_list-no-dsiplay li').each(function () {
+                        const timeValue = parseFloat($(this).attr('data-value'));
+                        if (timeValue >= mpcrbm_buffer_end_minutes / 60) {
+                            $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
+                        }
+                    });
+                }
+            }else if (!mpcrbm_start_time_hidden) {
                 $('.start_time_list-no-dsiplay li').each(function () {
                     $('#mpcrbm_map_start_time').siblings('.start_time_list').append($(this).clone());
                 });
@@ -832,17 +890,62 @@ jQuery(document).ready(function($) {
 
         let parent = $(this).closest(".mpcrbm_transport_search_area");
         mpcrbm_content_refresh(parent);
-        parent
-            .find("#mpcrbm_map_start_time")
-            .closest(".input_select")
-            .find("input.formControl")
-            .trigger("click");
+        if (mpcrbm_start_time_hidden) {
+            // Nothing to open, and nothing to wait for: mark the car-details guided
+            // pick-up step done on the date pick itself (its Return step is already
+            // rendered unlocked by single_car_search_details.php in this mode).
+            $('#mpcrbm_map_start_time').closest('.mpcrbm-date-step-pickup').addClass('is-complete');
+        } else {
+            parent
+                .find("#mpcrbm_map_start_time")
+                .closest(".input_select")
+                .find("input.formControl")
+                .trigger("click");
+        }
     });
+
+    // Moves the hidden pick-up time to the earliest slot that is still bookable
+    // (after "now" when the pick-up is today, and never inside the buffer window),
+    // reading the same server-rendered slot list the visible picker uses. Leaves the
+    // value untouched when it is already valid or when no slot qualifies.
+    function mpcrbm_shift_hidden_start_time_forward(afterTime, bufferEndMinutes) {
+        let $start = $('#mpcrbm_map_start_time');
+        if (!$start.length) {
+            return;
+        }
+        let bufferFloor = parseFloat(bufferEndMinutes) / 60;
+        bufferFloor = isNaN(bufferFloor) ? 0 : bufferFloor;
+        let currentValue = parseFloat(mpcrbm_ensure_time_value($start));
+        if (!isNaN(currentValue)
+            && (afterTime === null || currentValue > afterTime)
+            && currentValue >= bufferFloor) {
+            return;
+        }
+
+        let nextValue = null;
+        $('.start_time_list-no-dsiplay li').each(function () {
+            const timeValue = parseFloat($(this).attr('data-value'));
+            if (isNaN(timeValue) || timeValue < bufferFloor) {
+                return;
+            }
+            if (afterTime !== null && timeValue <= afterTime) {
+                return;
+            }
+            if (nextValue === null || timeValue < nextValue) {
+                nextValue = timeValue;
+            }
+        });
+
+        if (nextValue !== null) {
+            $start.val(nextValue);
+        }
+    }
 
     $(document).on("change", "#mpcrbm_map_return_date", function() {
         let mpcrbm_enable_return_in_different_date = $('[name="mpcrbm_enable_return_in_different_date"]').val();
+        let mpcrbm_return_time_hidden = mpcrbm_time_input_is_hidden($(this).closest(".mpcrbm_transport_search_area"));
 
-        if (mpcrbm_enable_return_in_different_date == 'yes') {
+        if (mpcrbm_enable_return_in_different_date == 'yes' && !mpcrbm_return_time_hidden) {
             var selectedTime = parseFloat($('#mpcrbm_map_start_time').val());
             var selectedDate = $('#mpcrbm_map_start_date').val();
             var dateValue = $('#mpcrbm_map_return_date').val();
@@ -874,8 +977,50 @@ jQuery(document).ready(function($) {
         // Trigger refresh and display logic
         let parent = $(this).closest(".mpcrbm_transport_search_area");
         mpcrbm_content_refresh(parent);
-        parent.find("#mpcrbm_map_return_time").closest(".input_select").find("input.formControl").trigger("click");
+        if (mpcrbm_return_time_hidden) {
+            // The return time is fixed, so the return DATE pick is the last step of the
+            // selection: make sure the hidden value is intact, then show the date-range
+            // summary that the (unreachable) return-time click normally reveals. The
+            // totals themselves are already refreshed by date-picker.js's own
+            // mpcrbm_get_selected_days() call on this same pick — don't duplicate it.
+            mpcrbm_ensure_time_value($('#mpcrbm_map_return_time'));
+            $('#mpcrbm_map_return_time').closest('.mpcrbm-date-step-return').addClass('is-complete');
+            mpcrbm_refresh_date_range_summary();
+        } else {
+            parent.find("#mpcrbm_map_return_time").closest(".input_select").find("input.formControl").trigger("click");
+        }
     });
+
+    // Fills + reveals the car-details "pick-up -> return" summary card. Normally
+    // driven by the return-time click; also called on the return-date change when the
+    // time pickers are hidden, since that click can never happen then.
+    function mpcrbm_refresh_date_range_summary() {
+        let $summary = $('#mpcrbm_date_range_summary');
+        if (!$summary.length) {
+            return;
+        }
+        let pickupDate = $('#mpcrbm_start_date').val();
+        let returnDate = $('#mpcrbm_return_date').val();
+        if (!pickupDate || !returnDate) {
+            return;
+        }
+        let pickupTime = $('#mpcrbm_map_start_time').closest('.input_select').find('input.formControl').val();
+        let returnTime = $('#mpcrbm_map_return_time').closest('.input_select').find('input.formControl').val();
+
+        $('#mpcrbm_date_range_text').text(pickupDate + ' → ' + returnDate);
+        // The time rows are meaningless when the customer never chose a time — hide
+        // them instead of showing the internal default as if it were their pick.
+        if (mpcrbm_time_input_is_hidden(null)) {
+            $summary.find('.mpcrbm-date-range-summary-times').hide();
+        } else {
+            $('#mpcrbm_summary_pickup_time').text(pickupTime);
+            $('#mpcrbm_summary_return_time').text(returnTime);
+        }
+
+        if ($summary.is(':hidden')) {
+            $summary.slideDown(300);
+        }
+    }
 
     // Handle time selection
     $(document).on("click", ".start_time_list li", function() {
@@ -926,26 +1071,9 @@ jQuery(document).ready(function($) {
             // "div.mpcrbm .input_select .input_select_list li" handler
             // (mp_global/assets/mp_style/mpcrbm_global.js), which is what actually
             // writes the human-readable text (e.g. "12:00 am") into the visible
-            // date/time inputs this reads below — deferring avoids a registration-
-            // order race where this could read the value from *before* the click.
-            setTimeout(function () {
-                let $summary = $('#mpcrbm_date_range_summary');
-                if (!$summary.length) {
-                    return;
-                }
-                let pickupDate = $('#mpcrbm_start_date').val();
-                let returnDate = $('#mpcrbm_return_date').val();
-                let pickupTime = $('#mpcrbm_map_start_time').closest('.input_select').find('input.formControl').val();
-                let returnTime = $('#mpcrbm_map_return_time').closest('.input_select').find('input.formControl').val();
-
-                $('#mpcrbm_date_range_text').text(pickupDate + ' → ' + returnDate);
-                $('#mpcrbm_summary_pickup_time').text(pickupTime);
-                $('#mpcrbm_summary_return_time').text(returnTime);
-
-                if ($summary.is(':hidden')) {
-                    $summary.slideDown(300);
-                }
-            }, 0);
+            // date/time inputs the summary reads — deferring avoids a registration-
+            // order race where it could read the value from *before* the click.
+            setTimeout(mpcrbm_refresh_date_range_summary, 0);
         }
     });
 
@@ -1005,31 +1133,52 @@ jQuery(document).ready(function($) {
     });
 
 
-    // Handle extra service selection
-    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service[]"]', function () {
-        let parent = $(this).closest('.mpcrbm_transport_search_area');
-        let service_id = $(this).data('value');
-        let service_value = $(this).val();
-        let $qty_input = $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service_qty[]"]');
-        let qty = parseInt($qty_input.val()) || 1;
+    // Adds / updates / removes one extra service's line in the ".Details" summary and
+    // syncs its Select button state. Shared by the search flow and the car-details
+    // page: both render the identical .mpcrbm_extra_service_item markup
+    // (registration/extra_service_display.php), and the car page previously had no
+    // itemisation at all — its .mpcrbm_extra_service_summary stayed empty while the
+    // services were still added to the total, so the breakdown never explained the
+    // number below it.
+    //
+    // $input is the hidden [name="mpcrbm_extra_service[]"] whose value is the service
+    // name when selected and empty when not.
+    function mpcrbm_sync_extra_service_row(parent, $input) {
+        let service_id = $input.data('value');
+        let service_value = $input.val();
+        let $item = $input.closest('.mpcrbm_extra_service_item');
+        let $qty_input = $item.find('[name="mpcrbm_extra_service_qty[]"]');
+        let qty = parseInt($qty_input.val(), 10) || 1;
         let price_per_item = parseFloat($qty_input.data('price')) || 0;
-        let total_price_for_item = price_per_item * qty;
-        let $button = $(this).closest('[data-extra-item]');
+        // Per-day services are billed for the whole stay, so the line has to show the
+        // same multiple the total uses — otherwise the rows visibly fail to add up.
+        let days = $qty_input.attr('data-price-type') === 'day' ? mpcrbm_calculate_rental_days(parent) : 1;
+        let total_price_for_item = price_per_item * qty * days;
+        let $button = $input.closest('[data-extra-item]');
+        let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
 
         if (service_value) {
-            let service_name_display = service_id;
-            let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
-
             if (summary_item.length === 0) {
+                // Structure mirrors the server-rendered car row (car_details.php,
+                // choose_vehicles.php, get_search_result.php) exactly — same wrapper
+                // classes, ._dFlex_alignCenter for the name block, .mpcrbm_product_price
+                // for the amount.
+                //
+                // Those two child classes are not decorative: the car-details summary
+                // lays the row out with explicit flex `order` per child
+                // (mpcrbm_car_details.css, ".book-items > ._dFlex_alignCenter {order:1}"
+                // / "> .mpcrbm_product_price {order:2}"). An unclassed price <p> keeps
+                // the default order:0 and therefore rendered BEFORE the name — which is
+                // why these lines came out as "$50.00 ✓ Child Seat x1" instead of
+                // "✓ Child Seat x1 … $50.00" like every other row.
                 let new_item_html = `
-                    <div class="_textColor_4_dFlex_flexWrap_justifyBetween book-items" data-extra-service-id="${service_id}" data-price="${price_per_item}">
+                    <div class="_textColor_4 justifyBetween book-items" data-extra-service-id="${service_id}" data-price="${price_per_item}">
                         <p class="_dFlex_alignCenter">
                             <span class="fas fa-check-square _textTheme_mR_xs"></span>
-                            <span class="">${service_name_display}</span> &nbsp;
+                            <span class="">${service_id}</span> &nbsp;
                             <span class="textTheme ex_service_qty">x${qty}</span>
                         </p>
-                        <p>
-                            
+                        <p class="mpcrbm_product_price _textTheme">
                             <span class="textTheme"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol"></span>${mpcrbm_price_format(total_price_for_item)}</span></span>
                         </p>
                     </div>
@@ -1046,7 +1195,6 @@ jQuery(document).ready(function($) {
                 $button.find('[data-icon]').attr('class', 'mL_xs ' + $button.data('close-icon'));
             }
         } else {
-            let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
             if (summary_item.length > 0) {
                 summary_item.slideUp(350, function() {
                     $(this).remove();
@@ -1059,7 +1207,13 @@ jQuery(document).ready(function($) {
                 $button.find('[data-icon]').attr('class', 'mL_xs ' + $button.data('open-icon'));
             }
         }
+    }
 
+    // Handle extra service selection
+    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service[]"]', function () {
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
+
+        mpcrbm_sync_extra_service_row(parent, $(this));
         mpcrbm_price_calculation(parent);
         checkAndToggleBookNowButton(parent);
     });
@@ -1067,9 +1221,9 @@ jQuery(document).ready(function($) {
     // Handle extra service selection
     $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service[]"]', function () {
         let parent = $(this).closest('.mpcrbm_car_details');
-        let $qty_input = parent.find('[name="mpcrbm_get_car_qty"]').val();
-        let qty = parseInt($qty_input) || 1;
-        // mpcrbm_price_calculation( parent );
+        let qty = parseInt(parent.find('[name="mpcrbm_get_car_qty"]').val(), 10) || 1;
+
+        mpcrbm_sync_extra_service_row(parent, $(this));
         mpcrbm_price_calculation_car_details_page(parent, qty);
     });
 
@@ -1140,19 +1294,26 @@ jQuery(document).ready(function($) {
         let total = 0;
         let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
         if (post_id > 0) {
-            total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+            total = total + (parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price")) || 0);
 
             total = total * number_of_car;
 
             parent.find(".mpcrbm_extra_service_item").each(function () {
                 let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
                 if (service_name) {
-                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]');
-                    let ex_qty = parseInt(ex_target.val());
-                    let ex_price = ex_target.data("price");
-                    ex_price = ex_price && ex_price > 0 ? ex_price : 0;
+                    // The closing '"]' here is load-bearing: without it jQuery THROWS
+                    // "Syntax error, unrecognized expression", which aborted this whole
+                    // function before it could write the total — so the moment any extra
+                    // service was selected, the displayed total silently froze at its
+                    // previous value.
+                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]"]');
+                    let ex_qty = parseInt(ex_target.val(), 10);
+                    // A blank/absent qty box must not turn the whole total into NaN.
+                    ex_qty = isNaN(ex_qty) || ex_qty < 0 ? 0 : ex_qty;
+                    let ex_price = parseFloat(ex_target.data("price"));
+                    ex_price = ex_price > 0 ? ex_price : 0;
                     let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
-                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
+                    total = total + ex_price * ex_qty * ex_days;
                 }
             });
 
@@ -1212,7 +1373,7 @@ jQuery(document).ready(function($) {
         let total = 0;
         let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
         if (post_id > 0) {
-            total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+            total = total + (parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price")) || 0);
 
             total = total * number_of_car;
             let basePerCar = total / number_of_car;
@@ -1220,12 +1381,17 @@ jQuery(document).ready(function($) {
             parent.find(".mpcrbm_extra_service_item").each(function () {
                 let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
                 if (service_name) {
-                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]');
-                    let ex_qty = parseInt(ex_target.val());
-                    let ex_price = ex_target.data("price");
-                    ex_price = ex_price && ex_price > 0 ? ex_price : 0;
+                    // See the note on the same selector in mpcrbm_price_calculation():
+                    // the missing '"]' made jQuery throw and abandon the recalculation
+                    // as soon as one extra service was selected, which is why the total
+                    // stopped tracking service quantity changes on this page.
+                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]"]');
+                    let ex_qty = parseInt(ex_target.val(), 10);
+                    ex_qty = isNaN(ex_qty) || ex_qty < 0 ? 0 : ex_qty;
+                    let ex_price = parseFloat(ex_target.data("price"));
+                    ex_price = ex_price > 0 ? ex_price : 0;
                     let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
-                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
+                    total = total + ex_price * ex_qty * ex_days;
                 }
             });
 
@@ -1286,7 +1452,10 @@ jQuery(document).ready(function($) {
         let mpcrbm_waiting_time = parent.find('[name="mpcrbm_waiting_time"]').val();
         let mpcrbm_taxi_return = parent.find('[name="mpcrbm_taxi_return"]').val();
         let return_target_date = parent.find("#mpcrbm_map_return_date").val();
-        let return_target_time = parent.find("#mpcrbm_map_return_time").val();
+        // Read through the default-restoring accessor: a blank return time makes the
+        // server skip 'return_date_time' entirely (MPCRBM_Woocommerce::add_cart_item_data),
+        // so the booking would lose its drop-off date/time altogether.
+        let return_target_time = mpcrbm_ensure_time_value(parent.find("#mpcrbm_map_return_time"));
         let mpcrbm_fixed_hours = parent.find('[name="mpcrbm_fixed_hours"]').val();
         // The CAR is the booking's identity; link_id is the hidden WooCommerce mirror
         // product, which simply does not exist in Custom Payment mode. Fall back to the
@@ -1413,10 +1582,18 @@ jQuery(document).ready(function($) {
     function mpcrbm_validate_date_time_fields(parent) {
         let fields = [
             { input: parent.find('#mpcrbm_start_date'), error: parent.find('#mpcrbm_pickup_date_error') },
-            { input: parent.find('#mpcrbm_map_start_time'), error: parent.find('#mpcrbm_pickup_time_error') },
-            { input: parent.find('#mpcrbm_return_date'), error: parent.find('#mpcrbm_return_date_error') },
-            { input: parent.find('#mpcrbm_map_return_time'), error: parent.find('#mpcrbm_return_time_error') }
+            { input: parent.find('#mpcrbm_return_date'), error: parent.find('#mpcrbm_return_date_error') }
         ];
+
+        // The two time fields are only required when the customer can actually pick
+        // them. With "Hide Time Input Field From Search Form" on they never get
+        // data-user-selected, so requiring them made "Book Now" fail forever — and
+        // silently, because their ".mpcrbm_field_error" notices sit inside the
+        // display:none wrappers.
+        if (!mpcrbm_time_input_is_hidden(parent)) {
+            fields.splice(1, 0, { input: parent.find('#mpcrbm_map_start_time'), error: parent.find('#mpcrbm_pickup_time_error') });
+            fields.push({ input: parent.find('#mpcrbm_map_return_time'), error: parent.find('#mpcrbm_return_time_error') });
+        }
 
         let $firstInvalidWrap = null;
 
@@ -1456,9 +1633,12 @@ jQuery(document).ready(function($) {
         let mpcrbm_waiting_time = '';
         let mpcrbm_taxi_return = '';
         let mpcrbm_start_date = parent.find("#mpcrbm_map_start_date").val();
-        let mpcrbm_start_time = parent.find("#mpcrbm_map_start_time").val();
+        // mpcrbm_ensure_time_value(): the times are never user-pickable when they are
+        // hidden, so read them through the default-restoring accessor rather than
+        // risking a blank that would silently book "00:00".
+        let mpcrbm_start_time = mpcrbm_ensure_time_value(parent.find("#mpcrbm_map_start_time"));
         let return_target_date = parent.find("#mpcrbm_map_return_date").val();
-        let return_target_time = parent.find("#mpcrbm_map_return_time").val();
+        let return_target_time = mpcrbm_ensure_time_value(parent.find("#mpcrbm_map_return_time"));
         let mpcrbm_fixed_hours = parent.find('[name="mpcrbm_fixed_hours"]').val();
         // let date = parent.find('[name="mpcrbm_date"]').val();
         // link_id is the hidden WooCommerce mirror product. It is absent in Custom
@@ -1768,6 +1948,10 @@ jQuery(document).ready(function($) {
         $images.eq(index).addClass('active').animate({ opacity: 1 }, 300);
     }
 
+    // Incremented per price request; the response only paints if it is still the
+    // newest one (see the success handler).
+    var mpcrbmPriceRequestToken = 0;
+
     function mpcrbm_get_selected_days() {
         let parentClass = $('.mpcrbm_car_details_container');
 
@@ -1803,12 +1987,16 @@ jQuery(document).ready(function($) {
             return;
         }
         let diffDays = diffMs / (1000 * 60 * 60 * 24);
-        let totalDays = Math.ceil(diffDays);
-        let dayPrice = parseFloat( parentClass.find("#mpcrbm_car_day_price").val() );
-        let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() );
-        let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val() );
+        // Never fewer than one day. Pick-up and return can legitimately land on the
+        // same clock time — a same-day booking, or any booking made while the time
+        // pickers are hidden (both times are then identical by design) — and
+        // Math.ceil(0) would have shown "0 days" and a zero total.
+        let totalDays = Math.max(1, Math.ceil(diffDays));
+        let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() ) || 0;
+        let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val(), 10 );
+        // Undiscounted base for the whole stay — the server applies day-wise, seasonal
+        // and tiered rules to it and hands back the real price.
         let get_price = dayWisePrice * totalDays;
-        dayPrice = mpcrbm_price_format( dayPrice );
         parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
 
 
@@ -1820,6 +2008,7 @@ jQuery(document).ready(function($) {
         // target since it wraps both the rate header and the "Details" summary
         // card this AJAX call updates.
         let $priceBox = parentClass.find('.mpcrbm_car_details_price_box');
+        let requestToken = ++mpcrbmPriceRequestToken;
 
         $.ajax({
             type: 'POST',
@@ -1839,20 +2028,34 @@ jQuery(document).ready(function($) {
                 }
             },
             success: function (data) {
+                // Ignore a response that a newer request has already superseded —
+                // picking a date fires several of these in quick succession (pick-up,
+                // return, time), and without this the slowest reply wins and paints a
+                // price for dates the customer has already moved on from.
+                if (requestToken !== mpcrbmPriceRequestToken) {
+                    return;
+                }
 
                 if (data.success && data.data && data.data.calculated_price !== undefined) {
-                    let calculated_price = mpcrbm_price_format( data.data.calculated_price );
-                    let day_wise = data.data.calculated_price/totalDays;
+                    let day_wise = data.data.calculated_price / totalDays;
                     let day_wise_price = mpcrbm_price_format( day_wise );
                     parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
                     parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
+                    // The discounted base for the whole stay (day-wise / seasonal /
+                    // tiered already applied server-side). Everything else on this page
+                    // reads the total off this attribute, so it must be written BEFORE
+                    // the recalculation below.
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
-                    // Re-apply one-way fee on top of the updated base price
-                    let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
-                    let carQty = parseInt(parentClass.find('#mpcrbm_selected_car_quantity').val()) || 1;
-                    let deposit = parseFloat(parentClass.find('#mpcrbm_security_deposit_value').val()) || 0;
-                    let totalWithFee = data.data.calculated_price + (oneWayFee * carQty) + deposit;
-                    parentClass.find("#mpcrbm_car_total_price").html(mpcrbm_price_format(totalWithFee));
+
+                    // Deliberately NOT writing #mpcrbm_car_total_price here. That
+                    // element is .mpcrbm_product_total_price, which
+                    // mpcrbm_price_calculation_car_details_page() owns — it is the only
+                    // place that knows the full picture (car quantity, extra services,
+                    // security deposit, one-way fee, delivery/collection). Writing a
+                    // partial "base + fee + deposit" total here is what made the price
+                    // jump around: every date change silently dropped the extra services
+                    // back out of the displayed total.
+                    mpcrbm_refresh_car_details_total();
 
                     let $summary = parentClass.find('.mpcrbm_transport_summary');
                     $summary.addClass('mpcrbm-summary-pulse');
@@ -1872,6 +2075,36 @@ jQuery(document).ready(function($) {
         });
 
     }
+
+    // Recomputes the car-details total from whatever is currently on screen, using the
+    // single full-total calculator. Exposed on window so date-picker.js (a separate
+    // file, which owns the flatpickr callbacks) can reuse this one implementation
+    // instead of keeping a second, incomplete copy of the same maths.
+    function mpcrbm_refresh_car_details_total() {
+        // Resolved from the hidden car id rather than $('.mpcrbm_car_details'):
+        // car_details.php uses that class TWICE — once on the outer wrapper that holds
+        // the price data, and again on the inner tabs block — so the bare selector
+        // returns two elements, only one of which is the right context.
+        let $parent = $('[name="mpcrbm_post_id"]').first().closest('.mpcrbm_car_details');
+
+        if (!$parent.length) {
+            return;
+        }
+
+        // Re-price the selected services first: a per-day one is billed for the whole
+        // stay, so a new date range changes its line amount as well as the total.
+        $parent.find('.mpcrbm_extra_service_item [name="mpcrbm_extra_service[]"]').each(function () {
+            if ($(this).val()) {
+                mpcrbm_sync_extra_service_row($parent, $(this));
+            }
+        });
+
+        let qty = parseInt($parent.find('[name="mpcrbm_get_car_qty"]').val(), 10) || 1;
+        mpcrbm_price_calculation_car_details_page($parent, qty);
+    }
+
+    window.mpcrbmRefreshCarDetailsPrice = mpcrbm_get_selected_days;
+    window.mpcrbmRefreshCarDetailsTotal = mpcrbm_refresh_car_details_total;
 
 });
 

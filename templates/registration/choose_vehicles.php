@@ -227,7 +227,11 @@ $mpcrbm_startDate_str  = new DateTime( $mpcrbm_date );
 $mpcrbm_returnDate_str = new DateTime( $mpcrbm_return_date_time );
 $mpcrbm_interval = $mpcrbm_startDate_str->diff( $mpcrbm_returnDate_str );
 $mpcrbm_minutes_all        = ( $mpcrbm_interval->days * 24 * 60 ) + ( $mpcrbm_interval->h * 60 ) + $mpcrbm_interval->i;
-$mpcrbm_minutes_to_day = ceil( $mpcrbm_minutes_all / 1440 );
+// At least one day: this value is compared against each vehicle's minimum booking
+// period below, so a 0 (identical pick-up/return clock time — always the case while
+// "Hide Time Input Field From Search Form" is on, and on any same-day booking) used
+// to filter out every single vehicle and return an empty result page.
+$mpcrbm_minutes_to_day = max( 1, ceil( $mpcrbm_minutes_all / 1440 ) );
 
 $mpcrbm_ajax_search = isset( $_POST['ajax_search'] ) ? sanitize_text_field( wp_unslash( $_POST['ajax_search'] ) ) : '';
 

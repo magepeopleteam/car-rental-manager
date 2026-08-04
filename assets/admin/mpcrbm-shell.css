@@ -1415,6 +1415,58 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	box-shadow: none;
 }
 
+/* ── Per-step validation state on the tab strip ───────────────────────────
+   mpcrbm-shell.js's render() puts .mpcrbm-step-tab-done / .mpcrbm-step-tab-error
+   on these items from the same visited[]/errored[] state that paints the footer
+   step rail, so the strip — the control most people actually navigate with —
+   shows which steps are complete and which are blocking the save, instead of
+   looking identical either way.
+
+   Every selector below repeats the full "#mpcrbm_meta_box_panel
+   .mpcrbm_settings .tabLists li[data-tabs-target]" chain PLUS the state class:
+   that's one class-tier more than the .active pill above and the
+   "li[data-tabs-target]::after {content: none}" reset further up, both of which
+   it has to beat (see the ID-tier specificity note at the top of this section).
+   The error state deliberately outranks .active — a tab you are standing on
+   with an empty required field should read as a problem, not as "selected". */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].mpcrbm-step-tab-done::after,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].mpcrbm-step-tab-error::after {
+	position: static;
+	width: auto;
+	height: auto;
+	margin: 0;
+	border: 0;
+	background: none;
+	font-family: "Font Awesome 5 Free", "Font Awesome 6 Free";
+	font-weight: 900;
+	font-size: 11px;
+	line-height: 1;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].mpcrbm-step-tab-done::after {
+	content: "\f00c";
+	color: #1c9d5b;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].mpcrbm-step-tab-error::after {
+	content: "\f06a";
+	color: var(--mpcrbm-red, #d91e1e);
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].mpcrbm-step-tab-error,
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].mpcrbm-step-tab-error:hover {
+	background-color: var(--mpcrbm-red-light, #f6dada);
+	color: var(--mpcrbm-red, #d91e1e);
+	font-weight: 600;
+}
+
+/* Same shake the footer bar plays when a move is refused, repeated on the tab
+   that is actually blocking — the message itself lands in the fixed footer,
+   which is nowhere near the pointer when the click came from up here. */
+#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].is-shaking {
+	animation: mpcrbm-stepnav-shake .5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
 /* Persistent right sidebar inside tabsContent — holds the native "Car Feature
    Image" box (WP core's #postimagediv, moved here by mpcrbm-shell.js) so it
    stays visible alongside whichever tab is active, not tied to one tab.
@@ -1721,6 +1773,173 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	font-size: 10px;
 	font-weight: 700;
 	cursor: help;
+}
+
+/* ── "Pricing Priority" sidebar card ────────────────────────────────────────
+   Rendered by MPCRBM_Price_Settings::render_pricing_priority_card() inside the
+   Pricing tab and relocated into .mpcrbm-tabs-sidebar by mpcrbm-shell.js. The
+   selectors below are deliberately NOT scoped to .tabsItem — once moved, the
+   card is a child of the sidebar, not of any tab panel. */
+.mpcrbm-info-card.mpcrbm-pricing-priority-card {
+	margin-top: 20px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-pricing-priority-card .mpcrbm-info-card-header {
+	padding: 14px 16px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-pricing-priority-card .mpcrbm-info-card-body {
+	padding: 16px;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	counter-reset: none;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 0 0 14px;
+	margin: 0;
+	position: relative;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step:last-child {
+	padding-bottom: 0;
+}
+
+/* Connector line between the numbered bullets, so the list reads as a
+   sequence rather than four independent items. */
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step:not(:last-child)::before {
+	content: "";
+	position: absolute;
+	left: 10px;
+	top: 22px;
+	bottom: 4px;
+	width: 2px;
+	background: var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__num {
+	flex: 0 0 auto;
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__body {
+	min-width: 0;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__title {
+	display: block;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	line-height: 1.5;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__state {
+	display: inline-block;
+	margin-left: 5px;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background: #e6f4ea;
+	color: #1e7c3a;
+	font-size: 9.5px;
+	font-style: normal;
+	font-weight: 700;
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__state--always {
+	background: #eef2ff;
+	color: #3d4fbd;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__desc {
+	display: block;
+	margin-top: 2px;
+	font-size: 11.5px;
+	line-height: 1.55;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Switched-off rules stay listed — their position in the order is the whole
+   point of the card — but are dimmed so the active chain reads first. */
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step.is-off .mpcrbm-priority-step__num {
+	background: var(--mpcrbm-shell-border, #e7e7ea);
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step.is-off .mpcrbm-priority-step__title {
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step.is-off .mpcrbm-priority-step__state {
+	background: #f1f2f4;
+	color: #8b93a1;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes {
+	margin-top: 14px;
+	padding-top: 12px;
+	border-top: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes h6 {
+	margin: 0 0 8px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes li {
+	position: relative;
+	margin: 0 0 7px;
+	padding-left: 12px;
+	font-size: 11.5px;
+	line-height: 1.55;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes li:last-child {
+	margin-bottom: 0;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 7px;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-border, #d3d6dd);
 }
 
 /* Every round-switch toggle inside this metabox (Enable Driver Information,
@@ -3010,7 +3229,7 @@ button.mpcrbm-city-pill {
 /* ==========================================================================
    "Manage Car Feature" tab (MPCRBM_Manage_Feature.php) — Include/Exclude
    Feature checkboxes redesigned as toggle chips, two-column card layout.
-   Scoped via the [data-tabs="#mpcrbm_setting_feature"] ancestor rather than
+   Scoped via the .mpcrbm-feature-section ancestor rather than
    the bare .mpcrbm_faq_question_holder/.mpcrbm_faq_all_question_box/
    .mpcrbm_selected_faq_question_box classes, since those are SHARED with the
    unrelated "Manage FAQ" tab (MPCRBM_Faq_Settings.php) — its inner markup is
@@ -3023,21 +3242,21 @@ button.mpcrbm-city-pill {
 	margin-top: 0px;
 }
 
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
+.mpcrbm-feature-section .mpcrbm_faq_question_holder {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 20px;
 }
 
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_all_question_box,
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_selected_faq_question_box {
+.mpcrbm-feature-section .mpcrbm_faq_all_question_box,
+.mpcrbm-feature-section .mpcrbm_selected_faq_question_box {
 	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
 	border-radius: var(--mpcrbm-shell-radius, 14px);
 	padding: 18px 20px;
 }
 
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_all_question_box > h3,
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_selected_faq_question_box > h3 {
+.mpcrbm-feature-section .mpcrbm_faq_all_question_box > h3,
+.mpcrbm-feature-section .mpcrbm_selected_faq_question_box > h3 {
 	margin: 0 0 14px;
 	font-size: 14px;
 	font-weight: 600;
@@ -3045,7 +3264,7 @@ button.mpcrbm-city-pill {
 }
 
 @media (max-width: 900px) {
-	[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
+	.mpcrbm-feature-section .mpcrbm_faq_question_holder {
 		grid-template-columns: 1fr;
 	}
 }
@@ -4512,6 +4731,7 @@ body.mpcrbm-admin.mpcrbm-stepnav-active.post-new-php #wpbody-content {
 @media (prefers-reduced-motion: reduce) {
 	.mpcrbm-stepnav.is-entering,
 	.mpcrbm-stepnav.is-shaking,
+	#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li[data-tabs-target].is-shaking,
 	#mpcrbm_meta_box_panel .mpcrbm-step-invalid,
 	#titlediv #title.mpcrbm-step-invalid {
 		animation: none;

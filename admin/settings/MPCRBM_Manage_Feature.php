@@ -10,7 +10,10 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
     class MPCRBM_Manage_Feature
     {
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'feature_tab_content' ], 10, 1 );
+            // First section of the merged "Content & Policies" tab (see
+            // MPCRBM_Settings::content_tab_panel()): specs first, then FAQ (20),
+            // then Terms & Conditions (30) — the order the car page reads in.
+            add_action( 'mpcrbm_content_tab_sections', [ $this, 'feature_tab_content' ], 10, 1 );
             add_action('wp_ajax_mpcrbm_update_feature_meta', [ $this, 'mpcrbm_update_feature_meta' ] );
             add_action('wp_ajax_mpcrbm_save_new_feature', [ $this, 'mpcrbm_save_new_feature' ] );
         }
@@ -91,9 +94,18 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
 
         public function feature_tab_content( $post_id ){ ?>
 
-            <div class="tabsItem" data-tabs="#mpcrbm_setting_feature">
+            <?php
+                // Rendered inside the shared "Content & Policies" .tabsItem.
+                // .mpcrbm-feature-section is what scopes this section's grid/chip
+                // styling in mpcrbm-shell.css: its inner markup uses the same
+                // .mpcrbm_faq_question_holder / .mpcrbm_faq_*_question_box class names
+                // as the FAQ section directly below it, which must NOT pick those
+                // styles up. The scope used to be the panel's own
+                // [data-tabs="#mpcrbm_setting_feature"] attribute, which no longer
+                // exists now that all three sections share one panel.
+            ?>
                 <?php wp_nonce_field( 'manage_car_feature_settings', 'faq_settings_nonce' ); ?>
-                <div class="mpcrbm-info-card">
+                <div class="mpcrbm-info-card mpcrbm-feature-section">
                     <div class="mpcrbm-info-card-body">
                 <?php
 
@@ -171,7 +183,6 @@ if ( ! class_exists( 'MPCRBM_Manage_Feature' ) ) {
                 </section>
                     </div>
                 </div>
-            </div>
         <?php }
 
     }

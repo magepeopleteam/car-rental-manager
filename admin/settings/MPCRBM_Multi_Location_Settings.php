@@ -33,7 +33,12 @@
 				$one_way_fee_type = ( $one_way_fee_type === 'percentage' ) ? 'percentage' : 'fixed';
 				$one_way_checked  = $one_way_enabled ? 'checked' : '';
 				$one_way_display  = $one_way_enabled ? 'block' : 'none';
-				$ow_currency      = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
+				// _text(): printed through esc_html() and set with jQuery .text() below,
+				// both of which would show WooCommerce's raw "&#36;" entity literally.
+				// It also covers Custom Payment mode, where there is no
+				// get_woocommerce_currency_symbol() and the old fallback showed "$"
+				// even for a shop configured in another currency.
+				$ow_currency      = MPCRBM_Global_Function::currency_symbol_text();
 				$ow_unit          = $one_way_fee_type === 'percentage' ? '%' : $ow_currency;
 				?>
 				
@@ -89,13 +94,23 @@
 					.mpcrbm-ow-type-lbl{display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid #e5e9f0;border-radius:8px;cursor:pointer;transition:all .2s;background:#fafbfc;font-size:13px;}
 					.mpcrbm-ow-type-lbl:hover{border-color:#93c5fd;background:#eff6ff;}
 					.mpcrbm-ow-type-opt input[type=radio]:checked + .mpcrbm-ow-type-lbl{border-color:#2563eb;background:#eff6ff;font-weight:600;color:#1d4ed8;}
-					.mpcrbm-ow-type-dot{width:16px;height:16px;border-radius:50%;border:2px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+					/* IMPORTANT — <span> rules are written as ".mpcrbm span.<class>"
+					   (specificity 0,2,1) because mp_global/assets/mp_style/mpcrbm_global.css
+					   has ".mpcrbm span {display:inline-block}" (0,1,1), which outranks a
+					   bare class selector and throws away "display:flex" along with its
+					   align-items/justify-content centring. */
+					.mpcrbm span.mpcrbm-ow-type-dot{width:16px;height:16px;border-radius:50%;border:2px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 					.mpcrbm-ow-type-opt input[type=radio]:checked + .mpcrbm-ow-type-lbl .mpcrbm-ow-type-dot{border-color:#2563eb;background:#2563eb;}
 					.mpcrbm-ow-type-dot::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff;display:none;}
 					.mpcrbm-ow-type-opt input[type=radio]:checked + .mpcrbm-ow-type-lbl .mpcrbm-ow-type-dot::after{display:block;}
 					.mpcrbm-ow-amount-wrap{display:flex;align-items:center;border:2px solid #e5e9f0;border-radius:8px;overflow:hidden;transition:border-color .2s;max-width:220px;}
 					.mpcrbm-ow-amount-wrap:focus-within{border-color:#2563eb;}
-					.mpcrbm-ow-amount-prefix{padding:20px 12px 0 12px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:40px;display:flex;align-items:center;font-weight:700;font-size:14px;color:#374151;min-width:40px;justify-content:center;}
+					/* flex:0 0 auto + nowrap so a multi-character symbol ("CHF", "Rp") isn't
+					   shrunk and clipped by the wrapper's overflow:hidden. The old
+					   "padding:20px 12px 0 12px" was hand-pushing the glyph down to fake the
+					   centring that the ".mpcrbm span" override above had killed; with
+					   display:flex actually applying, symmetric padding is correct. */
+					.mpcrbm span.mpcrbm-ow-amount-prefix{padding:0 12px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:40px;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:700;font-size:14px;color:#374151;min-width:40px;flex:0 0 auto;white-space:nowrap;}
 					#mpcrbm_car_one_way_fee_input{border:none!important;outline:none!important;box-shadow:none!important;padding:0 12px;height:40px;font-size:14px;font-weight:600;color:#111827;width:100%;background:#fff;}
 					</style>
 					<div class="mpcrbm-info-card">
@@ -179,7 +194,8 @@
 				$dropoff_location = isset( $price_data['dropoff_location'] ) ? $price_data['dropoff_location'] : '';
 				// Removed daily_price - using base pricing from main settings instead
 				$transfer_fee = isset( $price_data['transfer_fee'] ) ? $price_data['transfer_fee'] : '';
-				$currency = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
+				// _text(): echoed through esc_html() below — see the note above.
+				$currency = MPCRBM_Global_Function::currency_symbol_text();
 				?>
 
 				<div class="mpcrbm-location-price-row mpcrbm-season-row" data-index="<?php echo esc_attr( $index ); ?>">

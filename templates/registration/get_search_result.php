@@ -113,7 +113,11 @@ $mpcrbm_start_date_str  = new DateTime( $mpcrbm_date );
 $mpcrbm_return_date_str = new DateTime( $mpcrbm_return_date_time );
 $mpcrbm_interval = $mpcrbm_start_date_str->diff( $mpcrbm_return_date_str );
 $mpcrbm_minutes_all        = ( $mpcrbm_interval->days * 24 * 60 ) + ( $mpcrbm_interval->h * 60 ) + $mpcrbm_interval->i;
-$mpcrbm_minutes_to_day = ceil( $mpcrbm_minutes_all / 1440 );
+// At least one day: vehicle_item.php multiplies this by the daily rate for the
+// "N-day total", so a 0 (identical pick-up/return clock time — always the case while
+// "Hide Time Input Field From Search Form" is on, and on any same-day booking) used to
+// advertise every vehicle as a 0-day, zero-cost rental.
+$mpcrbm_minutes_to_day = max( 1, ceil( $mpcrbm_minutes_all / 1440 ) );
 
 $mpcrbm_all_posts = MPCRBM_Query::query_transport_list($mpcrbm_price_based);
 $mpcrbm_post_ids = $mpcrbm_left_side_filter = [];

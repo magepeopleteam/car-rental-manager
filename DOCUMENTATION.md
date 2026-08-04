@@ -220,9 +220,10 @@ Cars are stored as `mpcrbm_rent` custom post type. Each car has a WooCommerce pr
 | Tax | `MPCRBM_Tax_Settings` | WooCommerce tax status and tax class |
 | Operation Area | `MPCRBM_Operation_Area_Settings` | Restrict car to specific operation areas |
 | Multi-Location | `MPCRBM_Multi_Location_Settings` | Enable multi-location, define transfer fees per pickup/dropoff pair |
-| FAQ | `MPCRBM_Faq_Settings` | Assign FAQs from global FAQ pool |
-| Car Feature | `MPCRBM_Manage_Feature` | Included/excluded features from taxonomy |
-| Term & Condition | `MPCRBM_Term_Condition_Setting` | Assign T&C from global pool |
+| Content & Policies | `MPCRBM_Settings::content_tab_panel()` | One tab holding the three sections below; extend it via the `mpcrbm_content_tab_sections` action |
+| → Car Feature | `MPCRBM_Manage_Feature` | Included/excluded features from taxonomy |
+| → FAQ | `MPCRBM_Faq_Settings` | Assign FAQs from global FAQ pool |
+| → Term & Condition | `MPCRBM_Term_Condition_Setting` | Assign T&C from global pool |
 | Security Deposit | `MPCRBM_Security_Deposit_Setting` | Enable deposit, set fixed/percentage amount |
 | Branch Assignment | `MPCRBM_Branch_Manager` (PRO) | Assign home/current branch, view transfer history |
 
@@ -269,12 +270,24 @@ If the customer picks up from branch A and drops off at branch B, a configurable
 **Branch Price Multiplier** *(meta exists, UI not yet implemented)*  
 `mpcrbm_branch_multiplier` on the branch term. Designed to multiply base price per pickup branch.
 
-**Pricing formula applied in `vehicle_item.php`:**
+**Order of application — `MPCRBM_Function::mpcrbm_calculate_price()`**
+
+This is the single source of truth for precedence; `MPCRBM_Price_Settings::render_pricing_priority_card()`
+(admin sidebar) and `MPCRBM_Function::display_pricing_rules()` (frontend tooltip) both
+mirror it and must be kept in step with any change here.
+
 ```
 subtotal = base_day_price × number_of_days
-subtotal = apply(tiered_discounts, subtotal)
-subtotal = apply(seasonal_pricing, subtotal)
-subtotal = apply(daywise_pricing, subtotal)
+
+1. day-wise   REPLACES subtotal — each date of the stay is summed at its own
+              weekday rate; a weekday left empty/0 falls back to base_day_price
+2. seasonal   ADJUSTS subtotal — matched on the PICK-UP DATE only, first
+              matching season wins. percentage_* applies to the whole subtotal;
+              fixed_* applies per rental day (see seasonal_price_calc())
+3. tiered     ADJUSTS subtotal — first tier whose min–max contains the day count
+              wins. percent / fixed_discount subtract; fixed_price and day_price
+              OVERRIDE the subtotal outright, discarding steps 1–2. Floored at 0
+
 total    = subtotal + one_way_fee + extra_services + security_deposit
 ```
 
@@ -652,6 +665,7 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 | `mpcrbm_left_side_car_filter` | Render left sidebar filter | car list array |
 | `mpcrbm_settings_tab_navigation` | Add tab to car meta box nav | post ID |
 | `mpcrbm_settings_tab_content` | Add tab panel content | post ID |
+| `mpcrbm_content_tab_sections` | Add a section inside the "Content & Policies" tab (Car Feature 10, FAQ 20, Terms 30) | post ID |
 | `mpcrbm_extra_service_item` | Render a service row | service data |
 | `mpcrbm_before_cart_item_display` | Before cart booking summary | cart item |
 | `mpcrbm_after_cart_item_display` | After cart booking summary | cart item |

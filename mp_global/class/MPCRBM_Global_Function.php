@@ -352,11 +352,14 @@
 					return gmdate( 'j-n-Y', strtotime( $date ) );
 				}, $dates );
 				// Register and enqueue script
+				// Version bumped to 1.0.1 with the minimum-one-day fix in
+				// mpcrbm_get_selected_days() — this file is served with a fixed version
+				// string, so returning visitors keep the cached copy until it changes.
 				wp_register_script(
 					'date-picker',
 					plugin_dir_url( __FILE__ ) . '../assets/date-picker/date-picker.js', // Corrected path
 					[ 'jquery', 'jquery-ui-datepicker' ],
-					'1.0.0',
+					'1.0.1',
 					true
 				);
 				wp_enqueue_script( 'date-picker' );
@@ -737,6 +740,22 @@
 				}
 
 				return self::native_currency_config()['symbol'];
+			}
+
+			/**
+			 * The same symbol as a PLAIN CHARACTER — use this whenever the value is
+			 * about to be escaped or written as text rather than echoed as raw HTML.
+			 *
+			 * WooCommerce returns its symbols as HTML entities ("&#36;", "&euro;",
+			 * "&#2547;"), which only render correctly when printed unescaped. Passed
+			 * through esc_html() / esc_js() / jQuery .text() instead, the customer or
+			 * admin sees the literal string "&#36;" — and in a fixed-width flex prefix
+			 * box (the "Fee Value" fields) five characters get squeezed down to an
+			 * unreadable sliver of a glyph, which is what "fix this icon sign" was
+			 * about. Decoding first makes the value safe for every one of those paths.
+			 */
+			public static function currency_symbol_text( $currency = '' ): string {
+				return html_entity_decode( self::currency_symbol( $currency ), ENT_QUOTES, 'UTF-8' );
 			}
 
 			/**

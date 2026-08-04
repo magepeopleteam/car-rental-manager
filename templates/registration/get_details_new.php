@@ -142,7 +142,14 @@ $mpcrbm_formatted_end_time = MPCRBM_Global_Function::format_custom_time( $mpcrbm
 
 
 
+// Whether the dates below were restored from the customer's previous search
+// (transport-result page). mpcrbm_validate_search_dates() in mpcrbm_registration.js
+// only accepts dates carrying data-user-selected="1" — restored dates ARE the
+// customer's own pick, so without this flag clicking Search again on the result page
+// (without re-opening both calendars) just failed with "Please select a pick-up date".
+$mpcrbm_dates_prefilled = false;
 if( is_array( $search_date ) && !empty( $search_date ) ){
+    $mpcrbm_dates_prefilled = ! empty( $search_date['start_date'] ) && ! empty( $search_date['return_date'] );
     $mpcrbm_pickup_location = isset( $search_date['start_place'] ) ? $search_date['start_place'] : '' ;
     $mpcrbm_return_location =  isset( $search_date['end_place'] ) ? $search_date['end_place'] : '' ;
     $mpcrbm_start_date =  isset( $search_date['start_date'] ) ? $search_date['start_date'] : '' ;
@@ -161,10 +168,34 @@ if( $mpcrbm_single_page === 'yes' ){
 }
 
 $mpcrbm_hide_time_input_field = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'hide_time_input_field_search_form', 'no' );
-$mpcrbm_input_time = 'block';
-if( $mpcrbm_hide_time_input_field === 'yes' ){
-    $mpcrbm_input_time = 'none';
-    $mpcrbm_end_time = 23;
+$mpcrbm_time_input_hidden = ( $mpcrbm_hide_time_input_field === 'yes' );
+$mpcrbm_input_time = $mpcrbm_time_input_hidden ? 'none' : 'block';
+if( $mpcrbm_time_input_hidden ){
+    /*
+     * "Hide Time Input Field From Search Form" is on, so the customer can never
+     * pick a time — the hidden #mpcrbm_map_start_time / #mpcrbm_map_return_time
+     * inputs that the search, the schedule check and the duration/price
+     * calculation all read MUST therefore carry usable values on their own:
+     *
+     *  - Pick-up time: keep whatever was already resolved (session value or the
+     *    10:00 default) but clamp it into the operating window, otherwise
+     *    MPCRBM_Function::mpcrbm_get_schedule_search_form() rejects every vehicle
+     *    and the search legitimately returns "no vehicles found".
+     *  - Return time: the SAME clock time as the pick-up, so one night is billed
+     *    as exactly one day. The previous hardcoded 23 both over-billed
+     *    (10:00 -> next day 23:00 = 37h = 2 days) and pushed the return outside
+     *    the shift of every vehicle that closes before 23:00 — which is what made
+     *    searching look broken with this setting on.
+     */
+    $mpcrbm_current_start_time = is_numeric( $mpcrbm_start_time ) ? (float) $mpcrbm_start_time : null;
+    if ( null === $mpcrbm_current_start_time
+        || $mpcrbm_current_start_time < $mpcrbm_min_schedule_value
+        || $mpcrbm_current_start_time > $mpcrbm_max_schedule_value ) {
+        $mpcrbm_start_time = $mpcrbm_min_schedule_value;
+    }
+    $mpcrbm_end_time             = $mpcrbm_start_time;
+    $mpcrbm_formatted_start_time = MPCRBM_Global_Function::format_custom_time( $mpcrbm_start_time );
+    $mpcrbm_formatted_end_time   = $mpcrbm_formatted_start_time;
 }
 
 $mpcrbm_time_format_display = (int)MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'time_format_display');
@@ -227,6 +258,13 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                     <input type="hidden" id="mpcrbm_buffer_end_minutes" name="mpcrbm_buffer_end_minutes" value="<?php echo esc_attr( $mpcrbm_buffer_end_minutes ); ?>" />
                     <input type="hidden" id="mpcrbm_first_calendar_date" name="mpcrbm_first_calendar_date" value="<?php echo esc_attr( $mpcrbm_all_dates[0] ); ?>" />
                     <input type="hidden" id="mpcrbm_start_calendar_day" name="mpcrbm_start_calendar_day" value="<?php echo esc_attr($mpcrbm_start_day); ?>" />
+                    <?php
+                    // Flag read by mpcrbm_registration.js (mpcrbm_time_input_is_hidden):
+                    // with the time pickers hidden nothing can ever set the time inputs, so
+                    // the JS must stop clearing them / waiting for a pick and fall back on
+                    // the server-rendered defaults instead.
+                    ?>
+                    <input type="hidden" id="mpcrbm_time_input_hidden" name="mpcrbm_time_input_hidden" value="<?php echo esc_attr( $mpcrbm_time_input_hidden ? 'yes' : 'no' ); ?>" />
 
 
                     <?php
@@ -319,7 +357,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-calendar"></i>
                                         <span class="mprcbm_text"><?php echo esc_html( $mpcrbm_type_text_pickup !== '' ? $mpcrbm_type_text_pickup : esc_html__('Date', 'car-rental-manager') ); ?></span>
                                     </span>
-                                    <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_date );?>" readonly required />
+                                    <input type="text" id="mpcrbm_start_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_start_date );?>" readonly required <?php echo $mpcrbm_dates_prefilled ? 'data-user-selected="1"' : ''; ?> />
                                 </label>
                                 <span class="mpcrbm_field_error" id="mpcrbm_pickup_date_error" style="display: none"><?php esc_html_e( 'Please select a pick-up date', 'car-rental-manager' ); ?></span>
                             </div>
@@ -327,7 +365,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                             <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>"></div>
 
                             <div class=" input_select" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>">
-                                <input type="hidden" id="mpcrbm_map_start_time" value="<?php echo esc_attr( $mpcrbm_start_time );?>" />
+                                <input type="hidden" id="mpcrbm_map_start_time" value="<?php echo esc_attr( $mpcrbm_start_time );?>" data-default-time="<?php echo esc_attr( $mpcrbm_start_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-clock-three"></i>
@@ -390,14 +428,14 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <i class="mi mi-calendar"></i>
                                         <span class="mprcbm_text"><?php echo esc_html( $mpcrbm_type_text_return !== '' ? $mpcrbm_type_text_return : esc_html__('Date', 'car-rental-manager') ); ?></span>
                                     </span>
-                                    <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_date );?>" readonly required name="return_date"/>
+                                    <input type="text" id="mpcrbm_return_date" class="formControl" placeholder="<?php esc_attr_e('Select Date', 'car-rental-manager'); ?>" value="<?php echo esc_attr( $mpcrbm_formatted_end_date );?>" readonly required name="return_date" <?php echo $mpcrbm_dates_prefilled ? 'data-user-selected="1"' : ''; ?>/>
                                     <!--						<span class="far fa-calendar-alt mpcrbm_left_icon allCenter"></span>-->
                                 </label>
                                 <span class="mpcrbm_field_error" id="mpcrbm_return_date_error" style="display: none"><?php esc_html_e( 'Please select a return date', 'car-rental-manager' ); ?></span>
                             </div>
                             <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>"></div>
                             <div class=" input_select" style="display: <?php echo esc_attr( $mpcrbm_input_time );?>">
-                                <input type="hidden" id="mpcrbm_map_return_time" value="<?php echo esc_attr( $mpcrbm_end_time );?>" />
+                                <input type="hidden" id="mpcrbm_map_return_time" value="<?php echo esc_attr( $mpcrbm_end_time );?>" data-default-time="<?php echo esc_attr( $mpcrbm_end_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-clock"></i>
