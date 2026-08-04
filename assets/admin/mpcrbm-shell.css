@@ -3062,7 +3062,7 @@ button.mpcrbm-city-pill {
 /* ==========================================================================
    "Manage Car Feature" tab (MPCRBM_Manage_Feature.php) — Include/Exclude
    Feature checkboxes redesigned as toggle chips, two-column card layout.
-   Scoped via the [data-tabs="#mpcrbm_setting_feature"] ancestor rather than
+   Scoped via the .mpcrbm-feature-section ancestor rather than
    the bare .mpcrbm_faq_question_holder/.mpcrbm_faq_all_question_box/
    .mpcrbm_selected_faq_question_box classes, since those are SHARED with the
    unrelated "Manage FAQ" tab (MPCRBM_Faq_Settings.php) — its inner markup is
@@ -3075,21 +3075,21 @@ button.mpcrbm-city-pill {
 	margin-top: 0px;
 }
 
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
+.mpcrbm-feature-section .mpcrbm_faq_question_holder {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 20px;
 }
 
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_all_question_box,
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_selected_faq_question_box {
+.mpcrbm-feature-section .mpcrbm_faq_all_question_box,
+.mpcrbm-feature-section .mpcrbm_selected_faq_question_box {
 	border: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
 	border-radius: var(--mpcrbm-shell-radius, 14px);
 	padding: 18px 20px;
 }
 
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_all_question_box > h3,
-[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_selected_faq_question_box > h3 {
+.mpcrbm-feature-section .mpcrbm_faq_all_question_box > h3,
+.mpcrbm-feature-section .mpcrbm_selected_faq_question_box > h3 {
 	margin: 0 0 14px;
 	font-size: 14px;
 	font-weight: 600;
@@ -3097,7 +3097,7 @@ button.mpcrbm-city-pill {
 }
 
 @media (max-width: 900px) {
-	[data-tabs="#mpcrbm_setting_feature"] .mpcrbm_faq_question_holder {
+	.mpcrbm-feature-section .mpcrbm_faq_question_holder {
 		grid-template-columns: 1fr;
 	}
 }

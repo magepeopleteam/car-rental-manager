@@ -220,9 +220,10 @@ Cars are stored as `mpcrbm_rent` custom post type. Each car has a WooCommerce pr
 | Tax | `MPCRBM_Tax_Settings` | WooCommerce tax status and tax class |
 | Operation Area | `MPCRBM_Operation_Area_Settings` | Restrict car to specific operation areas |
 | Multi-Location | `MPCRBM_Multi_Location_Settings` | Enable multi-location, define transfer fees per pickup/dropoff pair |
-| FAQ | `MPCRBM_Faq_Settings` | Assign FAQs from global FAQ pool |
-| Car Feature | `MPCRBM_Manage_Feature` | Included/excluded features from taxonomy |
-| Term & Condition | `MPCRBM_Term_Condition_Setting` | Assign T&C from global pool |
+| Content & Policies | `MPCRBM_Settings::content_tab_panel()` | One tab holding the three sections below; extend it via the `mpcrbm_content_tab_sections` action |
+| → Car Feature | `MPCRBM_Manage_Feature` | Included/excluded features from taxonomy |
+| → FAQ | `MPCRBM_Faq_Settings` | Assign FAQs from global FAQ pool |
+| → Term & Condition | `MPCRBM_Term_Condition_Setting` | Assign T&C from global pool |
 | Security Deposit | `MPCRBM_Security_Deposit_Setting` | Enable deposit, set fixed/percentage amount |
 | Branch Assignment | `MPCRBM_Branch_Manager` (PRO) | Assign home/current branch, view transfer history |
 
@@ -652,6 +653,7 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 | `mpcrbm_left_side_car_filter` | Render left sidebar filter | car list array |
 | `mpcrbm_settings_tab_navigation` | Add tab to car meta box nav | post ID |
 | `mpcrbm_settings_tab_content` | Add tab panel content | post ID |
+| `mpcrbm_content_tab_sections` | Add a section inside the "Content & Policies" tab (Car Feature 10, FAQ 20, Terms 30) | post ID |
 | `mpcrbm_extra_service_item` | Render a service row | service data |
 | `mpcrbm_before_cart_item_display` | Before cart booking summary | cart item |
 | `mpcrbm_after_cart_item_display` | After cart booking summary | cart item |

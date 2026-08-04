@@ -10,6 +10,30 @@
 		class MPCRBM_Settings {
 			public function __construct() {
 				add_action( 'add_meta_boxes', [ $this, 'settings_meta' ] );
+				add_action( 'mpcrbm_settings_tab_content', [ $this, 'content_tab_panel' ] );
+			}
+
+			/**
+			 * The single panel behind the "Content & Policies" tab.
+			 *
+			 * Car Feature, FAQ and Terms & Conditions each used to render their own
+			 * .tabsItem for their own tab. They now render into this one, in that
+			 * order, through the 'mpcrbm_content_tab_sections' action — which is also
+			 * the extension point for anything else that belongs with them.
+			 *
+			 * One wrapper, not three panels sharing a data-tabs value: mpcrbm_global.js
+			 * would happily show three siblings at once, but the step navigator
+			 * (mpcrbm-shell.js) resolves a step to a SINGLE panel element and walks
+			 * ancestors up to it when deciding whether a required field is hidden — so
+			 * fields in the 2nd and 3rd panel would read as permanently hidden and
+			 * escape validation.
+			 */
+			public function content_tab_panel( $post_id ) {
+				?>
+				<div class="tabsItem" data-tabs="#mpcrbm_setting_content">
+					<?php do_action( 'mpcrbm_content_tab_sections', $post_id ); ?>
+				</div>
+				<?php
 			}
 
 			//************************//
@@ -44,14 +68,17 @@
                             <li data-tabs-target="#mpcrbm_setting_multi_location">
                                 <span class="mi mi-map-marker"></span><?php esc_html_e( 'Fee & Deposit', 'car-rental-manager' ); ?>
                             </li>
-                            <li data-tabs-target="#mpcrbm_setting_manage_faq">
-                                <span class="mi mi-messages-question"></span><?php esc_html_e( 'FAQ', 'car-rental-manager' ); ?>
-                            </li>
-                            <li data-tabs-target="#mpcrbm_setting_feature">
-                                <span class="mi mi-list-timeline"></span><?php esc_html_e( 'Car Feature', 'car-rental-manager' ); ?>
-                            </li>
-                            <li data-tabs-target="#mpcrbm_term_and_condition">
-                                <span class="mi mi-wishlist-star"></span><?php esc_html_e( 'Term & Condition', 'car-rental-manager' ); ?>
+                            <?php
+                                // One tab for the three "extra content shown on the car
+                                // page" sections that used to be separate steps — Car
+                                // Feature, FAQ and Terms & Conditions. They are all the same
+                                // kind of work (pick from a global list, toggle the section
+                                // on the frontend), so three near-identical steps in the
+                                // wizard was mostly navigation. Their panels are rendered
+                                // together by content_tab_panel() below.
+                            ?>
+                            <li data-tabs-target="#mpcrbm_setting_content">
+                                <span class="mi mi-list-timeline"></span><?php esc_html_e( 'Content & Policies', 'car-rental-manager' ); ?>
                             </li>
                             <?php
                                 // Allow pro plugins to add their own tabs

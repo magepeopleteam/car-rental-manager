@@ -798,14 +798,14 @@
 						<p class="mpcrbm-guide-intro"><?php esc_html_e( 'FAQs and Terms & Conditions are each a single shared library — you write a question/term once, then pick which ones apply to each car.', 'car-rental-manager' ); ?></p>
 						<div class="mpcrbm-guide-grid">
 							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-circle-question"></i> <?php esc_html_e( 'Manage FAQ tab', 'car-rental-manager' ); ?></h4>
+								<h4><i class="fas fa-circle-question"></i> <?php esc_html_e( 'Manage FAQ section', 'car-rental-manager' ); ?></h4>
 								<ul>
 									<li><?php esc_html_e( 'Click a question in the list to add it to this car — click again to remove it', 'car-rental-manager' ); ?></li>
 									<li><?php esc_html_e( '"Add New FAQ" writes a brand new question straight from this screen', 'car-rental-manager' ); ?></li>
 								</ul>
 							</div>
 							<div class="mpcrbm-guide-block">
-								<h4><i class="fas fa-file-contract"></i> <?php esc_html_e( 'Term & Condition tab', 'car-rental-manager' ); ?></h4>
+								<h4><i class="fas fa-file-contract"></i> <?php esc_html_e( 'Term & Condition section', 'car-rental-manager' ); ?></h4>
 								<ul>
 									<li><?php esc_html_e( 'Works the same way — click to select which terms show for this car', 'car-rental-manager' ); ?></li>
 									<li><?php esc_html_e( 'Selections are saved instantly; no need to hit Update', 'car-rental-manager' ); ?></li>
@@ -816,7 +816,7 @@
 							<i class="fas fa-location-arrow"></i>
 							<?php
 							/* translators: %s: the plugin's configurable "Car" label */
-							echo wp_kses_post( sprintf( __( 'Find it: editing a %s &rarr; <b>Manage FAQ</b> / <b>Term & Condition</b> tabs.', 'car-rental-manager' ), strtolower( $label ) ) );
+							echo wp_kses_post( sprintf( __( 'Find it: editing a %s &rarr; <b>Content &amp; Policies</b> tab.', 'car-rental-manager' ), strtolower( $label ) ) );
 							?>
 						</div>
 					</div>
