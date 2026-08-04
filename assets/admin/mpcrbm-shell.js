@@ -290,8 +290,35 @@
 			$sidebar.append($galleryCard);
 		}
 
+		// "Pricing Priority" reference card (MPCRBM_Price_Settings::
+		// render_pricing_priority_card()). Rendered inside the Pricing tab so its
+		// strings stay in PHP, then moved here so the order-of-application is
+		// readable from every step — same relocation the two cards above get.
+		var $priorityCard = $('#mpcrbm-pricing-priority-card');
+		if ($priorityCard.length) {
+			$sidebar.append($priorityCard);
+		}
+
 		$tabsContent.append($sidebar);
 	}
+
+	// Keep each priority row's On/Off badge in step with its own switch. The
+	// three discount toggles save straight away over AJAX
+	// (wp_ajax_mpcrbm_add_price_discount_rules), so without this the badges would
+	// only be right until the first toggle and then silently disagree with what
+	// is actually stored.
+	// Both labels ride along on the row as data attributes (already translated
+	// server-side), so no extra wp_localize_script plumbing is needed here.
+	$(document).on('change', '.mpcrbm_switch_checkbox', function () {
+		var $step = $('[data-mpcrbm-priority-toggle="' + this.id + '"]');
+		if (!$step.length) { return; }
+
+		var isOn = $(this).is(':checked');
+		$step.toggleClass('is-off', !isOn);
+		$step.find('.mpcrbm-priority-step__state').text(
+			isOn ? $step.data('onLabel') : $step.data('offLabel')
+		);
+	});
 
 	// Reveal the panel now that every relocation above is done — see
 	// MPCRBM_Admin_Shell::print_metabox_reveal_style() for why it starts

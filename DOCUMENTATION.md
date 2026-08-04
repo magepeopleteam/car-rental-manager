@@ -270,12 +270,24 @@ If the customer picks up from branch A and drops off at branch B, a configurable
 **Branch Price Multiplier** *(meta exists, UI not yet implemented)*  
 `mpcrbm_branch_multiplier` on the branch term. Designed to multiply base price per pickup branch.
 
-**Pricing formula applied in `vehicle_item.php`:**
+**Order of application — `MPCRBM_Function::mpcrbm_calculate_price()`**
+
+This is the single source of truth for precedence; `MPCRBM_Price_Settings::render_pricing_priority_card()`
+(admin sidebar) and `MPCRBM_Function::display_pricing_rules()` (frontend tooltip) both
+mirror it and must be kept in step with any change here.
+
 ```
 subtotal = base_day_price × number_of_days
-subtotal = apply(tiered_discounts, subtotal)
-subtotal = apply(seasonal_pricing, subtotal)
-subtotal = apply(daywise_pricing, subtotal)
+
+1. day-wise   REPLACES subtotal — each date of the stay is summed at its own
+              weekday rate; a weekday left empty/0 falls back to base_day_price
+2. seasonal   ADJUSTS subtotal — matched on the PICK-UP DATE only, first
+              matching season wins. percentage_* applies to the whole subtotal;
+              fixed_* applies per rental day (see seasonal_price_calc())
+3. tiered     ADJUSTS subtotal — first tier whose min–max contains the day count
+              wins. percent / fixed_discount subtract; fixed_price and day_price
+              OVERRIDE the subtotal outright, discarding steps 1–2. Floored at 0
+
 total    = subtotal + one_way_fee + extra_services + security_deposit
 ```
 

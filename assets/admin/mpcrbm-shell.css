@@ -1775,6 +1775,173 @@ body.mpcrbm-admin .mpcrbm-shell-body a.mpcrbm_action_btn:hover {
 	cursor: help;
 }
 
+/* ── "Pricing Priority" sidebar card ────────────────────────────────────────
+   Rendered by MPCRBM_Price_Settings::render_pricing_priority_card() inside the
+   Pricing tab and relocated into .mpcrbm-tabs-sidebar by mpcrbm-shell.js. The
+   selectors below are deliberately NOT scoped to .tabsItem — once moved, the
+   card is a child of the sidebar, not of any tab panel. */
+.mpcrbm-info-card.mpcrbm-pricing-priority-card {
+	margin-top: 20px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-pricing-priority-card .mpcrbm-info-card-header {
+	padding: 14px 16px;
+}
+
+#mpcrbm_meta_box_panel .mpcrbm_settings .mpcrbm-pricing-priority-card .mpcrbm-info-card-body {
+	padding: 16px;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	counter-reset: none;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	padding: 0 0 14px;
+	margin: 0;
+	position: relative;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step:last-child {
+	padding-bottom: 0;
+}
+
+/* Connector line between the numbered bullets, so the list reads as a
+   sequence rather than four independent items. */
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step:not(:last-child)::before {
+	content: "";
+	position: absolute;
+	left: 10px;
+	top: 22px;
+	bottom: 4px;
+	width: 2px;
+	background: var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__num {
+	flex: 0 0 auto;
+	position: relative;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-primary, #1d7bff);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__body {
+	min-width: 0;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__title {
+	display: block;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text, #1f222b);
+	line-height: 1.5;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__state {
+	display: inline-block;
+	margin-left: 5px;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background: #e6f4ea;
+	color: #1e7c3a;
+	font-size: 9.5px;
+	font-style: normal;
+	font-weight: 700;
+	letter-spacing: .03em;
+	text-transform: uppercase;
+	vertical-align: middle;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__state--always {
+	background: #eef2ff;
+	color: #3d4fbd;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step__desc {
+	display: block;
+	margin-top: 2px;
+	font-size: 11.5px;
+	line-height: 1.55;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+/* Switched-off rules stay listed — their position in the order is the whole
+   point of the card — but are dimmed so the active chain reads first. */
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step.is-off .mpcrbm-priority-step__num {
+	background: var(--mpcrbm-shell-border, #e7e7ea);
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step.is-off .mpcrbm-priority-step__title {
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-step.is-off .mpcrbm-priority-step__state {
+	background: #f1f2f4;
+	color: #8b93a1;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes {
+	margin-top: 14px;
+	padding-top: 12px;
+	border-top: 1px solid var(--mpcrbm-shell-border, #e7e7ea);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes h6 {
+	margin: 0 0 8px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .04em;
+	text-transform: uppercase;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes li {
+	position: relative;
+	margin: 0 0 7px;
+	padding-left: 12px;
+	font-size: 11.5px;
+	line-height: 1.55;
+	color: var(--mpcrbm-shell-text-faded, #788291);
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes li:last-child {
+	margin-bottom: 0;
+}
+
+.mpcrbm-pricing-priority-card .mpcrbm-priority-notes li::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 7px;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--mpcrbm-shell-border, #d3d6dd);
+}
+
 /* Every round-switch toggle inside this metabox (Enable Driver Information,
    One-Way Fee, this new gallery toggle, etc.) still turns the plugin's old
    pink when checked — assets/admin/mpcrbm_admin.css's

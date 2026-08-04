@@ -776,13 +776,53 @@
                 ?>
                 <div class="mpcrbm_display_pricing_rules">
 
-                    <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
-                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ) ); ?></strong></p>
+                    <?php
+                    // Sections below are printed in the exact order
+                    // mpcrbm_calculate_price() applies them — base ➜ day-wise ➜
+                    // seasonal ➜ tiered — and numbered as the customer reads them, so
+                    // the tooltip explains not just WHICH rules exist but which one
+                    // wins when several are switched on. Keep the two in sync.
+                    $step = 1;
+                    ?>
+                    <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
+                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ) ); ?></strong> <?php esc_attr_e( 'per day.', 'car-rental-manager' );?></p>
+
+                    <?php if ( $enable_day_wise && ! empty( $day_wise ) ) :
+                        $is_discount = true;
+                        $step ++;
+                        ?>
+                        <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Day-wise Pricing', 'car-rental-manager' );?></h4>
+                        <p class="mpcrbm_rule_hint"><?php esc_attr_e( 'Each date of your rental is charged at its own weekday rate instead of the base price.', 'car-rental-manager' );?></p>
+                        <ul>
+                            <?php
+                            foreach ( $day_wise as $day => $day_price ) :
+
+//                                $diff = $day_price - $base_price;
+
+                                if ( $day_price > 0 ) {
+                                    $label =  MPCRBM_Global_Function::format_price( abs( $day_price ) );
+                                    $class = 'increase';
+                                } else {
+                                    $label = 'Same as base price';
+                                    $class = 'same';
+                                }
+                                ?>
+                                <li>
+                                    <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
+                                    <span class="<?php echo esc_attr( $class ); ?>">
+                                        <?php echo wp_kses_post( $label ); ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
 
                     <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
                         $is_discount = true;
+                        $step ++;
                         ?>
-                        <h4><?php esc_attr_e( 'Seasonal Pricing', 'car-rental-manager' );?></h4>
+                        <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Seasonal Pricing', 'car-rental-manager' );?></h4>
+                        <p class="mpcrbm_rule_hint"><?php esc_attr_e( 'Matched on your pick-up date. Only the first matching season is applied.', 'car-rental-manager' );?></p>
                         <ul>
                             <?php foreach ( $seasonal as $rule ) : ?>
                                 <li>
@@ -819,39 +859,13 @@
                         </ul>
                     <?php endif; ?>
 
-                    <?php if ( $enable_day_wise && ! empty( $day_wise ) ) :
-                        $is_discount = true;
-                        ?>
-                        <h4><?php esc_attr_e( 'Day-wise Pricing', 'car-rental-manager' );?></h4>
-                        <ul>
-                            <?php
-                            foreach ( $day_wise as $day => $day_price ) :
-
-//                                $diff = $day_price - $base_price;
-
-                                if ( $day_price > 0 ) {
-                                    $label =  MPCRBM_Global_Function::format_price( abs( $day_price ) );
-                                    $class = 'increase';
-                                } else {
-                                    $label = 'Same as base price';
-                                    $class = 'same';
-                                }
-                                ?>
-                                <li>
-                                    <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
-                                    <span class="<?php echo esc_attr( $class ); ?>">
-                                        <?php echo wp_kses_post( $label ); ?>
-                                    </span>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-
                     <?php if ( $enable_tired && ! empty( $tiered ) ) :
 
                         $is_discount = true;
+                        $step ++;
                         ?>
-                        <h4><?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
+                        <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
+                        <p class="mpcrbm_rule_hint"><?php esc_attr_e( 'Applied last, based on how many days you book. The first matching range is used.', 'car-rental-manager' );?></p>
                         <ul>
                             <?php
                             if( is_array( $tiered ) && !empty( $tiered ) && isset( $tiered[0] ) && !empty( $tiered[0] ) ){
@@ -898,6 +912,12 @@
                                 </li>
                             <?php endforeach; }?>
                         </ul>
+                    <?php endif; ?>
+
+                    <?php if ( $step > 1 ) : ?>
+                        <p class="mpcrbm_rule_order_note">
+                            <?php esc_attr_e( 'These steps run in order — each one works on the result of the step above it. Your final price depends on the dates you pick.', 'car-rental-manager' );?>
+                        </p>
                     <?php endif; ?>
 
                 </div>
