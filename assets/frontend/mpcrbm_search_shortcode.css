@@ -51,8 +51,8 @@ div.header-text h2 {
 }
 
 .mpcrbm_search-button {
-    background: var(--color_theme);
-    color: white;
+    background: var(--button_bg);
+    color: var(--color_button);
     border: none;
     padding: 10px;
     font-weight: 600;

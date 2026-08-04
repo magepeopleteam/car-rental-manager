@@ -617,7 +617,7 @@
 		height: auto;
 		min-height: var(--button_height);
 		color: var(--color_button);
-		background-color: var(--color_theme);
+		background-color: var(--button_bg);
 	}
 	.mpcrbm [class*="dButton"] span {
 		margin: 0 var(--dmp_xs) 0 0;
@@ -625,7 +625,7 @@
 	.mpcrbm .dButton,
 	.mpcrbm [class*="_dButton"] {
 		color: var(--color_button);
-		background-color: var(--color_theme);
+		background-color: var(--button_bg);
 	}
 	.mpcrbm .dButton.mActive,
 	.mpcrbm [class*="_dButton"].mActive {
