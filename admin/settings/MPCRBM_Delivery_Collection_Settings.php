@@ -20,7 +20,11 @@ if ( ! class_exists( 'MPCRBM_Delivery_Collection_Settings' ) ) {
 
         public function delivery_collection_settings( $post_id ) {
             wp_nonce_field( 'mpcrbm_save_delivery_collection', 'mpcrbm_delivery_collection_nonce' );
-            $currency = MPCRBM_Global_Function::currency_symbol();
+            // _text(): this symbol is printed through esc_html() and handed to
+            // jQuery .text() below, so it must be a real character. WooCommerce's
+            // raw symbol is an HTML entity ("&#36;") and would show up literally,
+            // crushed into an unreadable sliver by the narrow prefix box.
+            $currency = MPCRBM_Global_Function::currency_symbol_text();
 
             $this->render_fee_card(
                 'delivery',
@@ -46,13 +50,26 @@ if ( ! class_exists( 'MPCRBM_Delivery_Collection_Settings' ) ) {
             .mpcrbm-dc-type-lbl{display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid #e5e9f0;border-radius:8px;cursor:pointer;transition:all .2s;background:#fafbfc;font-size:13px;}
             .mpcrbm-dc-type-lbl:hover{border-color:#93c5fd;background:#eff6ff;}
             .mpcrbm-dc-type-opt input[type=radio]:checked + .mpcrbm-dc-type-lbl{border-color:#2563eb;background:#eff6ff;font-weight:600;color:#1d4ed8;}
-            .mpcrbm-dc-type-dot{width:16px;height:16px;border-radius:50%;border:2px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+            /* IMPORTANT — every rule below that styles a <span> is written as
+               ".mpcrbm span.<class>" (specificity 0,2,1) on purpose. The shared
+               framework sheet mp_global/assets/mp_style/mpcrbm_global.css carries
+               ".mpcrbm span {display:inline-block}" (0,1,1), which outranks a plain
+               ".mpcrbm-dc-…" class selector (0,1,0) and silently discards
+               "display:flex" — taking align-items/justify-content down with it. That
+               is what left the currency symbol stuck at the top-left of its box
+               instead of centred, and the radio dot's inner dot off-centre. */
+            .mpcrbm span.mpcrbm-dc-type-dot{width:16px;height:16px;border-radius:50%;border:2px solid #d1d5db;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
             .mpcrbm-dc-type-opt input[type=radio]:checked + .mpcrbm-dc-type-lbl .mpcrbm-dc-type-dot{border-color:#2563eb;background:#2563eb;}
             .mpcrbm-dc-type-dot::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff;display:none;}
             .mpcrbm-dc-type-opt input[type=radio]:checked + .mpcrbm-dc-type-lbl .mpcrbm-dc-type-dot::after{display:block;}
             .mpcrbm-dc-amount-wrap{display:flex;align-items:center;border:2px solid #e5e9f0;border-radius:8px;overflow:hidden;transition:border-color .2s;max-width:220px;}
             .mpcrbm-dc-amount-wrap:focus-within{border-color:#2563eb;}
-            .mpcrbm-dc-amount-prefix{padding:0 12px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:40px;display:flex;align-items:center;font-weight:700;font-size:14px;color:#374151;min-width:40px;justify-content:center;}
+            /* flex-shrink:0 + nowrap: without them flexbox shrinks this box to fit
+               the input, and a symbol wider than one glyph ("CHF", "Rp", "zł" — or
+               an un-decoded "&#36;") is clipped to a sliver by the wrapper's
+               overflow:hidden. line-height:1 keeps the glyph optically centred at
+               any font size. See the ".mpcrbm span" note above for the selector. */
+            .mpcrbm span.mpcrbm-dc-amount-prefix{padding:0 12px;background:#f3f4f6;border-right:1px solid #e5e9f0;height:40px;display:flex;align-items:center;justify-content:center;line-height:1;font-weight:700;font-size:14px;color:#374151;min-width:40px;flex:0 0 auto;white-space:nowrap;}
             .mpcrbm-dc-amount-wrap input[type=number]{border:none!important;outline:none!important;box-shadow:none!important;padding:0 12px;height:40px;font-size:14px;font-weight:600;color:#111827;width:100%;background:#fff;}
             </style>
             <script>

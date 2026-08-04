@@ -59,7 +59,11 @@
                 $daywise    = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
                 $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
                 $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
-                $currency   = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
+                // _text(): every .mpcrbm-season-unit below prints this through
+                // esc_html(), which would render WooCommerce's raw "&#36;" entity as
+                // literal text. Also gives Custom Payment mode the shop's own
+                // configured symbol instead of a hardcoded "$".
+                $currency   = MPCRBM_Global_Function::currency_symbol_text();
 
                 $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
                 $enable_day_wise    = (int)get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );

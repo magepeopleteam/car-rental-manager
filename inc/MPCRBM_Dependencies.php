@@ -187,7 +187,10 @@
 				return [
 					'ajax_url'         => admin_url( 'admin-ajax.php' ),
 					'car_one_way_fees' => $car_one_way_fees,
-					'currency'         => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
+					// _text() so the value works whether mpcrbm-branch.js drops it into an
+					// HTML string or into .text(), and so Custom Payment mode gets the
+					// shop's configured symbol instead of a hardcoded "$".
+					'currency'         => MPCRBM_Global_Function::currency_symbol_text(),
 					'strings'          => [
 						'loading'        => __( 'Loading branch info…', 'car-rental-manager' ),
 						'viewHours'      => __( 'View opening hours', 'car-rental-manager' ),

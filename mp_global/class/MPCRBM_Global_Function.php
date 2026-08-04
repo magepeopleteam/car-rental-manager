@@ -743,6 +743,22 @@
 			}
 
 			/**
+			 * The same symbol as a PLAIN CHARACTER — use this whenever the value is
+			 * about to be escaped or written as text rather than echoed as raw HTML.
+			 *
+			 * WooCommerce returns its symbols as HTML entities ("&#36;", "&euro;",
+			 * "&#2547;"), which only render correctly when printed unescaped. Passed
+			 * through esc_html() / esc_js() / jQuery .text() instead, the customer or
+			 * admin sees the literal string "&#36;" — and in a fixed-width flex prefix
+			 * box (the "Fee Value" fields) five characters get squeezed down to an
+			 * unreadable sliver of a glyph, which is what "fix this icon sign" was
+			 * about. Decoding first makes the value safe for every one of those paths.
+			 */
+			public static function currency_symbol_text( $currency = '' ): string {
+				return html_entity_decode( self::currency_symbol( $currency ), ENT_QUOTES, 'UTF-8' );
+			}
+
+			/**
 			 * The ISO currency CODE (USD, EUR, …) — what payment gateways need, as opposed
 			 * to the display symbol above. WooCommerce owns it when active; otherwise it
 			 * comes from the plugin's Currency Settings tab.
