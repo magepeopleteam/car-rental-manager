@@ -49,83 +49,25 @@ jQuery(document).ready(function ($) {
         return result;
     }
 
+    /**
+     * Refresh the car-details price after a date pick.
+     *
+     * This used to be a SECOND copy of the same day-count + price AJAX that
+     * mpcrbm_registration.js already owns, and both ran on a return-date pick: two
+     * concurrent requests for the same car, each writing #mpcrbm_car_total_price,
+     * whichever replied last winning. Worse, this copy wrote the bare server price as
+     * the total — no extra services, no delivery/collection, no deposit, no one-way
+     * fee — so whenever it won the race the customer's selected extras vanished from
+     * the displayed total. That was the "price keeps changing / doesn't match" report.
+     *
+     * There is now one implementation, exported by mpcrbm_registration.js (enqueued on
+     * every frontend page, so it is always present alongside this file). If it somehow
+     * isn't, this is a no-op rather than a stale second opinion.
+     */
     function mpcrbm_get_selected_days() {
-        let parentClass = $('.mpcrbm_car_details_container');
-
-        let startDate = parentClass.find("#mpcrbm_map_start_date").val();
-        let endDate = parentClass.find("#mpcrbm_map_return_date").val();
-        if (!endDate || endDate.trim() === "") {
-            return;
+        if (typeof window.mpcrbmRefreshCarDetailsPrice === 'function') {
+            window.mpcrbmRefreshCarDetailsPrice();
         }
-
-        let start_time = parseFloat(parentClass.find("#mpcrbm_map_start_time").val() );
-        let return_time = parseFloat(parentClass.find("#mpcrbm_map_return_time") .val() );
-
-        // Either time can still be unset mid-selection (guided single-date flow picks
-        // date and time separately) — bail out instead of letting NaN through, which
-        // "diffMs < 0" below does NOT catch (NaN < 0 is false), and previously ended up
-        // writing "NaN x days" / "$NaN" over the server-rendered defaults.
-        if (isNaN(start_time) || isNaN(return_time)) {
-            return;
-        }
-
-        let start = new Date(startDate);
-        let end = new Date(endDate);
-
-        let startDateTime = new Date(start);
-        startDateTime.setHours(start_time);
-        let endDateTime = new Date(end);
-        endDateTime.setHours(return_time);
-
-        let diffMs = endDateTime - startDateTime;
-
-        if (isNaN(diffMs) || diffMs < 0) {
-            console.log("End date/time must be after start date/time");
-            return;
-        }
-        let diffDays = diffMs / (1000 * 60 * 60 * 24);
-        // Never fewer than one day: pick-up and return share the same clock time on a
-        // same-day booking (and always do while the time pickers are hidden), and
-        // Math.ceil(0) would have shown "0 days" with a zero total.
-        let totalDays = Math.max(1, Math.ceil(diffDays));
-        let dayPrice = parseFloat( parentClass.find("#mpcrbm_car_day_price").val() );
-        let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() );
-        let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val() );
-        let get_price = dayWisePrice * totalDays;
-        dayPrice = mpcrbm_price_format( dayPrice );
-        parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
-        parentClass.find("#mpcrbm_selected_car_price").html(dayPrice);
-
-        $.ajax({
-            type: 'POST',
-            url: mpcrbm_ajax.ajax_url,
-            data: {
-                action: "mpcrbm_get_total_count_price_selected_car",
-                start_date: startDate,
-                start_time: start_time,
-                car_id: car_id,
-                total_price: get_price,
-                total_days: totalDays,
-                _nonce: mpcrbm_ajax.nonce
-            },
-            success: function (data) {
-
-                console.log( data );
-                if (data.success && data.data && data.data.calculated_price !== undefined) {
-                    let day_wise = data.data.calculated_price/totalDays;
-                    let calculated_price = mpcrbm_price_format( data.data.calculated_price );
-                    let day_wise_price = mpcrbm_price_format( day_wise );
-                    parentClass.find("#mpcrbm_car_total_price").html(calculated_price);
-                    parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
-                    $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
-                    parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
-                }
-            },
-            error: function(response) {
-                console.log(response);
-            }
-        });
-
     }
 
 

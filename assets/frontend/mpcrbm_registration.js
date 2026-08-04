@@ -1133,31 +1133,52 @@ jQuery(document).ready(function($) {
     });
 
 
-    // Handle extra service selection
-    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service[]"]', function () {
-        let parent = $(this).closest('.mpcrbm_transport_search_area');
-        let service_id = $(this).data('value');
-        let service_value = $(this).val();
-        let $qty_input = $(this).closest('.mpcrbm_extra_service_item').find('[name="mpcrbm_extra_service_qty[]"]');
-        let qty = parseInt($qty_input.val()) || 1;
+    // Adds / updates / removes one extra service's line in the ".Details" summary and
+    // syncs its Select button state. Shared by the search flow and the car-details
+    // page: both render the identical .mpcrbm_extra_service_item markup
+    // (registration/extra_service_display.php), and the car page previously had no
+    // itemisation at all — its .mpcrbm_extra_service_summary stayed empty while the
+    // services were still added to the total, so the breakdown never explained the
+    // number below it.
+    //
+    // $input is the hidden [name="mpcrbm_extra_service[]"] whose value is the service
+    // name when selected and empty when not.
+    function mpcrbm_sync_extra_service_row(parent, $input) {
+        let service_id = $input.data('value');
+        let service_value = $input.val();
+        let $item = $input.closest('.mpcrbm_extra_service_item');
+        let $qty_input = $item.find('[name="mpcrbm_extra_service_qty[]"]');
+        let qty = parseInt($qty_input.val(), 10) || 1;
         let price_per_item = parseFloat($qty_input.data('price')) || 0;
-        let total_price_for_item = price_per_item * qty;
-        let $button = $(this).closest('[data-extra-item]');
+        // Per-day services are billed for the whole stay, so the line has to show the
+        // same multiple the total uses — otherwise the rows visibly fail to add up.
+        let days = $qty_input.attr('data-price-type') === 'day' ? mpcrbm_calculate_rental_days(parent) : 1;
+        let total_price_for_item = price_per_item * qty * days;
+        let $button = $input.closest('[data-extra-item]');
+        let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
 
         if (service_value) {
-            let service_name_display = service_id;
-            let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
-
             if (summary_item.length === 0) {
+                // Structure mirrors the server-rendered car row (car_details.php,
+                // choose_vehicles.php, get_search_result.php) exactly — same wrapper
+                // classes, ._dFlex_alignCenter for the name block, .mpcrbm_product_price
+                // for the amount.
+                //
+                // Those two child classes are not decorative: the car-details summary
+                // lays the row out with explicit flex `order` per child
+                // (mpcrbm_car_details.css, ".book-items > ._dFlex_alignCenter {order:1}"
+                // / "> .mpcrbm_product_price {order:2}"). An unclassed price <p> keeps
+                // the default order:0 and therefore rendered BEFORE the name — which is
+                // why these lines came out as "$50.00 ✓ Child Seat x1" instead of
+                // "✓ Child Seat x1 … $50.00" like every other row.
                 let new_item_html = `
-                    <div class="_textColor_4_dFlex_flexWrap_justifyBetween book-items" data-extra-service-id="${service_id}" data-price="${price_per_item}">
+                    <div class="_textColor_4 justifyBetween book-items" data-extra-service-id="${service_id}" data-price="${price_per_item}">
                         <p class="_dFlex_alignCenter">
                             <span class="fas fa-check-square _textTheme_mR_xs"></span>
-                            <span class="">${service_name_display}</span> &nbsp;
+                            <span class="">${service_id}</span> &nbsp;
                             <span class="textTheme ex_service_qty">x${qty}</span>
                         </p>
-                        <p>
-                            
+                        <p class="mpcrbm_product_price _textTheme">
                             <span class="textTheme"><span class="woocommerce-Price-amount amount"><span class="woocommerce-Price-currencySymbol"></span>${mpcrbm_price_format(total_price_for_item)}</span></span>
                         </p>
                     </div>
@@ -1174,7 +1195,6 @@ jQuery(document).ready(function($) {
                 $button.find('[data-icon]').attr('class', 'mL_xs ' + $button.data('close-icon'));
             }
         } else {
-            let summary_item = parent.find('[data-extra-service-id="' + service_id + '"]');
             if (summary_item.length > 0) {
                 summary_item.slideUp(350, function() {
                     $(this).remove();
@@ -1187,7 +1207,13 @@ jQuery(document).ready(function($) {
                 $button.find('[data-icon]').attr('class', 'mL_xs ' + $button.data('open-icon'));
             }
         }
+    }
 
+    // Handle extra service selection
+    $(document).on('change', '.mpcrbm_transport_search_area [name="mpcrbm_extra_service[]"]', function () {
+        let parent = $(this).closest('.mpcrbm_transport_search_area');
+
+        mpcrbm_sync_extra_service_row(parent, $(this));
         mpcrbm_price_calculation(parent);
         checkAndToggleBookNowButton(parent);
     });
@@ -1195,9 +1221,9 @@ jQuery(document).ready(function($) {
     // Handle extra service selection
     $(document).on('change', '.mpcrbm_car_details [name="mpcrbm_extra_service[]"]', function () {
         let parent = $(this).closest('.mpcrbm_car_details');
-        let $qty_input = parent.find('[name="mpcrbm_get_car_qty"]').val();
-        let qty = parseInt($qty_input) || 1;
-        // mpcrbm_price_calculation( parent );
+        let qty = parseInt(parent.find('[name="mpcrbm_get_car_qty"]').val(), 10) || 1;
+
+        mpcrbm_sync_extra_service_row(parent, $(this));
         mpcrbm_price_calculation_car_details_page(parent, qty);
     });
 
@@ -1268,19 +1294,26 @@ jQuery(document).ready(function($) {
         let total = 0;
         let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
         if (post_id > 0) {
-            total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+            total = total + (parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price")) || 0);
 
             total = total * number_of_car;
 
             parent.find(".mpcrbm_extra_service_item").each(function () {
                 let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
                 if (service_name) {
-                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]');
-                    let ex_qty = parseInt(ex_target.val());
-                    let ex_price = ex_target.data("price");
-                    ex_price = ex_price && ex_price > 0 ? ex_price : 0;
+                    // The closing '"]' here is load-bearing: without it jQuery THROWS
+                    // "Syntax error, unrecognized expression", which aborted this whole
+                    // function before it could write the total — so the moment any extra
+                    // service was selected, the displayed total silently froze at its
+                    // previous value.
+                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]"]');
+                    let ex_qty = parseInt(ex_target.val(), 10);
+                    // A blank/absent qty box must not turn the whole total into NaN.
+                    ex_qty = isNaN(ex_qty) || ex_qty < 0 ? 0 : ex_qty;
+                    let ex_price = parseFloat(ex_target.data("price"));
+                    ex_price = ex_price > 0 ? ex_price : 0;
                     let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
-                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
+                    total = total + ex_price * ex_qty * ex_days;
                 }
             });
 
@@ -1340,7 +1373,7 @@ jQuery(document).ready(function($) {
         let total = 0;
         let post_id = parseInt(parent.find('[name="mpcrbm_post_id"]').val());
         if (post_id > 0) {
-            total = total + parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price"));
+            total = total + (parseFloat(parent.find('[name="mpcrbm_post_id"]').attr("data-price")) || 0);
 
             total = total * number_of_car;
             let basePerCar = total / number_of_car;
@@ -1348,12 +1381,17 @@ jQuery(document).ready(function($) {
             parent.find(".mpcrbm_extra_service_item").each(function () {
                 let service_name = jQuery(this).find('[name="mpcrbm_extra_service[]"]').val();
                 if (service_name) {
-                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]');
-                    let ex_qty = parseInt(ex_target.val());
-                    let ex_price = ex_target.data("price");
-                    ex_price = ex_price && ex_price > 0 ? ex_price : 0;
+                    // See the note on the same selector in mpcrbm_price_calculation():
+                    // the missing '"]' made jQuery throw and abandon the recalculation
+                    // as soon as one extra service was selected, which is why the total
+                    // stopped tracking service quantity changes on this page.
+                    let ex_target = jQuery(this).find('[name="mpcrbm_extra_service_qty[]"]');
+                    let ex_qty = parseInt(ex_target.val(), 10);
+                    ex_qty = isNaN(ex_qty) || ex_qty < 0 ? 0 : ex_qty;
+                    let ex_price = parseFloat(ex_target.data("price"));
+                    ex_price = ex_price > 0 ? ex_price : 0;
                     let ex_days = ex_target.attr("data-price-type") === "day" ? mpcrbm_calculate_rental_days(parent) : 1;
-                    total = total + parseFloat(ex_price) * ex_qty * ex_days;
+                    total = total + ex_price * ex_qty * ex_days;
                 }
             });
 
@@ -1910,6 +1948,10 @@ jQuery(document).ready(function($) {
         $images.eq(index).addClass('active').animate({ opacity: 1 }, 300);
     }
 
+    // Incremented per price request; the response only paints if it is still the
+    // newest one (see the success handler).
+    var mpcrbmPriceRequestToken = 0;
+
     function mpcrbm_get_selected_days() {
         let parentClass = $('.mpcrbm_car_details_container');
 
@@ -1950,11 +1992,11 @@ jQuery(document).ready(function($) {
         // pickers are hidden (both times are then identical by design) — and
         // Math.ceil(0) would have shown "0 days" and a zero total.
         let totalDays = Math.max(1, Math.ceil(diffDays));
-        let dayPrice = parseFloat( parentClass.find("#mpcrbm_car_day_price").val() );
-        let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() );
-        let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val() );
+        let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() ) || 0;
+        let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val(), 10 );
+        // Undiscounted base for the whole stay — the server applies day-wise, seasonal
+        // and tiered rules to it and hands back the real price.
         let get_price = dayWisePrice * totalDays;
-        dayPrice = mpcrbm_price_format( dayPrice );
         parentClass.find("#mpcrbm_car_selected_day").text(totalDays);
 
 
@@ -1966,6 +2008,7 @@ jQuery(document).ready(function($) {
         // target since it wraps both the rate header and the "Details" summary
         // card this AJAX call updates.
         let $priceBox = parentClass.find('.mpcrbm_car_details_price_box');
+        let requestToken = ++mpcrbmPriceRequestToken;
 
         $.ajax({
             type: 'POST',
@@ -1985,20 +2028,34 @@ jQuery(document).ready(function($) {
                 }
             },
             success: function (data) {
+                // Ignore a response that a newer request has already superseded —
+                // picking a date fires several of these in quick succession (pick-up,
+                // return, time), and without this the slowest reply wins and paints a
+                // price for dates the customer has already moved on from.
+                if (requestToken !== mpcrbmPriceRequestToken) {
+                    return;
+                }
 
                 if (data.success && data.data && data.data.calculated_price !== undefined) {
-                    let calculated_price = mpcrbm_price_format( data.data.calculated_price );
-                    let day_wise = data.data.calculated_price/totalDays;
+                    let day_wise = data.data.calculated_price / totalDays;
                     let day_wise_price = mpcrbm_price_format( day_wise );
                     parentClass.find("#mpcrbm_selected_car_price").html(day_wise_price);
                     parentClass.find("#mpcrbm_total_day_price").html(day_wise_price);
+                    // The discounted base for the whole stay (day-wise / seasonal /
+                    // tiered already applied server-side). Everything else on this page
+                    // reads the total off this attribute, so it must be written BEFORE
+                    // the recalculation below.
                     $('.mpcrbm_car_details').find('[name="mpcrbm_post_id"]').attr("data-price", data.data.calculated_price );
-                    // Re-apply one-way fee on top of the updated base price
-                    let oneWayFee = parseFloat($('#mpcrbm_branch_one_way_fee').val()) || 0;
-                    let carQty = parseInt(parentClass.find('#mpcrbm_selected_car_quantity').val()) || 1;
-                    let deposit = parseFloat(parentClass.find('#mpcrbm_security_deposit_value').val()) || 0;
-                    let totalWithFee = data.data.calculated_price + (oneWayFee * carQty) + deposit;
-                    parentClass.find("#mpcrbm_car_total_price").html(mpcrbm_price_format(totalWithFee));
+
+                    // Deliberately NOT writing #mpcrbm_car_total_price here. That
+                    // element is .mpcrbm_product_total_price, which
+                    // mpcrbm_price_calculation_car_details_page() owns — it is the only
+                    // place that knows the full picture (car quantity, extra services,
+                    // security deposit, one-way fee, delivery/collection). Writing a
+                    // partial "base + fee + deposit" total here is what made the price
+                    // jump around: every date change silently dropped the extra services
+                    // back out of the displayed total.
+                    mpcrbm_refresh_car_details_total();
 
                     let $summary = parentClass.find('.mpcrbm_transport_summary');
                     $summary.addClass('mpcrbm-summary-pulse');
@@ -2018,6 +2075,36 @@ jQuery(document).ready(function($) {
         });
 
     }
+
+    // Recomputes the car-details total from whatever is currently on screen, using the
+    // single full-total calculator. Exposed on window so date-picker.js (a separate
+    // file, which owns the flatpickr callbacks) can reuse this one implementation
+    // instead of keeping a second, incomplete copy of the same maths.
+    function mpcrbm_refresh_car_details_total() {
+        // Resolved from the hidden car id rather than $('.mpcrbm_car_details'):
+        // car_details.php uses that class TWICE — once on the outer wrapper that holds
+        // the price data, and again on the inner tabs block — so the bare selector
+        // returns two elements, only one of which is the right context.
+        let $parent = $('[name="mpcrbm_post_id"]').first().closest('.mpcrbm_car_details');
+
+        if (!$parent.length) {
+            return;
+        }
+
+        // Re-price the selected services first: a per-day one is billed for the whole
+        // stay, so a new date range changes its line amount as well as the total.
+        $parent.find('.mpcrbm_extra_service_item [name="mpcrbm_extra_service[]"]').each(function () {
+            if ($(this).val()) {
+                mpcrbm_sync_extra_service_row($parent, $(this));
+            }
+        });
+
+        let qty = parseInt($parent.find('[name="mpcrbm_get_car_qty"]').val(), 10) || 1;
+        mpcrbm_price_calculation_car_details_page($parent, qty);
+    }
+
+    window.mpcrbmRefreshCarDetailsPrice = mpcrbm_get_selected_days;
+    window.mpcrbmRefreshCarDetailsTotal = mpcrbm_refresh_car_details_total;
 
 });
 
