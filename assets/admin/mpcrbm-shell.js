@@ -325,8 +325,10 @@ jQuery(function ($) {
 	   'mpcrbm_settings_tab_navigation' action.
 	   ====================================================================== */
 	var mpcrbmStepNav = (function () {
+		var TAB_LIST_SELECTOR = '#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists';
+
 		var $bar     = $('#mpcrbm-stepnav');
-		var $tabList = $('#mpcrbm_meta_box_panel .mpcrbm_settings .tabLists');
+		var $tabList = $(TAB_LIST_SELECTOR);
 		var $tabs    = $tabList.children('li[data-tabs-target]');
 		var total    = $tabs.length;
 
@@ -375,6 +377,66 @@ jQuery(function ($) {
 				.replace(/%1\$s/g, a)
 				.replace(/%2\$s/g, b)
 				.replace(/%s/g, a);
+		}
+
+		// Re-reads the tab <li> elements from the DOM.
+		//
+		// Nothing guarantees the nodes captured at load are still the ones on
+		// screen: anything that re-renders the strip (this plugin later, an
+		// add-on, a translation/UI tweak) creates NEW <li> elements carrying the
+		// same data-tabs-target. Everything here that compares by node identity —
+		// the click gate's index lookup, render()'s state classes — would then
+		// silently stop matching, which un-gates the strip and leaves it with no
+		// validation state, while the footer's own buttons (which pass an index,
+		// not an element) keep working. That asymmetry is precisely the failure
+		// this guards against.
+		//
+		// The refresh is only accepted when the strip still has the same number of
+		// steps: a different count means a different wizard than the one
+		// visited[]/errored[] describe, so the old indices would be meaningless.
+		function refreshTabs() {
+			// A detached cached <ul> (the strip itself got replaced) can't be
+			// queried through — go back to the selector in that case.
+			if (!$tabList.length || !$tabList.closest('body').length) {
+				$tabList = $(TAB_LIST_SELECTOR);
+			}
+
+			var $fresh = $tabList.children('li[data-tabs-target]');
+
+			if ($fresh.length === total) {
+				$tabs = $fresh;
+			}
+
+			return $tabs;
+		}
+
+		// Index of a tab <li> within the strip, or -1 for anything that isn't one
+		// of ours. Falls back to matching on data-tabs-target so a replaced node
+		// still resolves (see refreshTabs() above) instead of quietly reading as
+		// "not a tab" and skipping the gate.
+		function indexOfTab(el) {
+			if (!el) {
+				return -1;
+			}
+
+			var index = refreshTabs().index(el);
+
+			if (index > -1) {
+				return index;
+			}
+
+			var target = el.getAttribute ? el.getAttribute('data-tabs-target') : null;
+
+			if (!target) {
+				return -1;
+			}
+			for (var i = 0; i < total; i++) {
+				if ($tabs.eq(i).attr('data-tabs-target') === target) {
+					return i;
+				}
+			}
+
+			return -1;
 		}
 
 		// The <li> is "<span class="mi mi-..."></span>Label" — the icon span is
@@ -571,6 +633,40 @@ jQuery(function ($) {
 					.toggleClass('is-error', !!errored[index])
 					.toggleClass('is-done', index !== current && !errored[index] && !!visited[index]);
 			});
+
+			// Mirror the same state onto the tab strip at the top of the screen.
+			// It is the control most people actually navigate with, so leaving the
+			// completed/incomplete read-out only on the footer dots meant the strip
+			// showed nothing at all about validation — a step could be blocking the
+			// save with no sign of it where the user is looking.
+			//
+			// Only these two classes are touched: ".active" belongs to
+			// mpcrbm_global.js's switcher and must not be second-guessed here.
+			// refreshTabs() so the classes land on the <li> elements actually on
+			// screen, not on stale nodes a re-render replaced.
+			refreshTabs().each(function (index) {
+				$(this)
+					.toggleClass('mpcrbm-step-tab-error', !!errored[index])
+					.toggleClass('mpcrbm-step-tab-done', index !== current && !errored[index] && !!visited[index]);
+			});
+		}
+
+		// Draws attention to a tab in the strip — used when a click on it (or on a
+		// tab past it) is refused, since the explanatory message lands in the
+		// footer bar and the pointer is up here.
+		function flashTab(index) {
+			var $tab = $tabs.eq(index);
+
+			if (!$tab.length) {
+				return;
+			}
+			$tab.removeClass('is-shaking');
+			// Force a reflow so re-adding the class restarts the animation.
+			void $tab[0].offsetWidth;
+			$tab.addClass('is-shaking');
+			window.setTimeout(function () {
+				$tab.removeClass('is-shaking');
+			}, 500);
 		}
 
 		// Re-checks every step already flagged red and clears the ones that are
@@ -685,6 +781,9 @@ jQuery(function ($) {
 			}
 
 			shake();
+			// Called after navigate(): its syncTo() runs render(), which would
+			// otherwise repaint the strip and drop the class mid-animation.
+			flashTab(block);
 
 			return false;
 		}
@@ -737,6 +836,7 @@ jQuery(function ($) {
 				? fmt(i18n.stepBlocked, stepLabel(firstBad))
 				: fmt(i18n.stepsBlocked, stepLabel(firstBad), invalid.length));
 			shake();
+			flashTab(firstBad);
 
 			return false;
 		}
@@ -754,11 +854,35 @@ jQuery(function ($) {
 			render();
 		}
 
-		// Single choke point for the tab strip. Bound on the <ul> rather than on
-		// document so it runs BEFORE the framework's document-delegated switcher,
-		// which is what makes stopPropagation() able to veto a move.
-		$tabList.on('click', 'li[data-tabs-target]', function (e) {
-			var index = $tabs.index(this);
+		// ── The tab strip: gate (capture) + bookkeeping (bubble) ────────────
+		//
+		// THE GATE is a NATIVE, CAPTURE-PHASE listener on the document. Capture
+		// travels root → target, so this runs before EVERY other click handler in
+		// the page: the framework's document-delegated switcher, anything an
+		// add-on delegates from a container, and anything bound directly on the
+		// <li> itself. stopImmediatePropagation() here is therefore a veto that
+		// cannot be lost to handler-registration order or to where the strip
+		// happens to sit in the DOM.
+		//
+		// That last part is why this is on the document and not on the <ul>: a
+		// bubble-phase (or even capture-phase) handler on the <ul> only beats
+		// handlers bound FURTHER UP the tree — a click handler on the <li> runs at
+		// target level, i.e. first, and by the time the veto ran the tab had
+		// already switched. That is exactly the reported split, "the footer's
+		// Back/Next validate but the top tabs jump anywhere", since Back/Next call
+		// requestStep() directly instead of going through a DOM event.
+		//
+		// The listener is scoped by indexOfTab(): a click anywhere else in the
+		// admin (or on some other tab strip this module doesn't own) reports -1
+		// and is left completely alone.
+		//
+		// jQuery's .trigger('click') simulates bubbling by calling handlers
+		// itself, so navigate()'s programmatic move never reaches this listener
+		// through that path — only through the real elem.click() jQuery fires at
+		// the tail of trigger(), which the bypass flag below covers.
+		document.addEventListener('click', function (e) {
+			var li = (e.target && e.target.closest) ? e.target.closest('li[data-tabs-target]') : null;
+			var index = indexOfTab(li);
 
 			if (index < 0 || index === current) {
 				return;
@@ -767,21 +891,38 @@ jQuery(function ($) {
 			// Two cases must never be gated:
 			//  - bypass: navigate() already vetted this move.
 			//  - !booted: mpcrbm_global.js restores the remembered tab by
-			//    triggering a click on it from its own ready handler. Vetoing that
-			//    would stop the framework's switcher from ever running and leave
-			//    the panel area blank — and there is nothing to gate on load
-			//    anyway, since the user hasn't asked to go anywhere yet.
+			//    triggering a click on it from its own ready handler. Vetoing
+			//    that would stop the framework's switcher from ever running and
+			//    leave the panel area blank — and there is nothing to gate on
+			//    load anyway, since the user hasn't asked to go anywhere yet.
+			//    (Bookkeeping for both cases is done by the bubble handler
+			//    below, which jQuery-triggered clicks always reach.)
 			if (bypass || !booted) {
-				syncTo(index);
-
 				return;
 			}
 
-			// User-initiated: hold the framework's switcher back and let
-			// requestStep() decide, then perform the move itself via navigate().
+			// User-initiated: hold every other handler back and let requestStep()
+			// decide, then perform the move itself via navigate() when allowed.
 			e.preventDefault();
 			e.stopPropagation();
+			e.stopImmediatePropagation();
 			requestStep(index);
+		}, true);
+
+		// BOOKKEEPING for a switch that has already been allowed (a programmatic
+		// navigate(), or the boot-time tab restore). A bubble-phase jQuery handler
+		// on purpose: .trigger('click') runs these (it never reaches the native
+		// capture gate above), while a refused click never gets here because that
+		// gate stopped propagation. Delegated from the document for the same
+		// reason as the gate — so it keeps working wherever the strip lives.
+		$(document).on('click', 'li[data-tabs-target]', function () {
+			var index = indexOfTab(this);
+
+			if (index < 0 || index === current) {
+				return;
+			}
+
+			syncTo(index);
 		});
 
 		$dots.on('click', 'button[data-mpcrbm-goto]', function (e) {
