@@ -84,7 +84,10 @@ jQuery(document).ready(function ($) {
             return;
         }
         let diffDays = diffMs / (1000 * 60 * 60 * 24);
-        let totalDays = Math.ceil(diffDays);
+        // Never fewer than one day: pick-up and return share the same clock time on a
+        // same-day booking (and always do while the time pickers are hidden), and
+        // Math.ceil(0) would have shown "0 days" with a zero total.
+        let totalDays = Math.max(1, Math.ceil(diffDays));
         let dayPrice = parseFloat( parentClass.find("#mpcrbm_car_day_price").val() );
         let dayWisePrice = parseFloat( parentClass.find("#mpcrbm_car_day_wise_price").val() );
         let car_id = parseInt( parentClass.find("#mpcrbm_car_id").val() );

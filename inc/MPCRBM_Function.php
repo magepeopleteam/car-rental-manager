@@ -413,7 +413,11 @@
 				$interval = $startDate->diff( $returnDate );
 				// Convert the difference to total minutes
 				$minutes        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
-				$minutes_to_day = ceil( $minutes / 1440 );
+				// A rental is always at least one day. Pick-up and return share the same
+				// clock time whenever "Hide Time Input Field From Search Form" is on (and
+				// on any same-day booking), which made ceil( 0 / 1440 ) price the whole
+				// rental at zero.
+				$minutes_to_day = max( 1, ceil( $minutes / 1440 ) );
 				$manual_prices  = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_terms_price_info', [] );
 				if ( sizeof( $manual_prices ) > 0 ) {
 					foreach ( $manual_prices as $manual_price ) {
@@ -1082,7 +1086,10 @@
                 $returnDate = new DateTime( $return_date_time );
                 $interval = $startDate->diff( $returnDate );
                 $minutes = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
-                $days = ceil( $minutes / 1440 );
+                // Always at least one day — see the same guard in get_price(): identical
+                // pick-up/return clock times (same-day booking, or any booking made with the
+                // time pickers hidden) otherwise yield 0 days and a free rental.
+                $days = max( 1, ceil( $minutes / 1440 ) );
 
                 return $days;
             }
