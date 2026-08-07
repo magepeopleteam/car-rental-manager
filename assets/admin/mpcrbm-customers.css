@@ -1,0 +1,124 @@
+.mpcrbm-cust-wrap{--mpcrbm-cu-accent:var(--mpcrbm-shell-primary,#667eea);}
+.mpcrbm-cust-wrap *{box-sizing:border-box;}
+
+.mpcrbm-cust-card{margin:0 4px 24px;background:#fff;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:var(--mpcrbm-shell-radius,16px);box-shadow:var(--mpcrbm-shell-shadow,0 5px 15px -5px rgba(115,125,146,.11));overflow:hidden;}
+.mpcrbm-table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:16px 22px;border-bottom:1px solid var(--mpcrbm-shell-border,#e7e7ea);}
+.mpcrbm-result-count{font-size:13.5px;font-weight:600;color:var(--mpcrbm-shell-text-faded,#788291);}
+
+.mpcrbm-cust-search{position:relative;display:flex;align-items:center;gap:8px;flex:1 1 280px;max-width:360px;}
+.mpcrbm-cust-search .dashicons{position:absolute;left:11px;color:#9aa1b1;font-size:16px;}
+.mpcrbm-cust-search input[type=text]{width:100%;padding:8px 12px 8px 34px;border:1px solid #d9dce3;border-radius:8px;font-size:13px;}
+.mpcrbm-cust-search-clear{white-space:nowrap;font-size:12px;}
+.mpcrbm-cust-sort{display:flex;align-items:center;gap:8px;}
+.mpcrbm-cust-sort label{font-size:12px;font-weight:600;color:#39445A;}
+.mpcrbm-cust-sort select{padding:7px 10px;border:1px solid #d9dce3;border-radius:8px;font-size:13px;}
+
+.mpcrbm-btn{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-radius:var(--mpcrbm-shell-radius-xs,8px);font-size:13px;font-weight:600;text-decoration:none;line-height:34px;border:none;cursor:pointer;}
+.mpcrbm-btn-ghost{background:#f1f2f6;color:#39445A;}
+.mpcrbm-btn-ghost:hover{background:#e7e9f0;}
+.mpcrbm-btn-primary{background:var(--mpcrbm-shell-primary,#667eea);color:#fff;}
+.mpcrbm-btn-primary:hover{opacity:.92;}
+.mpcrbm-btn:disabled{opacity:.6;cursor:progress;}
+.mpcrbm-btn .dashicons{font-size:15px;width:15px;height:15px;line-height:1.2;}
+
+.mpcrbm-table-scroll{width:100%;overflow-x:auto;}
+.mpcrbm-cust-table{width:100%;min-width:820px;border-collapse:collapse;}
+.mpcrbm-cust-table th{padding:13px 18px;text-align:left;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--mpcrbm-shell-text-faded,#788291);background:#fafbfc;border-bottom:1px solid var(--mpcrbm-shell-border,#e7e7ea);white-space:nowrap;}
+.mpcrbm-cust-table td{padding:15px 18px;font-size:13.5px;color:var(--mpcrbm-shell-text,#1f222b);border-bottom:1px solid #f1f2f6;vertical-align:top;}
+.mpcrbm-cust-table tbody tr:last-child td{border-bottom:none;}
+.mpcrbm-cust-table tbody tr:hover{background:#fbfcfe;}
+.mpcrbm-cell-strong{display:block;font-weight:600;}
+.mpcrbm-cell-sub{display:block;font-size:12px;color:var(--mpcrbm-shell-text-faded,#788291);margin-top:2px;}
+.mpcrbm-col-actions{white-space:nowrap;}
+
+.mpcrbm-cust-badge{display:inline-block;margin-left:7px;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;vertical-align:1px;}
+.mpcrbm-cust-badge.is-repeat{background:#eef1fe;color:#4f5bd5;}
+.mpcrbm-cust-badge.is-vip{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;}
+
+.mpcrbm-empty-row td{padding:56px 20px !important;text-align:center;color:var(--mpcrbm-shell-text-faded,#788291);}
+.mpcrbm-empty-row .dashicons{display:block;margin:0 auto 12px;font-size:38px;width:38px;height:38px;color:#c8ccd6;}
+.mpcrbm-empty-row strong{display:block;font-size:15px;color:var(--mpcrbm-shell-text,#1f222b);margin-bottom:5px;}
+.mpcrbm-empty-row span{font-size:13px;}
+
+.mpcrbm-pagination{display:flex;justify-content:center;gap:6px;padding:18px;border-top:1px solid var(--mpcrbm-shell-border,#e7e7ea);}
+.mpcrbm-pagination .page-numbers{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;border-radius:8px;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);font-size:13px;font-weight:600;color:#39445A;text-decoration:none;}
+.mpcrbm-pagination .page-numbers:hover{border-color:var(--mpcrbm-cu-accent);color:var(--mpcrbm-cu-accent);}
+.mpcrbm-pagination .page-numbers.current{background:var(--mpcrbm-cu-accent);border-color:var(--mpcrbm-cu-accent);color:#fff;}
+
+/* Detail modal */
+.mpcrbm-cust-modal-overlay{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;background:rgba(20,22,32,.5);padding:20px;}
+.mpcrbm-cust-modal-overlay[hidden]{display:none;}
+/* The card itself does NOT scroll — only .mpcrbm-cust-modal-body does.
+   Keeping the close button outside that scrolling element is what
+   keeps it pinned to the top-right corner instead of scrolling out of
+   view with long booking-history content. */
+.mpcrbm-cust-modal{position:relative;width:100%;max-width:640px;max-height:85vh;display:flex;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.25);}
+.mpcrbm-cust-modal-body{overflow-y:auto;padding:26px 28px;}
+/* left:auto + the extra .mpcrbm-cust-modal specificity are belt-and-suspenders
+   against any stray "left" rule winning the left/right/width over-constraint
+   (CSS resolves that in favor of "left" over "right" when both are set) —
+   nothing in this codebase currently sets one, but this makes the top-right
+   position unambiguous regardless. */
+.mpcrbm-cust-modal .mpcrbm-cust-modal-close{position:absolute;top:14px;right:14px;left:auto;z-index:1;display:inline-flex;align-items:center;justify-content:center;background:#f1f2f6;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#39445A;}
+.mpcrbm-cust-modal-close:hover{background:#e7e9f0;}
+.mpcrbm-cust-modal-close .dashicons{pointer-events:none;}
+.mpcrbm-cust-modal-loading{text-align:center;padding:30px 0;color:#788291;}
+.mpcrbm-cust-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px;padding-right:30px;}
+.mpcrbm-cust-modal-head h3{margin:0 0 6px;font-size:17px;}
+.mpcrbm-cust-modal-contact{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:#788291;}
+.mpcrbm-cust-modal-contact span{display:inline-flex;align-items:center;gap:5px;}
+.mpcrbm-cust-modal-contact .dashicons{font-size:14px;width:14px;height:14px;}
+.mpcrbm-cust-modal-stats{display:flex;gap:20px;}
+.mpcrbm-cust-modal-stats div{text-align:right;}
+.mpcrbm-cust-modal-stats strong{display:block;font-size:16px;color:var(--mpcrbm-shell-text,#1f222b);}
+.mpcrbm-cust-modal-stats span{font-size:11px;color:#788291;}
+.mpcrbm-cust-modal-table{width:100%;border-collapse:collapse;}
+.mpcrbm-cust-modal-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#788291;padding:8px 10px;border-bottom:1px solid #e7e7ea;}
+.mpcrbm-cust-modal-table td{padding:10px;font-size:13px;border-bottom:1px solid #f1f2f6;}
+.mpcrbm-cust-modal-empty-row td{text-align:center;color:#9aa1b1;padding:20px 10px;}
+.mpcrbm-cust-modal-footnote{margin:16px 0 0;font-size:12.5px;}
+
+.mpcrbm-cust-bookings-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.mpcrbm-cust-bookings-head strong{font-size:13px;}
+.mpcrbm-cust-date-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.mpcrbm-cust-date-filter select,.mpcrbm-cust-date-filter input[type=date]{padding:6px 9px;border:1px solid #d9dce3;border-radius:8px;font-size:12.5px;}
+.mpcrbm-cust-date-custom{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.mpcrbm-cust-load-more{display:block;margin:14px auto 0;}
+
+.mpcrbm-cust-discount{margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #f1f2f6;}
+.mpcrbm-cust-discount-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.mpcrbm-cust-discount-head strong{font-size:13px;}
+.mpcrbm-cust-discount-head a{font-size:11.5px;}
+.mpcrbm-cust-discount-list{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:12.5px;}
+.mpcrbm-cust-discount-list td{padding:7px 8px;border-bottom:1px solid #f1f2f6;vertical-align:top;}
+.mpcrbm-disc-code{font-family:monospace;font-weight:700;letter-spacing:.02em;}
+.mpcrbm-disc-state{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;}
+.mpcrbm-disc-state.is-active{background:#dcfce7;color:#15803d;}
+.mpcrbm-disc-state.is-used{background:#f1f2f6;color:#788291;}
+.mpcrbm-disc-state.is-expired{background:#fef2f2;color:#b42318;}
+.mpcrbm-disc-usage{color:#788291;font-size:11.5px;text-align:right;white-space:nowrap;}
+.mpcrbm-disc-actions{text-align:right;white-space:nowrap;}
+.mpcrbm-disc-mail-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid #d9dce3;border-radius:7px;background:#fff;color:#39445A;font-size:11.5px;cursor:pointer;}
+.mpcrbm-disc-mail-btn:hover{background:#f1f2f6;}
+.mpcrbm-disc-mail-btn:disabled{cursor:progress;opacity:.75;}
+.mpcrbm-disc-mail-btn .dashicons{font-size:14px;width:14px;height:14px;line-height:1;}
+.mpcrbm-disc-mail-btn.is-sending .dashicons{animation:mpcrbm-disc-spin 0.8s linear infinite;}
+.mpcrbm-disc-mail-btn.is-sent{border-color:#15803d;color:#15803d;background:#dcfce7;}
+.mpcrbm-disc-success .mpcrbm-disc-mail-btn{margin-top:8px;}
+@keyframes mpcrbm-disc-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.mpcrbm-cust-discount-form{margin-top:12px;padding:14px;border:1px solid var(--mpcrbm-shell-border,#e7e7ea);border-radius:10px;background:#fafbfc;}
+.mpcrbm-cust-discount-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.mpcrbm-cust-discount-row label{display:inline-flex;align-items:center;gap:5px;font-size:13px;white-space:nowrap;}
+.mpcrbm-cust-discount-row input[type=number],.mpcrbm-cust-discount-row input[type=date]{flex:1 1 140px;padding:7px 10px;border:1px solid #d9dce3;border-radius:8px;font-size:13px;}
+.mpcrbm-cust-discount-inline-hint{font-size:11px;color:#9aa1b1;flex:1 1 160px;}
+.mpcrbm-cust-discount-hint{margin:0 0 12px;font-size:11.5px;color:#788291;}
+.mpcrbm-cust-discount-result{margin-top:10px;}
+.mpcrbm-disc-success{padding:10px 12px;border-radius:8px;background:#dcfce7;color:#15803d;}
+.mpcrbm-disc-success strong{display:block;font-size:14px;letter-spacing:.03em;}
+.mpcrbm-disc-success p{margin:4px 0 0;font-size:12px;}
+.mpcrbm-disc-error{padding:10px 12px;border-radius:8px;background:#fef2f2;color:#b42318;font-size:12.5px;}
+
+@media (max-width:782px){
+	.mpcrbm-table-toolbar{flex-direction:column;align-items:stretch;}
+	.mpcrbm-cust-search{max-width:none;}
+}

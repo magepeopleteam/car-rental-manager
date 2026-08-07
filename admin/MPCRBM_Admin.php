@@ -57,6 +57,7 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Payment_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Payment_Notices.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Booking_List_Free.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Customers.php';
 			}
 
 			//************Disable Gutenberg************************//
