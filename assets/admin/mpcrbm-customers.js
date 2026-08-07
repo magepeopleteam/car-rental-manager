@@ -214,4 +214,52 @@ jQuery(function ($) {
 				window.alert(i18n.somethingWrong);
 			});
 	});
+
+	// Block/Unblock — appears both as a row action in the Customers list and
+	// as a button in the detail modal (data-context tells the two apart,
+	// since each uses different label text and lives in a different bit of
+	// markup for the "Blocked" badge to be inserted next to).
+	$(document).on('click', '.mpcrbm-cust-block-toggle', function () {
+		var $btn = $(this);
+		if ($btn.prop('disabled')) { return; }
+
+		var willBlock = !$btn.hasClass('is-blocked');
+		if (willBlock && !window.confirm(i18n.confirmBlock)) { return; }
+
+		$btn.prop('disabled', true);
+		$.post(ajaxurl, { action: 'mpcrbm_customer_toggle_block', nonce: nonce, key: $btn.data('key') })
+			.done(function (res) {
+				$btn.prop('disabled', false);
+				if (!res || !res.success) {
+					window.alert((res && res.data && res.data.message) || i18n.somethingWrong);
+					return;
+				}
+
+				var blocked = res.data.blocked;
+				var ctx = $btn.data('context');
+				var label = blocked
+					? (ctx === 'modal' ? i18n.unblockCustomer : i18n.unblock)
+					: (ctx === 'modal' ? i18n.blockCustomer : i18n.block);
+				$btn.toggleClass('is-blocked', blocked)
+					.html('<span class="dashicons dashicons-' + (blocked ? 'unlock' : 'lock') + '"></span>' + label);
+
+				if (ctx === 'modal') {
+					var $h3 = $btn.closest('.mpcrbm-cust-modal-head').find('h3');
+					$h3.find('.mpcrbm-cust-badge.is-blocked').remove();
+					if (blocked) {
+						$('<span class="mpcrbm-cust-badge is-blocked">' + i18n.blocked + '</span>').appendTo($h3);
+					}
+				} else {
+					var $strong = $btn.closest('tr').find('.mpcrbm-cell-strong');
+					$strong.siblings('.mpcrbm-cust-badge.is-blocked').remove();
+					if (blocked) {
+						$('<span class="mpcrbm-cust-badge is-blocked">' + i18n.blocked + '</span>').insertAfter($strong);
+					}
+				}
+			})
+			.fail(function () {
+				$btn.prop('disabled', false);
+				window.alert(i18n.somethingWrong);
+			});
+	});
 });

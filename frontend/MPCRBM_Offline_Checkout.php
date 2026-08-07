@@ -439,18 +439,18 @@
 						<?php foreach ( $services as $service ) : ?>
 							<li>
 								<span><?php echo esc_html( $service['service_name'] ); ?> &times; <?php echo esc_html( (string) $service['service_quantity'] ); ?></span>
-								<strong><?php echo esc_html( $this->money( (float) $service['service_price'] * (int) $service['service_quantity'] ) ); ?></strong>
+								<strong><?php echo wp_kses_post( $this->money( (float) $service['service_price'] * (int) $service['service_quantity'] ) ); ?></strong>
 							</li>
 						<?php endforeach; ?>
 
 						<?php if ( ! empty( $draft['mpcrbm_security_deposit_amount'] ) ) : ?>
-							<li><span><?php esc_html_e( 'Security deposit', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( $this->money( $draft['mpcrbm_security_deposit_amount'] ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Security deposit', 'car-rental-manager' ); ?></span><strong><?php echo wp_kses_post( $this->money( $draft['mpcrbm_security_deposit_amount'] ) ); ?></strong></li>
 						<?php endif; ?>
 					</ul>
 
 					<div class="mpcrbm-summary-total">
 						<span><?php esc_html_e( 'Total', 'car-rental-manager' ); ?></span>
-						<strong><?php echo esc_html( $this->money( $draft['mpcrbm_tp'] ) ); ?></strong>
+						<strong><?php echo wp_kses_post( $this->money( $draft['mpcrbm_tp'] ) ); ?></strong>
 					</div>
 					<?php if ( ! empty( $draft['mpcrbm_security_deposit_amount'] ) ) : ?>
 						<p class="mpcrbm-summary-note"><?php esc_html_e( 'The security deposit is refundable and collected separately.', 'car-rental-manager' ); ?></p>
@@ -539,6 +539,18 @@
 				}
 				if ( ! is_email( $email ) ) {
 					wp_send_json_error( array( 'message' => __( 'Please enter a valid email address.', 'car-rental-manager' ) ) );
+				}
+
+				/**
+				 * Lets the Customers screen's block-list (MPCRBM_Customers) reject a
+				 * booking without this file needing to know how/where blocking is
+				 * implemented — same loose-coupling idiom as the
+				 * 'mpcrbm_add_booking_data' filter just below. Defaults to false
+				 * (fails open) if that admin screen isn't loaded, so a missing
+				 * dependency never blocks a legitimate customer by accident.
+				 */
+				if ( apply_filters( 'mpcrbm_is_customer_blocked', false, $email, $phone, get_current_user_id() ) ) {
+					wp_send_json_error( array( 'message' => __( 'We’re unable to process a booking for this account. Please contact us for assistance.', 'car-rental-manager' ) ) );
 				}
 
 				$car_id = absint( $draft['mpcrbm_id'] );
@@ -654,7 +666,7 @@
 				if ( ! empty( $meta['return_date_time'] ) ) {
 					$lines[] = '<li><strong>' . esc_html__( 'Return', 'car-rental-manager' ) . ':</strong> ' . esc_html( $meta['return_date_time'] ) . '</li>';
 				}
-				$lines[] = '<li><strong>' . esc_html__( 'Total', 'car-rental-manager' ) . ':</strong> ' . esc_html( $this->money( $meta['mpcrbm_tp'] ) ) . '</li>';
+				$lines[] = '<li><strong>' . esc_html__( 'Total', 'car-rental-manager' ) . ':</strong> ' . wp_kses_post( $this->money( $meta['mpcrbm_tp'] ) ) . '</li>';
 				$lines[] = '<li><strong>' . esc_html__( 'Payment', 'car-rental-manager' ) . ':</strong> ' . esc_html( $this->offline_label() ) . '</li>';
 				$lines[] = '</ul>';
 

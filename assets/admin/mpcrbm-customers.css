@@ -34,6 +34,11 @@
 .mpcrbm-cust-badge{display:inline-block;margin-left:7px;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;vertical-align:1px;}
 .mpcrbm-cust-badge.is-repeat{background:#eef1fe;color:#4f5bd5;}
 .mpcrbm-cust-badge.is-vip{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;}
+.mpcrbm-cust-badge.is-blocked{background:#fef2f2;color:#b42318;}
+.mpcrbm-cust-row-blocked{background:#fffbfb;}
+.mpcrbm-cust-block-toggle{color:#b42318;}
+.mpcrbm-cust-block-toggle.is-blocked{background:#dcfce7;color:#15803d;}
+.mpcrbm-cust-modal-head .mpcrbm-cust-block-toggle{margin-top:10px;align-self:flex-start;}
 
 .mpcrbm-empty-row td{padding:56px 20px !important;text-align:center;color:var(--mpcrbm-shell-text-faded,#788291);}
 .mpcrbm-empty-row .dashicons{display:block;margin:0 auto 12px;font-size:38px;width:38px;height:38px;color:#c8ccd6;}

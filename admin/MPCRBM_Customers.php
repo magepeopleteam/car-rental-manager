@@ -29,6 +29,7 @@
 			const VIP_AT            = 5; // bookings count that earns the "VIP" badge
 			const CACHE_KEY         = 'mpcrbm_customers_aggregate_v1';
 			const CACHE_TTL         = 60; // seconds — short enough that a brand new booking shows up quickly, long enough that a burst of list/search/sort/load-more/filter clicks on one page load only pays for the full scan once
+			const BLOCKLIST_OPTION  = 'mpcrbm_blocked_customers';
 
 			public function __construct() {
 				add_action( 'admin_menu', array( $this, 'add_menu' ), 21 ); // just after Bookings (20)
@@ -38,11 +39,22 @@
 				add_action( 'wp_ajax_mpcrbm_customer_bookings_page', array( $this, 'ajax_customer_bookings_page' ) );
 				add_action( 'wp_ajax_mpcrbm_customer_give_discount', array( $this, 'ajax_give_discount' ) );
 				add_action( 'wp_ajax_mpcrbm_customer_send_discount_email', array( $this, 'ajax_send_discount_email' ) );
+				add_action( 'wp_ajax_mpcrbm_customer_toggle_block', array( $this, 'ajax_toggle_block' ) );
 				// WooCommerce has no native "valid from" date on a coupon (only an
 				// expiry), so date-range validity is enforced here instead — this
 				// filter runs on every coupon in the shop, not just ones this screen
 				// created, but it's a no-op for any coupon lacking the meta key.
 				add_filter( 'woocommerce_coupon_is_valid', array( $this, 'enforce_valid_from' ), 10, 2 );
+				// Blocklist enforcement at checkout. The actual match logic lives in
+				// filter_is_customer_blocked(); this hooks it into BOTH WooCommerce
+				// checkout UIs — the legacy [woocommerce_checkout] shortcode form
+				// AND the Checkout block (Store API) — since which one fires depends
+				// on how the site's Checkout page is built and both need covering.
+				// MPCRBM_Offline_Checkout::ajax_place_order() calls the same filter
+				// directly for the Custom Payment path.
+				add_filter( 'mpcrbm_is_customer_blocked', array( $this, 'filter_is_customer_blocked' ), 10, 4 );
+				add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_checkout_if_blocked' ), 10, 2 );
+				add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'block_store_api_checkout_if_blocked' ), 10, 2 );
 			}
 
 			public function enforce_valid_from( $valid, $coupon ) {
@@ -229,6 +241,158 @@
 				}
 
 				return array( null, null );
+			}
+
+			/* --------------------------------------------------------------
+			 * Blocklist — a customer with no email on file (a "booking:ID" key)
+			 * can't meaningfully be blocked at checkout (nothing to match against
+			 * on a future guest order), so blocking is only offered for
+			 * email/phone-keyed customers; see render_page()/render_detail_modal_content().
+			 * ------------------------------------------------------------ */
+
+			private function get_blocklist() {
+				$list = get_option( self::BLOCKLIST_OPTION, array() );
+
+				return is_array( $list ) ? $list : array();
+			}
+
+			private function is_blocked( $key ) {
+				return isset( $this->get_blocklist()[ $key ] );
+			}
+
+			public function ajax_toggle_block() {
+				check_ajax_referer( 'mpcrbm_customers', 'nonce' );
+				if ( ! current_user_can( 'manage_options' ) ) {
+					wp_send_json_error( array( 'message' => __( 'Unauthorized', 'car-rental-manager' ) ), 403 );
+				}
+
+				$key = isset( $_POST['key'] ) ? sanitize_text_field( wp_unslash( $_POST['key'] ) ) : '';
+				if ( $key === '' ) {
+					wp_send_json_error( array( 'message' => __( 'Invalid customer.', 'car-rental-manager' ) ) );
+				}
+
+				$customers = $this->get_all_customers();
+				if ( ! isset( $customers[ $key ] ) ) {
+					wp_send_json_error( array( 'message' => __( 'Customer not found.', 'car-rental-manager' ) ) );
+				}
+
+				$blocklist = $this->get_blocklist();
+
+				if ( isset( $blocklist[ $key ] ) ) {
+					unset( $blocklist[ $key ] );
+					$blocked = false;
+				} else {
+					$c                    = $customers[ $key ];
+					$blocklist[ $key ]    = array(
+						'email'      => $c['email'],
+						'phone'      => $c['phone'],
+						'user_id'    => $c['user_id'],
+						'name'       => $c['name'],
+						'blocked_at' => current_time( 'mysql' ),
+						'blocked_by' => get_current_user_id(),
+					);
+					$blocked = true;
+				}
+
+				update_option( self::BLOCKLIST_OPTION, $blocklist );
+
+				wp_send_json_success( array(
+					'blocked' => $blocked,
+					'message' => $blocked
+						? __( 'Customer blocked — future WooCommerce checkouts matching their email, phone, or account will be rejected.', 'car-rental-manager' )
+						: __( 'Customer unblocked.', 'car-rental-manager' ),
+				) );
+			}
+
+			/**
+			 * Generic "is this customer blocked?" query, exposed as a filter
+			 * (`mpcrbm_is_customer_blocked`) so both checkout paths can ask it
+			 * without a hard class dependency on MPCRBM_Customers — mirrors the
+			 * existing `mpcrbm_add_booking_data` filter idiom MPCRBM_Offline_Checkout
+			 * already uses for the same reason. Matches on whichever signal is
+			 * available: billing email, billing phone, or (for a logged-in
+			 * customer) their WordPress user ID — so blocking still holds even if a
+			 * repeat guest changes the email/phone they type in next time, as long
+			 * as they're checking out while logged into the account that was blocked.
+			 */
+			public function filter_is_customer_blocked( $blocked, $email, $phone, $user_id = 0 ) {
+				if ( $blocked ) {
+					return $blocked; // an earlier callback already said yes
+				}
+
+				$blocklist = $this->get_blocklist();
+				if ( empty( $blocklist ) ) {
+					return false;
+				}
+
+				$email = strtolower( trim( (string) $email ) );
+				$phone = $this->normalize_phone( $phone );
+
+				foreach ( $blocklist as $entry ) {
+					$email_match = $email !== '' && $email === strtolower( (string) $entry['email'] );
+					$phone_match = $phone !== '' && $phone === $this->normalize_phone( $entry['phone'] );
+					$user_match  = $user_id && ! empty( $entry['user_id'] ) && (int) $user_id === (int) $entry['user_id'];
+
+					if ( $email_match || $phone_match || $user_match ) {
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			/** Rejects checkout for a blocked customer — the WooCommerce side of enforcement; see filter_is_customer_blocked() for the shared matching logic and MPCRBM_Offline_Checkout::ajax_place_order() for the Custom Payment side. */
+			public function block_checkout_if_blocked( $data, $errors ) {
+				$email   = isset( $data['billing_email'] ) ? $data['billing_email'] : '';
+				$phone   = isset( $data['billing_phone'] ) ? $data['billing_phone'] : '';
+				$user_id = get_current_user_id();
+
+				if ( apply_filters( 'mpcrbm_is_customer_blocked', false, $email, $phone, $user_id ) ) {
+					$errors->add(
+						'mpcrbm_blocked',
+						__( 'We’re unable to process a booking for this account. Please contact us for assistance.', 'car-rental-manager' )
+					);
+				}
+			}
+
+			/**
+			 * Rejects checkout for a blocked customer — the Checkout BLOCK (Store
+			 * API) side of enforcement. This is a SEPARATE hook from
+			 * block_checkout_if_blocked() above because the block-based checkout
+			 * never fires 'woocommerce_after_checkout_validation' at all — that
+			 * hook belongs to the legacy [woocommerce_checkout] shortcode's own
+			 * form processor, a completely different code path in WooCommerce
+			 * core. A site whose Checkout page uses the block (the WooCommerce
+			 * default since ~8.3) got no enforcement without this — confirmed by
+			 * testing: blocking an email here and then completing an order through
+			 * this site's actual block-based Checkout page went through anyway,
+			 * because only the shortcode hook was wired up.
+			 *
+			 * Unlike the shortcode path (a filter that adds to a $errors object),
+			 * the Store API path expects a thrown RouteException to abort the
+			 * request — that's what actually turns into the error the customer
+			 * sees in the block checkout UI, caught by WooCommerce's own route
+			 * handler (Automattic\WooCommerce\StoreApi\Routes\V1\Checkout::get_response()).
+			 *
+			 * @param \WC_Order         $order   The order being placed.
+			 * @param \WP_REST_Request  $request The Store API request.
+			 * @throws \Exception To abort checkout; a RouteException when the class is available, for a clean 403 instead of a generic 500.
+			 */
+			public function block_store_api_checkout_if_blocked( $order, $request ) {
+				$email   = $order->get_billing_email();
+				$phone   = $order->get_billing_phone();
+				$user_id = get_current_user_id();
+
+				if ( ! apply_filters( 'mpcrbm_is_customer_blocked', false, $email, $phone, $user_id ) ) {
+					return;
+				}
+
+				$message = __( 'We’re unable to process a booking for this account. Please contact us for assistance.', 'car-rental-manager' );
+
+				if ( class_exists( '\Automattic\WooCommerce\StoreApi\Exceptions\RouteException' ) ) {
+					throw new \Automattic\WooCommerce\StoreApi\Exceptions\RouteException( 'mpcrbm_blocked', $message, 403 );
+				}
+				throw new \Exception( esc_html( $message ) );
 			}
 
 			/**
@@ -659,10 +823,14 @@
 				$bookings_url  = admin_url( 'edit.php?post_type=' . $this->get_cpt() . '&page=' . MPCRBM_Booking_List_Free::SLUG );
 				$coupons_url   = admin_url( 'edit.php?post_type=shop_coupon' );
 				$discounts     = $this->get_customer_discounts( $customer['email'] );
+				$is_blocked    = $this->is_blocked( $customer['key'] );
 				?>
 				<div class="mpcrbm-cust-modal-head">
 					<div>
 						<h3><?php echo esc_html( $customer['name'] ); ?>
+							<?php if ( $is_blocked ) : ?>
+								<span class="mpcrbm-cust-badge is-blocked"><?php esc_html_e( 'Blocked', 'car-rental-manager' ); ?></span>
+							<?php endif; ?>
 							<?php if ( $badge_label ) : ?>
 								<span class="mpcrbm-cust-badge is-<?php echo esc_attr( $badge_class ); ?>"><?php echo esc_html( $badge_label ); ?></span>
 							<?php endif; ?>
@@ -672,6 +840,9 @@
 							<?php if ( $customer['phone'] ) : ?><span><span class="dashicons dashicons-phone"></span><?php echo esc_html( $customer['phone'] ); ?></span><?php endif; ?>
 							<?php if ( $customer['user_id'] ) : ?><span><span class="dashicons dashicons-admin-users"></span><?php esc_html_e( 'Registered user', 'car-rental-manager' ); ?></span><?php else : ?><span><span class="dashicons dashicons-businessman"></span><?php esc_html_e( 'Guest', 'car-rental-manager' ); ?></span><?php endif; ?>
 						</div>
+						<button type="button" class="mpcrbm-btn mpcrbm-btn-ghost mpcrbm-cust-block-toggle<?php echo $is_blocked ? ' is-blocked' : ''; ?>" data-key="<?php echo esc_attr( $customer['key'] ); ?>" data-context="modal">
+							<span class="dashicons dashicons-<?php echo $is_blocked ? 'unlock' : 'lock'; ?>"></span><?php echo $is_blocked ? esc_html__( 'Unblock customer', 'car-rental-manager' ) : esc_html__( 'Block customer', 'car-rental-manager' ); ?>
+						</button>
 					</div>
 					<div class="mpcrbm-cust-modal-stats">
 						<div><strong><?php echo count( $customer['bookings'] ); ?></strong><span><?php esc_html_e( 'Bookings', 'car-rental-manager' ); ?></span></div>
@@ -819,6 +990,12 @@
 						'somethingWrong'   => __( 'Something went wrong.', 'car-rental-manager' ),
 						'sendEmail'        => __( 'Send Email', 'car-rental-manager' ),
 						'emailThisCode'    => __( 'Email this code to the customer', 'car-rental-manager' ),
+						'confirmBlock'     => __( 'Block this customer? They won’t be able to complete a WooCommerce checkout while blocked.', 'car-rental-manager' ),
+						'block'            => __( 'Block', 'car-rental-manager' ),
+						'unblock'          => __( 'Unblock', 'car-rental-manager' ),
+						'blockCustomer'    => __( 'Block customer', 'car-rental-manager' ),
+						'unblockCustomer'  => __( 'Unblock customer', 'car-rental-manager' ),
+						'blocked'          => __( 'Blocked', 'car-rental-manager' ),
 					),
 				) );
 			}
@@ -934,11 +1111,16 @@
 										</td>
 									</tr>
 								<?php else : ?>
+									<?php $blocklist = $this->get_blocklist(); ?>
 									<?php foreach ( $page_rows as $c ) : ?>
-										<?php list( $badge_label, $badge_class ) = $this->badge_for( count( $c['bookings'] ) ); ?>
-										<tr>
+										<?php
+										list( $badge_label, $badge_class ) = $this->badge_for( count( $c['bookings'] ) );
+										$is_blocked = isset( $blocklist[ $c['key'] ] );
+										?>
+										<tr<?php echo $is_blocked ? ' class="mpcrbm-cust-row-blocked"' : ''; ?>>
 											<td>
 												<span class="mpcrbm-cell-strong"><?php echo esc_html( $c['name'] ); ?></span>
+												<?php if ( $is_blocked ) : ?><span class="mpcrbm-cust-badge is-blocked"><?php esc_html_e( 'Blocked', 'car-rental-manager' ); ?></span><?php endif; ?>
 												<?php if ( $badge_label ) : ?><span class="mpcrbm-cust-badge is-<?php echo esc_attr( $badge_class ); ?>"><?php echo esc_html( $badge_label ); ?></span><?php endif; ?>
 												<?php if ( ! $c['user_id'] ) : ?><span class="mpcrbm-cell-sub"><?php esc_html_e( 'Guest', 'car-rental-manager' ); ?></span><?php endif; ?>
 											</td>
@@ -952,6 +1134,9 @@
 											<td class="mpcrbm-col-actions">
 												<button type="button" class="mpcrbm-btn mpcrbm-btn-ghost mpcrbm-cust-view" data-key="<?php echo esc_attr( $c['key'] ); ?>">
 													<span class="dashicons dashicons-visibility"></span><?php esc_html_e( 'View', 'car-rental-manager' ); ?>
+												</button>
+												<button type="button" class="mpcrbm-btn mpcrbm-btn-ghost mpcrbm-cust-block-toggle<?php echo $is_blocked ? ' is-blocked' : ''; ?>" data-key="<?php echo esc_attr( $c['key'] ); ?>" data-context="row">
+													<span class="dashicons dashicons-<?php echo $is_blocked ? 'unlock' : 'lock'; ?>"></span><?php echo $is_blocked ? esc_html__( 'Unblock', 'car-rental-manager' ) : esc_html__( 'Block', 'car-rental-manager' ); ?>
 												</button>
 											</td>
 										</tr>

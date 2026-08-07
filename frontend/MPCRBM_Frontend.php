@@ -31,6 +31,22 @@
 				// Free standalone checkout for the built-in Offline method. Stands down on
 				// its own when the Pro plugin (MPCRBM_Native_Checkout) is active.
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Offline_Checkout.php';
+				// admin/MPCRBM_Customers.php is mostly the wp-admin "Customers" screen,
+				// but it ALSO registers the customer-blocklist checkout enforcement
+				// (both WooCommerce checkout UIs + this Custom Payment flow) and the
+				// discount coupon's "valid from" date check. MPCRBM_Admin only requires
+				// this file behind is_admin() — true for wp-admin and admin-ajax.php
+				// requests, but FALSE for the customer's own checkout page and the
+				// Store API's REST request, which is exactly where this enforcement
+				// needs to run. Requiring it here too (require_once is idempotent) is
+				// what actually makes blocking take effect instead of silently
+				// registering hooks that only ever fire in the admin screen that set
+				// them up. The admin-only parts of the file (menu registration, page
+				// rendering, its own wp_ajax_* handlers) are harmless dead weight on
+				// the frontend — the WP hooks they're bound to just never fire here.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin_Shell.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Booking_List_Free.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Customers.php';
 			}
 			public function load_single_template($template): string {
 				global $post;
