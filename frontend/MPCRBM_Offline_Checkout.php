@@ -365,6 +365,17 @@
 									<label for="mpcrbm_co_note"><?php esc_html_e( 'Booking notes (optional)', 'car-rental-manager' ); ?></label>
 									<textarea id="mpcrbm_co_note" name="note" rows="3"></textarea>
 								</p>
+								<?php if ( class_exists( 'WC_Coupon' ) ) : ?>
+									<div class="mpcrbm-field mpcrbm-field--full mpcrbm-coupon-block" id="mpcrbm-coupon-block" hidden>
+										<label for="mpcrbm_co_coupon"><?php esc_html_e( 'Coupon code', 'car-rental-manager' ); ?></label>
+										<span class="mpcrbm-coupon-row">
+											<input type="text" id="mpcrbm_co_coupon" name="coupon_code" autocapitalize="characters" autocomplete="off">
+											<button type="button" class="mpcrbm-btn-ghost mpcrbm-coupon-check-btn" id="mpcrbm-coupon-check"><?php esc_html_e( 'Check', 'car-rental-manager' ); ?></button>
+										</span>
+										<span class="mpcrbm-field-note"><?php esc_html_e( 'We found a coupon for your account — enter the code and click Check to apply it. Applies to the rental price only, not the security deposit.', 'car-rental-manager' ); ?></span>
+										<span class="mpcrbm-coupon-result" id="mpcrbm-coupon-result" aria-live="polite"></span>
+									</div>
+								<?php endif; ?>
 							</div>
 
 							<h2 class="mpcrbm-checkout-title"><?php esc_html_e( 'Payment', 'car-rental-manager' ); ?></h2>
@@ -445,6 +456,17 @@
 
 						<?php if ( ! empty( $draft['mpcrbm_security_deposit_amount'] ) ) : ?>
 							<li><span><?php esc_html_e( 'Security deposit', 'car-rental-manager' ); ?></span><strong><?php echo wp_kses_post( $this->money( $draft['mpcrbm_security_deposit_amount'] ) ); ?></strong></li>
+						<?php endif; ?>
+						<?php if ( ! empty( $draft['mpcrbm_coupon_discount'] ) ) : ?>
+							<li class="mpcrbm-summary-discount">
+								<span>
+									<?php esc_html_e( 'Discount', 'car-rental-manager' ); ?>
+									<?php if ( ! empty( $draft['mpcrbm_coupon_code'] ) ) : ?>
+										(<?php echo esc_html( strtoupper( $draft['mpcrbm_coupon_code'] ) ); ?>)
+									<?php endif; ?>
+								</span>
+								<strong>&minus;<?php echo wp_kses_post( $this->money( $draft['mpcrbm_coupon_discount'] ) ); ?></strong>
+							</li>
 						<?php endif; ?>
 					</ul>
 
@@ -568,6 +590,34 @@
 					}
 				}
 
+				/**
+				 * Optional coupon code. This checkout has no WC cart for a coupon to
+				 * hook into, so it's validated and priced by hand via the shared filter
+				 * (see MPCRBM_Customers::filter_validate_coupon()) against the rental
+				 * price only — never the security deposit, same rule the WooCommerce
+				 * "Give Discount" flow enforces. An entered-but-invalid code rejects the
+				 * booking outright rather than silently charging full price.
+				 */
+				$coupon_code     = isset( $_POST['coupon_code'] ) ? sanitize_text_field( wp_unslash( $_POST['coupon_code'] ) ) : '';
+				$coupon_discount = 0.0;
+				$coupon_id       = 0;
+				if ( '' !== $coupon_code ) {
+					$deposit_amount = (float) ( $draft['mpcrbm_security_deposit_amount'] ?? 0 );
+					$rental_amount  = max( 0.0, (float) $draft['mpcrbm_tp'] - $deposit_amount );
+					$coupon_result  = apply_filters( 'mpcrbm_validate_coupon', null, $coupon_code, $email, $rental_amount );
+
+					if ( ! is_array( $coupon_result ) || empty( $coupon_result['valid'] ) ) {
+						$message = ( is_array( $coupon_result ) && ! empty( $coupon_result['message'] ) )
+							? $coupon_result['message']
+							: __( 'Coupons are not available right now.', 'car-rental-manager' );
+						wp_send_json_error( array( 'message' => $message ) );
+					}
+
+					$coupon_discount    = (float) $coupon_result['discount'];
+					$coupon_id          = (int) $coupon_result['coupon_id'];
+					$draft['mpcrbm_tp'] = max( 0.0, (float) $draft['mpcrbm_tp'] - $coupon_discount );
+				}
+
 				// The stored draft is the ONLY price source — the browser never gets a
 				// say in what a booking costs.
 				$booking_meta = array_merge( $draft, array(
@@ -582,6 +632,8 @@
 					'mpcrbm_billing_phone'   => $phone,
 					'mpcrbm_customer_note'   => $note,
 					'mpcrbm_booking_date'    => current_time( 'mysql' ),
+					'mpcrbm_coupon_code'     => $coupon_code,
+					'mpcrbm_coupon_discount' => $coupon_discount,
 				) );
 
 				/** Same filter the WooCommerce flow applies, so integrations see both. */
@@ -590,6 +642,14 @@
 				$booking_id = $this->insert_booking( $booking_meta );
 				if ( ! $booking_id ) {
 					wp_send_json_error( array( 'message' => __( 'We could not save your booking. Please try again.', 'car-rental-manager' ) ) );
+				}
+
+				// This whole flow is "confirmed immediately" (unlike an off-site
+				// gateway that might never be completed), so the coupon is counted as
+				// used right here.
+				if ( $coupon_id && class_exists( 'WC_Coupon' ) ) {
+					$coupon = new WC_Coupon( $coupon_id );
+					$coupon->increase_usage_count( $email );
 				}
 
 				// Extra services get their own records, mirroring the WooCommerce flow so
@@ -711,6 +771,8 @@
 					'mpcrbm_tp'                      => get_post_meta( $booking_id, 'mpcrbm_tp', true ),
 					'mpcrbm_service_info'            => get_post_meta( $booking_id, 'mpcrbm_service_info', true ),
 					'mpcrbm_security_deposit_amount' => get_post_meta( $booking_id, 'mpcrbm_security_deposit_amount', true ),
+					'mpcrbm_coupon_code'              => get_post_meta( $booking_id, 'mpcrbm_coupon_code', true ),
+					'mpcrbm_coupon_discount'          => get_post_meta( $booking_id, 'mpcrbm_coupon_discount', true ),
 				);
 
 				$this->enqueue_checkout_assets();
@@ -780,10 +842,16 @@
 				);
 				wp_localize_script( 'mpcrbm-checkout', 'mpcrbmCheckout', array(
 					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+					'nonces'  => array(
+						'couponAvailability' => wp_create_nonce( 'mpcrbm_coupon_availability' ),
+						'couponCheck'        => wp_create_nonce( 'mpcrbm_coupon_check' ),
+					),
 					'i18n'    => array(
-						'placing' => __( 'Placing your booking…', 'car-rental-manager' ),
-						'submit'  => __( 'Place Booking', 'car-rental-manager' ),
-						'error'   => __( 'Something went wrong. Please try again.', 'car-rental-manager' ),
+						'placing'          => __( 'Placing your booking…', 'car-rental-manager' ),
+						'submit'           => __( 'Place Booking', 'car-rental-manager' ),
+						'error'            => __( 'Something went wrong. Please try again.', 'car-rental-manager' ),
+						'couponEnterCode'  => __( 'Enter a coupon code first.', 'car-rental-manager' ),
+						'couponChecking'   => __( 'Checking…', 'car-rental-manager' ),
 					),
 				) );
 			}

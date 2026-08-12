@@ -55,6 +55,20 @@
 				add_filter( 'mpcrbm_is_customer_blocked', array( $this, 'filter_is_customer_blocked' ), 10, 4 );
 				add_action( 'woocommerce_after_checkout_validation', array( $this, 'block_checkout_if_blocked' ), 10, 2 );
 				add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'block_store_api_checkout_if_blocked' ), 10, 2 );
+				// Lets the Custom Payment checkout paths (free MPCRBM_Offline_Checkout and
+				// Pro MPCRBM_Native_Checkout — neither goes through WooCommerce's own cart/
+				// coupon machinery at all) validate and price a coupon created from this
+				// screen, without either of those files needing a hard dependency on this
+				// class — same loose-coupling idiom as mpcrbm_is_customer_blocked above.
+				add_filter( 'mpcrbm_validate_coupon', array( $this, 'filter_validate_coupon' ), 10, 4 );
+				// The Custom Payment checkout form only reveals its coupon field once it
+				// knows the typed email has one waiting, and validates a typed code ahead
+				// of final submit via a "Check" button — both handled here, right next to
+				// filter_validate_coupon(), so the checkout files stay free of coupon logic.
+				add_action( 'wp_ajax_mpcrbm_coupon_availability', array( $this, 'ajax_coupon_availability' ) );
+				add_action( 'wp_ajax_nopriv_mpcrbm_coupon_availability', array( $this, 'ajax_coupon_availability' ) );
+				add_action( 'wp_ajax_mpcrbm_coupon_check', array( $this, 'ajax_coupon_check' ) );
+				add_action( 'wp_ajax_nopriv_mpcrbm_coupon_check', array( $this, 'ajax_coupon_check' ) );
 			}
 
 			public function enforce_valid_from( $valid, $coupon ) {
@@ -64,6 +78,153 @@
 				$valid_from = $coupon->get_meta( '_mpcrbm_valid_from' );
 
 				return ( $valid_from && current_time( 'Y-m-d' ) < $valid_from ) ? false : $valid;
+			}
+
+			/**
+			 * Validates a coupon code for the Custom Payment checkout paths, which
+			 * have no WC cart to run WooCommerce's own coupon validation through —
+			 * this re-checks the same rules by hand (email restriction, usage limit,
+			 * expiry, the custom "valid from" meta) and computes the discount amount
+			 * directly against the booking's own price, rather than a cart total.
+			 *
+			 * @param mixed  $result Default filter value (null) — untouched if this
+			 *                       screen isn't loaded, so callers must treat a
+			 *                       non-array result as "coupon system unavailable".
+			 * @param string $code   Coupon code as typed by the customer.
+			 * @param string $email  Billing email the coupon must be restricted to.
+			 * @param float  $amount The rental price the discount applies against
+			 *                       (never the security deposit — same rule as the
+			 *                       WooCommerce path, see ajax_give_discount()'s form).
+			 * @return array{valid: bool, message: string, discount?: float, coupon_id?: int}
+			 */
+			public function filter_validate_coupon( $result, $code, $email, $amount ) {
+				if ( ! class_exists( 'WC_Coupon' ) ) {
+					return array( 'valid' => false, 'message' => __( 'Coupons are not available right now.', 'car-rental-manager' ) );
+				}
+				$code = trim( (string) $code );
+				if ( $code === '' ) {
+					return array( 'valid' => false, 'message' => __( 'Enter a coupon code.', 'car-rental-manager' ) );
+				}
+
+				$coupon_id = wc_get_coupon_id_by_code( $code );
+				if ( ! $coupon_id ) {
+					return array( 'valid' => false, 'message' => __( 'Invalid coupon code.', 'car-rental-manager' ) );
+				}
+
+				$coupon = new WC_Coupon( $coupon_id );
+
+				$emails = $coupon->get_email_restrictions();
+				$email  = strtolower( trim( (string) $email ) );
+				if ( ! empty( $emails ) && ( $email === '' || ! in_array( $email, array_map( 'strtolower', $emails ), true ) ) ) {
+					return array( 'valid' => false, 'message' => __( 'This coupon isn’t valid for your email address.', 'car-rental-manager' ) );
+				}
+
+				$limit = $coupon->get_usage_limit();
+				if ( $limit > 0 && $coupon->get_usage_count() >= $limit ) {
+					return array( 'valid' => false, 'message' => __( 'This coupon has already been used.', 'car-rental-manager' ) );
+				}
+
+				$expiry = $coupon->get_date_expires();
+				if ( $expiry && $expiry->getTimestamp() < time() ) {
+					return array( 'valid' => false, 'message' => __( 'This coupon has expired.', 'car-rental-manager' ) );
+				}
+
+				$valid_from = $coupon->get_meta( '_mpcrbm_valid_from' );
+				if ( $valid_from && current_time( 'Y-m-d' ) < $valid_from ) {
+					return array( 'valid' => false, 'message' => __( 'This coupon isn’t active yet.', 'car-rental-manager' ) );
+				}
+
+				$amount = max( 0.0, (float) $amount );
+				if ( $coupon->get_discount_type() === 'percent' ) {
+					$discount = round( $amount * ( (float) $coupon->get_amount() / 100 ), 2 );
+				} else {
+					// Never discount past zero, and never past the rental price itself
+					// (a fixed-amount coupon bigger than the booking shouldn't make the
+					// deposit or the booking itself go negative).
+					$discount = min( $amount, max( 0.0, (float) $coupon->get_amount() ) );
+				}
+
+				return array(
+					'valid'     => true,
+					'message'   => '',
+					'discount'  => $discount,
+					'coupon_id' => $coupon_id,
+				);
+			}
+
+			/**
+			 * Does this email have a coupon waiting for it? Gates whether the Custom
+			 * Payment checkout form shows its coupon field at all — an always-visible
+			 * box invites guessing from customers who were never given a code, and a
+			 * silent "invalid code" on submit is a worse experience than never showing
+			 * the field. Deliberately does not check active/expired/used state: if the
+			 * admin gave the customer a coupon that has since expired, showing the field
+			 * (and letting Check explain why it no longer works) is more honest than
+			 * hiding it as if none was ever given.
+			 */
+			public function ajax_coupon_availability() {
+				check_ajax_referer( 'mpcrbm_coupon_availability', 'nonce' );
+
+				$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+				if ( ! is_email( $email ) || ! class_exists( 'WC_Coupon' ) ) {
+					wp_send_json_success( array( 'has_coupon' => false ) );
+				}
+
+				$q = new WP_Query( array(
+					'post_type'      => 'shop_coupon',
+					'post_status'    => 'publish',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					'meta_query'     => array(
+						array( 'key' => 'customer_email', 'value' => $email, 'compare' => 'LIKE' ),
+					),
+				) );
+
+				wp_send_json_success( array( 'has_coupon' => ! empty( $q->posts ) ) );
+			}
+
+			/**
+			 * The checkout form's "Check" button — validates a typed code against the
+			 * parked draft's own price ahead of time, purely for feedback. Not a trust
+			 * boundary: both checkout files' ajax_place_order() re-run
+			 * mpcrbm_validate_coupon at submit time regardless of what happened here, so
+			 * nothing this returns is taken on faith by the actual booking.
+			 */
+			public function ajax_coupon_check() {
+				check_ajax_referer( 'mpcrbm_coupon_check', 'nonce' );
+
+				$token = isset( $_POST['token'] ) ? sanitize_text_field( wp_unslash( $_POST['token'] ) ) : '';
+				$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+				$code  = isset( $_POST['code'] ) ? sanitize_text_field( wp_unslash( $_POST['code'] ) ) : '';
+
+				$draft = $token ? get_transient( 'mpcrbm_checkout_' . $token ) : false;
+				if ( ! is_array( $draft ) ) {
+					wp_send_json_error( array( 'message' => __( 'Your checkout session has expired. Please search and select your vehicle again.', 'car-rental-manager' ) ) );
+				}
+				if ( ! is_email( $email ) ) {
+					wp_send_json_error( array( 'message' => __( 'Enter a valid email address first.', 'car-rental-manager' ) ) );
+				}
+
+				$deposit_amount = (float) ( $draft['mpcrbm_security_deposit_amount'] ?? 0 );
+				$rental_amount  = max( 0.0, (float) $draft['mpcrbm_tp'] - $deposit_amount );
+				$result         = $this->filter_validate_coupon( null, $code, $email, $rental_amount );
+
+				if ( empty( $result['valid'] ) ) {
+					wp_send_json_error( array( 'message' => $result['message'] ) );
+				}
+
+				$new_total = max( 0.0, (float) $draft['mpcrbm_tp'] - (float) $result['discount'] );
+
+				wp_send_json_success( array(
+					'message' => sprintf(
+						/* translators: 1: discount amount, 2: new booking total */
+						__( 'Coupon applied — you save %1$s. New total: %2$s.', 'car-rental-manager' ),
+						wp_strip_all_tags( $this->format_price( (float) $result['discount'] ) ),
+						wp_strip_all_tags( $this->format_price( $new_total ) )
+					),
+				) );
 			}
 
 			private function get_cpt() {

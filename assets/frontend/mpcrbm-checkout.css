@@ -122,6 +122,49 @@
 	min-height: 84px;
 }
 
+/* ── Coupon field ───────────────────────────────────────────────────────── */
+
+.mpcrbm-coupon-row {
+	display: flex;
+	gap: 10px;
+}
+
+.mpcrbm-coupon-row input {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.mpcrbm-coupon-check-btn {
+	flex: 0 0 auto;
+	border: none;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.mpcrbm-field-note {
+	display: block;
+	margin-top: 6px;
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--mpcrbm-co-faded);
+}
+
+.mpcrbm-coupon-result {
+	display: block;
+	margin-top: 8px;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.mpcrbm-coupon-result.is-success {
+	color: #16a34a;
+}
+
+.mpcrbm-coupon-result.is-error {
+	color: #dc2626;
+}
+
 /* ── Payment method card(s) ────────────────────────────────────────────────
    Free renders a single non-interactive Offline card; Pro renders one radio
    per enabled gateway. Both use .mpcrbm-pay-method so the styling is shared. */
