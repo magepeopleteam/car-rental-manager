@@ -344,6 +344,17 @@
                             )
 						),
 						array(
+							'name' => 'car_details_damage_section',
+                            'label' => esc_html__('Show Damage Charges Section In Car Details page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes to publicly display each car\'s Damage Management price list on its car details page. Only shown for a car that actually has Damage Management enabled with a price list set.', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
+						array(
 							'name' => 'car_details_term_condition',
                             'label' => esc_html__('Show Term & Condition Section In Car Details page ', 'car-rental-manager'),
                             'desc' => esc_html__('Select yes for display term & condition section in car details page', 'car-rental-manager'),

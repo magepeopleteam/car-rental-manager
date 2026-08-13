@@ -202,6 +202,14 @@ $mpcrbm_show_faq_section     = ( $mpcrbm_display_faq !== 'no' && ! empty( $mpcrb
 // 'no' turns it off, so existing cars keep showing terms as before.
 $mpcrbm_show_term_condition  = ( get_post_meta( $mpcrbm_post_id, 'mpcrbm_display_term_condition', true ) !== 'no' && ! empty( $mpcrbm_selected_term_condition ) ) ? 'yes' : 'no';
 
+// Damage price list tab — global on/off (MPCRBM_Settings_Global.php, "Show
+// Damage Charges Section In Car Details page", default 'no' since publishing
+// prices is an explicit choice), further gated per car by whether Damage
+// Management is actually enabled there with a price list set.
+$mpcrbm_damage_mgmt_on      = class_exists( 'MPCRBM_Damage_Management_Setting' ) && MPCRBM_Damage_Management_Setting::is_enabled( $mpcrbm_post_id );
+$mpcrbm_damage_parts        = $mpcrbm_damage_mgmt_on ? MPCRBM_Damage_Management_Setting::get_damage_parts( $mpcrbm_post_id ) : array();
+$mpcrbm_show_damage_section = ( $mpcrbm_damage_mgmt_on && ! empty( $mpcrbm_damage_parts ) && MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'car_details_damage_section' ) === 'yes' ) ? 'yes' : 'no';
+
 $booking_period = 0;
 if (is_plugin_active( MPCRBM_PRO_PLUGIN_NAME )) {
     $booking_period = (int)MPCRBM_Global_Function::get_post_info($mpcrbm_post_id, 'mpcrbm_minimum_booking_period');
@@ -318,6 +326,8 @@ if ( $deposit_enable === 'on' ) {
                                     <button data-tab="reviews"><?php esc_attr_e( 'Reviews', 'car-rental-manager' );?></button>
                                 <?php } if( $mpcrbm_show_faq_section === 'yes' ){?>
                                     <button data-tab="faq"><?php esc_attr_e( 'FAQs', 'car-rental-manager' );?></button>
+                                <?php } if( $mpcrbm_show_damage_section === 'yes' ){?>
+                                    <button data-tab="damage"><?php esc_attr_e( 'Damage Charges', 'car-rental-manager' );?></button>
                                 <?php } if ( ! empty( $mpcrbm_related_rentals ) ) : ?>
                                     <button data-tab="similar_rentals"><?php esc_attr_e( 'Similar Rentals', 'car-rental-manager' );?></button>
                                 <?php endif; ?>
@@ -424,6 +434,30 @@ if ( $deposit_enable === 'on' ) {
                                         }
                                         ?>
                                     </div>
+                                </div>
+                            <?php }
+
+                            if( $mpcrbm_show_damage_section === 'yes' ){?>
+                                <div id="damage" class="mpcrbm_car_details_tab_content mpcrbm_car_details_damage_section">
+                                    <h3><?php esc_attr_e( 'Damage Charges', 'car-rental-manager' );?></h3>
+                                    <div class="mpcrbm_car_details_divider"></div>
+                                    <p><?php esc_attr_e( 'If the vehicle is returned damaged, repair costs are charged from the security deposit as follows:', 'car-rental-manager' );?></p>
+                                    <table class="mpcrbm_car_details_table">
+                                        <thead>
+                                        <tr>
+                                            <th><?php esc_attr_e( 'Damage Type / Part', 'car-rental-manager' );?></th>
+                                            <th><?php esc_attr_e( 'Repair Cost', 'car-rental-manager' );?></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php foreach ( $mpcrbm_damage_parts as $mpcrbm_damage_part ) : ?>
+                                            <tr>
+                                                <td><?php echo esc_html( $mpcrbm_damage_part['name'] ?? '' ); ?></td>
+                                                <td><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( floatval( $mpcrbm_damage_part['price'] ?? 0 ) ) ); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
                             <?php }
 
