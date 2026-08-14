@@ -323,9 +323,9 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 if ( $security_deposit > 0 ) {
                     $security_deposit_total = $security_deposit * intval( $car_quantity );
                     $item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $security_deposit_total ) ) );
-                    $item->add_meta_data( 'mpcrbm_security_deposit_amount', $security_deposit_total );
+                    $item->add_meta_data( '_mpcrbm_security_deposit_amount', $security_deposit_total );
                 } else {
-                    $item->add_meta_data( 'mpcrbm_security_deposit_amount', 0 );
+                    $item->add_meta_data( '_mpcrbm_security_deposit_amount', 0 );
                 }
                 if ( $one_way_fee > 0 ) {
                     $one_way_fee_total = $one_way_fee * intval( $car_quantity );
@@ -487,7 +487,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             $price        = $price ? MPCRBM_Global_Function::data_sanitize( $price ) : [];
                             $car_quantity = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_car_quantity' );
                             $car_quantity = $car_quantity ? MPCRBM_Global_Function::data_sanitize( $car_quantity ) : 1;
-                            $security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, 'mpcrbm_security_deposit_amount' );
+                            $security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_security_deposit_amount' );
                             $security_deposit_order = $security_deposit_order ? floatval( MPCRBM_Global_Function::data_sanitize( $security_deposit_order ) ) : 0;
                             $one_way_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_branch_one_way_fee' );
                             $one_way_fee_order = $one_way_fee_order !== '' && $one_way_fee_order !== false ? floatval( $one_way_fee_order ) : 0;
