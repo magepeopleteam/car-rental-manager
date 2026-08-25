@@ -368,17 +368,6 @@
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(
-							'name' => 'disable_block_editor',
-							'label' => esc_html__('Disable Block/Gutenberg Editor', 'car-rental-manager'),
-							'desc' => esc_html__('If you want to disable WordPress\'s new Block/Gutenberg editor, please select Yes.', 'car-rental-manager'),
-							'type' => 'select',
-							'default' => 'yes',
-							'options' => array(
-								'yes' => esc_html__('Yes', 'car-rental-manager'),
-								'no' => esc_html__('No', 'car-rental-manager')
-							)
-						),
-						array(
 							'name' => 'set_book_status',
 							'label' => $label . ' ' . esc_html__('Seat Booked Status', 'car-rental-manager'),
 							'desc' => esc_html__('Please Select when and which order status Seat Will be Booked/Reduced.', 'car-rental-manager'),

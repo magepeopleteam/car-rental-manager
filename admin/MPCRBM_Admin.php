@@ -11,7 +11,9 @@
 			public function __construct() {
 				if ( is_admin() ) {
 					$this->load_file();
-					add_filter( 'use_block_editor_for_post_type', [ $this, 'disable_gutenberg' ], 10, 2 );
+					add_filter( 'use_block_editor_for_post_type', [ $this, 'disable_gutenberg' ], PHP_INT_MAX, 2 );
+					add_filter( 'use_block_editor_for_post', [ $this, 'disable_gutenberg_for_car' ], PHP_INT_MAX, 2 );
+					add_action( 'do_meta_boxes', [ $this, 'limit_car_metaboxes' ], PHP_INT_MAX, 2 );
 					add_filter( 'wp_mail_content_type', array( $this, 'email_content_type' ) );
 					add_action( 'upgrader_process_complete', [ $this, 'flush_rewrite' ], 0 );
 
@@ -63,12 +65,63 @@
 
 			//************Disable Gutenberg************************//
 			public function disable_gutenberg( $current_status, $post_type ) {
-				$user_status = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'disable_block_editor', 'yes' );
-				if ( $post_type === MPCRBM_Function::get_cpt() && $user_status == 'yes' ) {
+				if ( $post_type === MPCRBM_Function::get_cpt() ) {
 					return false;
 				}
 
 				return $current_status;
+			}
+
+			/**
+			 * Prevent a post-specific editor filter from re-enabling Gutenberg.
+			 *
+			 * @param bool    $current_status Whether the block editor is enabled.
+			 * @param WP_Post $post           Post being edited.
+			 * @return bool
+			 */
+			public function disable_gutenberg_for_car( $current_status, $post ) {
+				if ( $post instanceof WP_Post && $post->post_type === MPCRBM_Function::get_cpt() ) {
+					return false;
+				}
+
+				return $current_status;
+			}
+
+			/**
+			 * Keep the Add/Edit Car screen focused on the plugin settings wizard.
+			 *
+			 * The publish box remains in the DOM because the custom top-bar buttons
+			 * proxy its native controls. The featured-image box is moved into the
+			 * General Info tab by mpcrbm-shell.js. Both are hidden from their native
+			 * sidebar positions by the shell stylesheet.
+			 *
+			 * @param string $post_type Current post type.
+			 * @param string $context   Current meta-box context.
+			 */
+			public function limit_car_metaboxes( $post_type, $context ): void {
+				if ( $post_type !== MPCRBM_Function::get_cpt() ) {
+					return;
+				}
+
+				global $wp_meta_boxes;
+
+				if ( empty( $wp_meta_boxes[ $post_type ][ $context ] ) ) {
+					return;
+				}
+
+				$allowed_metaboxes = [
+					'mpcrbm_meta_box_panel',
+					'postimagediv',
+					'submitdiv',
+				];
+
+				foreach ( $wp_meta_boxes[ $post_type ][ $context ] as $priority => $metaboxes ) {
+					foreach ( array_keys( $metaboxes ) as $metabox_id ) {
+						if ( ! in_array( $metabox_id, $allowed_metaboxes, true ) ) {
+							unset( $wp_meta_boxes[ $post_type ][ $context ][ $priority ][ $metabox_id ] );
+						}
+					}
+				}
 			}
 
 			//*************************//
