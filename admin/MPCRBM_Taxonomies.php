@@ -96,7 +96,11 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                 'post_type'    => $post->post_type,
             );
 
-            $new_post_id = wp_insert_post( $new_post );
+            $new_post_id = wp_insert_post( $new_post, true );
+
+            if ( is_wp_error( $new_post_id ) || ! $new_post_id ) {
+                wp_die( esc_html__( 'The vehicle could not be duplicated. Please try again.', 'car-rental-manager' ) );
+            }
 
             // Copy meta
             $metas = get_post_meta( $post_id );
@@ -106,6 +110,19 @@ if (!class_exists('MPCRBM_Taxonomies')) {
                     update_post_meta( $new_post_id, $key, MPCRBM_Global_Function::safe_maybe_unserialize( $value ) );
                 }
             }
+
+            // "Custom" extra services are stored as the car's OWN post id in
+            // mpcrbm_extra_services_id (see MPCRBM_Extra_Service::ex_service_settings()).
+            // Copied verbatim, the duplicate ended up pointing at the ORIGINAL car — an id
+            // its own <select> never renders an <option> for, so the field fell back to the
+            // blank "Select extra option" entry and the submit guard in
+            // assets/admin/mpcrbm_admin.js blocked Publish with an extras alert every time.
+            // Re-point a self-reference at the copy so "Custom" stays "Custom".
+            $copied_service_id = get_post_meta( $new_post_id, 'mpcrbm_extra_services_id', true );
+            if ( (int) $copied_service_id === (int) $post_id ) {
+                update_post_meta( $new_post_id, 'mpcrbm_extra_services_id', $new_post_id );
+            }
+
             wp_safe_redirect( get_edit_post_link( $new_post_id, 'url' ) ); // phpcs:ignore WordPress.Security.SafeRedirect.DangerousRedirect
             exit;
         }
