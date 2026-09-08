@@ -1052,6 +1052,86 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 
 
 
+        /**
+         * The single reply "Book Now" is allowed to produce, and the end of the request.
+         *
+         * The frontend contract (assets/frontend/mpcrbm_registration.js) is strict: a
+         * response starting with "<" is HTML to render in place, "0" means "unavailable",
+         * and anything else is a URL to navigate to. Any incidental output — a PHP notice,
+         * or wpdb printing a query error while WP_DEBUG is on — used to be prepended to
+         * that body, which turned a valid checkout URL into unparseable HTML and left
+         * "Book Now" doing nothing at all. Discarding everything this handler buffered
+         * guarantees the client only ever sees the payload we meant to send. Nothing is
+         * lost: PHP and wpdb still record their own errors in the debug log.
+         *
+         * @param string $payload      Already-escaped response body.
+         * @param int    $buffer_level ob_get_level() as it was before this handler started buffering.
+         */
+        protected static function mpcrbm_send_cart_response( $payload, $buffer_level ) {
+            while ( ob_get_level() > $buffer_level ) {
+                ob_end_clean();
+            }
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every caller escapes with esc_url_raw()/wp_kses_post() before handing the payload over.
+            echo $payload;
+            die();
+        }
+
+        /**
+         * Error block shown in place when a booking cannot be added to the cart, so the
+         * customer gets a reason instead of a button that silently does nothing.
+         *
+         * @param string $message Fallback text when WooCommerce itself said nothing useful.
+         * @return string
+         */
+        protected static function mpcrbm_cart_error_html( $message ) {
+            // Prefer WooCommerce's own wording ("out of stock", a failed
+            // woocommerce_add_to_cart_validation rule, ...) — it is far more specific
+            // than anything this plugin could guess at. Guarded three ways because this
+            // also runs in Custom Payment mode, where WooCommerce may be active but its
+            // session was never started for this request (wc_get_notices() would then
+            // dereference a null WC()->session).
+            if ( function_exists( 'wc_get_notices' ) && did_action( 'woocommerce_init' ) && ! empty( WC()->session ) ) {
+                $notices = wc_get_notices( 'error' );
+                if ( ! empty( $notices ) ) {
+                    $collected = array();
+                    foreach ( $notices as $notice ) {
+                        $text = is_array( $notice ) && isset( $notice['notice'] ) ? $notice['notice'] : $notice;
+                        if ( is_string( $text ) && '' !== trim( $text ) ) {
+                            $collected[] = wp_strip_all_tags( $text );
+                        }
+                    }
+                    if ( ! empty( $collected ) ) {
+                        $message = implode( ' ', $collected );
+                    }
+
+                    // Consume only the errors we just rendered. wc_clear_notices() empties
+                    // the whole bag, so anything else queued is put straight back — the
+                    // customer should not lose an unrelated success/info message just
+                    // because their booking could not be added.
+                    $keep = wc_get_notices();
+                    unset( $keep['error'] );
+                    wc_clear_notices();
+                    foreach ( $keep as $keep_type => $keep_notices ) {
+                        foreach ( $keep_notices as $keep_notice ) {
+                            wc_add_notice(
+                                is_array( $keep_notice ) && isset( $keep_notice['notice'] ) ? $keep_notice['notice'] : $keep_notice,
+                                $keep_type,
+                                is_array( $keep_notice ) && isset( $keep_notice['data'] ) ? $keep_notice['data'] : array()
+                            );
+                        }
+                    }
+                }
+            }
+
+            ob_start();
+            ?>
+            <div class="dLayout mpcrbm-cart-error">
+                <p class="mpcrbm-error-message"><?php echo esc_html( $message ); ?></p>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
+
         /****************************/
         public function mpcrbm_add_to_cart() {
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
@@ -1063,6 +1143,13 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 return;
             }
 
+            // Remember where the output stack stood, then capture everything from here on
+            // so only mpcrbm_send_cart_response()'s payload can reach the browser. See that
+            // method for why. Every exit path below goes through it, so this buffer is
+            // always closed.
+            $mpcrbm_buffer_level = ob_get_level();
+            ob_start();
+
             $link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
             $post_id           = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
@@ -1071,7 +1158,11 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $already_booked = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, $mpcrbm_date );
 
             if( $already_booked === 0 ){
-                return 0;
+                // "0" is the frontend's agreed signal for "fully booked"; it shows the
+                // "choose another date or vehicle" message. Sent explicitly rather than
+                // returning and letting admin-ajax print it, so the buffer above is
+                // discarded instead of being flushed ahead of it at shutdown.
+                self::mpcrbm_send_cart_response( '0', $mpcrbm_buffer_level );
             }
 
             // The explicit Booking Mode setting (MPCRBM_Booking_Mode) is the single
@@ -1087,24 +1178,19 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 // instead of hanging on a spinner forever.
                 $response = apply_filters( 'mpcrbm_custom_payment_add_to_cart', '', $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified at the top of this method.
                 if ( '' === $response ) {
-                    ob_start();
-                    ?>
-                    <div class="dLayout mpcrbm-cart-error">
-                        <p class="mpcrbm-error-message"><?php esc_html_e( 'No payment method is currently available. Please contact the site admin.', 'car-rental-manager' ); ?></p>
-                    </div>
-                    <?php
-                    $response = ob_get_clean();
+                    $response = self::mpcrbm_cart_error_html(
+                        __( 'No payment method is currently available. Please contact the site admin.', 'car-rental-manager' )
+                    );
                 }
 
                 // A handler returns EITHER a redirect URL or an HTML block, and the two
                 // need opposite escaping: running a URL through wp_kses_post() turns every
                 // "&" into "&#038;", which silently breaks a multi-parameter checkout link.
                 if ( 0 === strpos( ltrim( $response ), '<' ) ) {
-                    echo wp_kses_post( $response );
-                } else {
-                    echo esc_url_raw( $response );
+                    self::mpcrbm_send_cart_response( wp_kses_post( $response ), $mpcrbm_buffer_level );
                 }
-                die();
+
+                self::mpcrbm_send_cart_response( esc_url_raw( $response ), $mpcrbm_buffer_level );
             }
 
             // A car published while WooCommerce was inactive (Custom Payment mode) has
@@ -1129,12 +1215,27 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
             $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
             $product_status = get_post_status($product_id);
-            ob_start();
-            if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
-                echo esc_url(wc_get_checkout_url());
+
+            if ($passed_validation && 'publish' === $product_status && WC()->cart->add_to_cart($product_id, $quantity)) {
+                // esc_url_raw(), not esc_url(): esc_url() encodes "&" as "&#038;", which
+                // the browser then follows literally and drops every query argument after
+                // the first — checkout URLs on stores that use them arrived broken.
+                self::mpcrbm_send_cart_response( esc_url_raw( wc_get_checkout_url() ), $mpcrbm_buffer_level );
             }
-            echo wp_kses_post(ob_get_clean());
-            die();
+
+            // Reaching here means WooCommerce refused the add — an unpublished or deleted
+            // mirror product, a product with no price, an out-of-stock item, or a
+            // woocommerce_add_to_cart_validation rule from another plugin. Say so instead
+            // of returning an empty body, which the frontend could only render as a
+            // "Book Now" button that appears to do nothing.
+            self::mpcrbm_send_cart_response(
+                wp_kses_post(
+                    self::mpcrbm_cart_error_html(
+                        __( 'Sorry, this vehicle could not be added to your cart. Please try another vehicle or contact us.', 'car-rental-manager' )
+                    )
+                ),
+                $mpcrbm_buffer_level
+            );
         }
     }
     new MPCRBM_Woocommerce();

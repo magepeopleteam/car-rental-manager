@@ -1469,9 +1469,24 @@ jQuery(document).ready(function($) {
             car_quantity = 1;
         }
 
-        // Deliberately NOT requiring link_id: without WooCommerce there is no mirror
-        // product, and demanding one here made "Book Now" silently do nothing at all.
-        if (start_place !== '' && end_place !== '' && post_id) {
+        // Normalise the two locations before the guard below. They arrive from hidden
+        // fields that the search step fills in, so they are blank whenever the customer
+        // only chose a pick-up point (the "Return car in same location" case), and on any
+        // site that doesn't use pickup/drop-off locations at all. Requiring both to be
+        // non-empty therefore aborted the click with no request, no message and no
+        // console error — the reported "Book Now does nothing". Same normalisation the
+        // car-details "Continue" handler further down already does.
+        start_place = (start_place === null || start_place === undefined) ? '' : start_place;
+        end_place   = (end_place === null || end_place === undefined) ? '' : end_place;
+        if (end_place === '') {
+            end_place = start_place;
+        }
+
+        // Only the CAR is genuinely required — the vehicle list was already filtered
+        // server-side by operation area. Deliberately NOT requiring link_id either:
+        // without WooCommerce there is no mirror product, and demanding one here made
+        // "Book Now" silently do nothing at all.
+        if (post_id) {
             let extra_service_name = {};
             let extra_service_qty = {};
             let count = 0;
@@ -1566,6 +1581,11 @@ jQuery(document).ready(function($) {
                     mpcrbm_loader_remove(parent.find('.tabsContentNext'));
                 }
             });
+        } else {
+            // Never swallow the click. The button is disabled until a vehicle is picked,
+            // so getting here means something re-enabled it (a cached page, a theme
+            // override) — say why instead of appearing broken.
+            alert(mpcrbm_ajax.i18n_select_vehicle || 'Please select a vehicle before continuing.');
         }
     });
     // #mpcrbm_start_date/#mpcrbm_return_date and the time fields are readonly

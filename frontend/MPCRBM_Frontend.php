@@ -397,12 +397,56 @@
                 ) );
             }
 
+            /**
+             * Reduce a caller-supplied pick-up value to the bare calendar day.
+             *
+             * mpcrbm_get_available_stock_by_date() builds its DATETIME bounds by string
+             * concatenation, so it can only ever be handed a plain "Y-m-d". Its callers
+             * disagree: car_details.php passes gmdate('Y-m-d'), while the Book Now AJAX
+             * (MPCRBM_Woocommerce::mpcrbm_add_to_cart) and both custom checkouts pass the
+             * full pick-up datetime "Y-m-d H:i". Normalising here fixes every caller at
+             * once instead of relying on each one to remember.
+             *
+             * @param string $date "Y-m-d", "Y-m-d H:i", "Y-m-d H:i:s" or anything strtotime() reads.
+             * @return string "Y-m-d", or '' when the value cannot be understood.
+             */
+            protected static function mpcrbm_date_only( $date ) {
+
+                $date = trim( (string) $date );
+
+                if ( '' === $date ) {
+                    return '';
+                }
+
+                // Fast path — the leading "Y-m-d" of every format this plugin stores.
+                if ( preg_match( '/^(\d{4}-\d{2}-\d{2})/', $date, $matches ) ) {
+                    return $matches[1];
+                }
+
+                $timestamp = strtotime( $date );
+
+                return $timestamp ? gmdate( 'Y-m-d', $timestamp ) : '';
+            }
+
             public static function mpcrbm_get_available_stock_by_date( $car_id, $date ) {
 
                 $total_stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
 
                 if ( $total_stock <= 0 ) {
                     return 0;
+                }
+
+                // Without this, a caller passing "2026-09-08 08:00" produced the bound
+                // "2026-09-08 08:00 23:59:59". MySQL rejects that as an invalid DATETIME
+                // and aborts the whole meta_query, so the stock check silently never ran —
+                // and with WP_DEBUG on, wpdb printed the error straight into the "Book Now"
+                // AJAX response body, which broke the redirect to checkout.
+                $date = self::mpcrbm_date_only( $date );
+
+                if ( '' === $date ) {
+                    // Nothing to compare against. Fail open (same net result the broken
+                    // query already produced) rather than blocking a legitimate booking.
+                    return $total_stock;
                 }
 
                 $start_datetime = $date . ' 00:00:00';

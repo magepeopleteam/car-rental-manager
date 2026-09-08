@@ -152,6 +152,10 @@
 					// Shown when add-to-cart bails (car fully booked for the chosen dates),
 					// so the customer gets a reason instead of a button that does nothing.
 					'i18n_unavailable' => __( 'This vehicle is not available for the selected dates. Please choose another date or vehicle.', 'car-rental-manager' ),
+					// Shown when "Book Now" is clicked with no vehicle picked — the button
+					// is normally disabled until one is, so this only guards the edge cases
+					// (a cached page, a theme that re-enables it) that used to fail silently.
+					'i18n_select_vehicle' => __( 'Please select a vehicle before continuing.', 'car-rental-manager' ),
 				) );
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbmL10n', array(
 					'nameLabel'  => __( 'Name : ', 'car-rental-manager' ),
