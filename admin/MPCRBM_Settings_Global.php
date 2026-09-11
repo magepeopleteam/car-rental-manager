@@ -365,6 +365,17 @@
                                 'yes' => esc_html__('Yes', 'car-rental-manager')
                             )
 						),
+						array(
+							'name' => 'car_details_rfq_button',
+                            'label' => esc_html__('Show "Request a Better Price" Button On Checkout page ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes to let customers, right at checkout, ask for a custom price on the booking they are about to place. Requests appear under Quote Requests for you to respond to with a personal discount code.', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(

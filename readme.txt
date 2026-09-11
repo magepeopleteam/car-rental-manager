@@ -3,7 +3,7 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
@@ -47,7 +47,9 @@ Let's look at the key features that make the plugin more acceptable in its categ
 
 * ✅ **Streamlined Booking Flow** – User-friendly, customizable front-end booking process, powered by WooCommerce or by the plugin's own checkout.  
 
-* 📦 **Order & Admin Management** – Track and manage reservations with an intuitive back-end dashboard.  
+* 📦 **Order & Admin Management** – Track and manage reservations with an intuitive back-end dashboard.
+
+* 💬 **Request a Better Price** – Let checkout customers who feel the price is too high ask for a custom price instead of leaving. The request lands in **Quote Requests** in wp-admin, where you can reply with a personal one-time discount coupon emailed straight to them.
 
 * 🌍 **Multi-Language Ready** – Reach global customers with built-in translation and localization support.  
 
@@ -125,6 +127,14 @@ Yes you can offer extra services along with the car
 Please report security bugs found in the source code of the Car Rental Manager for WordPress plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/b1431560-8325-44d1-9a15-6f0ccfb485d4). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
 == Changelog ==
+
+= 1.5.1 =
+**New Features**
+* Request a Better Price — a customer who feels the checkout price is too high can now ask for a custom price right on the checkout page, next to the order total, instead of abandoning the booking. Name, email, phone, pickup/return date and time are all taken automatically from the booking already in progress; the customer only has to type the price they'd like. Works on both WooCommerce checkout and the plugin's own Custom Payment checkout.
+* Quote Requests admin screen — every request appears here with the customer's details and proposed price. Responding with "Send a Personal Discount" creates a real, email-restricted, single-use WooCommerce coupon (reusing the same coupon system as the existing "Give Discount" customer tool) and emails it to the customer in one step; the admin sees the generated coupon code immediately with a Copy button. An in-page guide explains why the feature exists, how the request-to-coupon flow works, and what each status means. This screen — and the checkout-side button — only appear once the feature is switched on in Settings.
+
+**Fixes**
+* Fixed the checkout-side "Request a Better Price" script matching the wrong order total when a theme's header includes a Mini-Cart, which could inject the request form into the (hidden) Mini-Cart drawer instead of the real order summary. The search is now scoped to the checkout block's own summary.
 
 = 1.5.0 =
 WooCommerce is now optional. The plugin can take bookings either through the WooCommerce cart and checkout, or through its own built-in Custom Payment checkout — chosen with a single Booking Mode setting.

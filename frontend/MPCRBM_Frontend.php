@@ -47,6 +47,11 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin_Shell.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Booking_List_Free.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Customers.php';
+				// Same reasoning as MPCRBM_Customers.php just above: its whole reason to
+				// exist is a wp_enqueue_scripts callback that runs on the customer's own
+				// Checkout page, plus a nopriv AJAX handler — neither fires if this file
+				// only loads behind MPCRBM_Admin's is_admin() gate.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Quote_Requests.php';
 			}
 			public function load_single_template($template): string {
 				global $post;

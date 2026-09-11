@@ -397,7 +397,7 @@
 
 						<aside class="mpcrbm-checkout-summary">
 							<h2 class="mpcrbm-checkout-title"><?php esc_html_e( 'Booking summary', 'car-rental-manager' ); ?></h2>
-							<?php echo $this->render_summary( $draft, $car_id ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts below. ?>
+							<?php echo $this->render_summary( $draft, $car_id, $token ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped parts below. ?>
 						</aside>
 
 					</div>
@@ -407,8 +407,14 @@
 				return ob_get_clean();
 			}
 
-			/** Booking summary block, shared by the checkout page and the confirmation page. */
-			private function render_summary( array $draft, $car_id ): string {
+			/**
+			 * Booking summary block, shared by the checkout page and the confirmation
+			 * page. $token is only ever passed by the checkout page (the confirmation
+			 * page has no active draft to price against any more, and the booking is
+			 * already placed by then) — it gates the "Request a Better Price" block
+			 * below, so that block only ever appears where a request still makes sense.
+			 */
+			private function render_summary( array $draft, $car_id, $token = '' ): string {
 				// 'large', not 'medium': the card is up to ~600px wide, so a 300px "medium"
 				// crop was being upscaled and looked blurry. WordPress emits srcset for a
 				// registered size automatically, and the `sizes` hint keeps phones from
@@ -478,6 +484,90 @@
 						<p class="mpcrbm-summary-note"><?php esc_html_e( 'The security deposit is refundable and collected separately.', 'car-rental-manager' ); ?></p>
 					<?php endif; ?>
 				</div>
+
+				<?php if ( '' !== $token && class_exists( 'MPCRBM_Global_Function' ) && MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'car_details_rfq_button' ) === 'yes' ) : ?>
+				<div class="mpcrbm-rfq-native-wrap" style="margin-top:14px;">
+					<button type="button" id="mpcrbm-rfq-native-btn" style="width:100%;padding:10px;border:1px dashed #999;background:transparent;border-radius:6px;cursor:pointer;">
+						<?php esc_html_e( 'Request a Better Price', 'car-rental-manager' ); ?>
+					</button>
+					<div id="mpcrbm-rfq-native-panel" style="display:none;margin-top:10px;padding:14px;border:1px solid #e5e9f0;border-radius:8px;background:#fafbfc;">
+						<p style="margin:0 0 10px;font-size:13px;color:#555;"><?php esc_html_e( 'We\'ll email you a special price for this booking if we can offer one.', 'car-rental-manager' ); ?></p>
+						<label style="display:block;font-weight:600;font-size:12px;margin-bottom:4px;"><?php esc_html_e( 'Your Proposed Price', 'car-rental-manager' ); ?></label>
+						<input type="number" id="mpcrbm-rfq-native-price" min="0" step="0.01" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;box-sizing:border-box;">
+						<label style="display:block;font-weight:600;font-size:12px;margin:10px 0 4px;"><?php esc_html_e( 'Note (optional)', 'car-rental-manager' ); ?></label>
+						<textarea id="mpcrbm-rfq-native-note" rows="2" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;box-sizing:border-box;"></textarea>
+						<div id="mpcrbm-rfq-native-result" style="margin:10px 0;font-size:13px;"></div>
+						<div style="display:flex;gap:8px;justify-content:flex-end;">
+							<button type="button" id="mpcrbm-rfq-native-cancel" style="padding:8px 14px;border-radius:6px;border:1px solid #d1d5db;background:#fff;cursor:pointer;"><?php esc_html_e( 'Cancel', 'car-rental-manager' ); ?></button>
+							<button type="button" id="mpcrbm-rfq-native-send" style="padding:8px 14px;border-radius:6px;border:none;background:#111827;color:#fff;cursor:pointer;"><?php esc_html_e( 'Send Request', 'car-rental-manager' ); ?></button>
+						</div>
+					</div>
+				</div>
+				<script>
+				(function($){
+					$(document).on('click', '#mpcrbm-rfq-native-btn', function(){
+						$('#mpcrbm-rfq-native-panel').slideToggle(150);
+					});
+					$(document).on('click', '#mpcrbm-rfq-native-cancel', function(){
+						$('#mpcrbm-rfq-native-panel').slideUp(150);
+					});
+					$(document).on('click', '#mpcrbm-rfq-native-send', function(){
+						var $btn    = $(this);
+						var $result = $('#mpcrbm-rfq-native-result');
+						var price   = $('#mpcrbm-rfq-native-price').val();
+						var name    = ( $('#mpcrbm_co_first_name').val() + ' ' + $('#mpcrbm_co_last_name').val() ).trim();
+						var email   = $('#mpcrbm_co_email').val();
+						var phone   = $('#mpcrbm_co_phone').val();
+
+						if( !price || parseFloat(price) <= 0 ){
+							$result.css('color', '#b91c1c').text('<?php echo esc_js( __( 'Please enter your proposed price.', 'car-rental-manager' ) ); ?>');
+							return;
+						}
+						if( !name || !email ){
+							$result.css('color', '#b91c1c').text('<?php echo esc_js( __( 'Please fill in your name and email above first.', 'car-rental-manager' ) ); ?>');
+							return;
+						}
+
+						$btn.prop('disabled', true);
+						$result.css('color', '#555').text('<?php echo esc_js( __( 'Sending…', 'car-rental-manager' ) ); ?>');
+
+						$.post('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+							action: 'mpcrbm_submit_quote_request',
+							nonce: '<?php echo esc_js( wp_create_nonce( 'mpcrbm_quote_request' ) ); ?>',
+							checkout_token: '<?php echo esc_js( $token ); ?>',
+							name: name,
+							email: email,
+							phone: phone,
+							requested_price: price,
+							note: $('#mpcrbm-rfq-native-note').val()
+						}, function(r){
+							// Written with nested ifs/||, never a literal "&&" — this whole
+							// block is built by a PHP method whose *output string* is later
+							// echoed through content filters (wptexturize/convert_chars) that
+							// don't know they're inside a <script> tag, and silently rewrite
+							// any bare "&&" into "&#038;&#038;", breaking the script.
+							$btn.prop('disabled', false);
+							var ok = false;
+							var msg = '';
+							if ( r ) {
+								if ( r.success ) { ok = true; }
+								if ( r.data ) {
+									if ( r.data.message ) { msg = r.data.message; }
+								}
+							}
+							if ( ok ) {
+								$result.css('color', '#166534').text(msg);
+							} else {
+								$result.css('color', '#b91c1c').text( msg || '<?php echo esc_js( __( 'Something went wrong. Please try again.', 'car-rental-manager' ) ); ?>' );
+							}
+						}).fail(function(){
+							$btn.prop('disabled', false);
+							$result.css('color', '#b91c1c').text('<?php echo esc_js( __( 'Something went wrong. Please try again.', 'car-rental-manager' ) ); ?>');
+						});
+					});
+				})(jQuery);
+				</script>
+				<?php endif; ?>
 				<?php
 
 				return ob_get_clean();
