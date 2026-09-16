@@ -476,14 +476,29 @@
 					'step'              => isset( $option['step'] ) ? $option['step'] : '',
 				);
 				$callback = isset( $option['callback'] ) ? $option['callback'] : array( $this, 'callback_' . $type );
+				// Mirror the field's `class` onto its grid cell. Cells previously carried no
+				// class at all, so nothing existing can be affected — but tabs that show or
+				// hide fields conditionally (Payments: WooCommerce vs Custom Payment) need a
+				// hook on the cell itself, not just on the control inside it. A cell can also
+				// opt out of the 2-column grid with `mpcrbm-fullrow`.
+				$section_class = trim( (string) $args['class'] );
+				// A field with no explicit class defaults to its own name, which would leak
+				// dozens of meaningless one-off class names into the markup; only emit a
+				// class when the field actually asked for one.
+				$has_explicit_class = isset( $option['class'] ) && '' !== trim( (string) $option['class'] );
+				// Blank label + blank desc = a pure callback field (a whole custom panel).
+				// Rendering the empty .field-head would add stray vertical space above it.
+				$has_head = ( '' !== trim( (string) $args['name'] ) ) || ( '' !== trim( (string) $args['desc'] ) );
 				?>
-				<section>
-					<div class="field-head">
-						<h6><?php echo esc_html( $args['name'] ); ?></h6>
-						<?php if ( ! empty( $args['desc'] ) ) : ?>
-							<span class="desc"><?php echo wp_kses_post( $args['desc'] ); ?></span>
-						<?php endif; ?>
-					</div>
+				<section<?php echo $has_explicit_class ? ' class="' . esc_attr( $section_class ) . '"' : ''; ?>>
+					<?php if ( $has_head ) : ?>
+						<div class="field-head">
+							<h6><?php echo esc_html( $args['name'] ); ?></h6>
+							<?php if ( ! empty( $args['desc'] ) ) : ?>
+								<span class="desc"><?php echo wp_kses_post( $args['desc'] ); ?></span>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
 					<?php call_user_func( $callback, $args ); ?>
 				</section>
 				<?php

@@ -46,6 +46,15 @@ if ( ! class_exists( 'MPCRBM_Woo_Installer' ) ) {
 		/**
 		 * Constructor – hooks into WordPress.
 		 */
+		/**
+		 * User meta flag set when the popup is dismissed (the admin has decided to run
+		 * Custom Payment instead of installing WooCommerce).
+		 */
+		const DISMISSED_META = 'mpcrbm_woo_installer_dismissed';
+
+		/**
+		 * Constructor – hooks into WordPress.
+		 */
 		public function __construct() {
 			add_action( 'admin_init', array( $this, 'handle_activation_redirect' ) );
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
@@ -53,6 +62,7 @@ if ( ! class_exists( 'MPCRBM_Woo_Installer' ) ) {
 			add_action( 'wp_ajax_mpcrbm_woo_download_chunk', array( $this, 'ajax_download_chunk' ) );
 			add_action( 'wp_ajax_mpcrbm_woo_install', array( $this, 'ajax_install' ) );
 			add_action( 'wp_ajax_mpcrbm_woo_activate', array( $this, 'ajax_activate' ) );
+			add_action( 'wp_ajax_mpcrbm_woo_installer_dismiss', array( $this, 'ajax_dismiss' ) );
 		}
 
 		/**
@@ -127,7 +137,51 @@ if ( ! class_exists( 'MPCRBM_Woo_Installer' ) ) {
 		 * @return bool
 		 */
 		private function should_show_popup() {
-			return ! $this->is_woo_active();
+			if ( $this->is_woo_active() ) {
+				return false;
+			}
+			// WooCommerce is no longer required — Custom Payment mode runs the plugin's
+			// own standalone checkout (see MPCRBM_Booking_Mode). So this offer is exactly
+			// that, an offer: it appears once, only on this plugin's own screens, and
+			// never again once the admin has said no.
+			if ( ! current_user_can( 'install_plugins' ) ) {
+				return false;
+			}
+			if ( get_user_meta( get_current_user_id(), self::DISMISSED_META, true ) ) {
+				return false;
+			}
+			// An admin already taking bookings through Custom Payment has answered this
+			// question by their actions — don't interrupt them with it again.
+			if ( class_exists( 'MPCRBM_Booking_Mode' ) && MPCRBM_Booking_Mode::is_custom()
+				&& class_exists( 'MPCRBM_Payment_Status_Checker' )
+				&& MPCRBM_Payment_Status_Checker::get_enabled_pro_payment_method_count() > 0 ) {
+				return false;
+			}
+
+			return $this->is_plugin_screen();
+		}
+
+		/**
+		 * Restrict the popup to this plugin's own admin screens. It used to render on
+		 * every single wp-admin page, which blocked unrelated work (writing a post,
+		 * moderating comments) behind a modal about a plugin the user wasn't using at
+		 * that moment.
+		 */
+		private function is_plugin_screen() {
+			if ( ! function_exists( 'get_current_screen' ) ) {
+				return false;
+			}
+			if ( class_exists( 'MPCRBM_Admin_Shell' ) && ( MPCRBM_Admin_Shell::is_plugin_screen() || MPCRBM_Admin_Shell::is_metabox_screen() ) ) {
+				return true;
+			}
+			$screen = get_current_screen();
+			if ( ! $screen ) {
+				return false;
+			}
+			$cpt = class_exists( 'MPCRBM_Function' ) ? MPCRBM_Function::get_cpt() : 'mpcrbm_rent';
+
+			return ( isset( $screen->post_type ) && $screen->post_type === $cpt )
+				|| ( isset( $screen->id ) && false !== strpos( (string) $screen->id, 'mpcrbm_' ) );
 		}
 
 		/**
@@ -207,9 +261,9 @@ if ( ! class_exists( 'MPCRBM_Woo_Installer' ) ) {
 					</div>
 
 					<div class="mpcrbm-woo-content">
-						<h2 class="mpcrbm-woo-title"><?php esc_html_e( 'WooCommerce Required', 'car-rental-manager' ); ?></h2>
+						<h2 class="mpcrbm-woo-title"><?php esc_html_e( 'Take payments with WooCommerce', 'car-rental-manager' ); ?></h2>
 						<p class="mpcrbm-woo-desc">
-							<?php esc_html_e( 'Car Rental Manager requires WooCommerce to handle bookings, pricing, and payments. Please install and activate WooCommerce to continue using this plugin.', 'car-rental-manager' ); ?>
+							<?php esc_html_e( 'Install WooCommerce to run rental bookings through its cart, checkout, and order system — including every WooCommerce payment gateway. Prefer not to? Car Rental Manager also has its own built-in Custom Payment checkout.', 'car-rental-manager' ); ?>
 						</p>
 					</div>
 
@@ -261,9 +315,71 @@ if ( ! class_exists( 'MPCRBM_Woo_Installer' ) ) {
 						</svg>
 						<?php esc_html_e( 'WooCommerce is free, open-source, and trusted by millions of stores worldwide.', 'car-rental-manager' ); ?>
 					</p>
+
+					<?php
+					// Escape hatch. Without this the modal is a dead end for anyone who
+					// genuinely doesn't want WooCommerce — and since Custom Payment is now a
+					// fully supported mode, "no" has to be a real answer. Switching the mode
+					// here (rather than only closing the popup) means the very next screen
+					// they see is already configured the way they just asked for.
+					$can_switch_to_custom = class_exists( 'MPCRBM_Booking_Mode' );
+					?>
+					<p class="mpcrbm-woo-optout">
+						<button type="button" id="mpcrbm-woo-dismiss-btn" class="mpcrbm-woo-optout-link"
+							data-nonce="<?php echo esc_attr( wp_create_nonce( 'mpcrbm_woo_installer_dismiss' ) ); ?>"
+							data-switch="<?php echo $can_switch_to_custom ? '1' : '0'; ?>">
+							<?php esc_html_e( "No thanks — I'll use Custom Payment instead", 'car-rental-manager' ); ?>
+						</button>
+					</p>
 				</div>
 			</div>
+			<style>
+			.mpcrbm-woo-optout{margin:14px 0 0;text-align:center;}
+			.mpcrbm-woo-optout-link{background:none;border:none;padding:4px 8px;font-size:13px;font-weight:600;color:#788291;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+			.mpcrbm-woo-optout-link:hover{color:#667eea;}
+			</style>
+			<script>
+			jQuery(function($){
+				$('#mpcrbm-woo-dismiss-btn').on('click', function(){
+					var $btn = $(this);
+					$btn.prop('disabled', true);
+					$.post(ajaxurl, {
+						action: 'mpcrbm_woo_installer_dismiss',
+						nonce: $btn.data('nonce'),
+						switch_mode: String($btn.data('switch')) === '1' ? 'yes' : 'no'
+					}).always(function(){
+						// Reload rather than just hiding the overlay: the Booking Mode has
+						// changed server-side, so any payment notice / mode-dependent UI on
+						// this screen is now showing stale state.
+						window.location.reload();
+					});
+				});
+			});
+			</script>
 			<?php
+		}
+
+		/**
+		 * AJAX: dismiss the installer offer, optionally switching the site to Custom
+		 * Payment mode (which is what "no thanks" actually means here).
+		 *
+		 * Dismissal is per user, not site-wide: one admin declining WooCommerce shouldn't
+		 * silently hide the option from their colleagues.
+		 */
+		public function ajax_dismiss() {
+			check_ajax_referer( 'mpcrbm_woo_installer_dismiss', 'nonce' );
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( __( 'Permission denied.', 'car-rental-manager' ), 403 );
+			}
+
+			update_user_meta( get_current_user_id(), self::DISMISSED_META, 1 );
+
+			$switch = isset( $_POST['switch_mode'] ) && 'yes' === sanitize_key( wp_unslash( $_POST['switch_mode'] ) );
+			if ( $switch && class_exists( 'MPCRBM_Booking_Mode' ) ) {
+				MPCRBM_Booking_Mode::set_mode( MPCRBM_Booking_Mode::CUSTOM );
+			}
+
+			wp_send_json_success();
 		}
 
 		/**
@@ -433,6 +549,14 @@ if ( ! class_exists( 'MPCRBM_Woo_Installer' ) ) {
 			// page load, redirects to its own setup wizard — which would override our
 			// redirect to the car list. Remove it so our redirect wins.
 			delete_transient( '_wc_activation_redirect' );
+
+			// Cars published while WooCommerce was inactive have no hidden mirror product
+			// (MPCRBM_Hidden_Product stands down in Custom Payment mode), so "Book Now"
+			// would fail with a cart error the moment bookings move to WooCommerce.
+			// Backfill them now, while we know the exact transition just happened.
+			if ( class_exists( 'MPCRBM_Hidden_Product' ) ) {
+				MPCRBM_Hidden_Product::repair_all_hidden_products();
+			}
 
 			wp_send_json_success( array( 'message' => __( 'WooCommerce activated successfully!', 'car-rental-manager' ) ) );
 		}

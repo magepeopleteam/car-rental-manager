@@ -58,7 +58,7 @@
 			?>
 				<div class="justifyBetween">
 					<h6><?php echo esc_html($mpcrbm_service_name); ?></h6>
-					<span class="textTheme"><?php echo wp_kses_post(wc_price($mpcrbm_service_price)); ?></span>
+					<span class="textTheme"><?php echo wp_kses_post(MPCRBM_Global_Function::format_price($mpcrbm_service_price)); ?></span>
 				</div>
 				<div class="divider"></div>
 			<?php } ?>

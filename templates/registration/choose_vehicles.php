@@ -227,7 +227,11 @@ $mpcrbm_startDate_str  = new DateTime( $mpcrbm_date );
 $mpcrbm_returnDate_str = new DateTime( $mpcrbm_return_date_time );
 $mpcrbm_interval = $mpcrbm_startDate_str->diff( $mpcrbm_returnDate_str );
 $mpcrbm_minutes_all        = ( $mpcrbm_interval->days * 24 * 60 ) + ( $mpcrbm_interval->h * 60 ) + $mpcrbm_interval->i;
-$mpcrbm_minutes_to_day = ceil( $mpcrbm_minutes_all / 1440 );
+// At least one day: this value is compared against each vehicle's minimum booking
+// period below, so a 0 (identical pick-up/return clock time — always the case while
+// "Hide Time Input Field From Search Form" is on, and on any same-day booking) used
+// to filter out every single vehicle and return an empty result page.
+$mpcrbm_minutes_to_day = max( 1, ceil( $mpcrbm_minutes_all / 1440 ) );
 
 $mpcrbm_ajax_search = isset( $_POST['ajax_search'] ) ? sanitize_text_field( wp_unslash( $_POST['ajax_search'] ) ) : '';
 
@@ -404,6 +408,15 @@ if( $is_redirect === 'yes' ){
                     </p>
                 </div>
                 <div class="mpcrbm_extra_service_summary"></div>
+                <?php foreach ( [ 'delivery' => __( 'Delivery Fee:', 'car-rental-manager' ), 'collection' => __( 'Collection Fee:', 'car-rental-manager' ) ] as $mpcrbm_dc_kind => $mpcrbm_dc_row_label ) : ?>
+                    <div class="mpcrbm_dc_fee_summary" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_row" style="display: none">
+                        <div class="divider"></div>
+                        <div class="justifyBetween">
+                            <span><?php echo esc_html( $mpcrbm_dc_row_label ); ?></span>
+                            <span class="_textTheme" id="mpcrbm_car_<?php echo esc_attr( $mpcrbm_dc_kind ); ?>_fee_display"></span>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
                 <div class="justifyBetween total">
                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
                     <?php
@@ -413,7 +426,7 @@ if( $is_redirect === 'yes' ){
                     // handler (assets/frontend/mpcrbm_registration.js) overwrites this the
                     // moment a car is picked.
                     ?>
-                    <h3 class="mpcrbm_product_total_price"><?php echo wp_kses_post( wc_price( 0 ) ); ?></h3>
+                    <h3 class="mpcrbm_product_total_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( 0 ) ); ?></h3>
                 </div>
             </div>
 

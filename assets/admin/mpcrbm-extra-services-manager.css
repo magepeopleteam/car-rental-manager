@@ -161,34 +161,127 @@
 	color: var(--mpcrbm-red, #d91e1e);
 }
 
-/* ── Stat row (Active Groups / Total Items / Utilization) — reuses the
-   shared .mpcrbm_analytics/.mpcrbm_stat-card markup from mpcrbm_manage_
-   taxonomy.css/mpcrbm-shell.css (same widgets as the Car List page's
-   analytics row) so it stays visually consistent for free; only the
-   Utilization ring itself is new here. ─────────────────────────────────── */
-/* Extra specificity (3 classes) so this reliably wins over mpcrbm-shell.css's
-   ".mpcrbm-shell-body .mpcrbm_analytics" margin (also 2 classes) regardless
-   of which stylesheet happens to print second — this page has no other
-   horizontal gutter to match, unlike the Car List page that rule targets. */
-.mpcrbm-shell-body .mpcrbm-ex-services-manager .mpcrbm_analytics {
+/* ── Statistics ─────────────────────────────────────────────────────────
+   This row deliberately owns its complete layout instead of inheriting the
+   Car List analytics component. That prevents generic stat/ring rules from
+   moving the Utilization content outside its card. ─────────────────────── */
+.mpcrbm-shell-body .mpcrbm-ex-services-manager .mpcrbm-ex-services-stats {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 16px;
+	overflow: visible;
+	padding: 0;
 	margin: 0 0 20px;
 }
 
-.mpcrbm-ex-stat-ring {
-	position: relative;
-	width: 40px;
-	height: 40px;
-	border-radius: 50%;
-	flex: 0 0 auto;
-	background: conic-gradient(#667eea calc(var(--pct, 0) * 1%), #eef0f6 0);
+.mpcrbm-shell-body .mpcrbm-ex-services-manager .mpcrbm-ex-services-stat {
+	display: flex;
+	min-width: 0;
+	min-height: 78px;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 18px 20px;
+	box-sizing: border-box;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid var(--mpcrbm-shell-border, #e1e6ef);
+	border-radius: 12px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
 }
 
-.mpcrbm-ex-stat-ring::after {
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-left {
+	display: flex;
+	flex: 1 1 auto;
+	width: auto;
+	min-width: 0;
+	align-items: center;
+	gap: 12px;
+	padding: 0;
+	position: relative;
+	z-index: 1;
+	opacity: 1;
+	visibility: visible;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-left > i {
+	display: inline-flex;
+	width: 34px;
+	height: 34px;
+	flex: 0 0 34px;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	font-size: 22px;
+	line-height: 1;
+	color: #667eea;
+	background: #f2f4ff;
+	border-radius: 9px;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-left > div {
+	display: flex;
+	min-width: 0;
+	align-items: baseline;
+	gap: 8px;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-label,
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-value {
+	display: block;
+	margin: 0;
+	position: static;
+	color: var(--mpcrbm-shell-text, #1f2937);
+	line-height: 1.2;
+	opacity: 1;
+	visibility: visible;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-label {
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--mpcrbm-shell-text-faded, #667085);
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-services-stat .mpcrbm_stat-value {
+	font-size: 22px;
+	font-weight: 700;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-stat-utilization {
+	isolation: isolate;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-stat-ring {
+	display: block;
+	width: 42px;
+	height: 42px;
+	min-width: 42px;
+	min-height: 42px;
+	flex: 0 0 42px;
+	position: relative;
+	right: auto;
+	margin: 0;
+	box-sizing: border-box;
+	border: 0;
+	border-radius: 50%;
+	background: conic-gradient(#667eea 0 calc(var(--pct, 0) * 1%), #edf0f7 calc(var(--pct, 0) * 1%) 100%);
+	overflow: hidden;
+}
+
+.mpcrbm-ex-services-manager .mpcrbm-ex-stat-ring::after {
 	content: "";
 	position: absolute;
 	inset: 6px;
 	border-radius: 50%;
 	background: #fff;
+}
+
+@media (max-width: 900px) {
+	.mpcrbm-shell-body .mpcrbm-ex-services-manager .mpcrbm-ex-services-stats {
+		grid-template-columns: 1fr;
+	}
 }
 
 /* ── Card grid (list view) ───────────────────────────────────────────── */
@@ -222,7 +315,7 @@
 	margin-bottom: 6px;
 }
 
-.mpcrbm-ex-service-avatar {
+.mpcrbm-ex-service-card-top > .mpcrbm-ex-service-avatar {
 	position: relative;
 	width: 36px;
 	height: 36px;
@@ -233,6 +326,12 @@
 	font-size: 15px;
 	color: #667eea;
 	background: #f0f1ff;
+}
+
+.mpcrbm-ex-service-avatar > i {
+	display: block;
+	margin: 0;
+	line-height: 1;
 }
 
 /* Cycles the same accent palette used on the group editor's repeater-row
@@ -422,7 +521,7 @@
 	color: #667eea !important;
 }
 
-.mpcrbm-ex-service-card-add-icon {
+.mpcrbm-ex-service-card-add > .mpcrbm-ex-service-card-add-icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -431,6 +530,12 @@
 	border-radius: 50%;
 	background: #eef0ff;
 	font-size: 15px;
+}
+
+.mpcrbm-ex-service-card-add-icon > i {
+	display: block;
+	margin: 0;
+	line-height: 1;
 }
 
 /* ── Empty state ─────────────────────────────────────────────────────── */
@@ -786,4 +891,433 @@
 
 .mpcrbm-ex-services-manager ._themeButton_xs_mT_xs.add_item .fas {
 	font-size: 13px;
+}
+
+/* ── Add/Edit Service Group modal ───────────────────────────────────── */
+body.mpcrbm-ex-service-modal-open {
+	overflow: hidden;
+}
+
+.mpcrbm-ex-service-modal-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 24px;
+	background: rgba(15, 23, 42, .66);
+	backdrop-filter: blur(5px);
+	-webkit-backdrop-filter: blur(5px);
+}
+
+.mpcrbm-ex-service-modal-overlay.is-open {
+	display: flex;
+	animation: mpcrbm-ex-service-fade-in 160ms ease-out;
+}
+
+.mpcrbm-ex-service-modal,
+.mpcrbm-ex-service-modal * {
+	box-sizing: border-box;
+}
+
+.mpcrbm-ex-service-modal {
+	width: min(1080px, 100%);
+	max-height: min(920px, calc(100vh - 48px));
+	overflow: hidden;
+	border: 1px solid rgba(148, 163, 184, .3);
+	border-radius: 20px;
+	background: #fff;
+	box-shadow: 0 30px 80px rgba(15, 23, 42, .32);
+	animation: mpcrbm-ex-service-rise-in 180ms ease-out;
+}
+
+form.mpcrbm-ex-service-modal-form {
+	display: flex;
+	width: 100%;
+	max-height: min(920px, calc(100vh - 48px));
+	margin: 0;
+	padding: 0;
+	flex-direction: column;
+	background: #fff;
+}
+
+.mpcrbm-ex-service-modal-header {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+	padding: 23px 26px;
+	border-bottom: 1px solid #e7edf5;
+	background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
+}
+
+.mpcrbm-ex-service-modal-heading {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.mpcrbm-ex-service-modal-heading > .mpcrbm-ex-service-modal-icon {
+	display: inline-flex;
+	width: 50px;
+	height: 50px;
+	flex: 0 0 50px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 15px;
+	background: linear-gradient(135deg, #516ee8, #6e82ee);
+	box-shadow: 0 9px 22px rgba(81, 110, 232, .27);
+	color: #fff;
+	font-size: 19px;
+	line-height: 1;
+}
+
+.mpcrbm-ex-service-modal-icon > i {
+	display: block;
+	margin: 0;
+	line-height: 1;
+}
+
+.mpcrbm-ex-service-modal-heading .mpcrbm-ex-service-modal-eyebrow {
+	display: block;
+	margin: 0 0 3px;
+	color: #5870db;
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: .1em;
+	line-height: 1.3;
+	text-transform: uppercase;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-heading h2 {
+	margin: 0;
+	padding: 0;
+	color: #0f172a;
+	font-size: 24px !important;
+	font-weight: 750 !important;
+	line-height: 1.25;
+}
+
+.mpcrbm-ex-service-modal-form .mpcrbm-ex-service-modal-heading p {
+	margin: 5px 0 0;
+	color: #64748b;
+	font-size: 13px;
+	font-weight: 400;
+	line-height: 1.55;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-close {
+	display: inline-flex;
+	width: 38px;
+	height: 38px;
+	min-width: 38px;
+	flex: 0 0 38px;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0 0 2px;
+	border: 1px solid #dbe3ef;
+	border-radius: 11px;
+	background: #fff;
+	color: #64748b;
+	cursor: pointer;
+	font-size: 26px;
+	font-weight: 300;
+	line-height: 1;
+	transition: 150ms ease;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-close:hover {
+	border-color: #f3b7b7;
+	background: #fff4f4;
+	color: #dc2626;
+}
+
+.mpcrbm-ex-service-modal-body {
+	overflow-y: auto;
+	padding: 24px 26px;
+	background: #f8fafc;
+	scrollbar-gutter: stable;
+}
+
+.mpcrbm-ex-service-modal-alert {
+	margin-bottom: 16px;
+	padding: 12px 14px;
+	border: 1px solid #fecaca;
+	border-radius: 11px;
+	background: #fff1f2;
+	color: #b91c1c;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.mpcrbm-ex-service-modal-alert[hidden],
+.mpcrbm-ex-service-modal-loading[hidden] {
+	display: none !important;
+}
+
+.mpcrbm-ex-service-modal-section {
+	padding: 20px;
+	border: 1px solid #e2e8f0;
+	border-radius: 15px;
+	background: #fff;
+	box-shadow: 0 4px 16px rgba(15, 23, 42, .035);
+}
+
+.mpcrbm-ex-service-modal-section + .mpcrbm-ex-service-modal-section {
+	margin-top: 16px;
+}
+
+.mpcrbm-ex-service-modal-section-heading {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 18px;
+}
+
+.mpcrbm-ex-service-modal-section-heading > i {
+	display: inline-flex;
+	width: 36px;
+	height: 36px;
+	flex: 0 0 36px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 10px;
+	background: #eef2ff;
+	color: #5870db;
+	font-size: 14px;
+	line-height: 1;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-section-heading h3 {
+	margin: 0;
+	padding: 0;
+	color: #172033;
+	font-size: 15px;
+	font-weight: 750;
+	line-height: 1.35;
+}
+
+.mpcrbm-ex-service-modal-form .mpcrbm-ex-service-modal-section-heading p {
+	margin: 2px 0 0;
+	color: #7b879c;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.45;
+}
+
+.mpcrbm-ex-service-modal-field {
+	display: flex;
+	max-width: 620px;
+	flex-direction: column;
+}
+
+.mpcrbm-ex-service-modal-form .mpcrbm-ex-service-modal-field > label {
+	display: block;
+	margin: 0 0 8px;
+	padding: 0;
+	color: #334155;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.4;
+}
+
+.mpcrbm-ex-service-modal-field > label span {
+	color: #dc2626;
+	line-height: inherit;
+}
+
+.mpcrbm-ex-service-modal-form .mpcrbm-ex-service-modal-field > input[type="text"] {
+	width: 100%;
+	min-height: 42px;
+	margin: 0;
+	padding: 9px 12px;
+	border: 1px solid #cfd8e6;
+	border-radius: 9px;
+	background: #fff;
+	box-shadow: none;
+	color: #1e293b;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.4;
+	transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.mpcrbm-ex-service-modal-form .mpcrbm-ex-service-modal-field > input[type="text"]:focus {
+	border-color: #657beb;
+	box-shadow: 0 0 0 3px rgba(101, 123, 235, .14);
+	outline: none;
+}
+
+.mpcrbm-ex-service-modal-settings {
+	position: relative;
+}
+
+.mpcrbm-ex-service-modal-loading {
+	display: flex;
+	min-height: 160px;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	border: 1px dashed #d5ddeb;
+	border-radius: 11px;
+	background: #f8fafc;
+	color: #64748b;
+	font-size: 13px;
+}
+
+.mpcrbm-ex-service-modal-table-wrap.is-loading,
+.mpcrbm-ex-service-modal-settings .add_item.is-loading {
+	display: none;
+}
+
+.mpcrbm-ex-service-modal-table-wrap {
+	margin: 0;
+	border: 1px solid #e5eaf2;
+	border-radius: 11px;
+	background: #fff;
+}
+
+.mpcrbm-ex-service-modal-footer {
+	display: flex;
+	flex: 0 0 auto;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px;
+	padding: 17px 26px;
+	border-top: 1px solid #e7edf5;
+	background: #fff;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-cancel,
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-submit {
+	display: inline-flex;
+	min-height: 42px;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin: 0;
+	padding: 9px 18px;
+	border-radius: 10px;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: 750;
+	line-height: 1.2;
+	transition: 150ms ease;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-cancel {
+	border: 1px solid #d6deea;
+	background: #fff;
+	color: #526173;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-cancel:hover {
+	border-color: #b9c5d5;
+	background: #f8fafc;
+	color: #1e293b;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-submit {
+	min-width: 190px;
+	border: 1px solid #5870df;
+	background: linear-gradient(135deg, #5c73e5, #6a7fec);
+	box-shadow: 0 7px 18px rgba(82, 107, 224, .23);
+	color: #fff;
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-submit:hover {
+	border-color: #4862d4;
+	background: linear-gradient(135deg, #5069dc, #5d73e4);
+	box-shadow: 0 9px 22px rgba(82, 107, 224, .3);
+	color: #fff;
+	transform: translateY(-1px);
+}
+
+.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-submit:disabled {
+	cursor: wait;
+	opacity: .72;
+	transform: none;
+}
+
+.mpcrbm-ex-service-modal-close:focus-visible,
+.mpcrbm-ex-service-modal-cancel:focus-visible,
+.mpcrbm-ex-service-modal-submit:focus-visible {
+	outline: 3px solid rgba(81, 110, 232, .22);
+	outline-offset: 2px;
+}
+
+@keyframes mpcrbm-ex-service-fade-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes mpcrbm-ex-service-rise-in {
+	from { opacity: 0; transform: translateY(12px) scale(.985); }
+	to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 760px) {
+	.mpcrbm-ex-service-modal-overlay {
+		align-items: flex-end;
+		padding: 8px;
+	}
+
+	.mpcrbm-ex-service-modal,
+	form.mpcrbm-ex-service-modal-form {
+		max-height: calc(100vh - 16px);
+	}
+
+	.mpcrbm-ex-service-modal {
+		border-radius: 16px;
+	}
+
+	.mpcrbm-ex-service-modal-header,
+	.mpcrbm-ex-service-modal-body,
+	.mpcrbm-ex-service-modal-footer {
+		padding-right: 17px;
+		padding-left: 17px;
+	}
+
+	.mpcrbm-ex-service-modal-heading {
+		align-items: flex-start;
+		gap: 11px;
+	}
+
+	.mpcrbm-ex-service-modal-heading > .mpcrbm-ex-service-modal-icon {
+		width: 42px;
+		height: 42px;
+		flex-basis: 42px;
+		border-radius: 12px;
+	}
+
+	.mpcrbm-ex-service-modal .mpcrbm-ex-service-modal-heading h2 {
+		font-size: 20px !important;
+	}
+
+	.mpcrbm-ex-service-modal-form .mpcrbm-ex-service-modal-heading p {
+		display: none;
+	}
+
+	.mpcrbm-ex-service-modal-section {
+		padding: 16px;
+	}
+
+	.mpcrbm-ex-service-modal-footer {
+		justify-content: stretch;
+	}
+
+	.mpcrbm-ex-service-modal-footer button {
+		flex: 1 1 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mpcrbm-ex-service-modal-overlay.is-open,
+	.mpcrbm-ex-service-modal {
+		animation: none;
+	}
 }

@@ -59,7 +59,11 @@
                 $daywise    = (array) get_post_meta( $post_id, 'mpcrbm_daywise_pricing', true );
                 $tiered     = (array) get_post_meta( $post_id, 'mpcrbm_tiered_discounts', true );
                 $seasonal   = (array) get_post_meta( $post_id, 'mpcrbm_seasonal_pricing', true );
-                $currency   = function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$';
+                // _text(): every .mpcrbm-season-unit below prints this through
+                // esc_html(), which would render WooCommerce's raw "&#36;" entity as
+                // literal text. Also gives Custom Payment mode the shop's own
+                // configured symbol instead of a hardcoded "$".
+                $currency   = MPCRBM_Global_Function::currency_symbol_text();
 
                 $enable_tired       =  (int)get_post_meta( $post_id, 'mpcrbm_enable_tired_discount', true );
                 $enable_day_wise    = (int)get_post_meta( $post_id, 'mpcrbm_enable_day_wise_discount', true );
@@ -212,6 +216,102 @@
                     </div>
                 </div>
 
+                <?php
+                // Rendered here so it stays translatable/escaped in PHP, then moved into
+                // the persistent right-hand sidebar by mpcrbm-shell.js (same mechanism
+                // that relocates the featured image + gallery cards). It stays visible
+                // in the Pricing tab as-is if that script never runs.
+                $this->render_pricing_priority_card( $enable_day_wise, $enable_seasonal, $enable_tired );
+            }
+
+            /**
+             * "Pricing Priority" reference card.
+             *
+             * Mirrors the real order of operations in
+             * MPCRBM_Function::mpcrbm_calculate_price() — base ➜ day-wise ➜ seasonal
+             * ➜ tiered. Keep the two in sync: this card is the only place an admin is
+             * told which rule wins when several are switched on at once.
+             *
+             * @param int $enable_day_wise Saved state of mpcrbm_enable_day_wise_discount.
+             * @param int $enable_seasonal Saved state of mpcrbm_enable_seasonal_discount.
+             * @param int $enable_tired    Saved state of mpcrbm_enable_tired_discount.
+             */
+            private function render_pricing_priority_card( $enable_day_wise, $enable_seasonal, $enable_tired ) {
+                // Order here IS the order of application; the "toggle" key ties each row
+                // to its switch so the badge can follow it live (see mpcrbm-shell.js).
+                $steps = array(
+                    array(
+                        'toggle' => '',
+                        'title'  => __( 'Price/Day', 'car-rental-manager' ),
+                        'desc'   => __( 'The starting total: your daily rate multiplied by the number of rental days.', 'car-rental-manager' ),
+                        'on'     => true,
+                    ),
+                    array(
+                        'toggle' => 'mpcrbm_enable_day_wise_discount',
+                        'title'  => __( 'Day-wise Pricing', 'car-rental-manager' ),
+                        'desc'   => __( 'Replaces that total: every date of the stay is charged at its own weekday rate. Weekdays left empty or at 0 fall back to Price/Day.', 'car-rental-manager' ),
+                        'on'     => ( 1 === (int) $enable_day_wise ),
+                    ),
+                    array(
+                        'toggle' => 'mpcrbm_enable_seasonal_discount',
+                        'title'  => __( 'Seasonal Pricing', 'car-rental-manager' ),
+                        'desc'   => __( 'Adjusts the running total up or down. Percentage rules apply to the whole total; fixed amounts apply per rental day.', 'car-rental-manager' ),
+                        'on'     => ( 1 === (int) $enable_seasonal ),
+                    ),
+                    array(
+                        'toggle' => 'mpcrbm_enable_tired_discount',
+                        'title'  => __( 'Tiered Discount Rules', 'car-rental-manager' ),
+                        'desc'   => __( 'Applied last, to whatever the steps above produced.', 'car-rental-manager' ),
+                        'on'     => ( 1 === (int) $enable_tired ),
+                    ),
+                );
+
+                $notes = array(
+                    __( 'Seasonal rules are matched on the pick-up date only, and just the first matching season is used.', 'car-rental-manager' ),
+                    __( 'Tiered rules use the first Min–Max range the rental length falls into.', 'car-rental-manager' ),
+                    __( 'Tier types Fixed Price and Price Per Day replace the total outright — everything calculated above them is discarded.', 'car-rental-manager' ),
+                    __( 'The total is never allowed to fall below zero.', 'car-rental-manager' ),
+                );
+                ?>
+                <div class="mpcrbm-info-card mpcrbm-pricing-priority-card" id="mpcrbm-pricing-priority-card">
+                    <div class="mpcrbm-info-card-header">
+                        <i class="fas fa-sort-amount-down"></i>
+                        <div>
+                            <h3><?php esc_html_e( 'Pricing Priority', 'car-rental-manager' ); ?></h3>
+                            <span class="desc"><?php esc_html_e( 'Rules run top to bottom. Each step works on the result of the one above it.', 'car-rental-manager' ); ?></span>
+                        </div>
+                    </div>
+                    <div class="mpcrbm-info-card-body">
+                        <ol class="mpcrbm-priority-steps">
+                            <?php foreach ( $steps as $index => $step ) : ?>
+                                <li class="mpcrbm-priority-step<?php echo $step['on'] ? '' : ' is-off'; ?>"
+                                    <?php if ( $step['toggle'] ) : ?>data-mpcrbm-priority-toggle="<?php echo esc_attr( $step['toggle'] ); ?>" data-on-label="<?php esc_attr_e( 'On', 'car-rental-manager' ); ?>" data-off-label="<?php esc_attr_e( 'Off', 'car-rental-manager' ); ?>"<?php endif; ?>>
+                                    <span class="mpcrbm-priority-step__num"><?php echo esc_html( $index + 1 ); ?></span>
+                                    <div class="mpcrbm-priority-step__body">
+                                        <span class="mpcrbm-priority-step__title">
+                                            <?php echo esc_html( $step['title'] ); ?>
+                                            <?php if ( $step['toggle'] ) : ?>
+                                                <em class="mpcrbm-priority-step__state"><?php echo $step['on'] ? esc_html__( 'On', 'car-rental-manager' ) : esc_html__( 'Off', 'car-rental-manager' ); ?></em>
+                                            <?php else : ?>
+                                                <em class="mpcrbm-priority-step__state mpcrbm-priority-step__state--always"><?php esc_html_e( 'Always', 'car-rental-manager' ); ?></em>
+                                            <?php endif; ?>
+                                        </span>
+                                        <span class="mpcrbm-priority-step__desc"><?php echo esc_html( $step['desc'] ); ?></span>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ol>
+
+                        <div class="mpcrbm-priority-notes">
+                            <h6><?php esc_html_e( 'Good to know', 'car-rental-manager' ); ?></h6>
+                            <ul>
+                                <?php foreach ( $notes as $note ) : ?>
+                                    <li><?php echo esc_html( $note ); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 <?php
             }
 

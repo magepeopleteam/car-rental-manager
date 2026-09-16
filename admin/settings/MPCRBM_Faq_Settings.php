@@ -12,7 +12,9 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
 
         private $option_key = 'mpcrbm_faq_list';
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'faq_tab_content' ], 10, 1 );
+            // Second section of the merged "Content & Policies" tab — see
+            // MPCRBM_Settings::content_tab_panel().
+            add_action( 'mpcrbm_content_tab_sections', [ $this, 'faq_tab_content' ], 20, 1 );
             add_action('wp_ajax_mpcrbm_save_added_faq', [ $this, 'mpcrbm_save_added_faq' ] );
             add_action('wp_ajax_mpcrbm_save_faq_display_toggle', [ $this, 'ajax_save_faq_display_toggle' ] );
         }
@@ -84,7 +86,7 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
             $faq_enabled_for_car = ( $faq_display_meta !== 'no' );
 
             ?>
-            <div class="tabsItem" data-tabs="#mpcrbm_setting_manage_faq">
+            <?php // Rendered inside the shared "Content & Policies" .tabsItem. ?>
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-body">
@@ -174,8 +176,6 @@ if ( ! class_exists( 'MPCRBM_Faq_Settings' ) ) {
                 </section>
                     </div>
                 </div>
-
-            </div>
 
         <?php }
 

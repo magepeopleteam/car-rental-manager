@@ -435,22 +435,28 @@
 			}
 
 			public function data_sanitize( $data ) {
-				$data = maybe_unserialize( $data );
+				// Security: PHP Object Injection guard. maybe_unserialize() instantiates
+				// classes and fires their magic methods; safe_maybe_unserialize() never does.
+				$data = MPCRBM_Global_Function::safe_maybe_unserialize( $data );
 				if ( is_string( $data ) ) {
-					$data = maybe_unserialize( $data );
-					if ( is_array( $data ) ) {
-						$data = $this->data_sanitize( $data );
-					} else {
-						$data = sanitize_text_field( stripslashes( wp_strip_all_tags( $data ) ) );
-					}
-				} elseif ( is_array( $data ) ) {
+					// Double-serialized case.
+					$data = MPCRBM_Global_Function::safe_maybe_unserialize( $data );
+				}
+				if ( is_object( $data ) ) {
+					return '';
+				}
+				if ( is_array( $data ) ) {
 					foreach ( $data as &$value ) {
-						if ( is_array( $value ) ) {
-							$value = $this->data_sanitize( $value );
-						} else {
-							$value = sanitize_text_field( stripslashes( wp_strip_all_tags( $value ) ) );
-						}
+						$value = is_array( $value )
+							? $this->data_sanitize( $value )
+							: sanitize_text_field( stripslashes( wp_strip_all_tags( $value ) ) );
 					}
+					unset( $value );
+
+					return $data;
+				}
+				if ( is_string( $data ) ) {
+					return sanitize_text_field( stripslashes( wp_strip_all_tags( $data ) ) );
 				}
 
 				return $data;

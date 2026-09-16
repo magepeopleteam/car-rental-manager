@@ -235,33 +235,126 @@ p.mpcrbm-locations-head-subtitle {
 	color: #64748b;
 }
 
-/* View Cars — reuses mpcrbm-branch-manager.js's ".mpcrbm-view-branch-cars"
-   AJAX click handler (which already applies a #667eea background); the
-   compound selector here beats that single-class rule on specificity to
-   apply this page's dark-navy CTA instead, regardless of stylesheet order. */
-.mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars {
-	display: flex;
+/* View Cars — the full page-scoped selector intentionally beats the plugin's
+   broad global button rules, which otherwise collapse this CTA into a thin
+   bar. It still reuses Branch Manager's existing AJAX click handler. */
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars {
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 9px;
 	width: 100%;
-	background: #667eea;
+	height: 42px;
+	min-height: 42px;
+	margin-top: auto;
+	padding: 0 15px;
+	box-sizing: border-box;
+	background: linear-gradient(135deg, #667eea 0%, #586fdf 100%);
 	color: #fff;
-	border: none;
-	padding: 11px 14px;
-	border-radius: 8px;
+	border: 1px solid transparent;
+	border-radius: 9px;
+	box-shadow: 0 4px 10px rgba(102, 126, 234, .22);
+	font-family: inherit;
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: 700;
+	line-height: 1;
+	text-decoration: none;
+	text-transform: none;
+	white-space: nowrap;
 	cursor: pointer;
-	transition: background .15s ease;
+	opacity: 1;
+	transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
 }
 
-.mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars:hover {
-	background: #5568d3;
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars:hover {
+	background: linear-gradient(135deg, #5b72e4 0%, #4f64d1 100%);
+	box-shadow: 0 7px 16px rgba(79, 100, 209, .28);
+	color: #fff;
+	transform: translateY(-1px);
+	opacity: 1;
 }
 
-.mpcrbm-location-view-cars-btn i {
-	font-size: 12px;
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, .2), 0 6px 14px rgba(79, 100, 209, .24);
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-btn.mpcrbm-view-branch-cars:active {
+	box-shadow: 0 2px 6px rgba(79, 100, 209, .22);
+	transform: translateY(0);
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-btn i {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 13px;
+	line-height: 1;
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-arrow {
+	margin-left: 2px;
+	transition: transform .18s ease;
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-location-view-cars-btn:hover .mpcrbm-location-view-cars-arrow {
+	transform: translateX(3px);
+}
+
+/* Selected branch results panel. This component is shared with the Branch
+   List tab, but here it lives outside .mpcrbm-branch-dashboard, so it needs
+   an explicit standalone surface and strong typography selectors. */
+.mpcrbm-locations-manager .mpcrbm-branch-cars-panel {
+	margin-top: 20px;
+	background: #f8fafc;
+	border: 1px solid #dfe4ec;
+	border-radius: 14px;
+	box-shadow: 0 5px 16px rgba(15, 23, 42, .06);
+	overflow: hidden;
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-branch-cars-panel-header {
+	min-height: 60px;
+	padding: 16px 22px;
+	background: linear-gradient(135deg, #27378e 0%, #667eea 100%);
+	color: #fff;
+	border: 0;
+	box-shadow: 0 4px 12px rgba(67, 83, 180, .2);
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-branch-cars-panel-header h3 {
+	margin: 0 !important;
+	color: #fff !important;
+	font-size: 17px !important;
+	font-weight: 700 !important;
+	line-height: 1.3;
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-panel-car-count {
+	display: inline-flex;
+	align-items: center;
+	min-height: 24px;
+	padding: 3px 11px;
+	box-sizing: border-box;
+	background: rgba(255, 255, 255, .16);
+	border: 1px solid rgba(255, 255, 255, .3);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.mpcrbm-locations-manager .mpcrbm-branch-cars-panel-body {
+	min-height: 150px;
+	background: #fff;
+}
+
+div.mpcrbm .mpcrbm-locations-manager .mpcrbm-no-cars {
+	margin: 0;
+	padding: 48px 20px;
+	color: #64748b;
+	font-size: 14px;
+	font-weight: 500;
 }
 
 /* ── Empty state ─────────────────────────────────────────────────────── */
@@ -305,6 +398,7 @@ p.mpcrbm-locations-head-subtitle {
 	position: fixed;
 	inset: 0;
 	background: rgba(15, 23, 42, .55);
+	backdrop-filter: blur(3px);
 	z-index: 99999;
 	align-items: center;
 	justify-content: center;
@@ -317,7 +411,7 @@ p.mpcrbm-locations-head-subtitle {
 	flex-direction: column;
 	background: #fff;
 	border-radius: var(--mpcrbm-shell-radius, 16px);
-	width: 680px;
+	width: 760px;
 	max-width: 100%;
 	max-height: calc(100vh - 60px);
 	box-shadow: 0 24px 60px rgba(0, 0, 0, .3);
@@ -331,7 +425,24 @@ p.mpcrbm-locations-head-subtitle {
 	gap: 12px;
 	padding: 20px 26px;
 	border-bottom: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
+	background: linear-gradient(180deg, #fff 0%, #fafbff 100%);
 	flex: 0 0 auto;
+}
+
+.mpcrbm-location-modal-header > div {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+div.mpcrbm .mpcrbm-location-modal-eyebrow {
+	display: block;
+	color: #667eea;
+	font-size: 10px;
+	font-weight: 800;
+	letter-spacing: .1em;
+	line-height: 1.2;
+	text-transform: uppercase;
 }
 
 /* !important throughout this modal's typography: mp_global's
@@ -346,7 +457,7 @@ p.mpcrbm-locations-head-subtitle {
 	color: var(--mpcrbm-shell-text, #1f222b) !important;
 }
 
-.mpcrbm-location-modal-close {
+div.mpcrbm .mpcrbm-location-modal-close {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -362,15 +473,34 @@ p.mpcrbm-locations-head-subtitle {
 	transition: background .15s ease, color .15s ease;
 }
 
-.mpcrbm-location-modal-close:hover {
+div.mpcrbm .mpcrbm-location-modal-close:hover,
+div.mpcrbm .mpcrbm-location-modal-close:focus {
 	background: #e5e7eb;
 	color: #1f222b;
+	opacity: 1;
 }
 
 .mpcrbm-location-modal-body {
 	padding: 22px 26px;
 	overflow-y: auto;
 	flex: 1 1 auto;
+}
+
+.mpcrbm-location-modal-error {
+	display: none;
+	margin-bottom: 18px;
+	padding: 11px 13px;
+	color: #b4233a;
+	background: #fff1f3;
+	border: 1px solid #fecdd3;
+	border-radius: 9px;
+	font-size: 12.5px;
+	font-weight: 600;
+	line-height: 1.45;
+}
+
+.mpcrbm-location-modal-error.is-visible {
+	display: block;
 }
 
 .mpcrbm-location-modal-section + .mpcrbm-location-modal-section {
@@ -412,12 +542,16 @@ p.mpcrbm-locations-head-subtitle {
 
 .mpcrbm-location-modal label {
 	display: block;
-	margin: 20px 0px !important;
+	margin: 0 0 7px !important;
 	font-size: 11px !important;
 	font-weight: 700 !important;
 	text-transform: uppercase;
 	letter-spacing: .04em;
 	color: var(--mpcrbm-shell-text-faded, #64748b) !important;
+}
+
+.mpcrbm-location-modal label span {
+	color: #dc2626;
 }
 
 .mpcrbm-location-modal input[type="text"],
@@ -436,6 +570,20 @@ p.mpcrbm-locations-head-subtitle {
 .mpcrbm-location-modal textarea:focus {
 	border-color: #667eea;
 	box-shadow: 0 0 0 3px rgba(102, 126, 234, .12);
+}
+
+.mpcrbm-location-modal input[type="text"].has-error {
+	border-color: #dc2626;
+	box-shadow: 0 0 0 3px rgba(220, 38, 38, .1);
+}
+
+div.mpcrbm .mpcrbm-location-field-help {
+	display: block;
+	margin-top: 6px;
+	color: #94a3b8;
+	font-size: 10.5px;
+	font-weight: 400;
+	line-height: 1.4;
 }
 
 .mpcrbm-location-modal textarea {
@@ -525,7 +673,12 @@ p.mpcrbm-locations-head-subtitle {
 	flex: 0 0 auto;
 }
 
-.mpcrbm-location-save-btn {
+div.mpcrbm .mpcrbm-location-save-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	min-width: 130px;
 	background: #667eea;
 	color: #fff;
 	border: none;
@@ -533,20 +686,34 @@ p.mpcrbm-locations-head-subtitle {
 	border-radius: 8px;
 	font-size: 13px;
 	font-weight: 600;
+	line-height: 1.2;
+	text-transform: none;
 	cursor: pointer;
 	transition: background .15s ease;
 }
 
-.mpcrbm-location-save-btn:hover {
-	background: #5568d3;
+div.mpcrbm .mpcrbm-location-save-btn i {
+	font-size: 13px;
+	line-height: 1;
 }
 
-.mpcrbm-location-save-btn:disabled {
+div.mpcrbm .mpcrbm-location-save-btn.is-saving i {
+	animation: mpcrbm-branch-save-spin .8s linear infinite;
+}
+
+div.mpcrbm .mpcrbm-location-save-btn:hover,
+div.mpcrbm .mpcrbm-location-save-btn:focus {
+	background: #5568d3;
+	color: #fff;
+	opacity: 1;
+}
+
+div.mpcrbm .mpcrbm-location-save-btn:disabled {
 	opacity: .6;
 	cursor: not-allowed;
 }
 
-.mpcrbm-location-cancel-btn {
+div.mpcrbm .mpcrbm-location-cancel-btn {
 	background: #fff;
 	color: var(--mpcrbm-shell-text, #374151);
 	border: 1px solid var(--mpcrbm-shell-border, #e5e7eb);
@@ -554,15 +721,58 @@ p.mpcrbm-locations-head-subtitle {
 	border-radius: 8px;
 	font-size: 13px;
 	font-weight: 600;
+	line-height: 1.2;
+	text-transform: none;
 	cursor: pointer;
 }
 
-.mpcrbm-location-cancel-btn:hover {
+div.mpcrbm .mpcrbm-location-cancel-btn:hover,
+div.mpcrbm .mpcrbm-location-cancel-btn:focus {
 	background: #f3f4f6;
+	color: var(--mpcrbm-shell-text, #374151);
+	opacity: 1;
+}
+
+body.mpcrbm-branch-modal-open {
+	overflow: hidden;
+}
+
+@keyframes mpcrbm-branch-save-spin {
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 @media (max-width: 640px) {
+	.mpcrbm-location-modal-overlay {
+		align-items: flex-end;
+		padding: 12px;
+	}
+
+	.mpcrbm-location-modal {
+		max-height: calc(100vh - 24px);
+		border-radius: 15px;
+	}
+
 	.mpcrbm-location-modal-row {
 		grid-template-columns: 1fr;
+	}
+
+	.mpcrbm-location-modal-header,
+	.mpcrbm-location-modal-body,
+	.mpcrbm-location-modal-actions {
+		padding-left: 18px;
+		padding-right: 18px;
+	}
+
+	.mpcrbm-location-modal-actions {
+		position: sticky;
+		bottom: 0;
+		background: #fff;
+	}
+
+	.mpcrbm-location-cancel-btn,
+	.mpcrbm-location-save-btn {
+		flex: 1;
 	}
 }

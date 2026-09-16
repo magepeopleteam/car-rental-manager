@@ -242,7 +242,21 @@
             $display.html('');
         }
 
-        // Adjust the total shown in the car details summary
+        // Adjust the total shown in the car details summary.
+        //
+        // Hand this to mpcrbm_registration.js's calculator rather than doing the maths
+        // here: "base + one-way fee + deposit" leaves out the car quantity multiplier,
+        // the selected extra services and the delivery/collection fees, so changing the
+        // drop-off location used to knock those straight back out of the displayed
+        // total. That calculator is the single owner of #mpcrbm_car_total_price and
+        // reads the fee from the hidden field this function has already updated.
+        if (typeof window.mpcrbmRefreshCarDetailsTotal === 'function') {
+            window.mpcrbmRefreshCarDetailsTotal();
+
+            return;
+        }
+
+        // Fallback for contexts where that script isn't present (branch search).
         var basePrice = parseFloat($('[name="mpcrbm_post_id"]').attr('data-price')) || 0;
         if (basePrice > 0) {
             var deposit = parseFloat($('#mpcrbm_security_deposit_value').val()) || 0;

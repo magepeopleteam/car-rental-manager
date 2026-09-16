@@ -153,10 +153,23 @@ if( $mpcrbm_single_page === 'yes' ){
 }
 
 $mpcrbm_hide_time_input_field = MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'hide_time_input_field_search_form', 'no' );
-$mpcrbm_nput_time = 'block';
-if( $mpcrbm_hide_time_input_field === 'yes' ){
-    $mpcrbm_nput_time = 'none';
-    $mpcrbm_end_time = 23;
+$mpcrbm_time_input_hidden = ( $mpcrbm_hide_time_input_field === 'yes' );
+$mpcrbm_nput_time = $mpcrbm_time_input_hidden ? 'none' : 'block';
+if( $mpcrbm_time_input_hidden ){
+    /*
+     * See the matching block in get_details_new.php. With the time pickers hidden
+     * the customer can never pick a time, so both hidden time inputs have to hold
+     * usable values by themselves: the pick-up keeps this car's own opening time
+     * (already resolved above from its day/default schedule) and the return uses
+     * the SAME clock time, so one night is billed as exactly one day.
+     *
+     * The previous hardcoded 23 over-billed (opening -> next day 23:00 rounds up
+     * to an extra day) and fell outside the shift of any car closing before
+     * 23:00. $mpcrbm_formatted_end_time is recomputed because it was already
+     * built from the old value further up.
+     */
+    $mpcrbm_end_time           = $mpcrbm_start_time;
+    $mpcrbm_formatted_end_time = MPCRBM_Global_Function::format_custom_time( $mpcrbm_end_time );
 }
 
 $mpcrbm_time_format_display = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'time_format_display');
@@ -206,6 +219,13 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                     <input type="hidden" id="mpcrbm_enable_filter_via_features" name="mpcrbm_enable_filter_via_features" value="<?php echo esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_filter_via_features' ) ); ?>" />
                     <input type="hidden" id="mpcrbm_buffer_end_minutes" name="mpcrbm_buffer_end_minutes" value="<?php echo esc_attr( $mpcrbm_buffer_end_minutes ); ?>" />
                     <input type="hidden" id="mpcrbm_first_calendar_date" name="mpcrbm_first_calendar_date" value="<?php echo esc_attr( $mpcrbm_all_dates[0] ); ?>" />
+                    <?php
+                    // Flag read by mpcrbm_registration.js (mpcrbm_time_input_is_hidden):
+                    // with the time pickers hidden nothing can ever set the time inputs, so
+                    // the JS must stop clearing them / gating on a time pick and fall back on
+                    // the server-rendered defaults instead.
+                    ?>
+                    <input type="hidden" id="mpcrbm_time_input_hidden" name="mpcrbm_time_input_hidden" value="<?php echo esc_attr( $mpcrbm_time_input_hidden ? 'yes' : 'no' ); ?>" />
 
 
                     <div class="<?php echo esc_attr( $mpcrbm_form_class );?>">
@@ -303,7 +323,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                             <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $mpcrbm_nput_time );?>"></div>
 
                             <div class=" input_select" style="display: <?php echo esc_attr( $mpcrbm_nput_time );?>">
-                                <input type="hidden" id="mpcrbm_map_start_time" value="<?php echo esc_attr( $mpcrbm_start_time );?>" />
+                                <input type="hidden" id="mpcrbm_map_start_time" value="<?php echo esc_attr( $mpcrbm_start_time );?>" data-default-time="<?php echo esc_attr( $mpcrbm_start_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-clock-three"></i>
@@ -365,7 +385,13 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                         // Return date/time starts locked/hidden and is revealed by JS
                         // (mpcrbm_registration.js, ".start_time_list li" click handler) once the
                         // pick-up date AND time are both chosen, instead of showing both up front.
-                        $mpcrbm_return_step_class = $mpcrbm_single_page === 'yes' ? ' mpcrbm-date-step mpcrbm-date-step-return is-locked' : '';
+                        //
+                        // That reveal is driven by a *time* pick, so it can never fire while the
+                        // time pickers are hidden ("Hide Time Input Field From Search Form") —
+                        // which left the Return date permanently invisible and the booking
+                        // impossible to complete. With no time step to wait for there is nothing
+                        // to stage, so the Return block is rendered unlocked from the start.
+                        $mpcrbm_return_step_class = $mpcrbm_single_page === 'yes' ? ' mpcrbm-date-step mpcrbm-date-step-return' . ( $mpcrbm_time_input_hidden ? '' : ' is-locked' ) : '';
                         ?>
                         <div class="<?php echo esc_attr( ltrim( $mpcrbm_return_step_class ) ); ?>" id="mpcrbm_date_step_return">
                         <?php if( $mpcrbm_form_style === 'horizontal' ){?>
@@ -392,7 +418,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                             </div>
                             <div class="mpcrbm-vertical-divider" style="display: <?php echo esc_attr( $mpcrbm_nput_time );?>"></div>
                             <div class=" input_select" style="display: <?php echo esc_attr( $mpcrbm_nput_time );?>">
-                                <input type="hidden" id="mpcrbm_map_return_time" value="<?php echo esc_attr( $mpcrbm_end_time );?>" />
+                                <input type="hidden" id="mpcrbm_map_return_time" value="<?php echo esc_attr( $mpcrbm_end_time );?>" data-default-time="<?php echo esc_attr( $mpcrbm_end_time );?>" />
                                 <label class="fdColumn1">
                                     <span class="mpcrbm_search_title">
                                         <i class="mi mi-clock"></i>

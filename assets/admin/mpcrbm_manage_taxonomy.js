@@ -4,6 +4,21 @@
         let currentType = 'mpcrbm_car_list';
         // loadTaxonomyData( currentType );
 
+        function getTaxonomyLabel(type) {
+            const $tab = $('.mpcrbm_taxonomies_tab').filter(function () {
+                return String($(this).data('target')) === String(type);
+            }).first();
+
+            return $.trim($tab.text()) || 'Item';
+        }
+
+        function getTaxonomyModalTitle(action, type) {
+            const $title = $('#mpcrbm_taxonomies_popup_title');
+            const actionLabel = $title.data(action + '-label') || action;
+
+            return actionLabel + ' ' + getTaxonomyLabel(type);
+        }
+
         $(document).on( 'click','.mpcrbm_taxonomies_tab', function () {
             $('.mpcrbm_taxonomies_content_holder').hide();
             $('.mpcrbm_taxonomies_tab').removeClass('active');
@@ -11,6 +26,18 @@
             currentType = $(this).data('target');
             var content_holder_id = currentType + '_holder';
             $('#' + content_holder_id).fadeIn();
+
+			// Keep refreshes, copied URLs, and browser history on the selected
+			// workspace tab. The default Car List keeps the shorter canonical URL.
+			if (window.history && window.history.replaceState && window.URL) {
+				var currentUrl = new URL(window.location.href);
+				if (currentType === 'mpcrbm_car_list') {
+					currentUrl.searchParams.delete('mpcrbm_tab');
+				} else {
+					currentUrl.searchParams.set('mpcrbm_tab', currentType);
+				}
+				window.history.replaceState({}, '', currentUrl.toString());
+			}
 
             // Fleet stat cards only make sense on the Car List tab.
             $('#mpcrbm_analytics_holder').toggle( currentType === 'mpcrbm_car_list' );
@@ -45,6 +72,14 @@
             }
         });
 
+		// PHP marks a validated deep-linked tab as active before first paint.
+		// Trigger its normal handler now so lazy content starts loading as soon
+		// as the DOM is ready instead of waiting for every image/window resource.
+		var $initialTab = $('.mpcrbm_taxonomies_tab.active').first();
+		if ($initialTab.length && $initialTab.data('target') !== 'mpcrbm_car_list') {
+			$initialTab.trigger('click');
+		}
+
         // Pro popup close — button
         $(document).on('click', '#mpcrbm-pro-upgrade-close', function () {
             $('#mpcrbm-pro-upgrade-overlay').fadeOut(200);
@@ -58,6 +93,7 @@
         });
 
         $(document).on('click', '.mpcrbm_taxonomies_add_btn', function () {
+            $('#mpcrbm_taxonomies_popup_title').text(getTaxonomyModalTitle('add', currentType));
             $('.mpcrbm_taxonomies_popup_overlay').fadeIn();
         });
 
@@ -153,10 +189,12 @@
                 desc = '';
             }
 
+            const modalTitle = $('<div>').text(getTaxonomyModalTitle('edit', type)).html();
+
             let popup = `
             <div class="mpcrbm_popup">
                 <div class="mpcrbm_popup_inner">
-                    <h3>Edit Taxonomy</h3>
+                    <h3>${modalTitle}</h3>
                     <label>Name:</label>
                     <input type="text" id="edit_name" placeholder="Enter name" value="${name}">
                     <label>Slug:</label>

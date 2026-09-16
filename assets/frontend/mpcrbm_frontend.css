@@ -206,6 +206,47 @@
     font-size: 11px;
 }
 
+/* Step badge on each rule heading — the number is the order the rule is
+   actually applied in (see MPCRBM_Function::display_pricing_rules(), which
+   mirrors mpcrbm_calculate_price()). */
+.mpcrbm_display_pricing_rules .mpcrbm_rule_step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* One-line explanation under a heading. Overrides the dark "chip" look the
+   shared p rule above gives the base-price line — these are asides, not
+   values, and shouldn't read as heavily. */
+.mpcrbm_display_pricing_rules p.mpcrbm_rule_hint {
+    background: transparent;
+    padding: 0 0 0 24px;
+    margin: 0 0 6px;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #94a3b8;
+}
+
+.mpcrbm_display_pricing_rules p.mpcrbm_rule_order_note {
+    background: transparent;
+    border-top: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 0;
+    padding: 8px 0 0;
+    margin: 10px 0 0;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #94a3b8;
+}
+
 /* Arrow */
 .mpcrbm_display_pricing_rules::before {
     content: "";

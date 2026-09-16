@@ -24,7 +24,29 @@
 			private function load_file(): void {
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Shortcodes.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Transport_Search.php';
+				// Holds mpcrbm_add_to_cart(), the single entry point for "Book Now" in
+				// BOTH booking modes, so it loads whether or not WooCommerce is active.
+				// Its WooCommerce hooks simply never fire without WooCommerce.
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Woocommerce.php';
+				// Free standalone checkout for the built-in Offline method. Stands down on
+				// its own when the Pro plugin (MPCRBM_Native_Checkout) is active.
+				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Offline_Checkout.php';
+				// admin/MPCRBM_Customers.php is mostly the wp-admin "Customers" screen,
+				// but it ALSO registers the customer-blocklist checkout enforcement
+				// (both WooCommerce checkout UIs + this Custom Payment flow) and the
+				// discount coupon's "valid from" date check. MPCRBM_Admin only requires
+				// this file behind is_admin() — true for wp-admin and admin-ajax.php
+				// requests, but FALSE for the customer's own checkout page and the
+				// Store API's REST request, which is exactly where this enforcement
+				// needs to run. Requiring it here too (require_once is idempotent) is
+				// what actually makes blocking take effect instead of silently
+				// registering hooks that only ever fire in the admin screen that set
+				// them up. The admin-only parts of the file (menu registration, page
+				// rendering, its own wp_ajax_* handlers) are harmless dead weight on
+				// the frontend — the WP hooks they're bound to just never fire here.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin_Shell.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Booking_List_Free.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Customers.php';
 			}
 			public function load_single_template($template): string {
 				global $post;
@@ -244,7 +266,7 @@
 
                 return $all_dates;
             }
-            public static function mpcrbm_get_unavailable_dates_by_stock( $post_id ) {
+            public static function mpcrbm_get_unavailable_dates_by_stock( $post_id, $exclude_booking_id = 0 ) {
 
                 $stock = (int) MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_car_stock', 1 );
 
@@ -282,6 +304,10 @@
                 if ( ! empty( $query->posts ) ) {
 
                     foreach ( $query->posts as $booking_id ) {
+
+                        if ( $exclude_booking_id && (int) $booking_id === (int) $exclude_booking_id ) {
+                            continue;
+                        }
 
                         $start_datetime = get_post_meta( $booking_id, 'mpcrbm_date', true );
                         $end_datetime   = get_post_meta( $booking_id, 'return_date_time', true );
@@ -341,19 +367,25 @@
                 $start_date = isset( $_POST['start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['start_date'] ) ) : '';
                 $start_time = isset( $_POST['start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['start_time'] ) ) : '';
 
+                // decimal_time_to_hi() understands the plugin's decimal clock notation
+                // ("10.3" = 10:30). The previous sprintf( '%02d:%02d', $t, $t ) fed the
+                // SAME number in as both hours and minutes, so 10.30 became "10:10" and
+                // 0.5 became "00:00" — a wrong hour to test seasonal date ranges against.
                 $start_date_time = gmdate(
                     'Y-m-d H:i',
-                    strtotime(
-                        $start_date . ' ' .
-                        sprintf('%02d:%02d', $start_time, $start_time)
-                    )
+                    strtotime( $start_date . ' ' . MPCRBM_Function::decimal_time_to_hi( $start_time ) )
                 );
 
 
                 // Get posted values
                 $car_id = isset( $_POST['car_id'] ) ? absint( wp_unslash( $_POST['car_id'] ) ) : 0;
                 $days  = isset( $_POST['total_days'] ) ? absint( wp_unslash( $_POST['total_days'] ) ) : 1;
-                $total_price  = isset( $_POST['total_price'] ) ? absint( wp_unslash( $_POST['total_price'] ) ) : 0;
+                // floatval, NOT absint: this is the undiscounted base for the whole stay,
+                // and absint() truncated every fractional rate — a 59.50/day car over 3
+                // days came in as 178 instead of 178.50, so the price shown on the car
+                // page never quite matched the one the cart charged.
+                $total_price  = isset( $_POST['total_price'] ) ? (float) wp_unslash( $_POST['total_price'] ) : 0;
+                $total_price  = max( 0, $total_price );
 
                 $calculated_price = 0;
                 if ( $car_id && $days > 0 ) {
@@ -365,12 +397,56 @@
                 ) );
             }
 
+            /**
+             * Reduce a caller-supplied pick-up value to the bare calendar day.
+             *
+             * mpcrbm_get_available_stock_by_date() builds its DATETIME bounds by string
+             * concatenation, so it can only ever be handed a plain "Y-m-d". Its callers
+             * disagree: car_details.php passes gmdate('Y-m-d'), while the Book Now AJAX
+             * (MPCRBM_Woocommerce::mpcrbm_add_to_cart) and both custom checkouts pass the
+             * full pick-up datetime "Y-m-d H:i". Normalising here fixes every caller at
+             * once instead of relying on each one to remember.
+             *
+             * @param string $date "Y-m-d", "Y-m-d H:i", "Y-m-d H:i:s" or anything strtotime() reads.
+             * @return string "Y-m-d", or '' when the value cannot be understood.
+             */
+            protected static function mpcrbm_date_only( $date ) {
+
+                $date = trim( (string) $date );
+
+                if ( '' === $date ) {
+                    return '';
+                }
+
+                // Fast path — the leading "Y-m-d" of every format this plugin stores.
+                if ( preg_match( '/^(\d{4}-\d{2}-\d{2})/', $date, $matches ) ) {
+                    return $matches[1];
+                }
+
+                $timestamp = strtotime( $date );
+
+                return $timestamp ? gmdate( 'Y-m-d', $timestamp ) : '';
+            }
+
             public static function mpcrbm_get_available_stock_by_date( $car_id, $date ) {
 
                 $total_stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
 
                 if ( $total_stock <= 0 ) {
                     return 0;
+                }
+
+                // Without this, a caller passing "2026-09-08 08:00" produced the bound
+                // "2026-09-08 08:00 23:59:59". MySQL rejects that as an invalid DATETIME
+                // and aborts the whole meta_query, so the stock check silently never ran —
+                // and with WP_DEBUG on, wpdb printed the error straight into the "Book Now"
+                // AJAX response body, which broke the redirect to checkout.
+                $date = self::mpcrbm_date_only( $date );
+
+                if ( '' === $date ) {
+                    // Nothing to compare against. Fail open (same net result the broken
+                    // query already produced) rather than blocking a legitimate booking.
+                    return $total_stock;
                 }
 
                 $start_datetime = $date . ' 00:00:00';

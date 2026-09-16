@@ -199,78 +199,108 @@
 				return sanitize_text_field( $value );
 			}
 
-			public static function data_sanitize( $data ) {
-				// Security fix: Prevent PHP Object Injection by checking for serialized objects
-				// Only allow unserialization of arrays and primitive types, reject objects
-				if ( is_string( $data ) && is_serialized( $data ) ) {
-					$unserialized = @unserialize( $data );
-					// Reject if unserialized data is an object (potential security risk)
-					if ( is_object( $unserialized ) ) {
-						// Return empty string for objects to prevent object injection
-						return '';
-					}
-					// Only proceed if it's an array or primitive type
-					if ( $unserialized !== false ) {
-						$data = $unserialized;
-					}
-				} else {
-					$data = maybe_unserialize( $data );
+			/**
+			 * Unserialize a value without ever instantiating a PHP object.
+			 *
+			 * Security: this is the plugin's only safe entry point for untrusted
+			 * serialized data. Calling unserialize() and *then* testing is_object()
+			 * is not a fix -- PHP runs __wakeup()/__destruct() during the call, so a
+			 * POP chain has already executed by the time the check happens, and an
+			 * object nested inside an array never trips the check at all.
+			 *
+			 * allowed_classes => false makes PHP refuse to build any class: every
+			 * serialized object becomes an inert __PHP_Incomplete_Class with no magic
+			 * methods, which strip_objects() then removes at any nesting depth.
+			 *
+			 * @param mixed $data Possibly serialized value.
+			 *
+			 * @return mixed Unserialized value with every object removed. Non-serialized
+			 *               input is returned untouched.
+			 */
+			public static function safe_maybe_unserialize( $data ) {
+				if ( ! is_string( $data ) || ! is_serialized( $data ) ) {
+					return $data;
 				}
-				
-				// Additional security check: if data is still an object after unserialization, reject it
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Hardened with allowed_classes => false.
+				$unserialized = @unserialize( trim( $data ), array( 'allowed_classes' => false ) );
+				if ( false === $unserialized && 'b:0;' !== trim( $data ) ) {
+					// Malformed payload: keep the raw string, callers sanitize it as text.
+					return $data;
+				}
+
+				return self::strip_objects( $unserialized );
+			}
+
+			/**
+			 * Recursively drop object placeholders left behind by safe_maybe_unserialize().
+			 *
+			 * @param mixed $data Unserialized value.
+			 *
+			 * @return mixed Value guaranteed to contain no objects.
+			 */
+			public static function strip_objects( $data ) {
 				if ( is_object( $data ) ) {
 					return '';
 				}
-				
+				if ( is_array( $data ) ) {
+					$clean = array();
+					foreach ( $data as $key => $value ) {
+						if ( is_object( $value ) ) {
+							continue;
+						}
+						$clean[ $key ] = is_array( $value ) ? self::strip_objects( $value ) : $value;
+					}
+
+					return $clean;
+				}
+
+				return $data;
+			}
+
+			/**
+			 * Sanitize a single scalar according to the kind of content it holds.
+			 *
+			 * @param mixed $value Scalar value.
+			 *
+			 * @return mixed Sanitized value; non-strings are returned unchanged.
+			 */
+			protected static function sanitize_scalar( $value ) {
+				if ( ! is_scalar( $value ) ) {
+					// Only null can reach this point; keep the pre-existing empty-string result.
+					return '';
+				}
+				if ( is_email( $value ) ) {
+					return sanitize_email( $value );
+				} else if ( strpos( $value, 'http' ) === 0 ) {
+					return esc_url_raw( $value );
+				} else if ( strpos( $value, '<' ) !== false && strpos( $value, '>' ) !== false ) {
+					return wp_kses_post( $value );
+				}
+
+				return sanitize_text_field( wp_strip_all_tags( $value ) );
+			}
+
+			public static function data_sanitize( $data ) {
+				// Security: PHP Object Injection guard. No class is ever instantiated,
+				// so no magic method can fire, and no object survives at any depth.
+				$data = self::safe_maybe_unserialize( $data );
 				if ( is_string( $data ) ) {
-					// Check again if it's serialized (double-serialized case)
-					if ( is_serialized( $data ) ) {
-						$unserialized = @unserialize( $data );
-						// Reject objects
-						if ( is_object( $unserialized ) ) {
-							return '';
-						}
-						if ( $unserialized !== false ) {
-							$data = $unserialized;
-						}
-					}
-					
-					// Additional check after second unserialization
-					if ( is_object( $data ) ) {
-						return '';
-					}
-					
-					if ( is_array( $data ) ) {
-						$data = self::data_sanitize( $data );
-					} else if ( is_string( $data ) ) {
-						// Determine type of data and sanitize accordingly
-						if ( is_email( $data ) ) {
-							$data = sanitize_email( $data );
-						} else if ( strpos( $data, 'http' ) === 0 ) {
-							$data = esc_url_raw( $data );
-						} else if ( strpos( $data, '<' ) !== false && strpos( $data, '>' ) !== false ) {
-							$data = wp_kses_post( $data );
-						} else {
-							$data = sanitize_text_field( wp_strip_all_tags( $data ) );
-						}
-					}
-				} elseif ( is_array( $data ) ) {
+					// Double-serialized case.
+					$data = self::safe_maybe_unserialize( $data );
+				}
+				if ( is_object( $data ) ) {
+					return '';
+				}
+				if ( is_array( $data ) ) {
 					foreach ( $data as &$value ) {
-						if ( is_array( $value ) ) {
-							$value = self::data_sanitize( $value );
-						} else {
-							// Determine type of value and sanitize accordingly
-							if ( is_email( $value ) ) {
-								$value = sanitize_email( $value );
-							} else if ( strpos( $value, 'http' ) === 0 ) {
-								$value = esc_url_raw( $value );
-							} else if ( strpos( $value, '<' ) !== false && strpos( $value, '>' ) !== false ) {
-								$value = wp_kses_post( $value );
-							} else {
-								$value = sanitize_text_field( wp_strip_all_tags( $value ) );
-							}
-						}
+						$value = is_array( $value ) ? self::data_sanitize( $value ) : self::sanitize_scalar( $value );
 					}
+					unset( $value );
+
+					return $data;
+				}
+				if ( is_string( $data ) ) {
+					return self::sanitize_scalar( $data );
 				}
 
 				return $data;
@@ -322,11 +352,14 @@
 					return gmdate( 'j-n-Y', strtotime( $date ) );
 				}, $dates );
 				// Register and enqueue script
+				// Version bumped to 1.0.1 with the minimum-one-day fix in
+				// mpcrbm_get_selected_days() — this file is served with a fixed version
+				// string, so returning visitors keep the cached copy until it changes.
 				wp_register_script(
 					'date-picker',
 					plugin_dir_url( __FILE__ ) . '../assets/date-picker/date-picker.js', // Corrected path
 					[ 'jquery', 'jquery-ui-datepicker' ],
-					'1.0.0',
+					'1.0.1',
 					true
 				);
 				wp_enqueue_script( 'date-picker' );
@@ -472,17 +505,107 @@
 			//***********************************//
 			public static function price_convert_raw( $price ) {
 				$price = wp_strip_all_tags( $price );
-				$price = str_replace( get_woocommerce_currency_symbol(), '', $price );
-				$price = str_replace( wc_get_price_thousand_separator(), 't_s', $price );
-				$price = str_replace( wc_get_price_decimal_separator(), 'd_s', $price );
-				$price = str_replace( 't_s', '', $price );
-				$price = str_replace( 'd_s', '.', $price );
+				if ( self::check_woocommerce() === 1 ) {
+					$price = str_replace( get_woocommerce_currency_symbol(), '', $price );
+					$price = str_replace( wc_get_price_thousand_separator(), 't_s', $price );
+					$price = str_replace( wc_get_price_decimal_separator(), 'd_s', $price );
+					$price = str_replace( 't_s', '', $price );
+					$price = str_replace( 'd_s', '.', $price );
+				} else {
+					// Standalone (no WooCommerce): strip the admin-configured symbol +
+					// separators (defaults '$', ',', '.') so the raw number parses back
+					// out no matter how native_format_amount() rendered it.
+					$cfg   = self::native_currency_config();
+					$price = str_replace( $cfg['symbol'], '', $price );
+					$price = str_replace( $cfg['thousand_separator'], 't_s', $price );
+					$price = str_replace( $cfg['decimal_separator'], 'd_s', $price );
+					$price = str_replace( 't_s', '', $price );
+					$price = str_replace( 'd_s', '.', $price );
+				}
 				$price = str_replace( '&nbsp;', '', $price );
 
 				return max( $price, 0 );
 			}
 
+			//***** Native (non-WooCommerce) currency formatting *****//
+
+			/** Reads a single value from the Currency Settings tab (mpcrbm_currency_settings). */
+			public static function native_currency_setting( $key, $default = '' ) {
+				return self::get_settings( 'mpcrbm_currency_settings', $key, $default );
+			}
+
+			/**
+			 * Resolved native (non-WooCommerce) currency config from the Currency Settings
+			 * tab. Read straight from the option rather than through get_settings(): that
+			 * helper treats a stored 0 / '' as "empty" and hands back the default, which
+			 * would make 0-decimal currencies (JPY, BDT) and an intentionally blank
+			 * thousands separator impossible to configure. Shared by the PHP formatter and
+			 * the frontend JS constants so display never drifts between the two.
+			 *
+			 * @return array{symbol:string,position:string,decimals:int,decimal_separator:string,thousand_separator:string,currency_code:string}
+			 */
+			public static function native_currency_config(): array {
+				$opt = get_option( 'mpcrbm_currency_settings' );
+				$opt = is_array( $opt ) ? $opt : array();
+
+				return array(
+					'symbol'             => isset( $opt['symbol'] ) && '' !== $opt['symbol'] ? $opt['symbol'] : '$',
+					'position'           => isset( $opt['position'] ) && '' !== $opt['position'] ? $opt['position'] : 'left',
+					'decimals'           => isset( $opt['decimals'] ) && '' !== $opt['decimals'] ? max( 0, (int) $opt['decimals'] ) : 2,
+					'decimal_separator'  => isset( $opt['decimal_separator'] ) && '' !== $opt['decimal_separator'] ? $opt['decimal_separator'] : '.',
+					'thousand_separator' => array_key_exists( 'thousand_separator', $opt ) ? $opt['thousand_separator'] : ',',
+					'currency_code'      => isset( $opt['currency_code'] ) && '' !== $opt['currency_code'] ? $opt['currency_code'] : 'USD',
+				);
+			}
+
+			/**
+			 * Formats a raw amount using the Currency Settings tab (symbol, position,
+			 * decimals, separators) — the standalone counterpart of wc_price(). Falls back
+			 * to "$1,234.56" defaults when nothing has been configured yet.
+			 */
+			public static function native_format_amount( $amount ): string {
+				$cfg       = self::native_currency_config();
+				$formatted = number_format( (float) $amount, $cfg['decimals'], $cfg['decimal_separator'], $cfg['thousand_separator'] );
+
+				switch ( $cfg['position'] ) {
+					case 'right':
+						return $formatted . $cfg['symbol'];
+					case 'left_space':
+						return $cfg['symbol'] . ' ' . $formatted;
+					case 'right_space':
+						return $formatted . ' ' . $cfg['symbol'];
+					case 'left':
+					default:
+						return $cfg['symbol'] . $formatted;
+				}
+			}
+
+			/**
+			 * WooCommerce-safe price formatter for display. Uses wc_price() when
+			 * WooCommerce is active, otherwise formats through the Currency Settings tab so
+			 * standalone (Custom Payment) prices carry the configured symbol/position
+			 * instead of a bare number.
+			 */
+			public static function format_price( $price ) {
+				if ( self::check_woocommerce() === 1 && function_exists( 'wc_price' ) ) {
+					return wc_price( $price );
+				}
+
+				return self::native_format_amount( $price );
+			}
+
 			public static function wc_price( $post_id, $price, $args = array() ): string {
+				// Standalone (Custom Payment) mode: WooCommerce's tax engine and wc_price()
+				// are both unavailable, so format through the Currency Settings tab instead.
+				if ( self::check_woocommerce() !== 1 ) {
+					if ( '' === $price ) {
+						return '';
+					}
+					$qty = ( is_array( $args ) && isset( $args['qty'] ) && '' !== $args['qty'] ) ? max( 0.0, (float) $args['qty'] ) : 1;
+
+					return self::native_format_amount( (float) $price * $qty );
+				}
+
 				$num_of_decimal = get_option( 'woocommerce_price_num_decimals', 2 );
 				$args           = wp_parse_args( $args, array(
 					'qty'   => '',
@@ -603,7 +726,98 @@
 				}
 			}
 
+			/**
+			 * The currency symbol to show beside a bare number.
+			 *
+			 * WooCommerce owns the symbol when it is active; otherwise it comes from the
+			 * plugin's own Currency Settings tab. Callers used to reach straight for
+			 * get_woocommerce_currency_symbol(), which is a fatal error in Custom Payment
+			 * mode where WooCommerce isn't loaded at all.
+			 */
+			public static function currency_symbol( $currency = '' ): string {
+				if ( self::check_woocommerce() === 1 && function_exists( 'get_woocommerce_currency_symbol' ) ) {
+					return get_woocommerce_currency_symbol( $currency );
+				}
+
+				return self::native_currency_config()['symbol'];
+			}
+
+			/**
+			 * The same symbol as a PLAIN CHARACTER — use this whenever the value is
+			 * about to be escaped or written as text rather than echoed as raw HTML.
+			 *
+			 * WooCommerce returns its symbols as HTML entities ("&#36;", "&euro;",
+			 * "&#2547;"), which only render correctly when printed unescaped. Passed
+			 * through esc_html() / esc_js() / jQuery .text() instead, the customer or
+			 * admin sees the literal string "&#36;" — and in a fixed-width flex prefix
+			 * box (the "Fee Value" fields) five characters get squeezed down to an
+			 * unreadable sliver of a glyph, which is what "fix this icon sign" was
+			 * about. Decoding first makes the value safe for every one of those paths.
+			 */
+			public static function currency_symbol_text( $currency = '' ): string {
+				return html_entity_decode( self::currency_symbol( $currency ), ENT_QUOTES, 'UTF-8' );
+			}
+
+			/**
+			 * The ISO currency CODE (USD, EUR, …) — what payment gateways need, as opposed
+			 * to the display symbol above. WooCommerce owns it when active; otherwise it
+			 * comes from the plugin's Currency Settings tab.
+			 */
+			public static function currency_code(): string {
+				if ( self::check_woocommerce() === 1 && function_exists( 'get_woocommerce_currency' ) ) {
+					return get_woocommerce_currency();
+				}
+
+				return strtoupper( self::native_currency_config()['currency_code'] );
+			}
+
+			/**
+			 * WooCommerce-safe wc_get_order().
+			 *
+			 * In Custom Payment (standalone) mode there is no WooCommerce, and bookings
+			 * store mpcrbm_order_id = 0 — so any code that reaches for the "linked order"
+			 * has to cope with there not being one, and with wc_get_order() itself not
+			 * existing. Returns null in both cases instead of fataling.
+			 *
+			 * @return WC_Order|WC_Order_Refund|null
+			 */
+			public static function safe_wc_order( $order_id ) {
+				$order_id = absint( $order_id );
+				if ( ! $order_id || ! function_exists( 'wc_get_order' ) ) {
+					return null;
+				}
+				$order = wc_get_order( $order_id );
+
+				return $order ? $order : null;
+			}
+
+			/**
+			 * WooCommerce-safe wc_get_order_statuses(). Empty array when WooCommerce is
+			 * inactive, so status dropdowns render empty rather than crashing the screen.
+			 */
+			public static function safe_wc_order_statuses(): array {
+				return function_exists( 'wc_get_order_statuses' ) ? (array) wc_get_order_statuses() : array();
+			}
+
+			/**
+			 * WooCommerce-safe wc_get_orders(). Returns an empty array when WooCommerce is
+			 * inactive, so screens that list a customer's or branch's WooCommerce orders
+			 * simply come up empty in Custom Payment mode instead of fataling.
+			 */
+			public static function safe_wc_orders( $args = array() ): array {
+				if ( ! function_exists( 'wc_get_orders' ) ) {
+					return array();
+				}
+
+				return (array) wc_get_orders( $args );
+			}
+
 			public static function get_order_item_meta( $item_id, $key ): string {
+				// Order items only exist inside WooCommerce. In Custom Payment mode there
+				// is no order to read from, and the function itself is undefined.
+				if ( ! function_exists( 'wc_get_order_item_meta' ) ) {
+					return '';
+				}
 				// wc_get_order_item_meta handles caching and the database query for you
 				$value = wc_get_order_item_meta( $item_id, $key, true );
 				return is_string( $value ) ? $value : '';
@@ -624,7 +838,7 @@
 			}
 
 			public static function wc_product_sku( $product_id ) {
-				if ( $product_id ) {
+				if ( $product_id && class_exists( 'WC_Product' ) ) {
 					return new WC_Product( $product_id );
 				}
 
@@ -632,22 +846,31 @@
 			}
 
 			//***********************************//
-public static function all_tax_list(): array {
-    // 1. Get the raw tax classes from WooCommerce settings
-    $tax_classes = WC_Tax::get_tax_classes();
-    
-    // 2. Format them into the [slug => name] array you need
-    $tax_list = [];
-    
-    // Standard tax rate is always available but not in the tax_classes list
-    $tax_list['standard'] = __( 'Standard rate', 'car-rental-manager' );
+			/**
+			 * Tax classes offered on the per-car Tax settings tab.
+			 *
+			 * WooCommerce owns tax classes, and WC_Tax simply does not exist in Custom
+			 * Payment mode — calling it there fataled the whole car add/edit screen. The
+			 * tab is still rendered (so a site that later switches to WooCommerce keeps
+			 * its saved value), just with only the standard rate to choose from.
+			 */
+			public static function all_tax_list(): array {
+				// Standard rate is always offered: it is WooCommerce's implicit default and
+				// never appears in get_tax_classes().
+				$tax_list = array(
+					'standard' => __( 'Standard rate', 'car-rental-manager' ),
+				);
 
-    foreach ( $tax_classes as $class ) {
-        $tax_list[ sanitize_title( $class ) ] = $class;
-    }
+				if ( ! class_exists( 'WC_Tax' ) ) {
+					return $tax_list;
+				}
 
-    return $tax_list;
-}
+				foreach ( WC_Tax::get_tax_classes() as $class ) {
+					$tax_list[ sanitize_title( $class ) ] = $class;
+				}
+
+				return $tax_list;
+			}
 
 			public static function week_day(): array {
 				return [
@@ -753,9 +976,9 @@ public static function all_tax_list(): array {
                     foreach ($meta_keys as $key) {
                         $value = get_post_meta($post_id, $key, true);
 
-                        // Unserialize if needed
+                        // Unserialize if needed. Security: object-safe, see safe_maybe_unserialize().
                         if (is_serialized($value)) {
-                            $value = maybe_unserialize($value);
+                            $value = self::safe_maybe_unserialize($value);
                         }
 
                         // Merge arrays or single values

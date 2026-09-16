@@ -3,7 +3,7 @@
 	 * Plugin Name:       Car Rental Manager – Online Vehicle Booking System
 	 * Plugin URI:        https://wordpress.org/plugins/car-rental-manager
 	 * Description:       A complete car rental solution for WordPress by MagePeople. Manage bookings, vehicles, pricing, and availability with ease.
-	 * Version:           1.3.8
+	 * Version:           1.5.0
 	 * Author:            MagePeople Team
 	 * Author URI:        https://www.mage-people.com/
 	 * License:           GPL v2 or later
@@ -34,25 +34,29 @@
 					define( 'MPCRBM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 				}
 				if ( ! defined( 'MPCRBM_PLUGIN_VERSION' ) ) {
-					define( 'MPCRBM_PLUGIN_VERSION', '1.0.4' );
+					define( 'MPCRBM_PLUGIN_VERSION', '1.5.0' );
 				}
                 if (!defined('MPCRBM_PRO_PLUGIN_NAME')) {
                     define('MPCRBM_PRO_PLUGIN_NAME', 'car-rental-manager-pro/MPCRBM_Plugin_Pro.php');
                 }
 				require_once MPCRBM_PLUGIN_DIR . '/mp_global/MPCRBM_Global_File_Load.php';
 
-				// Dependency installer popup: shows a blocking popup on every admin page
-				// while WooCommerce is missing and installs/activates it (chunked) via AJAX.
-				// It also handles the post-activation redirect to the car list.
-				if ( is_admin() ) {
+				// WooCommerce is OPTIONAL. The plugin always boots: the CPT, settings,
+				// search and pricing engine work either way. Which flow actually takes a
+				// booking is decided by the explicit Booking Mode setting
+				// (inc/MPCRBM_Booking_Mode.php) — WooCommerce cart/checkout, or the
+				// plugin's own standalone "Custom Payment" checkout.
+				//
+				// The installer is only offered while WooCommerce is genuinely missing,
+				// and it is non-blocking: an admin who intends to run Custom Payment can
+				// dismiss it and never see it again.
+				if ( is_admin() && MPCRBM_Global_Function::check_woocommerce() !== 1 ) {
 					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Woo_Installer.php';
 				}
 
-				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
-					self::on_activation_page_create();
-					require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Dependencies.php';
-                	add_action('init', array($this, 'mpcrbm_register_cpt'));
-				}
+				self::on_activation_page_create();
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Dependencies.php';
+				add_action( 'init', array( $this, 'mpcrbm_register_cpt' ) );
 			}
 
 			/**
@@ -200,6 +204,42 @@
 				];
 
 				register_post_type( $cpt, $args );
+
+				// Booking records. Both post types have been written to since long before
+				// they were registered (see MPCRBM_Woocommerce::mpcrbm_cpt_data()) —
+				// registering them makes the data a first-class post type that
+				// get_post_type() checks and capability mapping can rely on.
+				//
+				// Registered HERE rather than in MPCRBM_CPT because that class only loads
+				// in wp-admin, while the standalone Custom Payment checkout creates and
+				// reads bookings on the frontend. In Custom Payment mode
+				// MPCRBM_Offline_Checkout (free) / MPCRBM_Native_Checkout (Pro) write the
+				// SAME meta schema the WooCommerce bridge does, so one booking list covers
+				// both flows.
+				$booking_args = [
+					'label'               => esc_html__( 'Car Rental Bookings', 'car-rental-manager' ),
+					'public'              => false,
+					'publicly_queryable'  => false,
+					'show_ui'             => false,
+					'show_in_menu'        => false,
+					'show_in_rest'        => false,
+					'exclude_from_search' => true,
+					'show_in_nav_menus'   => false,
+					'has_archive'         => false,
+					'supports'            => [ 'title' ],
+					'capability_type'     => 'post',
+					'rewrite'             => false,
+				];
+				register_post_type( 'mpcrbm_booking', $booking_args );
+
+				// The sibling extra-service records use the post type "mpcrbm_service_booking",
+				// which is 22 characters — over WordPress's 20-character limit, so
+				// register_post_type() rejects it with a _doing_it_wrong() notice. It is
+				// deliberately NOT registered: every existing site already has rows stored
+				// under that exact name, and renaming it would orphan their historical
+				// extra-service data. wp_insert_post()/WP_Query both work fine with an
+				// unregistered type, which is how those records have always been read and
+				// written (see MPCRBM_Woocommerce::checkout_order_processed()).
 			}
 
 		}

@@ -11,7 +11,15 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
         private $custom_order_data = array(); // Property to store the data
         private $ordered_item_name;
 
-        private static function calculate_security_deposit( $post_id, $base_price = 0 ) {
+        /**
+         * Public so the standalone Custom Payment checkout computes the deposit with the
+         * exact same rule as the WooCommerce cart. Duplicating the percentage/flat logic
+         * there meant the two flows could quietly disagree on what a customer owes.
+         *
+         * @param float $base_price The VEHICLE rate per car - never the grand total, or a
+         *                          percentage deposit would be charged on the extras too.
+         */
+        public static function calculate_security_deposit( $post_id, $base_price = 0 ) {
             $enable = get_post_meta( $post_id, 'mpcrbm_security_deposit_enable', true );
             if ( $enable !== 'on' ) {
                 return 0;
@@ -54,14 +62,24 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             }
         }
 
+        /**
+         * woocommerce_add_cart_item_data FILTER callback.
+         *
+         * It must always hand back the value it was given. The early exits below
+         * used a bare `return;`, which passed NULL down the rest of the filter
+         * chain -- and every MagePeople booking plugin hooks this same filter at
+         * priority 90, so whichever one ran after this plugin received null
+         * instead of the cart-item array and fataled the add-to-cart request
+         * ("array_merge(): Argument #1 must be of type array, null given").
+         */
         public function cart_item_data( $cart_item_data, $product_id ) {
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
-                return;
+                return $cart_item_data;
             }
             // Sanitize and verify the nonce
             $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
             if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
-                return;
+                return $cart_item_data;
             }
             $linked_id = MPCRBM_Global_Function::get_post_info( $product_id, 'link_mpcrbm_id', $product_id );
             $post_id = is_string( get_post_status( $linked_id ) ) ? $linked_id : $product_id;
@@ -123,6 +141,16 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         : $ow_value;
                 }
                 $cart_item_data['mpcrbm_branch_one_way_fee'] = $one_way_fee;
+                foreach ( [ 'delivery', 'collection' ] as $mpcrbm_dc_kind ) {
+                    $dc_requested = isset( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] ) && $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] === '1';
+                    $dc_address   = isset( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ? sanitize_textarea_field( wp_unslash( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ) : '';
+                    $dc_fee       = ( $dc_requested && class_exists( 'MPCRBM_Delivery_Collection_Settings' ) )
+                        ? MPCRBM_Delivery_Collection_Settings::get_fee( $post_id, $mpcrbm_dc_kind, $raw_price )
+                        : 0;
+                    $cart_item_data[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] = ( $dc_requested && $dc_fee > 0 ) ? '1' : '';
+                    $cart_item_data[ "mpcrbm_{$mpcrbm_dc_kind}_address" ]   = ( $dc_requested && $dc_fee > 0 ) ? $dc_address : '';
+                    $cart_item_data[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ]       = $dc_fee;
+                }
                 $rental_days = $return_date_time ? MPCRBM_Function::get_days_from_start_end_date( $start_time, $return_date_time ) : 1;
                 $cart_item_data['mpcrbm_extra_service_info'] = self::cart_extra_service_info( $post_id, $rental_days );
                 $security_deposit                            = self::calculate_security_deposit( $post_id, $raw_price );
@@ -291,19 +319,33 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $item->add_meta_data( '_return_date_time', $return_date_time );
                 $item->add_meta_data( '_mpcrbm_car_quantity', $car_quantity );
                 $item->add_meta_data( esc_html__( 'Car Quantity ', 'car-rental-manager' ), wp_kses_post( $car_quantity ) );
-                $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ) );
+                $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ).' X '.$car_quantity ) );
                 if ( $security_deposit > 0 ) {
                     $security_deposit_total = $security_deposit * intval( $car_quantity );
-                    $item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( wc_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $security_deposit_total ) ) );
-                    $item->add_meta_data( 'mpcrbm_security_deposit_amount', $security_deposit_total );
+                    $item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $security_deposit_total ) ) );
+                    $item->add_meta_data( '_mpcrbm_security_deposit_amount', $security_deposit_total );
                 } else {
-                    $item->add_meta_data( 'mpcrbm_security_deposit_amount', 0 );
+                    $item->add_meta_data( '_mpcrbm_security_deposit_amount', 0 );
                 }
                 if ( $one_way_fee > 0 ) {
                     $one_way_fee_total = $one_way_fee * intval( $car_quantity );
-                    $item->add_meta_data( esc_html__( 'One-Way Return Fee', 'car-rental-manager' ), wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . wc_price( $one_way_fee_total ) ) );
+                    $item->add_meta_data( esc_html__( 'One-Way Return Fee', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $one_way_fee_total ) ) );
                 }
                 $item->add_meta_data( '_mpcrbm_branch_one_way_fee', $one_way_fee );
+                foreach ( [ 'delivery' => __( 'Delivery Fee', 'car-rental-manager' ), 'collection' => __( 'Collection Fee', 'car-rental-manager' ) ] as $mpcrbm_dc_kind => $mpcrbm_dc_label ) {
+                    $dc_fee     = isset( $values[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ] ) ? floatval( $values[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ] ) : 0;
+                    $dc_address = isset( $values[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] ) ? $values[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] : '';
+                    if ( $dc_fee > 0 ) {
+                        $dc_fee_total = $dc_fee * intval( $car_quantity );
+                        $item->add_meta_data( $mpcrbm_dc_label, wp_kses_post( MPCRBM_Global_Function::format_price( $dc_fee ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $dc_fee_total ) ) );
+                        if ( $dc_address ) {
+                            $address_label = 'delivery' === $mpcrbm_dc_kind ? __( 'Delivery Address', 'car-rental-manager' ) : __( 'Collection Address', 'car-rental-manager' );
+                            $item->add_meta_data( $address_label, sanitize_textarea_field( $dc_address ) );
+                        }
+                    }
+                    $item->add_meta_data( "_mpcrbm_{$mpcrbm_dc_kind}_fee", $dc_fee );
+                    $item->add_meta_data( "_mpcrbm_{$mpcrbm_dc_kind}_address", sanitize_textarea_field( $dc_address ) );
+                }
                 if ( sizeof( $extra_service ) > 0 ) {
                     $item->add_meta_data( esc_html__( 'Optional Service ', 'car-rental-manager' ), '' );
                     foreach ( $extra_service as $service ) {
@@ -311,10 +353,10 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         $item->add_meta_data( esc_html__( 'Services Quantity ', 'car-rental-manager' ), $service['service_quantity'] );
                         $service_days = $service['service_days'] ?? 1;
                         if ( ( $service['service_price_type'] ?? 'flat' ) === 'day' && $service_days > 1 ) {
-                            $unit_per_day = wc_price( $service['service_price'] / $service_days );
-                            $price_line   = esc_html( ' ( ' ) . wp_kses_post( $unit_per_day ) . esc_html( '/day X ' . $service_days . ' days X ' . $service['service_quantity'] . ' ) = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                            $unit_per_day = MPCRBM_Global_Function::format_price( $service['service_price'] / $service_days );
+                            $price_line   = esc_html( ' ( ' ) . wp_kses_post( $unit_per_day ) . esc_html( '/day X ' . $service_days . ' days X ' . $service['service_quantity'] . ' ) = ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                         } else {
-                            $price_line = esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ') = ' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                            $price_line = esc_html( ' ( ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ') = ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                         }
                         $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), $price_line );
                     }
@@ -445,10 +487,16 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             $price        = $price ? MPCRBM_Global_Function::data_sanitize( $price ) : [];
                             $car_quantity = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_car_quantity' );
                             $car_quantity = $car_quantity ? MPCRBM_Global_Function::data_sanitize( $car_quantity ) : 1;
-                            $security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, 'mpcrbm_security_deposit_amount' );
+                            $security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_security_deposit_amount' );
                             $security_deposit_order = $security_deposit_order ? floatval( MPCRBM_Global_Function::data_sanitize( $security_deposit_order ) ) : 0;
                             $one_way_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_branch_one_way_fee' );
                             $one_way_fee_order = $one_way_fee_order !== '' && $one_way_fee_order !== false ? floatval( $one_way_fee_order ) : 0;
+                            $mpcrbm_dc_meta = [];
+                            foreach ( [ 'delivery', 'collection' ] as $mpcrbm_dc_kind ) {
+                                $dc_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, "_mpcrbm_{$mpcrbm_dc_kind}_fee" );
+                                $mpcrbm_dc_meta[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ]     = ( $dc_fee_order !== '' && $dc_fee_order !== false ) ? floatval( $dc_fee_order ) : 0;
+                                $mpcrbm_dc_meta[ "mpcrbm_{$mpcrbm_dc_kind}_address" ] = MPCRBM_Global_Function::get_order_item_meta( $item_id, "_mpcrbm_{$mpcrbm_dc_kind}_address" );
+                            }
                             // Add meta array data to the $data array
                             $data = array_merge( $meta_array, [
                                 'mpcrbm_id'                          => $post_id,
@@ -477,7 +525,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 'mpcrbm_security_deposit_amount'     => $security_deposit_order,
                                 'mpcrbm_branch_one_way_fee'          => $one_way_fee_order,
                                 'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
-                            ] );
+                            ], $mpcrbm_dc_meta );
                             $booking_data = apply_filters( 'mpcrbm_add_booking_data', $data, $post_id );
                             self::mpcrbm_cpt_data( 'mpcrbm_booking', $booking_data['mpcrbm_billing_name'], $booking_data );
                             if ( sizeof( $service_info ) > 0 ) {
@@ -640,7 +688,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         <li>
                             <span class="fa fa-tag"></span>
                             <h6 class="_mR_xs"><?php esc_html_e( 'Base Price : ', 'car-rental-manager' ); ?></h6>
-                            <span>(<?php echo wp_kses_post( wc_price( $base_price ).' X '.$car_quantity ); ?>) = <?php echo wp_kses_post( wc_price( $base_price * $car_quantity ) )?></span>
+                            <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ).' X '.$car_quantity ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price * $car_quantity ) )?></span>
                         </li>
                         <?php
                         $security_deposit = array_key_exists( 'mpcrbm_security_deposit', $cart_item ) ? floatval( $cart_item['mpcrbm_security_deposit'] ) : 0;
@@ -650,7 +698,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             <li>
                                 <span class="fa fa-shield-alt"></span>
                                 <h6 class="_mR_xs"><?php esc_html_e( 'Security Deposit : ', 'car-rental-manager' ); ?></h6>
-                                <span>(<?php echo wp_kses_post( wc_price( $security_deposit ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $security_deposit_total ) ); ?></span>
+                                <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit_total ) ); ?></span>
                             </li>
                         <?php } ?>
                         <?php
@@ -661,9 +709,21 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             <li>
                                 <span class="fa fa-exchange-alt"></span>
                                 <h6 class="_mR_xs"><?php esc_html_e( 'One-Way Return Fee : ', 'car-rental-manager' ); ?></h6>
-                                <span>(<?php echo wp_kses_post( wc_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( wc_price( $one_way_fee_total ) ); ?></span>
+                                <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $one_way_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $one_way_fee_total ) ); ?></span>
                             </li>
                         <?php } ?>
+                        <?php foreach ( [ 'delivery' => [ 'fa fa-truck', __( 'Delivery Fee : ', 'car-rental-manager' ) ], 'collection' => [ 'fa fa-truck-loading', __( 'Collection Fee : ', 'car-rental-manager' ) ] ] as $mpcrbm_dc_kind => $mpcrbm_dc_row ) :
+                            $dc_fee = array_key_exists( "mpcrbm_{$mpcrbm_dc_kind}_fee", $cart_item ) ? floatval( $cart_item[ "mpcrbm_{$mpcrbm_dc_kind}_fee" ] ) : 0;
+                            if ( $dc_fee > 0 ) :
+                                $dc_fee_total = $dc_fee * intval( $car_quantity );
+                                ?>
+                                <li>
+                                    <span class="<?php echo esc_attr( $mpcrbm_dc_row[0] ); ?>"></span>
+                                    <h6 class="_mR_xs"><?php echo esc_html( $mpcrbm_dc_row[1] ); ?></h6>
+                                    <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $dc_fee ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $dc_fee_total ) ); ?></span>
+                                </li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                         <?php do_action( 'mpcrbm_cart_item_display', $cart_item, $post_id ); ?>
                     </ul>
                 </div>
@@ -685,9 +745,9 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                     <span>
                                         <?php if ( ( $service['service_price_type'] ?? 'flat' ) === 'day' && ( $service['service_days'] ?? 1 ) > 1 ) {
                                             $unit_per_day = $service['service_quantity'] > 0 ? $service['service_price'] / $service['service_days'] : 0;
-                                            echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $unit_per_day ) ) . esc_html( '/day X ' . $service['service_days'] . ' days X ' . $service['service_quantity'] . ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                                            echo esc_html( ' ( ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $unit_per_day ) ) . esc_html( '/day X ' . $service['service_days'] . ' days X ' . $service['service_quantity'] . ' ) =' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                                         } else {
-                                            echo esc_html( ' ( ' ) . wp_kses_post( wc_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ' ) =' ) . wp_kses_post( wc_price( $service['service_price'] * $service['service_quantity'] ) );
+                                            echo esc_html( ' ( ' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] ) ) . esc_html( ' X ' ) . esc_html( $service['service_quantity'] ) . esc_html( ' ) =' ) . wp_kses_post( MPCRBM_Global_Function::format_price( $service['service_price'] * $service['service_quantity'] ) );
                                         } ?>
                                     </span>
                                 </li>
@@ -787,7 +847,33 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             return $extra_service;
         }
 
-        public function mpcrbm_get_cart_total_price( $post_id ) {
+        /**
+         * Server-side total for the booking described by the current $_POST.
+         *
+         * Static so the standalone Custom Payment checkout
+         * (MPCRBM_Offline_Checkout) can reuse the exact same calculation without
+         * instantiating this class — a second `new MPCRBM_Woocommerce()` would
+         * re-register every WooCommerce hook in the constructor and double-apply
+         * cart pricing. The body never touched $this, so existing `$this->`
+         * callers keep working unchanged.
+         */
+        public static function mpcrbm_get_cart_total_price( $post_id, &$breakdown = null ) {
+            // $breakdown is an optional out-param exposing the parts this method already
+            // works out internally (base rate per car, one-way fee, delivery/collection
+            // fees, extra-service total). The standalone checkout needs the BASE rate to
+            // store as mpcrbm_base_price - storing the grand total there instead made the
+            // vehicle line on the PDF/order list show the whole booking's price, so the
+            // itemised subtotal came out higher than the real total. Recomputing it at the
+            // call site would have been a second copy of this arithmetic, free to drift.
+            $breakdown = array(
+                'base_per_car' => 0.0,
+                'one_way_fee'  => 0.0,
+                'delivery_fee' => 0.0,
+                'collection_fee' => 0.0,
+                'services'     => 0.0,
+                'rental_days'  => 1,
+                'total'        => 0.0,
+            );
             //Validate nonce before processing
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
                 return;
@@ -830,37 +916,57 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $price            = MPCRBM_Function::calculate_multi_location_price( $post_id, $start_place, $end_place, $start_time, $return_date_time );
             $wc_price         = MPCRBM_Global_Function::wc_price( $post_id, $price );
             $raw_price        = MPCRBM_Global_Function::price_convert_raw( $wc_price ) * $car_quantity ;
+            $base_per_car = $raw_price / max( 1, intval( $car_quantity ) );
+            $breakdown['base_per_car'] = (float) $base_per_car;
             $one_way_enabled = get_post_meta( $post_id, 'mpcrbm_car_one_way_enabled', true );
             if ( $one_way_enabled && $start_place !== $end_place ) {
                 $ow_value    = floatval( get_post_meta( $post_id, 'mpcrbm_car_one_way_fee', true ) );
                 $ow_type     = get_post_meta( $post_id, 'mpcrbm_car_one_way_fee_type', true );
-                $base_per_car = $raw_price / max( 1, intval( $car_quantity ) );
                 $one_way_fee  = ( $ow_type === 'percentage' )
                     ? round( $base_per_car * $ow_value / 100, 2 )
                     : $ow_value;
                 if ( $one_way_fee > 0 ) {
                     $raw_price += $one_way_fee * intval( $car_quantity );
+                    $breakdown['one_way_fee'] = (float) $one_way_fee;
+                }
+            }
+            // Delivery/Collection — flat or % fee per car, requested via checkboxes
+            // on the single car booking page (registration/delivery_collection_display.php).
+            foreach ( [ 'delivery', 'collection' ] as $mpcrbm_dc_kind ) {
+                $requested = isset( $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] ) && $_POST[ "mpcrbm_{$mpcrbm_dc_kind}_requested" ] === '1';
+                if ( $requested && class_exists( 'MPCRBM_Delivery_Collection_Settings' ) ) {
+                    $dc_fee = MPCRBM_Delivery_Collection_Settings::get_fee( $post_id, $mpcrbm_dc_kind, $base_per_car );
+                    if ( $dc_fee > 0 ) {
+                        $raw_price += $dc_fee * intval( $car_quantity );
+                        $breakdown[ $mpcrbm_dc_kind . '_fee' ] = (float) $dc_fee;
+                    }
                 }
             }
             $service_name     = isset( $_POST['mpcrbm_extra_service'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_extra_service'] ) ) : [];
             $service_quantity = isset( $_POST['mpcrbm_extra_service_qty'] ) ? array_map( 'absint', $_POST['mpcrbm_extra_service_qty'] ) : [];
             $rental_days      = $return_date_time ? MPCRBM_Function::get_days_from_start_end_date( $start_time, $return_date_time ) : 1;
+            $breakdown['rental_days'] = $rental_days;
 
             if ( sizeof( $service_name ) > 0 ) {
                 for ( $i = 0; $i < count( $service_name ); $i ++ ) {
                     if ( $service_name[ $i ] ) {
                         if ( array_key_exists( $i, $service_quantity ) && isset( $service_quantity[ $i ] ) ) {
-                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days ) * $service_quantity[ $i ];
+                            $mpcrbm_service_amount = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days ) * $service_quantity[ $i ];
                         } else {
-                            $raw_price = $raw_price + MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days );
+                            $mpcrbm_service_amount = MPCRBM_Function::get_extra_service_price_by_name( $post_id, $service_name[ $i ], $rental_days );
                         }
+                        $raw_price               = $raw_price + $mpcrbm_service_amount;
+                        $breakdown['services'] += (float) $mpcrbm_service_amount;
                     }
                 }
             }
 
             $wc_price = MPCRBM_Global_Function::wc_price( $post_id, $raw_price );
 
-            return MPCRBM_Global_Function::price_convert_raw( $wc_price );
+            $mpcrbm_total       = MPCRBM_Global_Function::price_convert_raw( $wc_price );
+            $breakdown['total'] = (float) $mpcrbm_total;
+
+            return $mpcrbm_total;
         }
 
         public static function mpcrbm_cpt_data( $cpt_name, $title, $meta_data = array(), $status = 'publish', $cat = array() ) {
@@ -873,6 +979,13 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 'post_type'     => $cpt_name
             );
             $post_id = wp_insert_post( $new_post );
+            // wp_insert_post() returns WP_Error on failure; passing that straight into
+            // update_post_meta() below would throw. Bail with the error so callers (which
+            // all check is_wp_error) can report a real failure instead of half-writing a
+            // booking whose meta silently went nowhere.
+            if ( is_wp_error( $post_id ) || ! $post_id ) {
+                return $post_id;
+            }
             if ( sizeof( $meta_data ) > 0 ) {
                 foreach ( $meta_data as $key => $value ) {
                     update_post_meta( $post_id, $key, $value );
@@ -883,6 +996,11 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 update_post_meta( $post_id, 'mpcrbm_pin', $mpcrbm_pin );
                 update_post_meta( $post_id, 'mpcrbm_order_post_id', $post_id );
             }
+
+            // Returning the id lets callers act on the record they just created (the
+            // standalone checkout needs it for the confirmation URL and the customer
+            // email). Existing callers ignore the return value, so this is additive.
+            return $post_id;
         }
 
         public static function mpcrbm_find_bookings_by_date( $given_date, $post_id = null ) {
@@ -934,6 +1052,86 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 
 
 
+        /**
+         * The single reply "Book Now" is allowed to produce, and the end of the request.
+         *
+         * The frontend contract (assets/frontend/mpcrbm_registration.js) is strict: a
+         * response starting with "<" is HTML to render in place, "0" means "unavailable",
+         * and anything else is a URL to navigate to. Any incidental output — a PHP notice,
+         * or wpdb printing a query error while WP_DEBUG is on — used to be prepended to
+         * that body, which turned a valid checkout URL into unparseable HTML and left
+         * "Book Now" doing nothing at all. Discarding everything this handler buffered
+         * guarantees the client only ever sees the payload we meant to send. Nothing is
+         * lost: PHP and wpdb still record their own errors in the debug log.
+         *
+         * @param string $payload      Already-escaped response body.
+         * @param int    $buffer_level ob_get_level() as it was before this handler started buffering.
+         */
+        protected static function mpcrbm_send_cart_response( $payload, $buffer_level ) {
+            while ( ob_get_level() > $buffer_level ) {
+                ob_end_clean();
+            }
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- every caller escapes with esc_url_raw()/wp_kses_post() before handing the payload over.
+            echo $payload;
+            die();
+        }
+
+        /**
+         * Error block shown in place when a booking cannot be added to the cart, so the
+         * customer gets a reason instead of a button that silently does nothing.
+         *
+         * @param string $message Fallback text when WooCommerce itself said nothing useful.
+         * @return string
+         */
+        protected static function mpcrbm_cart_error_html( $message ) {
+            // Prefer WooCommerce's own wording ("out of stock", a failed
+            // woocommerce_add_to_cart_validation rule, ...) — it is far more specific
+            // than anything this plugin could guess at. Guarded three ways because this
+            // also runs in Custom Payment mode, where WooCommerce may be active but its
+            // session was never started for this request (wc_get_notices() would then
+            // dereference a null WC()->session).
+            if ( function_exists( 'wc_get_notices' ) && did_action( 'woocommerce_init' ) && ! empty( WC()->session ) ) {
+                $notices = wc_get_notices( 'error' );
+                if ( ! empty( $notices ) ) {
+                    $collected = array();
+                    foreach ( $notices as $notice ) {
+                        $text = is_array( $notice ) && isset( $notice['notice'] ) ? $notice['notice'] : $notice;
+                        if ( is_string( $text ) && '' !== trim( $text ) ) {
+                            $collected[] = wp_strip_all_tags( $text );
+                        }
+                    }
+                    if ( ! empty( $collected ) ) {
+                        $message = implode( ' ', $collected );
+                    }
+
+                    // Consume only the errors we just rendered. wc_clear_notices() empties
+                    // the whole bag, so anything else queued is put straight back — the
+                    // customer should not lose an unrelated success/info message just
+                    // because their booking could not be added.
+                    $keep = wc_get_notices();
+                    unset( $keep['error'] );
+                    wc_clear_notices();
+                    foreach ( $keep as $keep_type => $keep_notices ) {
+                        foreach ( $keep_notices as $keep_notice ) {
+                            wc_add_notice(
+                                is_array( $keep_notice ) && isset( $keep_notice['notice'] ) ? $keep_notice['notice'] : $keep_notice,
+                                $keep_type,
+                                is_array( $keep_notice ) && isset( $keep_notice['data'] ) ? $keep_notice['data'] : array()
+                            );
+                        }
+                    }
+                }
+            }
+
+            ob_start();
+            ?>
+            <div class="dLayout mpcrbm-cart-error">
+                <p class="mpcrbm-error-message"><?php echo esc_html( $message ); ?></p>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
+
         /****************************/
         public function mpcrbm_add_to_cart() {
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
@@ -945,6 +1143,13 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 return;
             }
 
+            // Remember where the output stack stood, then capture everything from here on
+            // so only mpcrbm_send_cart_response()'s payload can reach the browser. See that
+            // method for why. Every exit path below goes through it, so this buffer is
+            // always closed.
+            $mpcrbm_buffer_level = ob_get_level();
+            ob_start();
+
             $link_id           = isset( $_POST['link_id'] ) ? absint( $_POST['link_id'] ) : 0;
             $post_id           = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 
@@ -953,28 +1158,84 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $already_booked = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $post_id, $mpcrbm_date );
 
             if( $already_booked === 0 ){
-                return 0;
-            }else {
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
-                $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
-                $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
-
-                // Empty the cart BEFORE validating the new add: otherwise, when a customer goes
-                // back and re-books with a changed selection, WooCommerce's own "already in your
-                // cart" check still sees the previous booking sitting in the cart and rejects the
-                // new add_to_cart() call outright, silently leaving the old selection in place.
-                WC()->cart->empty_cart();
-
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-                $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
-                $product_status = get_post_status($product_id);
-                ob_start();
-                if ($passed_validation && WC()->cart->add_to_cart($product_id, $quantity) && 'publish' === $product_status) {
-                    echo esc_url(wc_get_checkout_url());
-                }
-                echo wp_kses_post(ob_get_clean());
-                die();
+                // "0" is the frontend's agreed signal for "fully booked"; it shows the
+                // "choose another date or vehicle" message. Sent explicitly rather than
+                // returning and letting admin-ajax print it, so the buffer above is
+                // discarded instead of being flushed ahead of it at shutdown.
+                self::mpcrbm_send_cart_response( '0', $mpcrbm_buffer_level );
             }
+
+            // The explicit Booking Mode setting (MPCRBM_Booking_Mode) is the single
+            // source of truth for which flow owns a booking, so a booking has one
+            // deterministic path instead of two handlers racing for it.
+            $use_wc_payment = class_exists( 'MPCRBM_Booking_Mode' ) && MPCRBM_Booking_Mode::is_woocommerce();
+
+            if ( ! $use_wc_payment ) {
+                // WooCommerce doesn't own this booking: hand off to whichever custom
+                // payment flow is registered (the free Offline checkout, or Pro's
+                // richer native checkout). If nothing handles it, return a visible
+                // error rather than an empty response, so the frontend shows a message
+                // instead of hanging on a spinner forever.
+                $response = apply_filters( 'mpcrbm_custom_payment_add_to_cart', '', $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce verified at the top of this method.
+                if ( '' === $response ) {
+                    $response = self::mpcrbm_cart_error_html(
+                        __( 'No payment method is currently available. Please contact the site admin.', 'car-rental-manager' )
+                    );
+                }
+
+                // A handler returns EITHER a redirect URL or an HTML block, and the two
+                // need opposite escaping: running a URL through wp_kses_post() turns every
+                // "&" into "&#038;", which silently breaks a multi-parameter checkout link.
+                if ( 0 === strpos( ltrim( $response ), '<' ) ) {
+                    self::mpcrbm_send_cart_response( wp_kses_post( $response ), $mpcrbm_buffer_level );
+                }
+
+                self::mpcrbm_send_cart_response( esc_url_raw( $response ), $mpcrbm_buffer_level );
+            }
+
+            // A car published while WooCommerce was inactive (Custom Payment mode) has
+            // no hidden mirror product, so $link_id arrives empty or points at a post
+            // that no longer exists — add_to_cart() would then silently fail and the
+            // customer would just see "Cart error". Self-heal the link instead of dying.
+            if ( class_exists( 'MPCRBM_Hidden_Product' ) && $post_id
+                && ( ! $link_id || 'product' !== get_post_type( $link_id ) ) ) {
+                $link_id = MPCRBM_Hidden_Product::ensure_hidden_product( $post_id );
+            }
+
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
+            $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
+            $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
+
+            // Empty the cart BEFORE validating the new add: otherwise, when a customer goes
+            // back and re-books with a changed selection, WooCommerce's own "already in your
+            // cart" check still sees the previous booking sitting in the cart and rejects the
+            // new add_to_cart() call outright, silently leaving the old selection in place.
+            WC()->cart->empty_cart();
+
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+            $passed_validation = apply_filters('woocommerce_add_to_cart_validation', true, $product_id, $quantity);
+            $product_status = get_post_status($product_id);
+
+            if ($passed_validation && 'publish' === $product_status && WC()->cart->add_to_cart($product_id, $quantity)) {
+                // esc_url_raw(), not esc_url(): esc_url() encodes "&" as "&#038;", which
+                // the browser then follows literally and drops every query argument after
+                // the first — checkout URLs on stores that use them arrived broken.
+                self::mpcrbm_send_cart_response( esc_url_raw( wc_get_checkout_url() ), $mpcrbm_buffer_level );
+            }
+
+            // Reaching here means WooCommerce refused the add — an unpublished or deleted
+            // mirror product, a product with no price, an out-of-stock item, or a
+            // woocommerce_add_to_cart_validation rule from another plugin. Say so instead
+            // of returning an empty body, which the frontend could only render as a
+            // "Book Now" button that appears to do nothing.
+            self::mpcrbm_send_cart_response(
+                wp_kses_post(
+                    self::mpcrbm_cart_error_html(
+                        __( 'Sorry, this vehicle could not be added to your cart. Please try another vehicle or contact us.', 'car-rental-manager' )
+                    )
+                ),
+                $mpcrbm_buffer_level
+            );
         }
     }
     new MPCRBM_Woocommerce();

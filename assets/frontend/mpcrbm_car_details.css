@@ -258,13 +258,14 @@ div.mpcrbm_car_details_container h3 {
     background: var(--mpcrbm-cd-bg);
 }
 
-div.mpcrbm_car_details_left h4,
-div.mpcrbm_car_details_right h4 {
+div.mpcrbm_car_details_left h4, div.mpcrbm_car_details_right h4
+ {
     margin: 0 0 10px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
     color: var(--mpcrbm-cd-text);
 }
+
 
 .mpcrbm_car_details_include i {
     color: #16a34a;

@@ -31,6 +31,11 @@
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Function.php';
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Query.php';
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Layout.php';
+				// Which checkout owns a booking (WooCommerce vs standalone Custom Payment)
+				// and whether that checkout has a usable gateway. Loaded before Admin and
+				// Frontend because both gate on them.
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Booking_Mode.php';
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_Payment_Status_Checker.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';
@@ -38,6 +43,12 @@
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Locations_Manager.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Extra_Services_Manager.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Branch_Search.php';
+				// Loaded unconditionally (not just admin-side) because its static
+				// read helpers (is_enabled()/get_fee()) are called from frontend
+				// checkout code (MPCRBM_Woocommerce.php, car_details.php) — its
+				// admin-only render/save methods only ever fire from their own
+				// admin-only action hooks, so defining the class here is safe.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Delivery_Collection_Settings.php';
 			}
 
 			public function global_enqueue() {
@@ -68,14 +79,44 @@
 					'nonce' => $nonce,
                     'site_url' => get_site_url(),
 				) );
+				wp_localize_script( 'mpcrbm_ex_services_manager', 'mpcrbmExServicesAdmin', array(
+					'nonce'         => $nonce,
+					'addTitle'      => __( 'Add Service Group', 'car-rental-manager' ),
+					'editTitle'     => __( 'Edit Service Group', 'car-rental-manager' ),
+					'addEyebrow'    => __( 'New Offering', 'car-rental-manager' ),
+					'editEyebrow'   => __( 'Update Offering', 'car-rental-manager' ),
+					'loadFailed'    => __( 'Unable to load the service group.', 'car-rental-manager' ),
+					'networkError'  => __( 'Network error. Please try again.', 'car-rental-manager' ),
+					'deleteConfirm' => __( 'Are you sure you want to delete this service group?', 'car-rental-manager' ),
+					'deleteFailed'  => __( 'Failed to delete service group.', 'car-rental-manager' ),
+					'showItems'     => __( 'Show all items', 'car-rental-manager' ),
+					'hideItems'     => __( 'Hide extra items', 'car-rental-manager' ),
+				) );
 				wp_localize_script( 'mpcrbm_branch_manager', 'mpcrbmBranchAdmin', array(
 					'loadingText'         => __( 'Loading…', 'car-rental-manager' ),
+					'carText'             => __( 'car', 'car-rental-manager' ),
 					'carsText'            => __( 'cars', 'car-rental-manager' ),
+					'activeText'          => __( 'Active', 'car-rental-manager' ),
+					'emptyText'           => __( 'Empty', 'car-rental-manager' ),
+					'noCarsText'          => __( 'No cars currently at this branch.', 'car-rental-manager' ),
 					'transferText'        => __( 'Transfer', 'car-rental-manager' ),
 					'transferringText'    => __( 'Transferring…', 'car-rental-manager' ),
 					'selectBranchText'    => __( 'Please select a target branch.', 'car-rental-manager' ),
 					'confirmTransferText' => __( 'Transfer this car to the selected branch?', 'car-rental-manager' ),
 					'isPro'               => is_plugin_active( MPCRBM_PRO_PLUGIN_NAME ),
+				) );
+				wp_localize_script( 'mpcrbm_locations_manager', 'mpcrbmLocationsAdmin', array(
+					'addTitle'          => __( 'Add New Branch', 'car-rental-manager' ),
+					'editTitle'         => __( 'Edit Branch', 'car-rental-manager' ),
+					'saveText'          => __( 'Save Branch', 'car-rental-manager' ),
+					'savingText'        => __( 'Saving…', 'car-rental-manager' ),
+					'nameRequired'      => __( 'Branch name is required.', 'car-rental-manager' ),
+					'saveFailed'        => __( 'Unable to save the branch.', 'car-rental-manager' ),
+					'networkError'      => __( 'Network error. Please try again.', 'car-rental-manager' ),
+					'deleteConfirmText' => __( 'Are you sure you want to delete this branch?', 'car-rental-manager' ),
+					'deleteFailed'      => __( 'Unable to delete the branch.', 'car-rental-manager' ),
+					'selectBranchTitle' => __( 'Select a branch to view and transfer cars.', 'car-rental-manager' ),
+					'selectBranchHint'  => __( 'Click any branch above to get started.', 'car-rental-manager' ),
 				) );
 				// Trigger the action hook to add additional scripts if needed
 				do_action( 'mpcrbm_admin_script' );
@@ -108,6 +149,13 @@
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'nonce'    => wp_create_nonce( 'mpcrbm_transportation_type_nonce' ),
                     'site_url' => get_site_url(),
+					// Shown when add-to-cart bails (car fully booked for the chosen dates),
+					// so the customer gets a reason instead of a button that does nothing.
+					'i18n_unavailable' => __( 'This vehicle is not available for the selected dates. Please choose another date or vehicle.', 'car-rental-manager' ),
+					// Shown when "Book Now" is clicked with no vehicle picked — the button
+					// is normally disabled until one is, so this only guards the edge cases
+					// (a cached page, a theme that re-enables it) that used to fail silently.
+					'i18n_select_vehicle' => __( 'Please select a vehicle before continuing.', 'car-rental-manager' ),
 				) );
 				wp_localize_script( 'mpcrbm_registration', 'mpcrbmL10n', array(
 					'nameLabel'  => __( 'Name : ', 'car-rental-manager' ),
@@ -143,7 +191,10 @@
 				return [
 					'ajax_url'         => admin_url( 'admin-ajax.php' ),
 					'car_one_way_fees' => $car_one_way_fees,
-					'currency'         => function_exists( 'get_woocommerce_currency_symbol' ) ? get_woocommerce_currency_symbol() : '$',
+					// _text() so the value works whether mpcrbm-branch.js drops it into an
+					// HTML string or into .text(), and so Custom Payment mode gets the
+					// shop's configured symbol instead of a hardcoded "$".
+					'currency'         => MPCRBM_Global_Function::currency_symbol_text(),
 					'strings'          => [
 						'loading'        => __( 'Loading branch info…', 'car-rental-manager' ),
 						'viewHours'      => __( 'View opening hours', 'car-rental-manager' ),

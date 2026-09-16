@@ -10,6 +10,14 @@ if (!defined('ABSPATH')) {
 	if (!class_exists('MPCRBM_Hidden_Product')) {
 		class MPCRBM_Hidden_Product {
 			public function __construct() {
+				// Every hook below mirrors a car into a hidden WooCommerce `product` post.
+				// With WooCommerce inactive (Custom Payment booking mode) those products
+				// are meaningless and would only litter the DB with orphan posts, so the
+				// mirror stands down entirely. MPCRBM_Woo_Installer's post-activation
+				// backfill re-links any car created while WooCommerce was off.
+				if ( ! MPCRBM_Function::is_wc_active() ) {
+					return;
+				}
 				add_action('wp_insert_post', array($this, 'create_hidden_wc_product_on_publish'), 10, 3);
 				add_action('save_post', array($this, 'run_link_product_on_save'), 99, 1);
 				add_action('parse_query', array($this, 'hide_wc_hidden_product_from_product_list'));
@@ -144,6 +152,72 @@ if (!defined('ABSPATH')) {
 					}
 				}
 			}
+			/**
+			 * Make sure ONE car has a usable hidden WooCommerce product, creating or
+			 * re-linking it if needed. Returns the product id, or 0 when it can't.
+			 *
+			 * Cars published while WooCommerce was inactive (Custom Payment booking mode)
+			 * never got a mirror product, because the whole mirror stands down in that
+			 * mode — see __construct(). The moment the site switches to WooCommerce mode
+			 * those cars would fail "Book Now" with a cart error, so the add-to-cart path
+			 * self-heals through this method instead of dying.
+			 *
+			 * A stale link (product trashed/deleted by hand) is treated the same as a
+			 * missing one, since both leave add_to_cart() with nothing to add.
+			 */
+			public static function ensure_hidden_product( $post_id ) {
+				$post_id = absint( $post_id );
+				if ( ! $post_id || ! MPCRBM_Function::is_wc_active() ) {
+					return 0;
+				}
+				if ( get_post_type( $post_id ) !== MPCRBM_Function::get_cpt() ) {
+					return 0;
+				}
+
+				$product_id = absint( MPCRBM_Global_Function::get_post_info( $post_id, 'link_wc_product', 0 ) );
+				if ( $product_id && 'product' === get_post_type( $product_id ) && 'publish' === get_post_status( $product_id ) ) {
+					return $product_id;
+				}
+
+				$self = new self();
+				$self->create_hidden_wc_product( $post_id, get_the_title( $post_id ) );
+
+				return absint( MPCRBM_Global_Function::get_post_info( $post_id, 'link_wc_product', 0 ) );
+			}
+
+			/**
+			 * Bulk counterpart of ensure_hidden_product() — repairs every published car.
+			 * Run once right after WooCommerce is activated so a fleet built up in Custom
+			 * Payment mode becomes bookable through the cart without touching each car.
+			 *
+			 * @return int Number of cars that were repaired.
+			 */
+			public static function repair_all_hidden_products(): int {
+				if ( ! MPCRBM_Function::is_wc_active() ) {
+					return 0;
+				}
+				$car_ids = get_posts( array(
+					'post_type'        => MPCRBM_Function::get_cpt(),
+					'post_status'      => 'publish',
+					'posts_per_page'   => -1,
+					'fields'           => 'ids',
+					'suppress_filters' => true,
+				) );
+
+				$repaired = 0;
+				foreach ( $car_ids as $car_id ) {
+					$existing = absint( MPCRBM_Global_Function::get_post_info( $car_id, 'link_wc_product', 0 ) );
+					if ( $existing && 'product' === get_post_type( $existing ) && 'publish' === get_post_status( $existing ) ) {
+						continue;
+					}
+					if ( self::ensure_hidden_product( $car_id ) ) {
+						$repaired++;
+					}
+				}
+
+				return $repaired;
+			}
+
 			public function count_hidden_wc_product( $post_id ): int {
 				$args = array(
 					'post_type'      => 'product',

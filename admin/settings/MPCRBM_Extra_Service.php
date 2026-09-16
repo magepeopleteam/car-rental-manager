@@ -192,6 +192,34 @@
 				$active             = $display == 'off' ? '' : 'mActive';
 				$checked            = $display == 'off' ? '' : 'checked';
 				$all_ex_services_id = MPCRBM_Query::query_post_id( 'mpcrbm_ex_services' );
+
+				/*
+				 * The stored pointer MUST match one of the <option> values rendered below.
+				 * When it doesn't, the browser silently selects the blank first entry and
+				 * the form-submit guard in assets/admin/mpcrbm_admin.js refuses to publish
+				 * the vehicle — with an "extras" alert the admin has no way to clear.
+				 * Two ways a car ends up in that state:
+				 *   1. It was duplicated, so it inherited the ORIGINAL car's id as its
+				 *      "Custom" marker (fixed at the source in
+				 *      MPCRBM_Taxonomies::mpcrbm_duplicate_car(); healed here for the
+				 *      copies that already exist).
+				 *   2. Its assigned service group was later unpublished, and
+				 *      query_post_id() only lists published ones.
+				 */
+				$all_ex_services_id = array_map( 'intval', (array) $all_ex_services_id );
+				$service_id         = (int) $service_id;
+				if ( $service_id && $service_id !== (int) $post_id && ! in_array( $service_id, $all_ex_services_id, true ) ) {
+					if ( 'mpcrbm_ex_services' === get_post_type( $service_id ) ) {
+						// A real service group, just not published — keep it selectable
+						// so the admin's existing choice survives.
+						$all_ex_services_id[] = $service_id;
+					} else {
+						// Points at something that is not a service group at all
+						// (a duplicated car's stale self-reference). Fall back to "Custom",
+						// which is what the copied mpcrbm_extra_service_infos rows already are.
+						$service_id = (int) $post_id;
+					}
+				}
 				?>
                 <div class="mpcrbm_extra_services_setting">
                     <div class="mpcrbm-info-card">

@@ -137,7 +137,11 @@
                 let mpcrbm_date_format = "' . esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'date_format', 'D d M , yy' ) ) . '";
                 let mpcrbm_date_format_without_year = "' . esc_attr( MPCRBM_Global_Function::get_settings( 'mpcrbm_global_settings', 'date_format_without_year', 'D d M' ) ) . '";
             ';
-				// Check if WooCommerce is active
+				// Currency constants for the frontend price formatter. WooCommerce is the
+				// source when it's active; otherwise (Custom Payment booking mode) they
+				// come from the plugin's own Currency Settings tab. Leaving them empty
+				// would make every JS-rendered price on the site lose its symbol and
+				// separators, so there is always a source.
 				if ( MPCRBM_Global_Function::check_woocommerce() == 1 ) {
 					$mp_js_constants .= '
                     mpcrbm_currency_symbol = "' . esc_js( get_woocommerce_currency_symbol() ) . '";
@@ -145,6 +149,18 @@
                     mpcrbm_currency_decimal = "' . esc_html( wc_get_price_decimal_separator() ) . '";
                     mpcrbm_currency_thousands_separator = "' . esc_js( wc_get_price_thousand_separator() ) . '";
                     mpcrbm_num_of_decimal = "' . absint( get_option( "woocommerce_price_num_decimals", 2 ) ) . '";
+                ';
+				} else {
+					$mpcrbm_cur = MPCRBM_Global_Function::native_currency_config();
+					// WooCommerce names its positions left/right/left_space/right_space —
+					// the Currency Settings tab uses the same vocabulary, so the JS
+					// formatter needs no branch of its own.
+					$mp_js_constants .= '
+                    mpcrbm_currency_symbol = "' . esc_js( $mpcrbm_cur['symbol'] ) . '";
+                    mpcrbm_currency_position = "' . esc_js( $mpcrbm_cur['position'] ) . '";
+                    mpcrbm_currency_decimal = "' . esc_js( $mpcrbm_cur['decimal_separator'] ) . '";
+                    mpcrbm_currency_thousands_separator = "' . esc_js( $mpcrbm_cur['thousand_separator'] ) . '";
+                    mpcrbm_num_of_decimal = "' . absint( $mpcrbm_cur['decimals'] ) . '";
                 ';
 				}
 				// Add inline script after enqueuing main script

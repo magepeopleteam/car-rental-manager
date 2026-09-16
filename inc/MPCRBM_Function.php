@@ -170,6 +170,142 @@
 			}
 
 			//************************//
+			/**
+			 * Is WooCommerce active right now?
+			 *
+			 * WooCommerce is OPTIONAL: when Booking Mode is "Custom Payment" the plugin
+			 * takes bookings through its own standalone checkout instead. Anything that
+			 * touches a WC function from always-loaded code must gate on this.
+			 *
+			 * @see MPCRBM_Booking_Mode
+			 */
+			public static function is_wc_active(): bool {
+				return class_exists( 'MPCRBM_Global_Function' ) && MPCRBM_Global_Function::check_woocommerce() === 1;
+			}
+
+			/**
+			 * Is the built-in Offline payment method switched on?
+			 *
+			 * Offline is a FREE standalone gateway (see MPCRBM_Offline_Checkout) — unlike
+			 * PayPal/Stripe, which are Pro-only. Kept here so both the settings screen and
+			 * the payment-status checker read the same flag.
+			 */
+			public static function offline_payment_enabled(): bool {
+				return MPCRBM_Global_Function::get_settings( 'mpcrbm_payment_settings', 'mpcrbm_offline_enable', 'off' ) === 'on';
+			}
+
+			/**
+			 * Statuses a booking can be set to, as slug => label.
+			 *
+			 * WooCommerce owns this list when it is active, so a WooCommerce booking keeps
+			 * offering exactly the statuses its orders support (including any a payment
+			 * plugin registered). In Custom Payment mode there are no WooCommerce order
+			 * statuses at all — and returning an empty list there left the Booking List's
+			 * status dropdown rendering as an empty box with nothing to pick.
+			 *
+			 * Slugs keep the "wc-" prefix in BOTH modes on purpose: every caller already
+			 * does str_replace( 'wc-', '', $slug ) before storing to mpcrbm_order_status,
+			 * and existing bookings are stored unprefixed. Matching the shape means the
+			 * two modes stay interchangeable and no stored value has to be migrated.
+			 *
+			 * @return array<string,string>
+			 */
+			public static function get_booking_statuses(): array {
+				if ( self::is_wc_active() && function_exists( 'wc_get_order_statuses' ) ) {
+					return (array) wc_get_order_statuses();
+				}
+
+				return array(
+					'wc-pending'    => __( 'Pending payment', 'car-rental-manager' ),
+					'wc-processing' => __( 'Processing', 'car-rental-manager' ),
+					'wc-on-hold'    => __( 'On hold', 'car-rental-manager' ),
+					'wc-completed'  => __( 'Completed', 'car-rental-manager' ),
+					'wc-cancelled'  => __( 'Cancelled', 'car-rental-manager' ),
+					'wc-refunded'   => __( 'Refunded', 'car-rental-manager' ),
+					'wc-failed'     => __( 'Failed', 'car-rental-manager' ),
+				);
+			}
+
+			/**
+			 * Convert the plugin's decimal clock notation into a real "HH:MM" time.
+			 *
+			 * Times move through the booking form as decimals — "10.3" or "10.30" meaning
+			 * 10:30 — where the fractional part is tenths-of-an-hour-in-minutes normally,
+			 * but literal minutes when the pickup interval is 5 or 15. Concatenating that
+			 * raw value into a datetime produces strings like "2026-08-09 0.5", which
+			 * display as nonsense to the customer AND break the availability queries that
+			 * compare `return_date_time` as a MySQL DATETIME.
+			 *
+			 * @param string $decimal_time e.g. "0.5", "10.30", "14".
+			 *
+			 * @return string "HH:MM"
+			 */
+			public static function decimal_time_to_hi( $decimal_time ): string {
+				$decimal_time = trim( (string) $decimal_time );
+				if ( '' === $decimal_time ) {
+					return '00:00';
+				}
+				// Already a real clock time — leave it alone.
+				if ( false !== strpos( $decimal_time, ':' ) ) {
+					$parts = array_pad( explode( ':', $decimal_time ), 2, '0' );
+
+					return sprintf( '%02d:%02d', (int) $parts[0], (int) $parts[1] );
+				}
+
+				list( $hours, $decimal_part ) = array_pad( explode( '.', $decimal_time ), 2, '0' );
+
+				$interval_time = self::get_general_settings( 'pickup_interval_time' );
+				$multiplier    = ( '5' === (string) $interval_time || '15' === (string) $interval_time ) ? 1 : 10;
+				$minutes       = (int) $decimal_part * $multiplier;
+
+				// A trailing ".3" means 30 minutes, not 3 — but ".30" already means 30, so
+				// the ×10 must not run twice. Clamp rather than overflow into the hour.
+				if ( $minutes > 59 ) {
+					$minutes = (int) $decimal_part;
+				}
+
+				return sprintf( '%02d:%02d', (int) $hours, max( 0, min( 59, $minutes ) ) );
+			}
+
+			/**
+			 * Mint the random token that guards a booking's public pages.
+			 *
+			 * The standalone checkout's confirmation page and the payment-gateway return
+			 * URLs both have to work for a logged-out customer, so they can only be
+			 * protected by something in the URL. That something must be UNGUESSABLE:
+			 * `mpcrbm_pin` is derived from user id + order id + car id + post id, all of
+			 * which are small sequential integers, so anyone could enumerate other
+			 * customers' bookings with it. This mints a real random secret instead.
+			 *
+			 * Generated once per booking and reused, so a customer can revisit their
+			 * confirmation link (or refresh a gateway return) without it breaking.
+			 */
+			public static function issue_booking_access_token( $booking_id ): string {
+				$booking_id = absint( $booking_id );
+				if ( ! $booking_id ) {
+					return '';
+				}
+				$token = (string) get_post_meta( $booking_id, '_mpcrbm_access_token', true );
+				if ( '' === $token ) {
+					$token = wp_generate_password( 32, false, false );
+					update_post_meta( $booking_id, '_mpcrbm_access_token', $token );
+				}
+
+				return $token;
+			}
+
+			/** Constant-time check of a booking access token. */
+			public static function verify_booking_access_token( $booking_id, $token ): bool {
+				$booking_id = absint( $booking_id );
+				$token      = (string) $token;
+				if ( ! $booking_id || '' === $token ) {
+					return false;
+				}
+				$stored = (string) get_post_meta( $booking_id, '_mpcrbm_access_token', true );
+
+				return '' !== $stored && hash_equals( $stored, $token );
+			}
+
 			public static function get_general_settings( $key, $default = '' ) {
 				return MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', $key, $default );
 			}
@@ -277,7 +413,11 @@
 				$interval = $startDate->diff( $returnDate );
 				// Convert the difference to total minutes
 				$minutes        = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
-				$minutes_to_day = ceil( $minutes / 1440 );
+				// A rental is always at least one day. Pick-up and return share the same
+				// clock time whenever "Hide Time Input Field From Search Form" is on (and
+				// on any same-day booking), which made ceil( 0 / 1440 ) price the whole
+				// rental at zero.
+				$minutes_to_day = max( 1, ceil( $minutes / 1440 ) );
 				$manual_prices  = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_terms_price_info', [] );
 				if ( sizeof( $manual_prices ) > 0 ) {
 					foreach ( $manual_prices as $manual_price ) {
@@ -636,13 +776,53 @@
                 ?>
                 <div class="mpcrbm_display_pricing_rules">
 
-                    <h4><?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
-                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( wc_price( $base_price ) ); ?></strong></p>
+                    <?php
+                    // Sections below are printed in the exact order
+                    // mpcrbm_calculate_price() applies them — base ➜ day-wise ➜
+                    // seasonal ➜ tiered — and numbered as the customer reads them, so
+                    // the tooltip explains not just WHICH rules exist but which one
+                    // wins when several are switched on. Keep the two in sync.
+                    $step = 1;
+                    ?>
+                    <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Base Price', 'car-rental-manager' );?></h4>
+                    <p><?php esc_attr_e( 'Base price starts from', 'car-rental-manager' );?> <strong><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ) ); ?></strong> <?php esc_attr_e( 'per day.', 'car-rental-manager' );?></p>
+
+                    <?php if ( $enable_day_wise && ! empty( $day_wise ) ) :
+                        $is_discount = true;
+                        $step ++;
+                        ?>
+                        <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Day-wise Pricing', 'car-rental-manager' );?></h4>
+                        <p class="mpcrbm_rule_hint"><?php esc_attr_e( 'Each date of your rental is charged at its own weekday rate instead of the base price.', 'car-rental-manager' );?></p>
+                        <ul>
+                            <?php
+                            foreach ( $day_wise as $day => $day_price ) :
+
+//                                $diff = $day_price - $base_price;
+
+                                if ( $day_price > 0 ) {
+                                    $label =  MPCRBM_Global_Function::format_price( abs( $day_price ) );
+                                    $class = 'increase';
+                                } else {
+                                    $label = 'Same as base price';
+                                    $class = 'same';
+                                }
+                                ?>
+                                <li>
+                                    <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
+                                    <span class="<?php echo esc_attr( $class ); ?>">
+                                        <?php echo wp_kses_post( $label ); ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
 
                     <?php if ( $enable_seasonal && ! empty( $seasonal ) ) :
                         $is_discount = true;
+                        $step ++;
                         ?>
-                        <h4><?php esc_attr_e( 'Seasonal Pricing', 'car-rental-manager' );?></h4>
+                        <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Seasonal Pricing', 'car-rental-manager' );?></h4>
+                        <p class="mpcrbm_rule_hint"><?php esc_attr_e( 'Matched on your pick-up date. Only the first matching season is applied.', 'car-rental-manager' );?></p>
                         <ul>
                             <?php foreach ( $seasonal as $rule ) : ?>
                                 <li>
@@ -668,40 +848,12 @@
                                         echo esc_html( '-' . abs( $value ) . '% discount' );
 
                                     } elseif ( 'fixed_increase' === $type ) {
-                                        echo wp_kses_post( '+' . wc_price( abs( $value ) ) . ' increase' );
+                                        echo wp_kses_post( '+' . MPCRBM_Global_Function::format_price( abs( $value ) ) . ' increase' );
 
                                     } elseif ( 'fixed_decrease' === $type ) {
-                                        echo wp_kses_post( '-' . wc_price( abs( $value ) ) . ' discount' );
+                                        echo wp_kses_post( '-' . MPCRBM_Global_Function::format_price( abs( $value ) ) . ' discount' );
                                     }
                                     ?>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
-                    <?php endif; ?>
-
-                    <?php if ( $enable_day_wise && ! empty( $day_wise ) ) :
-                        $is_discount = true;
-                        ?>
-                        <h4><?php esc_attr_e( 'Day-wise Pricing', 'car-rental-manager' );?></h4>
-                        <ul>
-                            <?php
-                            foreach ( $day_wise as $day => $day_price ) :
-
-//                                $diff = $day_price - $base_price;
-
-                                if ( $day_price > 0 ) {
-                                    $label =  wc_price( abs( $day_price ) );
-                                    $class = 'increase';
-                                } else {
-                                    $label = 'Same as base price';
-                                    $class = 'same';
-                                }
-                                ?>
-                                <li>
-                                    <span><?php echo esc_attr( ucfirst( $day ) ); ?></span>
-                                    <span class="<?php echo esc_attr( $class ); ?>">
-                                        <?php echo wp_kses_post( $label ); ?>
-                                    </span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -710,8 +862,10 @@
                     <?php if ( $enable_tired && ! empty( $tiered ) ) :
 
                         $is_discount = true;
+                        $step ++;
                         ?>
-                        <h4><?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
+                        <h4><span class="mpcrbm_rule_step"><?php echo esc_html( $step ); ?></span> <?php esc_attr_e( 'Tiered Pricing', 'car-rental-manager' );?></h4>
+                        <p class="mpcrbm_rule_hint"><?php esc_attr_e( 'Applied last, based on how many days you book. The first matching range is used.', 'car-rental-manager' );?></p>
                         <ul>
                             <?php
                             if( is_array( $tiered ) && !empty( $tiered ) && isset( $tiered[0] ) && !empty( $tiered[0] ) ){
@@ -741,23 +895,29 @@
                                     } elseif ( 'fixed_discount' === $type && isset( $rule['fixed_discount'] ) ) {
 
                                         $fixed_discount = floatval( $rule['fixed_discount'] );
-                                        echo esc_html__( 'Fixed Discount:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_discount ) ) );
+                                        echo esc_html__( 'Fixed Discount:', 'car-rental-manager' ) . ' ' . wp_kses_post( MPCRBM_Global_Function::format_price( abs( $fixed_discount ) ) );
 
                                     } elseif ( 'fixed_price' === $type && isset( $rule['fixed_price'] ) ) {
 
                                         $fixed_price = floatval( $rule['fixed_price'] );
-                                        echo esc_html__( 'Fixed Total Price:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $fixed_price ) ) );
+                                        echo esc_html__( 'Fixed Total Price:', 'car-rental-manager' ) . ' ' . wp_kses_post( MPCRBM_Global_Function::format_price( abs( $fixed_price ) ) );
 
                                     } elseif ( 'day_price' === $type && isset( $rule['day_price'] ) ) {
 
                                         $day_price = floatval( $rule['day_price'] );
-                                        echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( wc_price( abs( $day_price ) ) );
+                                        echo esc_html__( 'Price Per Day:', 'car-rental-manager' ) . ' ' . wp_kses_post( MPCRBM_Global_Function::format_price( abs( $day_price ) ) );
 
                                     }
                                     ?>
                                 </li>
                             <?php endforeach; }?>
                         </ul>
+                    <?php endif; ?>
+
+                    <?php if ( $step > 1 ) : ?>
+                        <p class="mpcrbm_rule_order_note">
+                            <?php esc_attr_e( 'These steps run in order — each one works on the result of the step above it. Your final price depends on the dates you pick.', 'car-rental-manager' );?>
+                        </p>
                     <?php endif; ?>
 
                 </div>
@@ -946,7 +1106,10 @@
                 $returnDate = new DateTime( $return_date_time );
                 $interval = $startDate->diff( $returnDate );
                 $minutes = ( $interval->days * 24 * 60 ) + ( $interval->h * 60 ) + $interval->i;
-                $days = ceil( $minutes / 1440 );
+                // Always at least one day — see the same guard in get_price(): identical
+                // pick-up/return clock times (same-day booking, or any booking made with the
+                // time pickers hidden) otherwise yield 0 days and a free rental.
+                $days = max( 1, ceil( $minutes / 1440 ) );
 
                 return $days;
             }

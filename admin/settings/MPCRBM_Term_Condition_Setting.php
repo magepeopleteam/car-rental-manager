@@ -14,7 +14,9 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
 
         private $term_option_key = 'mpcrbm_term_condition_list';
         public function __construct() {
-            add_action( 'mpcrbm_settings_tab_content', [ $this, 'term_tab_content' ], 10, 1 );
+            // Last section of the merged "Content & Policies" tab — see
+            // MPCRBM_Settings::content_tab_panel().
+            add_action( 'mpcrbm_content_tab_sections', [ $this, 'term_tab_content' ], 30, 1 );
             add_action('wp_ajax_mpcrbm_save_added_term_condition', [ $this, 'mpcrbm_save_added_term_condition' ] );
             add_action('wp_ajax_mpcrbm_save_term_display_toggle', [ $this, 'ajax_save_term_display_toggle' ] );
         }
@@ -55,7 +57,7 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
             $term_enabled_for_car = ( $term_display_meta !== 'no' );
 
             ?>
-            <div class="tabsItem" data-tabs="#mpcrbm_term_and_condition">
+            <?php // Rendered inside the shared "Content & Policies" .tabsItem. ?>
                 <?php wp_nonce_field( 'manage_faq_settings', 'faq_settings_nonce' ); ?>
                 <div class="mpcrbm-info-card">
                     <div class="mpcrbm-info-card-body">
@@ -145,8 +147,6 @@ if ( ! class_exists( 'MPCRBM_Term_Condition_Setting' ) ) {
                 </section>
                     </div>
                 </div>
-
-            </div>
 
         <?php }
 
