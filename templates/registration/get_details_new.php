@@ -142,12 +142,16 @@ $mpcrbm_formatted_end_time = MPCRBM_Global_Function::format_custom_time( $mpcrbm
 
 
 
-// Whether the dates below were restored from the customer's previous search
-// (transport-result page). mpcrbm_validate_search_dates() in mpcrbm_registration.js
-// only accepts dates carrying data-user-selected="1" — restored dates ARE the
-// customer's own pick, so without this flag clicking Search again on the result page
-// (without re-opening both calendars) just failed with "Please select a pick-up date".
-$mpcrbm_dates_prefilled = false;
+// #mpcrbm_start_date/#mpcrbm_return_date are readonly, so they always carry a
+// valid, non-blank value: either restored from the customer's previous search
+// (transport-result page) or the gmdate() defaults set above. Both cases are a
+// real date the customer is implicitly accepting by submitting the form as-is,
+// so this defaults to true. mpcrbm_validate_search_dates() in
+// mpcrbm_registration.js only accepts dates carrying data-user-selected="1" —
+// leaving this false on a fresh page load meant clicking Search without first
+// re-opening both calendars (even though a valid default date was already
+// shown) failed with "Please select a pick-up date".
+$mpcrbm_dates_prefilled = true;
 if( is_array( $search_date ) && !empty( $search_date ) ){
     $mpcrbm_dates_prefilled = ! empty( $search_date['start_date'] ) && ! empty( $search_date['return_date'] );
     $mpcrbm_pickup_location = isset( $search_date['start_place'] ) ? $search_date['start_place'] : '' ;
