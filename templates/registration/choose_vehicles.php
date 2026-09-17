@@ -420,13 +420,14 @@ if( $is_redirect === 'yes' ){
                 <div class="justifyBetween total">
                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
                     <?php
-                    // This card is now visible from page load (style="display: block" above),
-                    // before any vehicle is selected — an empty <h3> here would just show blank
-                    // instead of a sensible starting value. mpcrbm_transport_select's click
-                    // handler (assets/frontend/mpcrbm_registration.js) overwrites this the
-                    // moment a car is picked.
+                    // This card is visible from page load (style="display: block" above),
+                    // before any vehicle is selected. format_price(0) here used to read as
+                    // "Total: $0.00" — indistinguishable from a real zero-cost booking — so
+                    // show a neutral prompt instead. mpcrbm_transport_select's click handler
+                    // (assets/frontend/mpcrbm_registration.js) replaces this via .html() the
+                    // moment a car is picked, same as it does for a real price.
                     ?>
-                    <h3 class="mpcrbm_product_total_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( 0 ) ); ?></h3>
+                    <h3 class="mpcrbm_product_total_price"><?php esc_html_e( 'Select a car', 'car-rental-manager' ); ?></h3>
                 </div>
             </div>
 
