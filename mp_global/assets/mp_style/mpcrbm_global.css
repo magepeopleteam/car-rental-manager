@@ -3532,6 +3532,21 @@
 	div.mpcrbm [class*="_bgWarning"] {
 		background-color: var(--color_warning);
 	}
+	/* "No Transport Available" empty state: the generic _bgWarning utility
+	   above (solid --color_warning fill, default dark text) reads as a harsh
+	   alert block. Match the softer tinted-alert treatment already used for
+	   this same message in the branch-search widget (mpcrbm-bs-results.css)
+	   so every "no results" message on the site looks the same. */
+	div.mpcrbm ._dLayout_mT_bgWarning {
+		background-color: #fef3c7;
+		border: 1px solid #fcd34d;
+		border-radius: 8px;
+		padding: 16px 20px;
+	}
+	div.mpcrbm ._dLayout_mT_bgWarning h3 {
+		margin: 0;
+		color: #92400e;
+	}
 	/*****required*********/
 	div.mpcrbm .textRequired,
 	div.mpcrbm [class*="_textRequired"] {
