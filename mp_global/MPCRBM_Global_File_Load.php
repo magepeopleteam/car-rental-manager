@@ -40,9 +40,14 @@
 				wp_enqueue_script( 'mp_owl_carousel', MPCRBM_PLUGIN_URL . 'mp_global/assets/owl_carousel/owl.carousel.min.js', array( 'jquery' ), '2.3.4', true );
 
 				// 3. Custom Assets with Cache Busting
-				// Note: Ensure MPCRBM_PLUGIN_DIR is defined for filemtime (filesystem path, not URL)
-				$css_path = MPCRBM_PLUGIN_DIR . 'mp_global/assets/mp_style/mpcrbm_global.css';
-				$js_path  = MPCRBM_PLUGIN_DIR . 'mp_global/assets/mp_style/mpcrbm_global.js';
+				// Note: MPCRBM_PLUGIN_DIR is dirname(__FILE__), which has no
+				// trailing slash — unlike MPCRBM_PLUGIN_URL (plugin_dir_url()).
+				// Missing the '/' here made file_exists() always fail, so the
+				// version silently fell back to the '1.0.0' literal below and
+				// every edit to this CSS/JS was stuck behind visitors' browser
+				// caches indefinitely.
+				$css_path = MPCRBM_PLUGIN_DIR . '/mp_global/assets/mp_style/mpcrbm_global.css';
+				$js_path  = MPCRBM_PLUGIN_DIR . '/mp_global/assets/mp_style/mpcrbm_global.js';
 
 				wp_enqueue_style(
 					'mpcrbm_global', 
