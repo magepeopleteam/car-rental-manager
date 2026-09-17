@@ -79,7 +79,7 @@ if ( wp_is_block_theme() ) {
         })();
     </script>
 
-    <div id="maincontent" class="transport-result-page" style="margin: auto">
+    <div id="maincontent" class="transport-result-page" style="margin: auto; max-width: 1316px; padding: 0 20px; box-sizing: border-box;">
         <div class="mpcrbm mpcrbm_transport_search_area">
             <div class="mpcrbm_tab_next _mT">
                 <div class="tabListsNext <?php echo esc_attr($mpcrbm_progressbar_class); ?>" id="mpcrbm_progress_bar_holder" >
