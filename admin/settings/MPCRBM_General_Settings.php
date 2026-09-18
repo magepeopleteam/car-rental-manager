@@ -121,9 +121,9 @@
 								<section>
 									<label class="label">
 										<div>
-											<h6><?php esc_html_e('Make Year', 'car-rental-manager'); ?> <span class="mpcrbm-required-mark">*</span></h6>
+											<h6><?php esc_html_e('Make Year', 'car-rental-manager'); ?></h6>
 										</div>
-										<select name="tax_input[mpcrbm_make_year][]" class="formControl" required>
+										<select name="tax_input[mpcrbm_make_year][]" class="formControl">
 											<option value=""><?php esc_html_e(' Select Year ','car-rental-manager'); ?></option>
 											<?php foreach ($make_years as $year): ?>
 												<option value="<?php echo esc_attr($year->term_id); ?>" <?php selected(in_array($year->term_id, $selected_year)); ?>>

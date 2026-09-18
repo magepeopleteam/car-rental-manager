@@ -136,6 +136,9 @@ Please report security bugs found in the source code of the Car Rental Manager f
 **Fixes**
 * Fixed the checkout-side "Request a Better Price" script matching the wrong order total when a theme's header includes a Mini-Cart, which could inject the request form into the (hidden) Mini-Cart drawer instead of the real order summary. The search is now scoped to the checkout block's own summary.
 
+**Improvements**
+* "Make Year" on the Add/Edit Car screen is no longer a mandatory field — vehicles can now be saved/published without selecting a year.
+
 = 1.5.0 =
 WooCommerce is now optional. The plugin can take bookings either through the WooCommerce cart and checkout, or through its own built-in Custom Payment checkout — chosen with a single Booking Mode setting.
 
