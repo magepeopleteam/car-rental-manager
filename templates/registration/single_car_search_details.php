@@ -141,9 +141,29 @@ $mpcrbm_pickup_location = '';
 $mpcrbm_return_location = '';
 
 $mpcrbm_start_date = gmdate('Y-m-d');
+// On a single car's own page, "today" is not always a valid default: if the
+// car is already fully booked today, the calendar disables that day (see
+// date-picker.js's disable[]) but this pre-filled value still showed it as
+// selected, with no visual difference from a real available day — only the
+// separate "already booked" notice below hinted anything was wrong. Advance
+// to the first day that isn't already booked instead, same idea as
+// mpcrbm_find_minimum_valid_return() does client-side for the return date.
+if ( $post_id && class_exists( 'MPCRBM_Frontend' ) ) {
+    $mpcrbm_unavailable_by_stock = MPCRBM_Frontend::mpcrbm_get_unavailable_dates_by_stock( $post_id );
+    if ( ! empty( $mpcrbm_unavailable_by_stock ) ) {
+        $mpcrbm_guard = 0;
+        while ( in_array( $mpcrbm_start_date, $mpcrbm_unavailable_by_stock, true ) && $mpcrbm_guard < 370 ) {
+            $mpcrbm_start_date = gmdate( 'Y-m-d', strtotime( $mpcrbm_start_date . ' +1 day' ) );
+            $mpcrbm_guard++;
+        }
+    }
+}
 $mpcrbm_formatted_start_date = gmdate('D d M, Y', strtotime( $mpcrbm_start_date ));
 $mpcrbm_formatted_start_time = MPCRBM_Global_Function::format_custom_time( $mpcrbm_start_time );
-$mpcrbm_end_date = gmdate('Y-m-d', strtotime('+1 day'));
+// Relative to the (possibly advanced, see above) pickup date, not always
+// "today + 1" — otherwise a pushed-forward pickup date could default a
+// return date that sits before or on it.
+$mpcrbm_end_date = gmdate('Y-m-d', strtotime( $mpcrbm_start_date . ' +1 day' ));
 $mpcrbm_formatted_end_date = gmdate('D d M, Y', strtotime( $mpcrbm_end_date ));
 $mpcrbm_formatted_end_time = MPCRBM_Global_Function::format_custom_time( $mpcrbm_end_time );
 

@@ -52,6 +52,11 @@
 				// Checkout page, plus a nopriv AJAX handler — neither fires if this file
 				// only loads behind MPCRBM_Admin's is_admin() gate.
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Quote_Requests.php';
+				// Same reasoning again: MPCRBM_Waitlist's whole reason to exist is a
+				// wp_enqueue_scripts callback on the car-details page plus a nopriv
+				// AJAX handler — neither fires if this file only loads behind
+				// MPCRBM_Admin's is_admin() gate.
+				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Waitlist.php';
 			}
 			public function load_single_template($template): string {
 				global $post;

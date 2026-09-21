@@ -75,16 +75,53 @@ jQuery(document).ready(function ($) {
     let mpcrbm_off_days = '';
     let mpcrbm_offDates = [];
     let mpcrbm_off_days_ary = [];
+    // Kept separate from mpcrbm_offDates (closed days): those stay hard-disabled
+    // with no way forward, but a day that's just fully booked should still be
+    // clickable so the customer can join the waitlist — see mpcrbm_is_booked_date()
+    // and its onDayCreate click handler below. Only present in
+    // #mpcrbm_booked_dates on the car-details page (car_details.php); empty
+    // (so a no-op) anywhere else this same script runs.
+    let mpcrbm_booked_dates = '';
+    let mpcrbm_bookedDates = [];
+    let mpcrbm_i18n_booked_title = (typeof mpcrbmWaitlist !== 'undefined' && mpcrbmWaitlist.i18n && mpcrbmWaitlist.i18n.title)
+        ? mpcrbmWaitlist.i18n.title
+        : 'Already booked for this date';
 
     let parent = $('.mpcrbm_car_details');
     mpcrbm_off_dates = parent.find("#mpcrbm_off_dates").val();
     mpcrbm_off_days = parent.find( "#mpcrbm_off_days").val();
+    mpcrbm_booked_dates = parent.find("#mpcrbm_booked_dates").val();
 
     if( mpcrbm_off_dates ){
         mpcrbm_offDates = mpcrbm_off_dates.split(',');
     }
     if( mpcrbm_off_days ){
         mpcrbm_off_days_ary = get_off_days_numbers( mpcrbm_off_days );
+    }
+    if( mpcrbm_booked_dates ){
+        mpcrbm_bookedDates = mpcrbm_booked_dates.split(',');
+    }
+
+    /**
+     * True if this calendar day is fully booked (as opposed to a closed
+     * off-day) — matched the same way mpcrbm_is_disabled_booking_date() below
+     * matches off-dates.
+     */
+    function mpcrbm_is_booked_date(date) {
+        for (let i = 0; i < mpcrbm_bookedDates.length; i++) {
+            const bd = (mpcrbm_bookedDates[i] || '').trim();
+            if (!bd) {
+                continue;
+            }
+            const parsed = new Date(bd);
+            if (!isNaN(parsed.getTime()) &&
+                parsed.getFullYear() === date.getFullYear() &&
+                parsed.getMonth() === date.getMonth() &&
+                parsed.getDate() === date.getDate()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -241,8 +278,53 @@ jQuery(document).ready(function ($) {
                 function(date) {
                     return mpcrbm_off_days_ary.includes(date.getDay());
                 },
-                ...mpcrbm_offDates.map(d => new Date(d))
-            ]
+                ...mpcrbm_offDates.map(d => new Date(d)),
+                ...mpcrbm_bookedDates.map(d => new Date(d))
+            ],
+            // Booked days stay disabled for normal selection above (picking one
+            // as a real start/return date would just fail the server-side
+            // check anyway), but flatpickr only skips its OWN click handling
+            // for them — it doesn't block other listeners or set
+            // pointer-events:none. So a plain click listener added here still
+            // fires, letting a booked day open "Join Waitlist"
+            // (mpcrbm-waitlist.js, via mpcrbm:car_fully_booked) instead of
+            // just sitting there greyed out with no way forward.
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                if (!mpcrbm_is_booked_date(dayElem.dateObj)) {
+                    return;
+                }
+                // A day before today is disabled for an entirely different
+                // reason (it's in the past — minDate:"today" already covers
+                // this) than a booked day is — joining a waitlist for a date
+                // that has already gone by makes no sense. Without this
+                // check, a past date that also happened to appear in the
+                // booked-dates list (e.g. yesterday's booking) would still
+                // get the amber "click to join waitlist" treatment below.
+                let mpcrbm_today_midnight = new Date();
+                mpcrbm_today_midnight.setHours(0, 0, 0, 0);
+                if (dayElem.dateObj < mpcrbm_today_midnight) {
+                    return;
+                }
+                // Only marked clickable when mpcrbm-waitlist.js is actually
+                // loaded (enqueued solely when the admin has turned the
+                // feature on) — otherwise leave the day looking like any
+                // other disabled date, so nothing implies clickability that
+                // wouldn't do anything.
+                if (typeof mpcrbmWaitlist === 'undefined') {
+                    return;
+                }
+                dayElem.classList.add('mpcrbm-day-booked');
+                dayElem.title = mpcrbm_i18n_booked_title;
+                dayElem.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    $(document).trigger('mpcrbm:car_fully_booked', {
+                        carId: parent.find('[name="mpcrbm_post_id"]').val(),
+                        pickup: fp.formatDate(dayElem.dateObj, 'Y-m-d'),
+                        returnDate: ''
+                    });
+                });
+            }
         };
 
         // Pick-up date: a single independent picker. Selecting a date only

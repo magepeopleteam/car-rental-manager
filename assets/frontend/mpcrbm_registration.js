@@ -1733,8 +1733,19 @@ jQuery(document).ready(function($) {
                 success: function(data) {
 
                     if( data == 0 ){
-                        alert( 'This Day Is Already Booked Select Another Date');
                         mpcrbm_loader_remove(parent.find('.tabsContentNext'));
+                        // mpcrbm-waitlist.js (only enqueued when the "Join Waitlist"
+                        // setting is on) listens for this and opens a form instead —
+                        // fall back to the plain alert when it isn't loaded at all.
+                        if (typeof mpcrbmWaitlist !== 'undefined') {
+                            $(document).trigger('mpcrbm:car_fully_booked', {
+                                carId: post_id,
+                                pickup: date,
+                                returnDate: return_target_date
+                            });
+                        } else {
+                            alert( 'This Day Is Already Booked Select Another Date');
+                        }
                     }else {
                         var mpcrbm_response = $.trim(data);
 

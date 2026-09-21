@@ -125,17 +125,43 @@ $mpcrbm_booking_dates = [];
 $mpcrbm_booking_dates = MPCRBM_Frontend::mpcrbm_get_unavailable_dates_by_stock( $mpcrbm_post_id );
 $mpcrbm_booking_btn_show = 'none';
 $mpcrbm_is_already_booked = 'block';
-$mpcrbm_available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $mpcrbm_post_id, gmdate('Y-m-d') );
+// This used to always check *today*, even though the pickup-date field below
+// (single_car_search_details.php) already skips forward to the first day
+// that's actually free when today is fully booked — leaving this "already
+// booked" notice permanently stuck on, contradicting a date field that was
+// showing a genuinely available day. Check the same effective (possibly
+// advanced) date the field itself defaults to instead.
+$mpcrbm_effective_start_date = gmdate( 'Y-m-d' );
+if ( ! empty( $mpcrbm_booking_dates ) ) {
+    $mpcrbm_date_guard = 0;
+    while ( in_array( $mpcrbm_effective_start_date, $mpcrbm_booking_dates, true ) && $mpcrbm_date_guard < 370 ) {
+        $mpcrbm_effective_start_date = gmdate( 'Y-m-d', strtotime( $mpcrbm_effective_start_date . ' +1 day' ) );
+        $mpcrbm_date_guard++;
+    }
+}
+$mpcrbm_available_stock = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $mpcrbm_post_id, $mpcrbm_effective_start_date );
 if( $mpcrbm_available_stock > 0 ){
     $mpcrbm_booking_btn_show = 'block';
     $mpcrbm_is_already_booked = 'none';
 }
 
-$mpcrbm_off_dates = array_merge( $mpcrbm_off_dates, $mpcrbm_booking_dates );
-
+// Kept separate rather than merged into one off-dates list: a genuinely
+// closed day (off-day / particular off-date) stays hard-disabled in the
+// calendar, but a day that's merely fully booked needs to stay clickable so
+// date-picker.js can open the "Join Waitlist" prompt instead of just
+// greying it out with no way forward — see mpcrbm_booked_dates below.
 $mpcrbm_off_dates_str = '';
 if( is_array( $mpcrbm_off_dates ) && !empty( $mpcrbm_off_dates ) ){
     $mpcrbm_off_dates_str = implode( ',' , $mpcrbm_off_dates);
+}
+// Always sent (not gated behind the waitlist setting) so a booked day keeps
+// being disabled in the calendar exactly as before either way. Whether
+// clicking one actually opens "Join Waitlist" depends solely on whether
+// mpcrbm-waitlist.js got enqueued (MPCRBM_Waitlist::enqueue_frontend_assets(),
+// which IS gated on the setting) — see date-picker.js's onDayCreate.
+$mpcrbm_booked_dates_str = '';
+if( is_array( $mpcrbm_booking_dates ) && !empty( $mpcrbm_booking_dates ) ){
+    $mpcrbm_booked_dates_str = implode( ',' , $mpcrbm_booking_dates );
 }
 $mpcrbm_off_days = get_post_meta( $mpcrbm_post_id, 'mpcrbm_off_days', true );
 
@@ -247,6 +273,7 @@ if ( $deposit_enable === 'on' ) {
 
     <input type="hidden" id="mpcrbm_off_days" name="mpcrbm_car_off_days"  value="<?php echo esc_attr( $mpcrbm_off_days );?>" />
     <input type="hidden" id="mpcrbm_off_dates" name="mpcrbm_car_off_dates"  value="<?php echo esc_attr( $mpcrbm_off_dates_str );?>" />
+    <input type="hidden" id="mpcrbm_booked_dates" value="<?php echo esc_attr( $mpcrbm_booked_dates_str );?>" />
 
     <div class="mpcrbm_gallery_image_popup_wrapper">
         <div class="mpcrbm_gallery_image_popup_overlay"></div>

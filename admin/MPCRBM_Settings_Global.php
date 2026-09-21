@@ -376,6 +376,17 @@
                                 'yes' => esc_html__('Yes', 'car-rental-manager')
                             )
 						),
+						array(
+							'name' => 'car_details_waitlist_button',
+                            'label' => esc_html__('Enable "Join Waitlist" On Fully Booked Dates ', 'car-rental-manager'),
+                            'desc' => esc_html__('Select yes to let a customer leave their contact details when the car they want is already booked for their chosen date, instead of just seeing a "not available" message. They appear under Waitlist for you to notify when a booking for that car is cancelled.', 'car-rental-manager'),
+                            'type' => 'select',
+                            'default' => 'no',
+                            'options' => array(
+                                'no' => esc_html__('No', 'car-rental-manager'),
+                                'yes' => esc_html__('Yes', 'car-rental-manager')
+                            )
+						),
 					)),
 					'mpcrbm_global_settings' => apply_filters('mpcrbm_filter_global_settings', array(
 						array(
