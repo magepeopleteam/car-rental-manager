@@ -227,6 +227,10 @@ if ( $deposit_enable === 'on' ) {
     }
 //    $mpcrbm_day_price = $mpcrbm_day_price + $deposit_price;
 }
+// SecureHold WP holds a fixed deposit on the card at checkout instead of charging it,
+// so it is shown but left out of the amount the customer pays.
+$deposit_on_card  = MPCRBM_SecureHold_Compat::form_note( $post_id );
+$deposit_in_total = $deposit_on_card ? 0 : $deposit_price;
 
 ?>
 <div class="mpcrbm_car_details">
@@ -244,6 +248,7 @@ if ( $deposit_enable === 'on' ) {
 
     <input type="hidden" id="mpcrbm_selected_car_quantity" name="mpcrbm_selected_car_quantity"  value="1" />
     <input type="hidden" id="mpcrbm_security_deposit_value" name="mpcrbm_security_deposit_value" value="<?php echo esc_attr( $deposit_price ); ?>" />
+    <input type="hidden" name="mpcrbm_deposit_on_card" value="<?php echo $deposit_on_card ? '1' : '0'; ?>" />
 
     <input type="hidden" id="mpcrbm_off_days" name="mpcrbm_car_off_days"  value="<?php echo esc_attr( $mpcrbm_off_days );?>" />
     <input type="hidden" id="mpcrbm_off_dates" name="mpcrbm_car_off_dates"  value="<?php echo esc_attr( $mpcrbm_off_dates_str );?>" />
@@ -679,7 +684,7 @@ if ( $deposit_enable === 'on' ) {
                                 <div class="mpcrbm_car_quantity" id="mpcrbm_car_quantity_holder" data-collapse="<?php echo esc_attr($mpcrbm_post_id); ?>" style="display: flex; justify-content: space-between">
                                     <div class="mpcrbm_car_quantity_title"><?php esc_html_e('Car Quantity', 'car-rental-manager') ?></div>
                                     <?php
-                                    $total = $mpcrbm_day_price + $deposit_price;
+                                    $total = $mpcrbm_day_price + $deposit_in_total;
                                     MPCRBM_Custom_Layout::qty_input('mpcrbm_get_car_qty', $total, $mpcrbm_available_stock, 1, 0);
                                     ?>
                                 </div>
@@ -712,9 +717,12 @@ if ( $deposit_enable === 'on' ) {
                                     <div class="mpcrbm_security_deposit_summary">
                                         <div class="divider"></div>
                                         <div class="justifyBetween">
-                                            <span><?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?></span>
+                                            <span><?php $deposit_on_card ? esc_html_e( 'Security Deposit (held on card):', 'car-rental-manager' ) : esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?></span>
                                             <span class="mpcrbm_security_deposit_price _textTheme"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $deposit_price ) ); ?></span>
                                         </div>
+                                        <?php if ( $deposit_on_card ) : ?>
+                                            <p class="mpcrbm-securehold-note"><span class="fas fa-lock" aria-hidden="true"></span><span><?php echo wp_kses_post( $deposit_on_card ); ?></span></p>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                                 <div class="mpcrbm_one_way_fee_summary" id="mpcrbm_car_one_way_fee_row" style="display: none">
@@ -744,7 +752,7 @@ if ( $deposit_enable === 'on' ) {
                                 <?php endforeach; ?>
                                 <div class="justifyBetween total">
                                     <h6><?php esc_html_e('Total : ', 'car-rental-manager'); ?></h6>
-                                    <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price + $deposit_price ) );?></h3>
+                                    <h3 class="mpcrbm_product_total_price" id="mpcrbm_car_total_price"><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_day_price + $deposit_in_total ) );?></h3>
                                 </div>
                             </div>
 

@@ -31,6 +31,7 @@
 					'branches'      => array('icon' => 'fas fa-code-branch', 'title' => esc_html__('Drivers & Branches', 'car-rental-manager')),
 					'faq'           => array('icon' => 'fas fa-circle-question', 'title' => esc_html__('FAQs & Terms and Conditions', 'car-rental-manager')),
 					'services'      => array('icon' => 'fas fa-shopping-basket', 'title' => esc_html__('Extra Services & Features', 'car-rental-manager')),
+					'securehold'    => array('icon' => 'fas fa-lock', 'title' => esc_html__('SecureHold Deposit Holds', 'car-rental-manager')),
 					'help'          => array('icon' => 'fas fa-life-ring', 'title' => esc_html__('Need Help?', 'car-rental-manager')),
 				);
 			}
@@ -246,6 +247,67 @@
 					font-size: 13px;
 					font-weight: 600;
 					text-decoration: none;
+				}
+				/* SecureHold section: numbered setup steps and screenshots. */
+				.mpcrbm-guide-steps {
+					margin: 0 0 4px;
+					padding-left: 20px !important;
+				}
+				.mpcrbm-guide-steps li {
+					margin: 0 0 8px;
+					padding: 0 !important;
+					font-size: 13.5px;
+					line-height: 1.7;
+					color: #4b5563;
+					list-style: decimal;
+				}
+				.mpcrbm-guide-steps li strong {
+					color: var(--mpcrbm-shell-text, #1f222b);
+				}
+				.mpcrbm-guide-shots {
+					display: grid;
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					gap: 16px;
+					margin: 16px 0 4px;
+				}
+				.mpcrbm-guide-shots.is-single {
+					grid-template-columns: minmax(0, 1fr);
+				}
+				@media (max-width: 900px) {
+					.mpcrbm-guide-shots {
+						grid-template-columns: minmax(0, 1fr);
+					}
+				}
+				.mpcrbm-guide-shot {
+					margin: 0;
+					padding: 12px;
+					background: var(--mpcrbm-shell-bg, #f8fafc);
+					border: 1px solid #eef0f3;
+					border-radius: 10px;
+				}
+				.mpcrbm-guide-shot a {
+					display: block;
+				}
+				/* Scoped: a global image rule stretches every img to the column width,
+				   which blurs small screenshots. Show each at its natural size. */
+				.mpcrbm-shell-body .mpcrbm-guide-shot img {
+					display: block;
+					width: auto;
+					max-width: 100%;
+					height: auto;
+					margin: 0 auto;
+					border: 1px solid #e5e7eb;
+					border-radius: 8px;
+					background: #fff;
+				}
+				.mpcrbm-guide-shot figcaption {
+					margin-top: 10px;
+					font-size: 12.5px;
+					line-height: 1.55;
+					color: #6b7280;
+				}
+				.mpcrbm-guide-shot figcaption b {
+					color: var(--mpcrbm-shell-text, #1f222b);
 				}
 				.mpcrbm-guide-link-btn:hover {
 					background: var(--mpcrbm-shell-primary-dark, #1465d6);
@@ -860,6 +922,100 @@
 						</div>
 						<a class="mpcrbm-guide-link-btn" href="<?php echo esc_url( $ex_url ); ?>">
 							<i class="fas fa-shopping-basket"></i> <?php esc_html_e( 'Manage Extra Services', 'car-rental-manager' ); ?>
+						</a>
+					</div>
+				</div>
+
+				<!-- SecureHold Deposit Holds -->
+				<?php
+				$sh_settings_url = admin_url( 'edit.php?post_type=' . $cpt . '&page=mpcrbm_settings_page' );
+				$sh_img          = function ( $file, $alt, $caption ) {
+					$src = MPCRBM_PLUGIN_URL . '/assets/admin/images/guideline/' . $file;
+					?>
+					<figure class="mpcrbm-guide-shot">
+						<a href="<?php echo esc_url( $src ); ?>" target="_blank" rel="noopener noreferrer"><img src="<?php echo esc_url( $src ); ?>" alt="<?php echo esc_attr( $alt ); ?>" loading="lazy"></a>
+						<figcaption><?php echo wp_kses_post( $caption ); ?></figcaption>
+					</figure>
+					<?php
+				};
+				?>
+				<div class="mpcrbm-card" id="mpcrbm-guide-securehold">
+					<div class="mpcrbm-card-header mpcrbm-guide-card-header">
+						<div class="mpcrbm-guide-card-header-text">
+							<i class="<?php echo esc_attr( $sections['securehold']['icon'] ); ?>"></i>
+							<h3><?php echo esc_html( $sections['securehold']['title'] ); ?></h3>
+						</div>
+					</div>
+					<div class="mpcrbm-card-content">
+						<p class="mpcrbm-guide-intro">
+							<?php esc_html_e( 'With the free SecureHold WP plugin, a car’s security deposit is held on the customer’s card (a Stripe authorization) instead of being charged. The customer pays only the rental. After the rental the hold is released automatically, so there is nothing to refund, or you capture part or all of it for damage.', 'car-rental-manager' ); ?>
+						</p>
+
+						<div class="mpcrbm-guide-grid">
+							<div class="mpcrbm-guide-block">
+								<h4><i class="fas fa-tasks"></i> <?php esc_html_e( 'Requirements', 'car-rental-manager' ); ?></h4>
+								<ul>
+									<li><?php echo wp_kses_post( __( 'Booking Mode set to <strong>WooCommerce</strong> (Global Settings &rarr; Payments). SecureHold works only with WooCommerce orders.', 'car-rental-manager' ) ); ?></li>
+									<li><?php echo wp_kses_post( __( 'The <strong>WooCommerce Stripe Gateway</strong> plugin, enabled and connected. Holds are placed on the card the customer pays with.', 'car-rental-manager' ) ); ?></li>
+									<li><?php echo wp_kses_post( __( '<strong>SecureHold WP 3.4.11 or later</strong>, with Stripe API keys in the same mode (test or live) as the Stripe gateway.', 'car-rental-manager' ) ); ?></li>
+									<li><?php echo wp_kses_post( __( 'A <strong>Fixed Amount</strong> security deposit on the car (Fee & Deposit tab). Percentage deposits are always charged.', 'car-rental-manager' ) ); ?></li>
+								</ul>
+							</div>
+							<div class="mpcrbm-guide-block">
+								<h4><i class="fas fa-shield-alt"></i> <?php esc_html_e( 'When the deposit is still charged', 'car-rental-manager' ); ?></h4>
+								<ul>
+									<li><?php esc_html_e( 'Custom Payment checkout (no WooCommerce order, so nothing to hold on)', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Percentage deposits, and cars excluded in SecureHold', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Orders below SecureHold’s Minimum Cart Amount', 'car-rental-manager' ); ?></li>
+									<li><?php esc_html_e( 'Stripe not connected yet. The deposit is then charged with the booking as before, so it is never lost.', 'car-rental-manager' ); ?></li>
+								</ul>
+							</div>
+						</div>
+
+						<h4 class="mpcrbm-guide-subheading"><?php esc_html_e( 'Set it up', 'car-rental-manager' ); ?></h4>
+						<ol class="mpcrbm-guide-steps">
+							<li><?php echo wp_kses_post( __( 'Open <strong>Global Settings &rarr; Integrations</strong>. The SecureHold card checks everything listed under Requirements.', 'car-rental-manager' ) ); ?></li>
+							<li><?php echo wp_kses_post( __( 'Work down every orange row with its button: <strong>Install</strong> / <strong>Activate</strong> the Stripe gateway and SecureHold, <strong>Connect Stripe in SecureHold</strong>, then <strong>Enable compatibility</strong> (turns on SecureHold’s “Use MagePeople security deposit amounts”).', 'car-rental-manager' ) ); ?></li>
+							<li><?php echo wp_kses_post( __( 'Recommended: click <strong>Hold only car deposits</strong>. Otherwise SecureHold also holds its own Default Hold Amount on orders without a fixed car deposit, including bookings whose percentage deposit is already charged.', 'car-rental-manager' ) ); ?></li>
+							<li><?php echo wp_kses_post( __( 'On each car: <strong>Fee & Deposit</strong> tab &rarr; <strong>Security Deposit</strong> &rarr; <strong>Fixed Amount</strong>, then update the car.', 'car-rental-manager' ) ); ?></li>
+							<li><?php echo wp_kses_post( __( 'Test in Stripe test mode with card <strong>4242 4242 4242 4242</strong>. The booking total drops by the deposit and the order notes say “SecureHold WP: Security deposit of … authorized”.', 'car-rental-manager' ) ); ?></li>
+						</ol>
+						<div class="mpcrbm-guide-shots is-single">
+							<?php
+							$sh_img( 'securehold-setup-needed.png', __( 'SecureHold integration card with setup steps still open', 'car-rental-manager' ), __( '<b>Setup needed:</b> each open step has its own button.', 'car-rental-manager' ) );
+							$sh_img( 'securehold-integrations-card.png', __( 'SecureHold integration card, ready', 'car-rental-manager' ), __( '<b>Ready:</b> every row is green, and fixed car deposits are now held on the card.', 'car-rental-manager' ) );
+							?>
+						</div>
+
+						<h4 class="mpcrbm-guide-subheading"><?php esc_html_e( 'What the customer sees', 'car-rental-manager' ); ?></h4>
+						<p class="mpcrbm-guide-intro">
+							<?php esc_html_e( 'Why the deposit is not in the total: a held deposit is never paid, only reserved on the card. For a 2-day rental at $60/day with a $200 deposit, the customer is charged $120 and their card shows a separate $200 pending authorization, which disappears when the hold is released.', 'car-rental-manager' ); ?>
+						</p>
+						<div class="mpcrbm-guide-shots">
+							<?php
+							$sh_img( 'securehold-car-summary.png', __( 'Car booking summary with the deposit held on card', 'car-rental-manager' ), __( '<b>Car page and search results:</b> the deposit is labelled “held on card” and left out of the Total.', 'car-rental-manager' ) );
+							$sh_img( 'securehold-checkout.png', __( 'Checkout order summary with the deposit hold notice', 'car-rental-manager' ), __( '<b>Cart and checkout:</b> no deposit fee in the total, and a notice of the amount that will be held on the card.', 'car-rental-manager' ) );
+							?>
+						</div>
+
+						<h4 class="mpcrbm-guide-subheading"><?php esc_html_e( 'Manage the hold', 'car-rental-manager' ); ?></h4>
+						<div class="mpcrbm-guide-block">
+							<ul>
+								<li><?php echo wp_kses_post( __( '<strong>Bookings</strong> shows each hold under the booking total: amount, status (Held, Captured, Released, Hold failed) and the automatic release date, with a <strong>Manage in SecureHold</strong> link.', 'car-rental-manager' ) ); ?></li>
+								<li><?php echo wp_kses_post( __( 'To charge for damage, open the hold in SecureHold and <strong>capture</strong> all or part of it. Anything not captured is released. With Pro, record the damage in the booking’s <strong>Damage Charge</strong> tab first; it reminds you that the deposit is held in SecureHold.', 'car-rental-manager' ) ); ?></li>
+								<li><?php echo wp_kses_post( __( 'Stripe cancels an uncaptured hold after about 7 days. For longer rentals, set SecureHold’s capture timing so the hold is placed closer to the return date.', 'car-rental-manager' ) ); ?></li>
+								<li><?php echo wp_kses_post( __( 'A booking paid with another method (for example Cash on Delivery) gets no hold and no deposit charge. It is marked <strong>Not secured</strong>, so collect that deposit before the rental.', 'car-rental-manager' ) ); ?></li>
+							</ul>
+						</div>
+						<div class="mpcrbm-guide-shots is-single">
+							<?php
+							$sh_img( 'securehold-booking-list.png', __( 'Bookings list with a deposit hold under the booking total', 'car-rental-manager' ), __( '<b>Bookings list:</b> the hold appears under the booking’s total.', 'car-rental-manager' ) );
+							$sh_img( 'securehold-order-view.png', __( 'Booking details with the security deposit hold', 'car-rental-manager' ), __( '<b>Booking details (Pro):</b> the customer paid the $120 rental; the $200 deposit is held, not charged.', 'car-rental-manager' ) );
+							?>
+						</div>
+
+						<a class="mpcrbm-guide-link-btn" href="<?php echo esc_url( $sh_settings_url ); ?>">
+							<i class="fas fa-plug"></i> <?php esc_html_e( 'Open Integrations Settings', 'car-rental-manager' ); ?>
 						</a>
 					</div>
 				</div>

@@ -381,6 +381,8 @@ Customer reviews are stored as WordPress comments on the `mpcrbm_rent` post, wit
 
 Configurable per car: enable, type (fixed or percentage of base price), amount. The deposit is added to the cart total and stored in booking meta. Refund management for deposits is a PRO feature (`mpcrbm_dep_refund` CPT).
 
+With SecureHold WP, a fixed deposit can instead be held on the customer's card and never charged. See [3.15 SecureHold WP Deposit Holds](#315-securehold-wp-deposit-holds).
+
 ---
 
 ### 3.10 WooCommerce Auto-Installer
@@ -427,6 +429,74 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 
 ---
 
+### 3.15 SecureHold WP Deposit Holds
+
+With the free **SecureHold WP** plugin (3.4.11+), a car's **fixed** security deposit is held on the customer's card as a Stripe authorization instead of being charged. The customer pays only the rental. After the rental SecureHold releases the hold automatically, so nothing needs refunding, or the admin captures part or all of it for damage.
+
+Code: `inc/MPCRBM_SecureHold_Compat.php` (behaviour), `admin/settings/MPCRBM_Integrations_Settings.php` (Global Settings → Integrations card). The in-plugin **Guideline** page has the same walkthrough.
+
+#### Requirements
+
+| Requirement | Why |
+|---|---|
+| Booking Mode = **WooCommerce** (Global Settings → Payments) | SecureHold only works with WooCommerce orders |
+| **WooCommerce Stripe Gateway** enabled and connected | The hold is placed on the card the customer pays with |
+| **SecureHold WP 3.4.11+** with Stripe keys in the same mode (test/live) as the gateway | SecureHold creates the hold with its own keys |
+| SecureHold → Rule Engine → **Use MagePeople security deposit amounts** on | The bridge car deposits go through |
+| Car → Fee & Deposit → Security Deposit = **Fixed Amount** | SecureHold holds fixed amounts only |
+
+#### Set it up
+
+1. Open **Global Settings → Integrations**. The SecureHold card checks every requirement above.
+2. Click the button on each orange row: **Install/Activate** (Stripe gateway, SecureHold), **Connect Stripe in SecureHold**, **Enable compatibility**.
+3. Recommended: **Hold only car deposits** sets SecureHold's Default Hold Amount to 0. Otherwise SecureHold also holds its default (300) on orders without a fixed car deposit, including bookings whose percentage deposit is already charged.
+4. On each car, set a **Fixed Amount** security deposit.
+5. Test in Stripe test mode with card `4242 4242 4242 4242`. The order total excludes the deposit, and the order notes say *"SecureHold WP: Security deposit of … authorized"*.
+
+| Setup needed | Ready |
+|---|---|
+| ![SecureHold card with open setup steps](assets/admin/images/guideline/securehold-setup-needed.png) | ![SecureHold card, ready](assets/admin/images/guideline/securehold-integrations-card.png) |
+
+#### What the customer sees
+
+> **Why is the deposit not in the total?** A held deposit is never paid, only reserved on the card. Example: 2 days × $60 with a $200 deposit, so the customer is charged **$120** and their card shows a separate **$200 pending authorization**. It disappears when the hold is released, or becomes a charge only for the amount you capture for damage.
+
+- **Car page and search results:** the deposit is labelled *"Security Deposit (held on card)"*, a note explains it, and the Total leaves it out (also after changing dates, quantity or extras).
+- **Cart and checkout (classic and block):** no *"Security Deposit (Refundable)"* fee; a notice says *"Security deposit of $X: not included in your total. It is held on your card…"* (it replaces SecureHold's own notice for carts with cars). The order line reads *"Security Deposit (held on card, not charged)"*.
+
+| Car page | Checkout |
+|---|---|
+| ![Car booking summary with deposit held on card](assets/admin/images/guideline/securehold-car-summary.png) | ![Checkout order summary with hold notice](assets/admin/images/guideline/securehold-checkout.png) |
+
+#### When the deposit is still charged
+
+The deposit is charged with the booking as before, so it is never lost, when:
+
+- the booking uses the **Custom Payment** checkout (no WooCommerce order);
+- the deposit is a **percentage**, or the car's product is excluded in SecureHold;
+- the cart is below SecureHold's **Minimum Cart Amount**;
+- Stripe is not ready (gateway disabled or without keys, SecureHold keys missing, or test/live mode mismatch). Sites that connect Stripe differently can override this check with the `mpcrbm_securehold_can_hold` filter.
+
+#### Managing holds
+
+- The **Bookings** list (free and Pro) shows each hold under the booking total: amount, status (*Held, not charged* / *Captured* / *Released* / *Hold failed*), the automatic release date and a **Manage in SecureHold** link. A charged deposit shows *"Charged with the order"* with refund guidance.
+- **Damage:** capture all or part of the hold in SecureHold. With Pro, record the damage in the booking's **Damage Charge** tab first. Its deposit balance counts only charged deposits, so the tab notes that the deposit is held in SecureHold.
+- Stripe cancels an uncaptured authorization after about 7 days. For longer rentals, use SecureHold's capture timing to place the hold closer to the return date.
+- An order paid with another method (e.g. Cash on Delivery) gets no hold and no deposit charge. The booking is marked **Not secured**.
+
+![Bookings list with the deposit hold](assets/admin/images/guideline/securehold-booking-list.png)
+
+![Pro booking details: $120 paid, $200 deposit held](assets/admin/images/guideline/securehold-order-view.png)
+
+#### How it works (developers)
+
+- SecureHold's MagePeople bridge reads `rbfw_enable_security_deposit`, `rbfw_security_deposit_type` and `rbfw_security_deposit_amount` from the cart product. `MPCRBM_SecureHold_Compat::bridge_meta()` (a `get_post_metadata` filter) answers those keys for a car's hidden WooCommerce product (`link_mpcrbm_id`), and only when that car's deposit will really be held. This drives SecureHold's cart calculation and its checkout card-saving.
+- `MPCRBM_Woocommerce::add_security_deposit_fee()` leaves a held deposit out of the fee. `checkout_create_order_line_item()` records it as order item meta `_mpcrbm_securehold_deposit`, sets `_mpcrbm_security_deposit_amount` to 0, and removes it from `_mpcrbm_tp`.
+- On `securehold_computation_aggregate` (priority 99), the order is re-resolved without the bridge and the recorded held amounts are added. The hold is therefore always deposit × car quantity, decided at checkout, even if car or SecureHold settings change before a delayed hold.
+- Verified end to end with a Stripe test-mode payment (2 days × $60, $200 fixed deposit): Stripe charged **$120.00** (`succeeded`) and SecureHold placed a separate **$200.00** authorization on the same card (`requires_capture`, $0 received). The booking has `mpcrbm_tp` 120, `mpcrbm_security_deposit_held` 200, `mpcrbm_security_deposit_amount` 0.
+
+---
+
 ## 4. Feature List
 
 ### Core Features (Free)
@@ -441,6 +511,7 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 - [x] Tiered/duration-based discounts
 - [x] One-way fee support
 - [x] Security deposit (fixed or %)
+- [x] SecureHold WP integration: fixed deposits held on the customer's card instead of charged (WooCommerce checkout)
 - [x] Extra services (per-booking or per-day)
 - [x] Image gallery per car
 - [x] Car features (include/exclude)
@@ -553,10 +624,11 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 | `mpcrbm_start_place` | Pickup location slug |
 | `mpcrbm_end_place` | Dropoff location slug |
 | `mpcrbm_car_quantity` | Units booked |
-| `mpcrbm_tp` | Total price |
+| `mpcrbm_tp` | Total price charged (a deposit held by SecureHold is not included) |
 | `mpcrbm_base_price` | Base price at booking time |
 | `mpcrbm_order_status` | Current order status |
-| `mpcrbm_security_deposit` | Deposit charged |
+| `mpcrbm_security_deposit_amount` | Deposit charged (0 when held by SecureHold) |
+| `mpcrbm_security_deposit_held` | Deposit held on the card by SecureHold WP, not charged |
 | `mpcrbm_branch_one_way_fee` | One-way fee charged |
 | `mpcrbm_extra_service_info` | Extra services selected |
 
@@ -673,6 +745,7 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 | `mpcrbm_add_booking_data` | Modify booking data before save | booking data array |
 | `mpcrbm_licence_section` | Add license rows | — |
 | `mpcrbm_addon_list` | Add addon list items | — |
+| `mpcrbm_booking_list_total_after` | Under a booking's total on the Bookings list (free and Pro); SecureHold hold details render here | booking row (`ID`, `is_woo`, `order_id`) |
 
 ### Filter Hooks
 
@@ -683,6 +756,7 @@ Displays: WordPress version, WooCommerce status and version, WC email sender nam
 | `mpcrbm_total_price` | Override calculated price | float |
 | `mpcrbm_settings_sec_reg` | Add settings sections | sections array |
 | `mpcrbm_get_car_data` | Modify car query args | WP_Query args |
+| `mpcrbm_securehold_can_hold` | Whether SecureHold can place deposit holds (Stripe readiness) | bool |
 
 ### Key AJAX Actions
 
