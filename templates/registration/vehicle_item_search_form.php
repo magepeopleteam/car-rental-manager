@@ -357,10 +357,12 @@ if ($post_id) {
                                 $mpcrbm_security_deposit_result = $mpcrbm_sd_amount;
                             }
                         }
+                        // SecureHold WP holds a fixed deposit on the card at checkout instead of charging it.
+                        $mpcrbm_deposit_on_card = MPCRBM_SecureHold_Compat::form_note( $post_id );
                         if ( $mpcrbm_security_deposit_result > 0 ) { ?>
-                            <div class="mpcrbm_security_deposit_info" style="margin-top: 6px; font-size: 0.9em; color: #555;">
-                                <span class="fa fa-shield-alt" style="margin-right: 4px;"></span>
-                                <?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?>
+                            <div class="mpcrbm_security_deposit_info" style="margin-top: 6px; font-size: 0.9em; color: #555;"<?php echo $mpcrbm_deposit_on_card ? ' title="' . esc_attr( wp_strip_all_tags( $mpcrbm_deposit_on_card ) ) . '"' : ''; ?>>
+                                <span class="fa <?php echo esc_attr( $mpcrbm_deposit_on_card ? 'fa-lock' : 'fa-shield-alt' ); ?>" style="margin-right: 4px;"></span>
+                                <?php $mpcrbm_deposit_on_card ? esc_html_e( 'Security Deposit (held on card):', 'car-rental-manager' ) : esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?>
                                 <strong><?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $mpcrbm_security_deposit_result ) ); ?></strong>
                             </div>
                         <?php } ?>
@@ -389,6 +391,8 @@ if ($post_id) {
                                 data-transport-price="<?php echo esc_attr($mpcrbm_total_price); ?>"
                                 data-base-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
                                 data-security-deposit="<?php echo esc_attr($mpcrbm_security_deposit_result); ?>"
+                                data-security-deposit-held="<?php echo $mpcrbm_deposit_on_card ? '1' : '0'; ?>"
+                                data-security-deposit-label="<?php esc_attr_e( 'Security Deposit (held on card):', 'car-rental-manager' ); ?>"
                                 data-post-id="<?php echo esc_attr($post_id); ?>"
                                 data-wc_link_id="<?php echo esc_attr($mpcrbm_link_wc_product); ?>"
                                 data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"

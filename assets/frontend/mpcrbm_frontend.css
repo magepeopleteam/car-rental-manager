@@ -283,3 +283,31 @@
     }
 
 }
+
+/* SecureHold WP: security deposit held on the card instead of charged
+   (car details summary, classic cart/checkout and the Cart/Checkout blocks). */
+.mpcrbm-securehold-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 8px 0 12px;
+    padding: 10px 12px;
+    background: #f0f6ff;
+    border: 1px solid #cfe0fb;
+    border-radius: 6px;
+    color: #1e3a66;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.mpcrbm-securehold-note .fa-lock,
+.mpcrbm-securehold-note .fa-info-circle {
+    margin-top: 2px;
+    color: #3157b7;
+}
+
+.mpcrbm-deposit-notice-charged {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #334155;
+}

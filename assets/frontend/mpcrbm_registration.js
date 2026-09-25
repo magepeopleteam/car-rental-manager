@@ -264,6 +264,7 @@ jQuery(document).ready(function($) {
             target_extra_service_summary.slideUp(400);
             parent.find('[name="mpcrbm_post_id"]').val('');
             parent.find('[name="mpcrbm_security_deposit_value"]').val(0);
+            parent.find('[name="mpcrbm_deposit_on_card"]').val(0);
             target_summary.find('.mpcrbm_security_deposit_summary').remove();
             checkAndToggleBookNowButton(parent);
         } else {
@@ -276,6 +277,7 @@ jQuery(document).ready(function($) {
             if (isNaN(base_price)) { base_price = transport_price; }
             let post_id         = $this.attr('data-post-id');
             let security_deposit = parseFloat($this.attr('data-security-deposit')) || 0;
+            let deposit_on_card  = $this.attr('data-security-deposit-held') === '1';
 
             // Determine one-way fee: always trust the PHP-baked data attributes (server already
             // computed the per-car fee for the current pickup/dropoff pair), then zero out only
@@ -292,9 +294,14 @@ jQuery(document).ready(function($) {
 
             // Store deposit in hidden input for later quantity/extra-service recalculations
             parent.find('[name="mpcrbm_security_deposit_value"]').val(security_deposit);
+            let $onCardField = parent.find('[name="mpcrbm_deposit_on_card"]');
+            if (!$onCardField.length) {
+                $onCardField = $('<input type="hidden" name="mpcrbm_deposit_on_card">').appendTo(parent);
+            }
+            $onCardField.val(deposit_on_card ? 1 : 0);
 
-            // Build initial total: base price + one-way fee + deposit
-            let initial_total = base_price + oneWayFee + security_deposit;
+            // Build initial total: base price + one-way fee + deposit (unless held on the card)
+            let initial_total = base_price + oneWayFee + (deposit_on_card ? 0 : security_deposit);
 
             // Update vehicle details in summary
             target_summary.find('.mpcrbm_product_name').html(transport_name);
@@ -305,7 +312,7 @@ jQuery(document).ready(function($) {
             target_summary.find('.mpcrbm_security_deposit_summary').remove();
             if (security_deposit > 0) {
                 target_summary.find('.mpcrbm_extra_service_summary').after(
-                    '<div class="mpcrbm_security_deposit_summary"><div class="divider"></div><div class="justifyBetween"><span>Security Deposit:</span><span class="mpcrbm_security_deposit_price _textTheme">' + mpcrbm_price_format(security_deposit) + '</span></div></div>'
+                    '<div class="mpcrbm_security_deposit_summary"><div class="divider"></div><div class="justifyBetween"><span>' + (deposit_on_card ? $('<span>').text($this.attr('data-security-deposit-label') || 'Security Deposit (held on card):').html() : 'Security Deposit:') + '</span><span class="mpcrbm_security_deposit_price _textTheme">' + mpcrbm_price_format(security_deposit) + '</span></div></div>'
                 );
             }
 
@@ -1286,6 +1293,13 @@ jQuery(document).ready(function($) {
         return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
     }
 
+    // SecureHold WP holds this car's deposit on the card at checkout (see
+    // MPCRBM_SecureHold_Compat): the summary still shows it, but it is not part of
+    // the amount the customer pays, so it stays out of the total.
+    function mpcrbm_deposit_on_card(parent) {
+        return parent.find('[name="mpcrbm_deposit_on_card"]').val() === '1';
+    }
+
     // Price calculation function
     function mpcrbm_price_calculation(parent) {
         let number_of_car = mpcrbm_number_of_car_booked( parent );
@@ -1320,7 +1334,9 @@ jQuery(document).ready(function($) {
             let deposit = parseFloat(parent.find('[name="mpcrbm_security_deposit_value"]').val()) || 0;
             if (deposit > 0) {
                 let total_deposit = deposit * number_of_car;
-                total = total + total_deposit;
+                if (!mpcrbm_deposit_on_card(parent)) {
+                    total = total + total_deposit;
+                }
                 let deposit_row = target_summary.find('.mpcrbm_security_deposit_summary');
                 if (deposit_row.length > 0) {
                     deposit_row.find('.mpcrbm_security_deposit_price').html(mpcrbm_price_format(total_deposit));
@@ -1398,7 +1414,9 @@ jQuery(document).ready(function($) {
             let deposit = parseFloat(parent.find('[name="mpcrbm_security_deposit_value"]').val()) || 0;
             if (deposit > 0) {
                 let total_deposit = deposit * number_of_car;
-                total = total + total_deposit;
+                if (!mpcrbm_deposit_on_card(parent)) {
+                    total = total + total_deposit;
+                }
                 target_summary.find('.mpcrbm_security_deposit_price').html(mpcrbm_price_format(total_deposit));
             }
 
