@@ -118,6 +118,8 @@ if ($post_id) {
             $deposit_price = $mpcrbm_price * ( $deposit_amount / 100 );
         }
     }
+    // SecureHold WP holds a fixed deposit on the card at checkout instead of charging it.
+    $deposit_on_card = MPCRBM_SecureHold_Compat::form_note( $post_id );
 
     $mpcrbm_wc_price = MPCRBM_Global_Function::wc_price( $post_id, $mpcrbm_price );
     $mpcrbm_raw_price = MPCRBM_Global_Function::price_convert_raw( $mpcrbm_wc_price );
@@ -298,13 +300,17 @@ if ($post_id) {
                         <?php if ( $deposit_price > 0 ) : ?>
                             <div class="mpcrbm_price_hover_wrap mpcrbm_deposit_wrap">
                             <span class="mpcrbm_security_deposit_badge">
-                                <span class="fa fa-shield-alt"></span>
-                                <span><?php esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?> <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $deposit_price ) ); ?></span>
+                                <span class="fa <?php echo esc_attr( $deposit_on_card ? 'fa-lock' : 'fa-shield-alt' ); ?>"></span>
+                                <span><?php $deposit_on_card ? esc_html_e( 'Security Deposit (held on card):', 'car-rental-manager' ) : esc_html_e( 'Security Deposit:', 'car-rental-manager' ); ?> <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $deposit_price ) ); ?></span>
                                 <span class="fa fa-info-circle mpcrbm_deposit_info_icon"></span>
                             </span>
                                 <div class="mpcrbm_display_pricing_rules mpcrbm_deposit_tooltip">
                                     <h4><span class="fa fa-shield-alt"></span> <?php esc_html_e( 'Security Deposit (Refundable)', 'car-rental-manager' ); ?></h4>
-                                    <p><?php esc_html_e( 'This security deposit is refundable. After your order and trip are completed, the owner can refund this amount fully or partially based on the vehicle condition.', 'car-rental-manager' ); ?></p>
+                                    <?php if ( $deposit_on_card ) : ?>
+                                        <p><?php echo wp_kses_post( $deposit_on_card ); ?> <?php esc_html_e( 'It is an authorization only, released after the rental unless the owner needs it for damage.', 'car-rental-manager' ); ?></p>
+                                    <?php else : ?>
+                                        <p><?php esc_html_e( 'This security deposit is refundable. After your order and trip are completed, the owner can refund this amount fully or partially based on the vehicle condition.', 'car-rental-manager' ); ?></p>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         <?php endif; ?>
@@ -435,6 +441,8 @@ if ($post_id) {
                                     data-transport-price="<?php echo esc_attr($mpcrbm_discounted_price); ?>"
                                     data-base-price="<?php echo esc_attr($mpcrbm_discounted_price - $mpcrbm_branch_one_way_fee); ?>"
                                     data-security-deposit="<?php echo esc_attr($deposit_price); ?>"
+                                    data-security-deposit-held="<?php echo $deposit_on_card ? '1' : '0'; ?>"
+                                    data-security-deposit-label="<?php esc_attr_e( 'Security Deposit (held on card):', 'car-rental-manager' ); ?>"
                                     data-post-id="<?php echo esc_attr($post_id); ?>"
                                     data-wc_link_id="<?php echo esc_attr($mpcrbm_link_wc_product); ?>"
                                     data-open-text="<?php esc_attr_e('Select Car', 'car-rental-manager'); ?>"

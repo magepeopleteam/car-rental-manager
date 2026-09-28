@@ -313,6 +313,7 @@
 
 				MPCRBM_Admin_Shell::render_shell_open( esc_html__( 'Bookings', 'car-rental-manager' ) );
 				$this->render_styles();
+				MPCRBM_SecureHold_Compat::booking_row_styles();
 				?>
 				<div class="mpcrbm-bookings-wrap">
 					<div class="mpcrbm-settings-head">
@@ -411,6 +412,16 @@
 														<?php endforeach; ?>
 													</ul>
 												<?php endif; ?>
+												<?php
+												/**
+												 * After a booking's total and its breakdown on the Bookings list.
+												 *
+												 * MPCRBM_SecureHold_Compat shows the SecureHold WP deposit hold here.
+												 *
+												 * @param array $row Booking row: ID, is_woo, order_id, total, parts, ...
+												 */
+												do_action( 'mpcrbm_booking_list_total_after', $row );
+												?>
 											</td>
 											<td><?php echo esc_html( $row['payment'] ?: '—' ); ?></td>
 											<td><span class="mpcrbm-status-pill is-<?php echo esc_attr( $status_class ); ?>"><?php echo esc_html( $status_label ); ?></span></td>

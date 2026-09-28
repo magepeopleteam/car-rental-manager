@@ -58,6 +58,7 @@
 				// where an admin goes to install it, or to choose Custom Payment instead.
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_WC_Payment_Manager.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Payment_Settings.php';
+				require_once MPCRBM_PLUGIN_DIR . '/admin/settings/MPCRBM_Integrations_Settings.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Payment_Notices.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Booking_List_Free.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Customers.php';

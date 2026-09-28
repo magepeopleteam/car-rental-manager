@@ -200,7 +200,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
         }
 
         // Charges the refundable security deposit as a separate, non-taxable cart fee
-        // instead of folding it into the (taxable) rental price.
+        // instead of folding it into the (taxable) rental price. A deposit SecureHold WP
+        // holds on the customer's card is left out: it is authorized, not charged.
         public function add_security_deposit_fee( $cart_object ) {
             $total_deposit = 0;
             foreach ( $cart_object->cart_contents as $value ) {
@@ -208,7 +209,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
                     $deposit  = array_key_exists( 'mpcrbm_security_deposit', $value ) ? floatval( $value['mpcrbm_security_deposit'] ) : 0;
                     $quantity = array_key_exists( 'mpcrbm_car_quantity', $value ) ? intval( $value['mpcrbm_car_quantity'] ) : 1;
-                    $total_deposit += $deposit * $quantity;
+                    $total_deposit += $deposit * $quantity - MPCRBM_SecureHold_Compat::cart_item_held_deposit( $value );
                 }
             }
             if ( $total_deposit > 0 ) {
@@ -322,8 +323,17 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $item->add_meta_data( esc_html__( 'Price ', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $base_price ).' X '.$car_quantity ) );
                 if ( $security_deposit > 0 ) {
                     $security_deposit_total = $security_deposit * intval( $car_quantity );
-                    $item->add_meta_data( esc_html__( 'Security Deposit', 'car-rental-manager' ), wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $security_deposit_total ) ) );
-                    $item->add_meta_data( '_mpcrbm_security_deposit_amount', $security_deposit_total );
+                    // Held on the card by SecureHold WP instead of charged: the order line says
+                    // so, records nothing as charged, and keeps the held amount for the hold.
+                    $security_deposit_held  = MPCRBM_SecureHold_Compat::cart_item_held_deposit( $values );
+                    $security_deposit_label = $security_deposit_held > 0 ? esc_html__( 'Security Deposit (held on card, not charged)', 'car-rental-manager' ) : esc_html__( 'Security Deposit', 'car-rental-manager' );
+                    $item->add_meta_data( $security_deposit_label, wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) . ' = ' . MPCRBM_Global_Function::format_price( $security_deposit_total ) ) );
+                    $item->add_meta_data( '_mpcrbm_security_deposit_amount', $security_deposit_held > 0 ? 0 : $security_deposit_total );
+                    if ( $security_deposit_held > 0 ) {
+                        $item->add_meta_data( MPCRBM_SecureHold_Compat::HELD_META, $security_deposit_held );
+                        // mpcrbm_tp carries rental + deposit; the booking's total is what was charged.
+                        $price = max( 0, (float) $price - $security_deposit_held );
+                    }
                 } else {
                     $item->add_meta_data( '_mpcrbm_security_deposit_amount', 0 );
                 }
@@ -489,6 +499,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                             $car_quantity = $car_quantity ? MPCRBM_Global_Function::data_sanitize( $car_quantity ) : 1;
                             $security_deposit_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_security_deposit_amount' );
                             $security_deposit_order = $security_deposit_order ? floatval( MPCRBM_Global_Function::data_sanitize( $security_deposit_order ) ) : 0;
+                            $security_deposit_held  = (float) MPCRBM_Global_Function::get_order_item_meta( $item_id, MPCRBM_SecureHold_Compat::HELD_META );
                             $one_way_fee_order = MPCRBM_Global_Function::get_order_item_meta( $item_id, '_mpcrbm_branch_one_way_fee' );
                             $one_way_fee_order = $one_way_fee_order !== '' && $one_way_fee_order !== false ? floatval( $one_way_fee_order ) : 0;
                             $mpcrbm_dc_meta = [];
@@ -523,6 +534,7 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                                 'mpcrbm_billing_phone'               => $order->get_billing_phone(),
                                 'mpcrbm_car_quantity'                => $car_quantity,
                                 'mpcrbm_security_deposit_amount'     => $security_deposit_order,
+                                'mpcrbm_security_deposit_held'       => $security_deposit_held,
                                 'mpcrbm_branch_one_way_fee'          => $one_way_fee_order,
                                 'mpcrbm_target_pickup_interval_time' => MPCRBM_Function::get_general_settings( 'pickup_interval_time', '30' )
                             ], $mpcrbm_dc_meta );
@@ -694,10 +706,11 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         $security_deposit = array_key_exists( 'mpcrbm_security_deposit', $cart_item ) ? floatval( $cart_item['mpcrbm_security_deposit'] ) : 0;
                         if ( $security_deposit > 0 ) {
                             $security_deposit_total = $security_deposit * intval( $car_quantity );
+                            $security_deposit_held  = MPCRBM_SecureHold_Compat::cart_item_held_deposit( $cart_item ) > 0;
                             ?>
                             <li>
-                                <span class="fa fa-shield-alt"></span>
-                                <h6 class="_mR_xs"><?php esc_html_e( 'Security Deposit : ', 'car-rental-manager' ); ?></h6>
+                                <span class="fa <?php echo esc_attr( $security_deposit_held ? 'fa-lock' : 'fa-shield-alt' ); ?>"></span>
+                                <h6 class="_mR_xs"><?php $security_deposit_held ? esc_html_e( 'Security Deposit (held on card, not charged) : ', 'car-rental-manager' ) : esc_html_e( 'Security Deposit : ', 'car-rental-manager' ); ?></h6>
                                 <span>(<?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit ) . ' X ' . intval( $car_quantity ) ); ?>) = <?php echo wp_kses_post( MPCRBM_Global_Function::format_price( $security_deposit_total ) ); ?></span>
                             </li>
                         <?php } ?>

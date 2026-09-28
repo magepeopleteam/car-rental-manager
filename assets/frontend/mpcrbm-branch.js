@@ -259,7 +259,8 @@
         // Fallback for contexts where that script isn't present (branch search).
         var basePrice = parseFloat($('[name="mpcrbm_post_id"]').attr('data-price')) || 0;
         if (basePrice > 0) {
-            var deposit = parseFloat($('#mpcrbm_security_deposit_value').val()) || 0;
+            // A deposit SecureHold WP holds on the card is not part of the total.
+            var deposit = $('[name="mpcrbm_deposit_on_card"]').val() === '1' ? 0 : (parseFloat($('#mpcrbm_security_deposit_value').val()) || 0);
             $('#mpcrbm_car_total_price').html(priceFormatter(basePrice + fee * qty + deposit));
         }
     }
