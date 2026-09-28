@@ -439,6 +439,24 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 
         public function checkout_order_processed( $order_id ) {
             if ( $order_id ) {
+                // Hooked on woocommerce_before_thankyou, which fires on every page LOAD
+                // of the order-received page — a refresh, a revisit via back button, a
+                // duplicate tab, or a bot re-fetching the URL all re-ran this whole
+                // method with no check that a booking record already existed, creating
+                // one more mpcrbm_booking post per load. That's what produced multi-page
+                // "duplicate" booking-confirmation PDFs (MPCRBM_Pro_Pdf loops over every
+                // mpcrbm_booking post found for the order, one page each). Skip entirely
+                // once this order already has at least one booking post.
+                $already_processed = get_posts( array(
+                    'post_type'      => 'mpcrbm_booking',
+                    'post_status'    => 'any',
+                    'posts_per_page' => 1,
+                    'fields'         => 'ids',
+                    'meta_query'     => array( array( 'key' => 'mpcrbm_order_id', 'value' => $order_id ) ),
+                ) );
+                if ( ! empty( $already_processed ) ) {
+                    return;
+                }
                 $order = wc_get_order( $order_id );
                 // Get all meta data
                 $meta_data = $order->get_meta_data();
