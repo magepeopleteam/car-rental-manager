@@ -183,13 +183,14 @@
 							'type' => 'text',
 							'placeholder' => 'https://mysite.com/taxi'
 						),
-						// array(
-						// 	'name' => 'enable_buffer_time',
-						// 	'label' => $label . ' ' . esc_html__('Buffer Time', 'car-rental-manager'),
-						// 	'desc' => esc_html__('Enter buffer time per minutes. Also you have to change the timezone from', 'car-rental-manager') . '<strong style="color: red;">' . esc_html__('Settings --> General --> Timezone', 'car-rental-manager') . '</strong>',
-						// 	'type' => 'text',
-						// 	'placeholder' => 'Ex:10'
-						// ),
+						array(
+							'name' => 'enable_buffer_time',
+							'label' => $label . ' ' . esc_html__('Buffer Time', 'car-rental-manager'),
+							'desc' => esc_html__('Minimum minutes required between the current time and the earliest pickup time a customer can select. Enter 0 (or leave blank) to allow immediate/same-time bookings. Also make sure your timezone is correct under', 'car-rental-manager') . '<strong style="color: red;"> ' . esc_html__('Settings --> General --> Timezone', 'car-rental-manager') . '</strong>',
+							'type' => 'text',
+							'default' => '0',
+							'placeholder' => 'Ex:10'
+						),
 						// array(
 						// 	'name' => 'pickup_interval_time',
 						// 	'label' => $label . ' ' . esc_html__('Interval of pickup/return time in frontend', 'car-rental-manager'),
