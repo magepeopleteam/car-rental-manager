@@ -305,6 +305,19 @@
 				wp_enqueue_style( 'mpcrbm-shell', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-shell.css', [ 'mpcrbm_admin' ], file_exists( $css_path ) ? filemtime( $css_path ) : MPCRBM_PLUGIN_VERSION );
 				wp_enqueue_script( 'mpcrbm-shell', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-shell.js', [ 'jquery' ], file_exists( $js_path ) ? filemtime( $js_path ) : MPCRBM_PLUGIN_VERSION, true );
 
+				// The base stylesheet above is written entirely with physical left/right
+				// values (fixed sidebar pinned at the left, #wpcontent offset with
+				// margin-left, etc.), on the assumption that wp-admin renders LTR. On a
+				// RTL admin locale (e.g. Arabic) WordPress core moves its own chrome to
+				// the right, so this shell's fixed sidebar/topbar/step-navigator need the
+				// mirrored offsets or they overlap the page content instead of framing
+				// it. 'mpcrbm-shell' as a dependency guarantees this always prints after
+				// the base file, so its overrides win on source order alone.
+				if ( is_rtl() ) {
+					$rtl_css_path = MPCRBM_PLUGIN_DIR . '/assets/admin/mpcrbm-shell-rtl.css';
+					wp_enqueue_style( 'mpcrbm-shell-rtl', MPCRBM_PLUGIN_URL . 'assets/admin/mpcrbm-shell-rtl.css', [ 'mpcrbm-shell' ], file_exists( $rtl_css_path ) ? filemtime( $rtl_css_path ) : MPCRBM_PLUGIN_VERSION );
+				}
+
 				wp_localize_script( 'mpcrbm-shell', 'mpcrbmShell', [
 					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 					'nonce'   => wp_create_nonce( 'mpcrbm_shell_nonce' ),

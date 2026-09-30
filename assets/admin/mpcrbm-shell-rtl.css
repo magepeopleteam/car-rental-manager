@@ -1,0 +1,257 @@
+/* ==========================================================================
+   MPCRBM Admin Shell — RTL overrides.
+
+   mpcrbm-shell.css was written entirely with physical left/right values
+   (fixed sidebar pinned at left:0, #wpcontent offset with margin-left,
+   the floating step navigator inset from the left, etc.), on the assumption
+   that wp-admin renders LTR. When the site's admin language is a RTL
+   language (e.g. Arabic), WordPress core adds dir="rtl" to <html> and moves
+   its own chrome to the right, but this plugin's shell never accounted for
+   that — the fixed sidebar/topbar/step-navigator stayed pinned to the same
+   physical edges, while #wpcontent's own offset stopped lining up with them,
+   producing the overlapping/collapsed layout seen on RTL installs.
+
+   Only enqueued when is_rtl() (see MPCRBM_Admin_Shell::enqueue_shell_assets()),
+   loaded with 'mpcrbm-shell' as a dependency so it always prints after the
+   base file — every selector below is copied verbatim from mpcrbm-shell.css
+   so source order alone (not extra specificity) decides the winner.
+   ========================================================================== */
+
+[dir="rtl"] .mpcrbm-shell-loadbar {
+	left: auto;
+	right: 0;
+}
+
+[dir="rtl"] body.mpcrbm-admin #wpcontent,
+[dir="rtl"] body.mpcrbm-admin #wpfooter {
+	margin-left: 0;
+	padding-left: 0;
+	margin-right: 0;
+	padding-right: 0;
+}
+
+[dir="rtl"] .mpcrbm-shell-sidebar {
+	border-right: none;
+	border-left: 1px solid var(--mpcrbm-shell-border);
+}
+
+[dir="rtl"] .mpcrbm-shell-menu li > a .mpcrbm-shell-menu-arrow {
+	margin-left: 0;
+	margin-right: auto;
+}
+
+[dir="rtl"] .mpcrbm-shell-submenu {
+	padding: 0 30px 0 0;
+}
+
+[dir="rtl"] .mpcrbm-shell-submenu .mpcrbm_taxonomies_tab,
+[dir="rtl"] .mpcrbm-shell-submenu > li > a {
+	text-align: right;
+}
+
+@media (max-width: 960px) {
+	[dir="rtl"] .mpcrbm-shell-sidebar {
+		left: auto;
+		right: -100%;
+		transition: right .2s ease;
+	}
+
+	[dir="rtl"] .mpcrbm-shell.mobile-menu-open .mpcrbm-shell-sidebar {
+		left: auto;
+		right: 0;
+	}
+}
+
+[dir="rtl"] .mpcrbm-shell-body table.mpcrbm-table thead th {
+	text-align: right;
+}
+
+[dir="rtl"] .mpcrbm-shell-body .mpcrbm_stat-change {
+	margin-left: 0;
+	margin-right: auto;
+}
+
+[dir="rtl"] #mpcrbm_meta_box_panel .mpcrbm_settings .tabLists li span {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+/* "Car Feature Image" / pricing-priority sidebar, pinned to the wrong edge
+   of .tabsContent once the surrounding page is RTL. */
+[dir="rtl"] #mpcrbm_meta_box_panel .mpcrbm_settings .tabsContent .mpcrbm-tabs-sidebar {
+	right: auto;
+	left: 0;
+}
+
+[dir="rtl"] .mpcrbm-gallery-sidebar-card .mpcrbm_gallery_image_remove {
+	right: auto;
+	left: 4px;
+}
+
+[dir="rtl"] .mpcrbm-pricing-priority-card .mpcrbm-priority-step:not(:last-child)::before {
+	left: auto;
+	right: 10px;
+}
+
+[dir="rtl"] .mpcrbm-pricing-priority-card .mpcrbm-priority-step__state {
+	margin-left: 0;
+	margin-right: 5px;
+}
+
+[dir="rtl"] .mpcrbm-pricing-priority-card .mpcrbm-priority-notes li {
+	padding-left: 0;
+	padding-right: 12px;
+}
+
+[dir="rtl"] .mpcrbm-pricing-priority-card .mpcrbm-priority-notes li::before {
+	left: auto;
+	right: 0;
+}
+
+[dir="rtl"] .mpcrbm_extra_service_area thead th {
+	text-align: right;
+}
+
+/* ── Fixed shell chrome on the native Add/Edit Car screen ─────────────────
+   The single most impactful fix: on RTL, WordPress core would otherwise put
+   its own admin menu on the right, so #wpcontent's clearance for this
+   plugin's fixed sidebar has to move from margin-left to margin-right —
+   and the sidebar/topbar themselves have to swap the edge they're pinned to,
+   or they end up stacked on top of (rather than beside) the page content. */
+[dir="rtl"] body.mpcrbm-admin.post-php.post-type-mpcrbm_rent #wpcontent,
+[dir="rtl"] body.mpcrbm-admin.post-new-php.post-type-mpcrbm_rent #wpcontent {
+	margin-left: 0;
+	margin-right: var(--mpcrbm-shell-sidebar-width);
+}
+
+[dir="rtl"] .mpcrbm-shell-sidebar.mpcrbm-shell-fixed {
+	left: auto;
+	right: 0;
+}
+
+[dir="rtl"] .mpcrbm-shell-topbar.mpcrbm-shell-fixed {
+	left: 0;
+	right: var(--mpcrbm-shell-sidebar-width);
+}
+
+[dir="rtl"] .mpcrbm-split-publish__main {
+	border-radius: 0 var(--mpcrbm-shell-radius-xs, 8px) var(--mpcrbm-shell-radius-xs, 8px) 0;
+}
+
+[dir="rtl"] .mpcrbm-split-publish__toggle {
+	border-radius: var(--mpcrbm-shell-radius-xs, 8px) 0 0 var(--mpcrbm-shell-radius-xs, 8px);
+	border-left: none;
+	border-right: 1px solid rgba(255, 255, 255, .3);
+}
+
+[dir="rtl"] .mpcrbm-split-publish__menu {
+	right: auto;
+	left: 0;
+}
+
+[dir="rtl"] .mpcrbm-split-publish__item {
+	text-align: right;
+}
+
+[dir="rtl"] .mpcrbm-schedule-master-info {
+	margin-right: 0;
+	margin-left: 8px;
+}
+
+[dir="rtl"] .mpcrbm-schedule-apply-btn {
+	margin-left: 0;
+	margin-right: auto;
+}
+
+@media (max-width: 782px) {
+	[dir="rtl"] .mpcrbm-schedule-apply-btn {
+		margin-right: 0;
+	}
+
+	[dir="rtl"] .mpcrbm-schedule-to {
+		text-align: right;
+	}
+}
+
+[dir="rtl"] .mpcrbm-schedule-table thead th {
+	text-align: right;
+}
+
+[dir="rtl"] .mpcrbm_faq_all_question,
+[dir="rtl"] .mpcrbm_selected_faq_question,
+[dir="rtl"] .mpcrbm_selected_term_condition {
+	padding-right: 0;
+	padding-left: 4px;
+}
+
+[dir="rtl"] .mpcrbm-faq-live-switch::before {
+	right: auto;
+	left: 2px;
+}
+
+[dir="rtl"] .mpcrbm-faq-live-switch.is-off::before {
+	left: auto;
+	right: 2px;
+}
+
+[dir="rtl"] .mpcrbm-faq-list,
+[dir="rtl"] .mpcrbm-term-list {
+	padding-right: 0;
+	padding-left: 4px;
+}
+
+[dir="rtl"] .mpcrbm-rr-check-badge {
+	right: auto;
+	left: 8px;
+}
+
+[dir="rtl"] body.mpcrbm-admin .mpcrbm-faq-master-toggle-slider::before {
+	left: auto;
+	right: 2px;
+}
+
+[dir="rtl"] body.mpcrbm-admin .mpcrbm-faq-master-toggle input:checked + .mpcrbm-faq-master-toggle-slider::before {
+	transform: translateX(-18px);
+}
+
+/* ── Floating step navigator (bottom bar with Back/Next + the step dots) ──
+   Inset from the left to clear the fixed sidebar there in LTR; on RTL the
+   sidebar sits on the right instead, so the inset has to move with it or
+   the bar either overlaps the sidebar or leaves a stray gap on the wrong
+   side — this is the bar visible at the bottom of the Fiat Panda screenshot. */
+[dir="rtl"] .mpcrbm-stepnav {
+	left: 30px;
+	right: calc(var(--mpcrbm-shell-sidebar-width, 240px) + 30px);
+}
+
+[dir="rtl"] .mpcrbm-stepnav__bar-fill {
+	border-radius: 3px 0 0 3px;
+	margin-left: auto;
+}
+
+@media (max-width: 960px) {
+	[dir="rtl"] .mpcrbm-stepnav {
+		left: 14px;
+		right: 14px;
+	}
+
+	[dir="rtl"] .mpcrbm-shell-sidebar.mpcrbm-shell-fixed {
+		right: -100%;
+		left: auto;
+		transition: right .2s ease;
+	}
+
+	[dir="rtl"] body.mpcrbm-mobile-menu-open .mpcrbm-shell-sidebar.mpcrbm-shell-fixed {
+		right: 0;
+	}
+
+	[dir="rtl"] .mpcrbm-shell-topbar.mpcrbm-shell-fixed {
+		right: 0;
+		left: auto;
+	}
+
+	[dir="rtl"] body.mpcrbm-admin.post-php.post-type-mpcrbm_rent #wpcontent,
+	[dir="rtl"] body.mpcrbm-admin.post-new-php.post-type-mpcrbm_rent #wpcontent {
+		margin-right: 0;
+	}
+}
