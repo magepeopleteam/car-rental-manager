@@ -3,7 +3,7 @@
 	 * Plugin Name:       Car Rental Manager – Online Vehicle Booking System
 	 * Plugin URI:        https://wordpress.org/plugins/car-rental-manager
 	 * Description:       A complete car rental solution for WordPress by MagePeople. Manage bookings, vehicles, pricing, and availability with ease.
-	 * Version:           1.5.1
+	 * Version:           1.5.2
 	 * Author:            MagePeople Team
 	 * Author URI:        https://www.mage-people.com/
 	 * License:           GPL v2 or later
@@ -14,6 +14,17 @@
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
+
+	require_once __DIR__ . '/vendor/appneck/wordpress-sdk/appneck-wordpress-sdk/appneck-sdk.php';
+	appneck_sdk_load_latest();
+
+	$GLOBALS['my_plugin_sdk'] = \Appneck\Sdk\Sdk::bootstrap(
+		'pk_Ajs91mhdDxdcf0Oty5lTlnChNpipSoFT',  // your API key
+		'sk_1bwg37phLHBmiWDkW5I3C9LdISkAotuHnaWpuvQY1Mo2svmU', // your product secret
+		'https://appneck.com',                  // the Appneck server URL
+		__FILE__                                // so the SDK can hook activation/deactivation
+	);
+
 	if ( ! class_exists( 'MPCRBM_Plugin' ) ) {
 		class MPCRBM_Plugin {
 			public function __construct() {
@@ -34,7 +45,7 @@
 					define( 'MPCRBM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 				}
 				if ( ! defined( 'MPCRBM_PLUGIN_VERSION' ) ) {
-					define( 'MPCRBM_PLUGIN_VERSION', '1.5.1' );
+					define( 'MPCRBM_PLUGIN_VERSION', '1.5.2' );
 				}
                 if (!defined('MPCRBM_PRO_PLUGIN_NAME')) {
                     define('MPCRBM_PRO_PLUGIN_NAME', 'car-rental-manager-pro/MPCRBM_Plugin_Pro.php');

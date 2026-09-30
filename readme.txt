@@ -3,7 +3,7 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
@@ -128,6 +128,9 @@ Please report security bugs found in the source code of the Car Rental Manager f
 
 == Changelog ==
 
+= 1.5.2 =
+* New: added the Appneck SDK for opt-in telemetry and update tracking. It does not collect any data by default; it only starts after you confirm via the admin notice. See External Services in this readme.
+
 = 1.5.1 =
 **New Features**
 * Request a Better Price — a customer who feels the checkout price is too high can now ask for a custom price right on the checkout page, next to the order total, instead of abandoning the booking. Name, email, phone, pickup/return date and time are all taken automatically from the booking already in progress; the customer only has to type the price they'd like. Works on both WooCommerce checkout and the plugin's own Custom Payment checkout.
@@ -228,5 +231,11 @@ Major release: a rebuilt admin experience, a single Branch Management workspace,
 == External Services ==
 
 This plugin utilizes several external services and libraries to provide its functionality. Here's a detailed breakdown of what services are used and how:
+
+= Appneck =
+
+This Plugin uses [Appneck](https://appneck.com) SDK to collect some telemetry data upon the user's confirmation to troubleshoot problems faster & make product improvements.
+Appneck SDK **does not gather any data by default.** The SDK only starts gathering basic telemetry data **when a user allows it via the admin notice**. We collect the data to ensure a great user experience for all our users. Integrating Appneck SDK **DOES NOT IMMEDIATELY** start gathering data, **without confirmation from users in any case.**
+Learn more about how [Appneck collects and uses this data](https://appneck.com/privacy-policy/).
 
 Note: All external services are used only when necessary for the functionality requested by the user. No personal data is transmitted without user consent, and all data transmissions are done securely over HTTPS connections.
