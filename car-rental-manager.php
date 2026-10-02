@@ -14,6 +14,17 @@
 	if ( ! defined( 'ABSPATH' ) ) {
 		die;
 	} // Cannot access pages directly.
+
+	require_once __DIR__ . '/vendor/appneck/wordpress-sdk/appneck-wordpress-sdk/appneck-sdk.php';
+	appneck_sdk_load_latest();
+
+	$GLOBALS['my_plugin_sdk'] = \Appneck\Sdk\Sdk::bootstrap(
+		'pk_Ajs91mhdDxdcf0Oty5lTlnChNpipSoFT',  // your API key
+		'sk_1bwg37phLHBmiWDkW5I3C9LdISkAotuHnaWpuvQY1Mo2svmU', // your product secret
+		'https://appneck.com',                  // the Appneck server URL
+		__FILE__                                // so the SDK can hook activation/deactivation
+	);
+
 	if ( ! class_exists( 'MPCRBM_Plugin' ) ) {
 		class MPCRBM_Plugin {
 			public function __construct() {
