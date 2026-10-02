@@ -129,12 +129,11 @@ Please report security bugs found in the source code of the Car Rental Manager f
 == Changelog ==
 
 = 1.5.2 =
-<<<<<<< HEAD
 **Fixes**
 * Fixed the Add/Edit Car screen's admin layout (fixed sidebar, top bar, and the floating step navigator bar) breaking on RTL admin languages (e.g. Arabic) — the sidebar, top bar and content area kept the same left/right positioning as LTR instead of mirroring, so they overlapped and squeezed the form fields into unreadable, seemingly empty boxes. The shell's fixed chrome now mirrors correctly when the site's admin language is RTL.
-=======
+
 * New: added the Appneck SDK for opt-in telemetry and update tracking. It does not collect any data by default; it only starts after you confirm via the admin notice. See External Services in this readme.
->>>>>>> main
+
 
 = 1.5.1 =
 **New Features**
