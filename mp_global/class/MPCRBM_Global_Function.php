@@ -792,6 +792,82 @@
 			}
 
 			/**
+			 * Partial-payment (deposit) info for an order, from the "Advanced Partial
+			 * Payment or Deposit for WooCommerce" plugin. is_partial is false when
+			 * that plugin isn't active for this order (no deposit was taken), so
+			 * callers can keep showing the plain full total.
+			 *
+			 * due_now mirrors that plugin's own WooCommerce Orders list column
+			 * (APD_Order::render_deposit_column_content): for an offline gateway
+			 * (e.g. Cash on Delivery) the deposit itself is not auto-confirmed just
+			 * because the order reached "processing", so what's actually owed right
+			 * now is the deposit amount, not the full remaining balance, until an
+			 * admin confirms it (e.g. by setting the order to "Partially Paid").
+			 * due is the full remaining balance regardless of that confirmation —
+			 * what a PDF/invoice should keep showing as the customer's total debt.
+			 *
+			 * Everything is read live (no caching), so once the balance is paid off
+			 * and that plugin zeroes _apd_balance_due, every caller reflects it on
+			 * the next page load with nothing to invalidate.
+			 *
+			 * @param WC_Order|null $order
+			 * @return array{is_partial: bool, is_settled: bool, deposit_paid: bool, paid: float, due: float, due_now: float}
+			 */
+			public static function get_partial_payment_info( $order ): array {
+				$none = array(
+					'is_partial'   => false,
+					'is_settled'   => false,
+					'deposit_paid' => false,
+					'paid'         => 0.0,
+					'due'          => 0.0,
+					'due_now'      => 0.0,
+				);
+
+				if ( ! $order || ! is_callable( array( $order, 'get_meta' ) ) ) {
+					return $none;
+				}
+
+				// Prefer APD's own class when it's loaded — same source of truth its
+				// Orders list column and admin screens use, so this never drifts from
+				// how that plugin itself decides deposit_paid.
+				if ( class_exists( 'APD_Order' ) && is_callable( array( 'APD_Order', 'is_deposit_order' ) ) ) {
+					if ( ! APD_Order::is_deposit_order( $order ) ) {
+						return $none;
+					}
+					$details = APD_Order::get_deposit_details( $order );
+					if ( ! $details ) {
+						return $none;
+					}
+					$paid         = (float) $details['amount_paid'];
+					$balance_due  = (float) $details['balance_due'];
+					$deposit_paid = (bool) $details['deposit_paid'];
+					$deposit_amt  = (float) $details['deposit_amount'];
+				} elseif ( 'yes' === $order->get_meta( '_apd_is_deposit' ) ) {
+					// APD plugin not loaded right now (e.g. deactivated) but this order
+					// still carries its meta from when it was — fall back to reading it
+					// directly rather than losing the display entirely.
+					$paid         = (float) $order->get_meta( '_apd_amount_paid' );
+					$balance_due  = (float) $order->get_meta( '_apd_balance_due' );
+					$deposit_paid = 'yes' === $order->get_meta( '_apd_deposit_paid' );
+					$deposit_amt  = (float) $order->get_meta( '_apd_deposit_amount' );
+				} else {
+					return $none;
+				}
+
+				$is_settled = $balance_due <= 0.0;
+				$due_now    = $is_settled ? 0.0 : ( $deposit_paid ? $balance_due : min( $deposit_amt, $balance_due ) );
+
+				return array(
+					'is_partial'   => true,
+					'is_settled'   => $is_settled,
+					'deposit_paid' => $deposit_paid,
+					'paid'         => $paid,
+					'due'          => $balance_due,
+					'due_now'      => $due_now,
+				);
+			}
+
+			/**
 			 * WooCommerce-safe wc_get_order_statuses(). Empty array when WooCommerce is
 			 * inactive, so status dropdowns render empty rather than crashing the screen.
 			 */

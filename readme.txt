@@ -49,6 +49,8 @@ Let's look at the key features that make the plugin more acceptable in its categ
 
 * 📦 **Order & Admin Management** – Track and manage reservations with an intuitive back-end dashboard.
 
+* 💰 **Partial Payment / Deposit Compatibility (Pro)** – When used alongside the "Advanced Partial Payment or Deposit for WooCommerce" plugin, a deposit-only booking (order status "Partially Paid") shows the amount already paid and the balance still due — right in the Order List, the Order Details screen, and the booking confirmation PDF/email — instead of just the full price. The balance clears to zero on its own once the customer pays the rest.
+
 * 💬 **Request a Better Price** – Let checkout customers who feel the price is too high ask for a custom price instead of leaving. The request lands in **Quote Requests** in wp-admin, where you can reply with a personal one-time discount coupon emailed straight to them.
 
 * 🌍 **Multi-Language Ready** – Reach global customers with built-in translation and localization support.  
@@ -129,10 +131,11 @@ Please report security bugs found in the source code of the Car Rental Manager f
 == Changelog ==
 
 = 1.5.2 =
+
 **Fixes**
 * Fixed the Add/Edit Car screen's admin layout (fixed sidebar, top bar, and the floating step navigator bar) breaking on RTL admin languages (e.g. Arabic) — the sidebar, top bar and content area kept the same left/right positioning as LTR instead of mirroring, so they overlapped and squeezed the form fields into unreadable, seemingly empty boxes. The shell's fixed chrome now mirrors correctly when the site's admin language is RTL.
-
 * New: added the Appneck SDK for opt-in telemetry and update tracking. It does not collect any data by default; it only starts after you confirm via the admin notice. See External Services in this readme.
+* New (Pro): compatibility with the "Advanced Partial Payment or Deposit for WooCommerce" plugin. A deposit-only booking's Amount Paid and Balance Due now appear in the Order List, the Order Details screen, and the booking confirmation PDF/email, instead of just the full price.
 
 
 = 1.5.1 =
