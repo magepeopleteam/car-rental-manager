@@ -3,7 +3,7 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.5.2
+Stable tag: 1.5.4
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
@@ -130,13 +130,18 @@ Please report security bugs found in the source code of the Car Rental Manager f
 
 == Changelog ==
 
-= 1.5.2 =
+= 1.5.4 =
+**Fixes**
+* Fixed (Pro) the tracked security deposit balance not staying in sync after a regular Full/Partial refund from the Order List — only a refund specifically typed as a "Security Deposit" refund updated it, so a regular refund that paid back the whole order (deposit included) left the deposit balance showing as if it were still fully available. A damage charge logged afterward would then appear to be "covered by the deposit" and show nothing owed, when the deposit money had in fact already been returned to the customer and the cost was being silently absorbed. The tracked balance is now kept from ever exceeding what WooCommerce still has left to refund, regardless of which refund type was used.
+* Fixed (Pro) the Analytics Dashboard counting cancelled, refunded and partially-refunded orders at their full original amount. A cancelled or refunded booking's record isn't removed, only marked as such, so Total Bookings kept including it forever; a refund (full or partial) was also never subtracted from Total Revenue, the revenue chart or Average Order Value, even for orders refunded down to nothing. Cancelled/refunded/failed bookings are no longer counted, and every revenue figure now reflects the order's total minus whatever has actually been refunded from it.
 
+= 1.5.2 =
 **Fixes**
 * Fixed the Add/Edit Car screen's admin layout (fixed sidebar, top bar, and the floating step navigator bar) breaking on RTL admin languages (e.g. Arabic) — the sidebar, top bar and content area kept the same left/right positioning as LTR instead of mirroring, so they overlapped and squeezed the form fields into unreadable, seemingly empty boxes. The shell's fixed chrome now mirrors correctly when the site's admin language is RTL.
 * New: added the Appneck SDK for opt-in telemetry and update tracking. It does not collect any data by default; it only starts after you confirm via the admin notice. See External Services in this readme.
 * New (Pro): compatibility with the "Advanced Partial Payment or Deposit for WooCommerce" plugin. A deposit-only booking's Amount Paid and Balance Due now appear in the Order List, the Order Details screen, and the booking confirmation PDF/email, instead of just the full price.
-
+* Fixed the pickup "Buffer Time" (the minimum gap enforced between the current time and the earliest selectable pickup time) having no setting on the Global Settings screen, so a site with an existing buffer value had no way to shorten or remove it to allow same-time/immediate bookings. The Buffer Time field is now back on the Settings tab (minutes; 0 or blank allows immediate booking).
+* Fixed a duplicate booking record being created every time a customer's browser (re)loaded the order-received "Thank You" page — a refresh, a revisit via the back button, or a second tab all counted as a new load with nothing checking whether that order had already been recorded. Each extra load added another identical booking entry for the same order, which showed up as the same booking printed multiple times over on the PDF booking-confirmation ticket (Pro). An order is now recorded once, on its first load, regardless of how many times the page is revisited afterward.
 
 = 1.5.1 =
 **New Features**
@@ -149,9 +154,6 @@ Please report security bugs found in the source code of the Car Rental Manager f
 * Fixed the car-details page's pickup-date field defaulting to today even when the car is already fully booked today — it looked like a normal, selectable date in the calendar with no visual difference from an available one, while a separate notice below contradicted it by saying the day was booked. The default pickup (and return) date now skips forward to the first day that's actually available.
 * Fixed that same "already booked" notice staying stuck on even after the date above it correctly advanced to an available day — it was always checking today's availability specifically instead of the date actually shown, so it could contradict a perfectly bookable default date.
 * Fixed "Join Waitlist" (see above) marking a booked date BEFORE today as clickable in the calendar, letting a customer request a waitlist notification for a date that has already passed. Only today and future booked dates open the Join Waitlist form now; a past date is disabled with no special treatment, same as before this feature existed.
-* Fixed the pickup "Buffer Time" (the minimum gap enforced between the current time and the earliest selectable pickup time) having no setting on the Global Settings screen, so a site with an existing buffer value had no way to shorten or remove it to allow same-time/immediate bookings. The Buffer Time field is now back on the Settings tab (minutes; 0 or blank allows immediate booking).
-* Fixed a duplicate booking record being created every time a customer's browser (re)loaded the order-received "Thank You" page — a refresh, a revisit via the back button, or a second tab all counted as a new load with nothing checking whether that order had already been recorded. Each extra load added another identical booking entry for the same order, which showed up as the same booking printed multiple times over on the PDF booking-confirmation ticket (Pro). An order is now recorded once, on its first load, regardless of how many times the page is revisited afterward.
-* Fixed (Pro) the tracked security deposit balance not staying in sync after a regular Full/Partial refund from the Order List — only a refund specifically typed as a "Security Deposit" refund updated it, so a regular refund that paid back the whole order (deposit included) left the deposit balance showing as if it were still fully available. A damage charge logged afterward would then appear to be "covered by the deposit" and show nothing owed, when the deposit money had in fact already been returned to the customer and the cost was being silently absorbed. The tracked balance is now kept from ever exceeding what WooCommerce still has left to refund, regardless of which refund type was used.
 
 **Improvements**
 * "Make Year" on the Add/Edit Car screen is no longer a mandatory field — vehicles can now be saved/published without selecting a year.
