@@ -1143,7 +1143,25 @@
                 }
                 
                 $total_price = $calculated_price + $transfer_fee;
-                
+
+                // Lets Pro add-ons (Early Bird discounts, via MPCRBM_Enhanced_Pricing_Pro)
+                // adjust the final price before it's returned. That filter has been
+                // registered since Early Bird shipped, but nothing ever called
+                // apply_filters() for it, so the discount it computes was never
+                // actually subtracted from a real booking's price.
+                //
+                // $start_date_time is NOT reliably a real date here — both real callers
+                // (MPCRBM_Woocommerce::cart_item_data() and ::mpcrbm_get_cart_total_price())
+                // pass it straight from the "mpcrbm_date" POST field, which only holds the
+                // pickup TIME fragment (e.g. "12.3"), not a date. Early Bird needs an actual
+                // calendar date to measure "days in advance" against, so derive one from
+                // $return_date_time (always a real date here) minus the day count already
+                // computed above, rather than trust $start_date_time's content.
+                $pickup_date_for_filter = $return_date_time
+                    ? gmdate( 'Y-m-d', strtotime( $return_date_time ) - ( $days * DAY_IN_SECONDS ) )
+                    : $start_date_time;
+                $total_price = apply_filters( 'mpcrbm_calculate_price', $total_price, $post_id, $pickup_date_for_filter, array() );
+
                 return round( $total_price, 2 );
             }
 
