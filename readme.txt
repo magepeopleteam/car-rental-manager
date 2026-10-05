@@ -3,7 +3,7 @@ Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
-Stable tag: 1.5.2
+Stable tag: 1.5.3
 Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
@@ -129,6 +129,9 @@ Yes you can offer extra services along with the car
 Please report security bugs found in the source code of the Car Rental Manager for WordPress plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/b1431560-8325-44d1-9a15-6f0ccfb485d4). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
 
 == Changelog ==
+
+= 1.5.3 =
+* New: Updated the bundled Appneck SDK to the latest version.
 
 = 1.5.2 =
 
