@@ -136,6 +136,10 @@ Please report security bugs found in the source code of the Car Rental Manager f
 * Fixed (Pro) the Analytics Dashboard counting cancelled, refunded and partially-refunded orders at their full original amount. A cancelled or refunded booking's record isn't removed, only marked as such, so Total Bookings kept including it forever; a refund (full or partial) was also never subtracted from Total Revenue, the revenue chart or Average Order Value, even for orders refunded down to nothing. Cancelled/refunded/failed bookings are no longer counted, and every revenue figure now reflects the order's total minus whatever has actually been refunded from it.
 * Fixed (Pro) the Early Bird discount never actually being applied to a real booking's price. The class that calculates it was never loaded by the plugin, and the price-calculation filter it relies on was never fired, so a car with Early Bird configured and enabled showed the feature as active but the discount was silently never subtracted at checkout. Also fixed, now that it actually runs: when a booking qualified for more than one discount tier, the tier with the largest days-in-advance requirement was applied regardless of its discount size, instead of the tier worth the most to the customer as advertised ("the system will automatically apply the highest discount value"); and a discount percentage or fixed amount entered larger than the booking itself could produce a negative price, with nothing capping it.
 
+= 1.5.3 =
+* New: Updated the bundled Appneck SDK to the latest version.
+
+
 = 1.5.2 =
 **Fixes**
 * Fixed the Add/Edit Car screen's admin layout (fixed sidebar, top bar, and the floating step navigator bar) breaking on RTL admin languages (e.g. Arabic) — the sidebar, top bar and content area kept the same left/right positioning as LTR instead of mirroring, so they overlapped and squeezed the form fields into unreadable, seemingly empty boxes. The shell's fixed chrome now mirrors correctly when the site's admin language is RTL.
