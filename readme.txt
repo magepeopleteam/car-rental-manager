@@ -1,5 +1,5 @@
 ===  Car Rental Manager – Online Vehicle Booking System ===
-Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10
+Contributors: magepeopleteam, hamidxazad, aamahin, sjrubel10, raselsha
 Author URI : https://mage-people.com
 Tags: Car Rental, Ride Booking, Cab Booking, Car
 Requires at least: 5.6
