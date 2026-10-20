@@ -791,11 +791,35 @@
 
                 $order_id  = (int) get_post_meta( $booking_id, 'mpcrbm_order_id', true );
                 $order_obj = $order_id ? MPCRBM_Global_Function::safe_wc_order( $order_id ) : null;
-                if ( $order_obj && (int) $order_obj->get_customer_id() !== get_current_user_id() ) {
-                    wp_send_json_error( [ 'message' => __( 'Access denied.', 'car-rental-manager' ) ] );
+                // Fail closed. Someone else's booking gets the same reply as a missing
+                // one, so the ids cannot be probed either.
+                if ( ! $this->mpcrbm_mb_user_owns_booking( $booking_id, $order_obj ) ) {
+                    wp_send_json_error( [ 'message' => __( 'Booking not found.', 'car-rental-manager' ) ] );
                 }
 
                 wp_send_json_success( [ 'html' => $this->mpcrbm_mb_render_detail( $booking_id, $order_obj ) ] );
+            }
+
+            /**
+             * Whether the logged-in user owns this booking.
+             *
+             * With a WooCommerce order, the order's customer must be the current user.
+             * Without one (an Offline Checkout booking stores mpcrbm_order_id 0, or the
+             * order was deleted), the booking's own mpcrbm_user_id must be the current
+             * user; an empty owner (a guest booking) belongs to nobody here.
+             *
+             * @param int           $booking_id mpcrbm_booking post id.
+             * @param WC_Order|null $order_obj  The booking's order, if it still exists.
+             */
+            private function mpcrbm_mb_user_owns_booking( int $booking_id, $order_obj ): bool {
+                $user_id = get_current_user_id();
+                if ( ! $user_id ) {
+                    return false;
+                }
+                if ( $order_obj ) {
+                    return (int) $order_obj->get_customer_id() === $user_id;
+                }
+                return (int) get_post_meta( $booking_id, 'mpcrbm_user_id', true ) === $user_id;
             }
 
             private function mpcrbm_mb_render_card( $booking ) {
