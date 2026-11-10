@@ -221,7 +221,11 @@
 			 * Normalise the add-to-cart request into the meta shape the booking record
 			 * uses, so step 4 only has to add customer details and save.
 			 */
-			private function build_draft( $car_id, $total, array $post, array $breakdown = array() ): array {
+			// public static: the admin "Add Booking" screen (MPCRBM_Admin_Booking) builds its
+			// booking record through this same method so the deposit / one-way / delivery
+			// rules live in exactly one place. It never used $this, so the existing
+			// $this->build_draft() call keeps working unchanged.
+			public static function build_draft( $car_id, $total, array $post, array $breakdown = array() ): array {
 				$get = static function ( $key ) use ( $post ) {
 					return isset( $post[ $key ] ) ? sanitize_text_field( wp_unslash( $post[ $key ] ) ) : '';
 				};
