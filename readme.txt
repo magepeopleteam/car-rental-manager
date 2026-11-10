@@ -130,6 +130,10 @@ Please report security bugs found in the source code of the Car Rental Manager f
 
 == Changelog ==
 
+= 1.5.6 =
+**Fixes**
+* Fixed (Pro) the booking confirmation PDF (and the copy attached to the booking email) showing the wrong Paid and Due amounts for an order that took a deposit through Advanced Partial Payment or Deposit for WooCommerce. With an offline method such as Cash on Delivery, that plugin keeps "amount paid" at 0 until the deposit is confirmed, so a $20 booking with a $10 deposit read "Paid $0.00 / Due $20.00" on the PDF while the Booking List correctly showed Paid 10.00 / Due 10.00. The PDF now follows the same rule as the Booking List — once the order reaches an active status the deposit counts as received and only the rest stays due. The same wrong figures in the Order List's View popup (Amount Paid / Balance Due) are fixed too.
+
 = 1.5.4 =
 **Fixes**
 * Fixed (Pro) the tracked security deposit balance not staying in sync after a regular Full/Partial refund from the Order List — only a refund specifically typed as a "Security Deposit" refund updated it, so a regular refund that paid back the whole order (deposit included) left the deposit balance showing as if it were still fully available. A damage charge logged afterward would then appear to be "covered by the deposit" and show nothing owed, when the deposit money had in fact already been returned to the customer and the cost was being silently absorbed. The tracked balance is now kept from ever exceeding what WooCommerce still has left to refund, regardless of which refund type was used.
