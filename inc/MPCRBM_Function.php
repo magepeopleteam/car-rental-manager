@@ -55,15 +55,47 @@
 			}
 
 			public static function details_template_path(): string {
-				$tour_id       = get_the_id();
-				$template_name = MPCRBM_Global_Function::get_post_info( $tour_id, 'mpcrbm_theme_file', 'default.php' );
-				$file_name     = 'themes/' . $template_name;
-				$dir           = MPCRBM_PLUGIN_DIR . '/templates/' . $file_name;
-				if ( ! file_exists( $dir ) ) {
-					$file_name = 'themes/default.php';
+				return self::template_path( 'themes/' . self::details_template_name() );
+			}
+
+			/**
+			 * Single-car layout file to load from templates/themes/.
+			 *
+			 * The stored mpcrbm_theme_file value is accepted only when it exactly
+			 * matches a layout file shipped in the plugin's templates/themes/ folder.
+			 * Anything else (path segments such as "../", absolute paths, stream
+			 * wrappers, other extensions, missing files) falls back to default.php,
+			 * so post meta can never point include at a file outside that folder.
+			 *
+			 * @param int $post_id Car post ID. Defaults to the current post.
+			 */
+			public static function details_template_name( $post_id = 0 ): string {
+				$post_id       = $post_id ? $post_id : get_the_id();
+				$template_name = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_theme_file', 'default.php' );
+
+				return is_string( $template_name ) && in_array( $template_name, self::details_template_names(), true ) ? $template_name : 'default.php';
+			}
+
+			/**
+			 * Layout files shipped in templates/themes/ (index.php is a directory
+			 * guard, not a layout).
+			 *
+			 * @return string[]
+			 */
+			public static function details_template_names(): array {
+				static $names = null;
+				if ( null === $names ) {
+					$names = array();
+					$dir   = MPCRBM_PLUGIN_DIR . '/templates/themes';
+					$files = scandir( $dir );
+					foreach ( is_array( $files ) ? $files : array() as $file ) {
+						if ( 'index.php' !== $file && 'php' === pathinfo( $file, PATHINFO_EXTENSION ) && is_file( $dir . '/' . $file ) ) {
+							$names[] = $file;
+						}
+					}
 				}
 
-				return self::template_path( $file_name );
+				return $names;
 			}
 
             public static function get_taxonomy_name_by_slug( $slug, $taxonomy ) {
