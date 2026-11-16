@@ -48,7 +48,7 @@ if ( wp_is_block_theme() ) {
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$post_id                   = get_the_id();
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-		$template_name = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_theme_file', 'default.php' );
+		$template_name = MPCRBM_Function::details_template_name( $post_id );
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		$price_based    = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_price_based' );
 		include_once( MPCRBM_Function::details_template_path() );

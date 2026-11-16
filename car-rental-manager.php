@@ -33,6 +33,28 @@
 				add_filter( 'template_include', array( $this, 'change_page_template' ), 99 );
 				add_action( 'admin_init', array( $this, 'assign_template_to_page' ) );
                 add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
+				add_filter( 'map_meta_cap', array( $this, 'protect_plugin_meta' ), 10, 4 );
+			}
+
+			/**
+			 * Keep the plugin's own post meta out of WordPress' generic custom-field
+			 * writers: the Custom Fields box, wp_ajax_add_meta, XML-RPC custom_fields
+			 * and REST meta. All of them check these capabilities. Without this, any
+			 * user who can edit a post (a Contributor on their own draft) could store
+			 * raw values in mpcrbm_* keys that the plugin trusts when it renders a car.
+			 *
+			 * The plugin saves car settings with update_post_meta(), which does not
+			 * check capabilities, so its own handlers are unaffected. map_meta_cap is
+			 * used rather than is_protected_meta so translation plugins that copy only
+			 * non-protected meta keep copying car settings.
+			 */
+			public function protect_plugin_meta( $caps, $cap, $user_id, $args ) {
+				if ( in_array( $cap, array( 'add_post_meta', 'edit_post_meta', 'delete_post_meta' ), true )
+					&& isset( $args[1] ) && is_string( $args[1] ) && preg_match( '/^_?mpcrbm_/', $args[1] ) ) {
+					$caps[] = 'do_not_allow';
+				}
+
+				return $caps;
 			}
 
 			private function load_plugin(): void {
