@@ -383,8 +383,8 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 
 			$enabled     = isset( $_POST['mpcrbm_branch_enabled'] ) ? '1' : '0';
 			$old_current = get_post_meta( $post_id, 'mpcrbm_current_branch', true );
-			$home        = sanitize_text_field( wp_unslash( $_POST['mpcrbm_home_branch'] ?? '' ) );
-			$current     = sanitize_text_field( wp_unslash( $_POST['mpcrbm_current_branch'] ?? '' ) );
+			$home        = MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_home_branch'] ?? '' ) );
+			$current     = MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_current_branch'] ?? '' ) );
 
 			update_post_meta( $post_id, 'mpcrbm_branch_enabled', $enabled );
 			update_post_meta( $post_id, 'mpcrbm_home_branch', $home );
@@ -611,7 +611,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 		/** Public endpoint — frontend JS calls this to show branch info card. */
 		public function ajax_get_branch_info() {
 			// phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$slug = sanitize_text_field( wp_unslash( $_POST['branch_slug'] ?? '' ) );
+			$slug = MPCRBM_Function::sanitize_location( wp_unslash( $_POST['branch_slug'] ?? '' ) );
 			if ( ! $slug ) {
 				wp_send_json_error( [ 'message' => 'No branch slug provided' ] );
 			}
@@ -689,7 +689,7 @@ if ( ! class_exists( 'MPCRBM_Branch_Manager' ) ) {
 				wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
 			}
 
-			$slug        = sanitize_text_field( wp_unslash( $_POST['branch_slug'] ?? '' ) );
+			$slug        = MPCRBM_Function::sanitize_location( wp_unslash( $_POST['branch_slug'] ?? '' ) );
 			$cars        = self::get_cars_at_branch( $slug );
 			$all_branches = get_terms( [ 'taxonomy' => 'mpcrbm_locations', 'hide_empty' => false ] );
 

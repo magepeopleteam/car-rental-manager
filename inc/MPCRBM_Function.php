@@ -568,6 +568,31 @@
 				return 'flat';
 			}
 
+			/**
+			 * Sanitize a location / branch value (an mpcrbm_locations term slug).
+			 *
+			 * A branch whose name is not Latin (Arabic, Cyrillic, Bengali, Chinese ...)
+			 * gets a percent-encoded slug such as "%d9%81%d8%b1%d8%b9-...".
+			 * sanitize_text_field() deletes every %xx octet, so those slugs collapsed
+			 * to "-": a car saved with such a branch matched no search, and every
+			 * non-Latin branch looked like the same branch. This keeps the octets and
+			 * otherwise sanitizes exactly like sanitize_text_field(). Pass the value
+			 * already unslashed.
+			 *
+			 * @param mixed $value Raw value.
+			 *
+			 * @return string
+			 */
+			public static function sanitize_location( $value ) {
+				if ( ! is_scalar( $value ) ) {
+					return '';
+				}
+				$value = preg_replace( '/%([a-f0-9]{2})/i', 'mpcrbmpct$1mpcrbmpct', (string) $value );
+				$value = sanitize_text_field( $value );
+
+				return preg_replace( '/mpcrbmpct([a-f0-9]{2})mpcrbmpct/i', '%$1', $value );
+			}
+
 			public static function get_all_start_location( $post_id = '' ) {
 				$all_location = [];
 				if ( $post_id && $post_id > 0 ) {

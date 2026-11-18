@@ -910,10 +910,10 @@
                         <?php if ( $start_place ) : ?>
                         <div class="mpcrbm-mb-card-route">
                             <i class="mi mi-map-pin-alt"></i>
-                            <span><?php echo esc_html( $start_place ); ?></span>
+                            <span><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $start_place, 'mpcrbm_locations' ) ); ?></span>
                             <?php if ( $end_place && $end_place !== $start_place ) : ?>
                                 <i class="mi mi-arrow-right"></i>
-                                <span><?php echo esc_html( $end_place ); ?></span>
+                                <span><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $end_place, 'mpcrbm_locations' ) ); ?></span>
                             <?php endif; ?>
                         </div>
                         <?php endif; ?>
@@ -1009,13 +1009,13 @@
                                 <?php if ( $from ) : ?>
                                 <div class="mpcrbm-mb-detail-loc">
                                     <span class="mpcrbm-mb-detail-loc-label"><?php esc_html_e( 'From', 'car-rental-manager' ); ?></span>
-                                    <span><?php echo esc_html( $from ); ?></span>
+                                    <span><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $from, 'mpcrbm_locations' ) ); ?></span>
                                 </div>
                                 <?php endif; ?>
                                 <?php if ( $to && $to !== $from ) : ?>
                                 <div class="mpcrbm-mb-detail-loc">
                                     <span class="mpcrbm-mb-detail-loc-label"><?php esc_html_e( 'To', 'car-rental-manager' ); ?></span>
-                                    <span><?php echo esc_html( $to ); ?></span>
+                                    <span><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $to, 'mpcrbm_locations' ) ); ?></span>
                                 </div>
                                 <?php endif; ?>
                             </div>

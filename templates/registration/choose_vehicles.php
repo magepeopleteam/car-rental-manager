@@ -92,14 +92,14 @@ if ($mpcrbm_date && $mpcrbm_start_time !== "") {
 }
 
 // Sanitize location inputs
-$mpcrbm_start_place = isset($_POST["start_place"]) ? sanitize_text_field(wp_unslash($_POST["start_place"])) : "";
+$mpcrbm_start_place = isset($_POST["start_place"]) ? MPCRBM_Function::sanitize_location(wp_unslash($_POST["start_place"])) : "";
 $mpcrbm_start_place_coordinates = isset($_POST["start_place_coordinates"])
     ? sanitize_text_field(wp_unslash($_POST["start_place_coordinates"]))
     : '';
 $mpcrbm_end_place_coordinates = isset($_POST["end_place_coordinates"])
     ? sanitize_text_field(wp_unslash($_POST["end_place_coordinates"]))
     : '';
-$mpcrbm_end_place = isset($_POST["end_place"]) ? sanitize_text_field(wp_unslash($_POST["end_place"])) : "";
+$mpcrbm_end_place = isset($_POST["end_place"]) ? MPCRBM_Function::sanitize_location(wp_unslash($_POST["end_place"])) : "";
 
 // Sanitize and validate numeric inputs
 $mpcrbm_two_way = 2;

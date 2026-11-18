@@ -320,8 +320,8 @@
 				$rt = $period['rt'];
 
 				$qty         = isset( $in['quantity'] ) ? max( 1, absint( $in['quantity'] ) ) : 1;
-				$start_place = isset( $in['pickup_location'] ) ? sanitize_text_field( $in['pickup_location'] ) : '';
-				$end_place   = isset( $in['dropoff_location'] ) ? sanitize_text_field( $in['dropoff_location'] ) : '';
+				$start_place = isset( $in['pickup_location'] ) ? MPCRBM_Function::sanitize_location( $in['pickup_location'] ) : '';
+				$end_place   = isset( $in['dropoff_location'] ) ? MPCRBM_Function::sanitize_location( $in['dropoff_location'] ) : '';
 				if ( '' === $end_place ) {
 					$end_place = $start_place;
 				}

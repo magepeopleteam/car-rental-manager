@@ -84,8 +84,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $linked_id = MPCRBM_Global_Function::get_post_info( $product_id, 'link_mpcrbm_id', $product_id );
             $post_id = is_string( get_post_status( $linked_id ) ) ? $linked_id : $product_id;
             if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
-                $start_place      = isset( $_POST['mpcrbm_start_place'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) ) : '';
-                $end_place        = isset( $_POST['mpcrbm_end_place'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_end_place'] ) ) : '';
+                $start_place      = isset( $_POST['mpcrbm_start_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_start_place'] ) ) : '';
+                $end_place        = isset( $_POST['mpcrbm_end_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_end_place'] ) ) : '';
                 $return           = isset( $_POST['mpcrbm_taxi_return'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_taxi_return'] ) ) : 1;
                 $start_time       = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
                 $return_date      = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
@@ -621,12 +621,12 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                         <li>
                             <span class="fas fa-map-marker-alt"></span>
                             <h6 class="_mR_xs"><?php esc_html_e( 'Pickup Location', 'car-rental-manager' ); ?> :</h6>
-                            <span><?php echo esc_html( $start_location ); ?></span>
+                            <span><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $start_location, 'mpcrbm_locations' ) ); ?></span>
                         </li>
                         <li>
                             <span class="fas fa-map-marker-alt"></span>
                             <h6 class="_mR_xs"><?php esc_html_e( 'Return Location', 'car-rental-manager' ); ?> :</h6>
-                            <span><?php echo esc_html( $end_location ); ?></span>
+                            <span><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $end_location, 'mpcrbm_locations' ) ); ?></span>
                         </li>
                         <?php
                         $price_type = MPCRBM_Global_Function::get_post_info( $post_id, 'mpcrbm_price_based' );
@@ -914,8 +914,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                 return;
             }
-            $start_place = isset( $_POST['mpcrbm_start_place'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) ) : '';
-            $end_place       = isset( $_POST['mpcrbm_end_place'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_end_place'] ) ) : '';
+            $start_place = isset( $_POST['mpcrbm_start_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_start_place'] ) ) : '';
+            $end_place       = isset( $_POST['mpcrbm_end_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_end_place'] ) ) : '';
             $start_date_time = isset( $_POST['mpcrbm_start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_date'] ) ) : '';
             $start_time      = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
             $return_date     = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';

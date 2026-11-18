@@ -90,7 +90,7 @@
 				// browser, so an empty array here is a legitimate "clear the operation area" request
 				// and must still be saved, not skipped.
 				$terms_location = isset( $_POST['mpcrbm_terms_start_location'] )
-					? array_map( 'sanitize_text_field', wp_unslash( $_POST['mpcrbm_terms_start_location'] ) )
+					? array_map( array( 'MPCRBM_Function', 'sanitize_location' ), wp_unslash( $_POST['mpcrbm_terms_start_location'] ) )
 					: [];
 				$terms_price_infos = [];
 				foreach ( $terms_location as $index => $location ) {

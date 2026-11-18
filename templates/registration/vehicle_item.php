@@ -74,8 +74,8 @@ $mpcrbm_hidden_class = $mpcrbm_enable_view_search_result_page == '' ? '' : '';
 
 // Sanitize location data
 $mpcrbm_label = $label ?? MPCRBM_Function::get_name();
-$mpcrbm_start_place = $mpcrbm_start_place ?? isset($_POST['start_place']) ? sanitize_text_field(wp_unslash($_POST['start_place'])) : '';
-$mpcrbm_end_place = $mpcrbm_end_place ?? isset($_POST['end_place']) ? sanitize_text_field(wp_unslash($_POST['end_place'])) : '';
+$mpcrbm_start_place = $mpcrbm_start_place ?? isset($_POST['start_place']) ? MPCRBM_Function::sanitize_location(wp_unslash($_POST['start_place'])) : '';
+$mpcrbm_end_place = $mpcrbm_end_place ?? isset($_POST['end_place']) ? MPCRBM_Function::sanitize_location(wp_unslash($_POST['end_place'])) : '';
 $mpcrbm_two_way = $mpcrbm_two_way ?? 1;
 
 if ($post_id) {

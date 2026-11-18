@@ -200,10 +200,10 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
             }
             // Store search parameters in session
             if ( isset( $_POST['mpcrbm_start_place'] ) ) {
-                $_SESSION['mpcrbm_start_place'] =  sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_place'] ) );
+                $_SESSION['mpcrbm_start_place'] =  MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_start_place'] ) );
             }
             if ( isset( $_POST['mpcrbm_end_place'] ) ) {
-                $_SESSION['mpcrbm_end_place'] = sanitize_text_field( wp_unslash( $_POST['mpcrbm_end_place'] ) );
+                $_SESSION['mpcrbm_end_place'] = MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_end_place'] ) );
             }
             if ( isset( $_POST['mpcrbm_start_date'] ) ) {
                 $_SESSION['mpcrbm_start_date'] = sanitize_text_field( wp_unslash( $_POST['mpcrbm_start_date'] ) );
@@ -223,7 +223,7 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
                 wp_send_json_error( array( 'message' => esc_html__( 'Security check failed', 'car-rental-manager' ) ) );
             }
 
-            $pickup_location = isset( $_POST['pickup_location'] ) ? sanitize_text_field( wp_unslash( $_POST['pickup_location'] ) ) : '';
+            $pickup_location = isset( $_POST['pickup_location'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['pickup_location'] ) ) : '';
             $vehicle_ids = isset( $_POST['vehicle_ids'] ) ? array_map( 'intval', $_POST['vehicle_ids'] ) : array();
 
             if ( empty( $pickup_location ) ) {

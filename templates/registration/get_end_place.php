@@ -17,7 +17,7 @@
 	}
 
 	// Validate and sanitize inputs
-	$mpcrbm_start_place = isset($_POST['start_place']) ? sanitize_text_field(wp_unslash($_POST['start_place'])) : '';
+	$mpcrbm_start_place = isset($_POST['start_place']) ? MPCRBM_Function::sanitize_location(wp_unslash($_POST['start_place'])) : '';
 	$mpcrbm_price_based = isset($_POST['price_based']) ? sanitize_text_field(wp_unslash($_POST['price_based'])) : '';
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	$post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
