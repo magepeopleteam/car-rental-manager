@@ -288,8 +288,8 @@
 						foreach ( $posted_prices as $index => $price_data ) {
 							if ( ! empty( $price_data['pickup_location'] ) && ! empty( $price_data['dropoff_location'] ) ) {
 								$location_prices[] = array(
-									'pickup_location'  => sanitize_text_field( $price_data['pickup_location'] ),
-									'dropoff_location' => sanitize_text_field( $price_data['dropoff_location'] ),
+									'pickup_location'  => MPCRBM_Function::sanitize_location( wp_unslash( $price_data['pickup_location'] ) ),
+									'dropoff_location' => MPCRBM_Function::sanitize_location( wp_unslash( $price_data['dropoff_location'] ) ),
 									// Use wc_format_decimal or floatval, but ensure it's unslashed (handled above)
 									'transfer_fee'     => floatval( $price_data['transfer_fee'] ),
 								);

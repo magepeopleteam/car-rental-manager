@@ -413,7 +413,7 @@ if ( ! class_exists( 'MPCRBM_User_Branch_Manager' ) ) {
 			foreach ( $order->get_items() as $item ) {
 				$branch = $item->get_meta( '_mpcrbm_start_place' );
 				if ( $branch ) {
-					$order->update_meta_data( '_mpcrbm_order_branch', sanitize_text_field( $branch ) );
+					$order->update_meta_data( '_mpcrbm_order_branch', MPCRBM_Function::sanitize_location( $branch ) );
 					break;
 				}
 			}

@@ -277,8 +277,8 @@
 				$security_deposit_total = $security_deposit * $car_quantity;
 
 				$one_way_fee = 0;
-				$start_place = $get( 'mpcrbm_start_place' );
-				$end_place   = $get( 'mpcrbm_end_place' );
+				$start_place = MPCRBM_Function::sanitize_location( wp_unslash( $post['mpcrbm_start_place'] ?? '' ) );
+				$end_place   = MPCRBM_Function::sanitize_location( wp_unslash( $post['mpcrbm_end_place'] ?? '' ) );
 				if ( get_post_meta( $car_id, 'mpcrbm_car_one_way_enabled', true ) && $start_place !== $end_place ) {
 					$ow_value = (float) get_post_meta( $car_id, 'mpcrbm_car_one_way_fee', true );
 					$ow_type  = get_post_meta( $car_id, 'mpcrbm_car_one_way_fee_type', true );
@@ -450,10 +450,10 @@
 							<li><span><?php esc_html_e( 'Return', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( $draft['return_date_time'] ); ?></strong></li>
 						<?php endif; ?>
 						<?php if ( ! empty( $draft['mpcrbm_start_place'] ) ) : ?>
-							<li><span><?php esc_html_e( 'Pickup location', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( $draft['mpcrbm_start_place'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Pickup location', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $draft['mpcrbm_start_place'], 'mpcrbm_locations' ) ); ?></strong></li>
 						<?php endif; ?>
 						<?php if ( ! empty( $draft['mpcrbm_end_place'] ) ) : ?>
-							<li><span><?php esc_html_e( 'Drop-off location', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( $draft['mpcrbm_end_place'] ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Drop-off location', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( MPCRBM_Function::get_taxonomy_name_by_slug( $draft['mpcrbm_end_place'], 'mpcrbm_locations' ) ); ?></strong></li>
 						<?php endif; ?>
 						<li><span><?php esc_html_e( 'Vehicles', 'car-rental-manager' ); ?></span><strong><?php echo esc_html( (string) $draft['mpcrbm_car_quantity'] ); ?></strong></li>
 
