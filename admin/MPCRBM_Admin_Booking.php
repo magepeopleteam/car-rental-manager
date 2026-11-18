@@ -240,58 +240,11 @@
 			 * @return int[] { available, stock }
 			 */
 			private function availability( int $car_id, DateTime $start, DateTime $end ): array {
-				$stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
-				if ( $stock <= 0 ) {
-					return array( 'available' => 0, 'stock' => 0 );
-				}
-
-				$ids = get_posts( array(
-					'post_type'      => 'mpcrbm_booking',
-					'post_status'    => 'publish',
-					'posts_per_page' => -1,
-					'fields'         => 'ids',
-					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					'meta_query'     => array(
-						'relation' => 'AND',
-						array( 'key' => 'mpcrbm_id', 'value' => $car_id, 'compare' => '=', 'type' => 'NUMERIC' ),
-						array( 'key' => 'mpcrbm_date', 'value' => $end->format( 'Y-m-d H:i:s' ), 'compare' => '<', 'type' => 'DATETIME' ),
-						array( 'key' => 'return_date_time', 'value' => $start->format( 'Y-m-d H:i:s' ), 'compare' => '>', 'type' => 'DATETIME' ),
-						array( 'key' => 'mpcrbm_order_status', 'value' => array( 'cancelled', 'refunded', 'failed' ), 'compare' => 'NOT IN' ),
-					),
-				) );
-
-				$tz     = wp_timezone();
-				$events = array();
-				foreach ( $ids as $bid ) {
-					$bs = date_create( (string) get_post_meta( $bid, 'mpcrbm_date', true ), $tz );
-					$be = date_create( (string) get_post_meta( $bid, 'return_date_time', true ), $tz );
-					if ( ! $bs || ! $be ) {
-						continue;
-					}
-					$qty = max( 1, (int) get_post_meta( $bid, 'mpcrbm_car_quantity', true ) );
-					// Clip to the requested window.
-					$s = max( $bs->getTimestamp(), $start->getTimestamp() );
-					$e = min( $be->getTimestamp(), $end->getTimestamp() );
-					if ( $e <= $s ) {
-						continue;
-					}
-					$events[] = array( $s, $qty );
-					$events[] = array( $e, -$qty );
-				}
-				// Ends sort before starts at the same instant (back-to-back bookings don't clash).
-				usort( $events, static function ( $a, $b ) {
-					return $a[0] === $b[0] ? $a[1] <=> $b[1] : $a[0] <=> $b[0];
-				} );
-				$cur  = 0;
-				$peak = 0;
-				foreach ( $events as $ev ) {
-					$cur += $ev[1];
-					$peak = max( $peak, $cur );
-				}
-
+				// The calculation lives in MPCRBM_Function so the customer booking checks
+				// use the exact same rule.
 				return array(
-					'available' => max( 0, $stock - $peak ),
-					'stock'     => $stock,
+					'available' => MPCRBM_Function::get_available_stock_for_period( $car_id, $start, $end ),
+					'stock'     => max( 0, (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 ) ),
 				);
 			}
 

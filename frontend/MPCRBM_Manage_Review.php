@@ -35,6 +35,16 @@ if (!class_exists('MPCRBM_Manage_Review')) {
             $post_id = isset( $_POST['post_id'] ) ? intval( wp_unslash( $_POST['post_id'] ) ) : '';
             $rating  = isset( $_POST['rating'] ) ? intval( wp_unslash( $_POST['rating'] ) ) : '';
 
+            // Reviews belong to published cars only: this public endpoint must not add
+            // comments to private, draft or non-car posts. Ratings are 1-5 stars
+            // (0 / missing = no rating), so a crafted value can't skew a car's average.
+            if ( ! $post_id || get_post_type( $post_id ) !== MPCRBM_Function::get_cpt() || 'publish' !== get_post_status( $post_id ) ) {
+                wp_send_json_error( 'Invalid car.' );
+            }
+            if ( '' !== $rating && ( $rating < 0 || $rating > 5 ) ) {
+                wp_send_json_error( 'Invalid rating.' );
+            }
+
             // Record the author's user ID (0 for guests). This is what the
             // edit/delete ownership check relies on, so a logged-in author can
             // later manage their own review while guests remain non-owners.

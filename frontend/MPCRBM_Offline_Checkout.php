@@ -677,11 +677,12 @@
 				// Re-check availability at the moment of purchase, not just when the
 				// customer started checking out — someone else may have taken the last
 				// vehicle while this form sat open.
-				if ( class_exists( 'MPCRBM_Frontend' ) ) {
-					$available = MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $car_id, $draft['mpcrbm_date'] );
-					if ( 0 === $available ) {
-						wp_send_json_error( array( 'message' => __( 'Sorry, this vehicle has just been booked for your selected dates. Please choose another date or vehicle.', 'car-rental-manager' ) ) );
-					}
+				// Checks the whole rental period and the number of cars booked, not only
+				// whether the pickup day is completely full.
+				$period    = MPCRBM_Function::parse_booking_period( $draft['mpcrbm_date'] ?? '', $draft['return_date_time'] ?? '' );
+				$available = is_wp_error( $period ) ? 0 : MPCRBM_Function::get_available_car_stock( $car_id, $period['start'], $period['end'] );
+				if ( $available < max( 1, absint( $draft['mpcrbm_car_quantity'] ?? 1 ) ) ) {
+					wp_send_json_error( array( 'message' => __( 'Sorry, this vehicle has just been booked for your selected dates. Please choose another date or vehicle.', 'car-rental-manager' ) ) );
 				}
 
 				/**
@@ -698,7 +699,7 @@
 				if ( '' !== $coupon_code ) {
 					$deposit_amount = (float) ( $draft['mpcrbm_security_deposit_amount'] ?? 0 );
 					$rental_amount  = max( 0.0, (float) $draft['mpcrbm_tp'] - $deposit_amount );
-					$coupon_result  = apply_filters( 'mpcrbm_validate_coupon', null, $coupon_code, $email, $rental_amount );
+					$coupon_result  = apply_filters( 'mpcrbm_validate_coupon', null, $coupon_code, $email, $rental_amount, $car_id );
 
 					if ( ! is_array( $coupon_result ) || empty( $coupon_result['valid'] ) ) {
 						$message = ( is_array( $coupon_result ) && ! empty( $coupon_result['message'] ) )
