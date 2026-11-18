@@ -593,6 +593,44 @@
 				return preg_replace( '/mpcrbmpct([a-f0-9]{2})mpcrbmpct/i', '%$1', $value );
 			}
 
+			/**
+			 * Parse a requested car quantity (mpcrbm_car_quantity).
+			 *
+			 * The quantity multiplies the server-computed rental price, so it must be a
+			 * whole number of at least 1. sanitize_text_field() alone let a fractional
+			 * value such as "0.001" through, which cut the booking total to a fraction
+			 * of the price or to 0.00.
+			 *
+			 * A missing or empty value means one car: the single-car page sends no
+			 * quantity when the car has a stock of 1. Anything else that is not a
+			 * whole number of at least 1 (fractions, zero, negatives, exponents, text,
+			 * arrays) returns 0, so callers can reject the request or clamp it with
+			 * max( 1, ... ).
+			 *
+			 * @param mixed $value Raw value, slashed or not.
+			 *
+			 * @return int Requested quantity, or 0 when the value is invalid.
+			 */
+			public static function parse_car_quantity( $value ) {
+				if ( null === $value ) {
+					return 1;
+				}
+				if ( ! is_scalar( $value ) || is_bool( $value ) ) {
+					return 0;
+				}
+				$value = trim( (string) $value );
+				if ( '' === $value ) {
+					return 1;
+				}
+				if ( ! ctype_digit( $value ) ) {
+					return 0;
+				}
+				$quantity = (int) $value;
+				// (int) saturates at PHP_INT_MAX: the round trip rejects a value that overflowed.
+
+				return $quantity >= 1 && (string) $quantity === ltrim( $value, '0' ) ? $quantity : 0;
+			}
+
 			public static function get_all_start_location( $post_id = '' ) {
 				$all_location = [];
 				if ( $post_id && $post_id > 0 ) {

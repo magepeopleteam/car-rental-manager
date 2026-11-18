@@ -90,7 +90,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $start_time       = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
                 $return_date      = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
                 $return_time      = isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : '';
-                $quantity         = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
+                // Whole number of at least 1: it multiplies the price and the deposit below.
+                $quantity         = max( 1, MPCRBM_Function::parse_car_quantity( isset( $_POST['mpcrbm_car_quantity'] ) ? wp_unslash( $_POST['mpcrbm_car_quantity'] ) : null ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parse_car_quantity() returns an int.
                 $return_date_time = $return_date ? gmdate( "Y-m-d", strtotime( $return_date ) ) : "";
                 if ( $return_date && $return_time !== "" ) {
                     if ( $return_time !== "" ) {
@@ -267,7 +268,8 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 $fixed_time     = $values['mpcrbm_fixed_hours'] ?? 0;
                 $extra_service    = $values['mpcrbm_extra_service_info'] ?? [];
                 $price            = $values['mpcrbm_tp'] ?? '';
-                $car_quantity     = $values['mpcrbm_car_quantity'] ?? '';
+                // Store only a validated whole number on the order and the booking record.
+                $car_quantity     = max( 1, MPCRBM_Function::parse_car_quantity( $values['mpcrbm_car_quantity'] ?? null ) );
                 $security_deposit = isset( $values['mpcrbm_security_deposit'] ) ? floatval( $values['mpcrbm_security_deposit'] ) : 0;
                 $one_way_fee      = isset( $values['mpcrbm_branch_one_way_fee'] ) ? floatval( $values['mpcrbm_branch_one_way_fee'] ) : 0;
                 $item->add_meta_data( esc_html__( 'Pickup Location ', 'car-rental-manager' ), $start_location );
@@ -920,7 +922,10 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
             $start_time      = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
             $return_date     = isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '';
             $return_time     = isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : '';
-            $car_quantity     = isset( $_POST['mpcrbm_car_quantity'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
+            // Whole number of at least 1. A fractional quantity multiplied the rental
+            // price down to a fraction of itself, and every caller (WooCommerce cart,
+            // Custom Payment checkout, admin Add Booking) takes its total from here.
+            $car_quantity     = max( 1, MPCRBM_Function::parse_car_quantity( isset( $_POST['mpcrbm_car_quantity'] ) ? wp_unslash( $_POST['mpcrbm_car_quantity'] ) : null ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parse_car_quantity() returns an int.
             $return_date_time = $return_date ? gmdate( "Y-m-d", strtotime( $return_date ) ) : "";
             if ( $return_date && $return_time !== "" ) {
                 if ( $return_time !== "" ) {
@@ -1196,6 +1201,32 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 self::mpcrbm_send_cart_response( '0', $mpcrbm_buffer_level );
             }
 
+            // The quantity multiplies the rental price, so only a whole number of at least
+            // 1, and no more than the cars still free on that date, may book. Checked
+            // before the Booking Mode branch so the Custom Payment checkout gets the same
+            // guard as the WooCommerce cart.
+            $quantity = MPCRBM_Function::parse_car_quantity( isset( $_POST['mpcrbm_car_quantity'] ) ? wp_unslash( $_POST['mpcrbm_car_quantity'] ) : null ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parse_car_quantity() returns an int.
+            if ( $quantity < 1 ) {
+                self::mpcrbm_send_cart_response(
+                    wp_kses_post( self::mpcrbm_cart_error_html( __( 'Please choose a valid number of vehicles.', 'car-rental-manager' ) ) ),
+                    $mpcrbm_buffer_level
+                );
+            }
+            if ( $quantity > $already_booked ) {
+                self::mpcrbm_send_cart_response(
+                    wp_kses_post(
+                        self::mpcrbm_cart_error_html(
+                            sprintf(
+                                /* translators: %d: number of vehicles still available on the selected date */
+                                _n( 'Only %d vehicle is available for the selected date. Please choose a lower quantity.', 'Only %d vehicles are available for the selected date. Please choose a lower quantity.', $already_booked, 'car-rental-manager' ),
+                                $already_booked
+                            )
+                        )
+                    ),
+                    $mpcrbm_buffer_level
+                );
+            }
+
             // The explicit Booking Mode setting (MPCRBM_Booking_Mode) is the single
             // source of truth for which flow owns a booking, so a booking has one
             // deterministic path instead of two handlers racing for it.
@@ -1235,7 +1266,6 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
 
             // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce core hook
             $product_id = apply_filters('woocommerce_add_to_cart_product_id', $link_id);
-            $quantity = isset($_POST['mpcrbm_car_quantity']) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_car_quantity'] ) ) : 1;
 
             // Empty the cart BEFORE validating the new add: otherwise, when a customer goes
             // back and re-books with a changed selection, WooCommerce's own "already in your
