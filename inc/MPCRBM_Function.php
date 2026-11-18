@@ -631,6 +631,143 @@
 				return $quantity >= 1 && (string) $quantity === ltrim( $value, '0' ) ? $quantity : 0;
 			}
 
+			/**
+			 * Pickup and return of a booking request as a period.
+			 *
+			 * Both dates must parse, and the return date may not be before the pickup
+			 * date: a reversed or missing return was priced on the absolute gap (or on
+			 * the gap to "now"), stored as a booking that no availability query ever
+			 * matches, and so never held the car. A return at or before the pickup
+			 * clock time on the same day counts as one day, the same minimum the price
+			 * uses (get_days_from_start_end_date()).
+			 *
+			 * @param mixed $pickup           Pickup date/time, e.g. "2027-03-10 10:00".
+			 * @param mixed $return_date_time Return date/time, e.g. "2027-03-20 10:00".
+			 *
+			 * @return array{start: DateTimeImmutable, end: DateTimeImmutable}|WP_Error
+			 */
+			public static function parse_booking_period( $pickup, $return_date_time ) {
+				$pickup = is_scalar( $pickup ) ? trim( (string) $pickup ) : '';
+				$return = is_scalar( $return_date_time ) ? trim( (string) $return_date_time ) : '';
+				$tz     = wp_timezone();
+				// date_create( '' ) means "now", so empty values must be refused first.
+				$start = '' !== $pickup ? date_create_immutable( $pickup, $tz ) : false;
+				$end   = '' !== $return ? date_create_immutable( $return, $tz ) : false;
+				if ( ! $start || ! $end ) {
+					return new WP_Error( 'mpcrbm_dates', __( 'Please choose valid pickup and return dates.', 'car-rental-manager' ) );
+				}
+				if ( $end->format( 'Y-m-d' ) < $start->format( 'Y-m-d' ) ) {
+					return new WP_Error( 'mpcrbm_dates', __( 'The return date must be on or after the pickup date.', 'car-rental-manager' ) );
+				}
+				if ( $end <= $start ) {
+					$end = $start->modify( '+1 day' );
+				}
+
+				return array( 'start' => $start, 'end' => $end );
+			}
+
+			/**
+			 * The rental period of a booking form request (mpcrbm_date,
+			 * mpcrbm_return_date, mpcrbm_return_time), with the return time read the
+			 * way the cart reads it. Pass sanitized, unslashed values.
+			 *
+			 * @return array{start: DateTimeImmutable, end: DateTimeImmutable}|WP_Error
+			 */
+			public static function get_request_rental_period( $pickup, $return_date, $return_time ) {
+				$return_date = is_scalar( $return_date ) ? trim( (string) $return_date ) : '';
+				$return_time = is_scalar( $return_time ) ? trim( (string) $return_time ) : '';
+				$timestamp   = '' !== $return_date ? strtotime( $return_date ) : false;
+				if ( false === $timestamp ) {
+					return new WP_Error( 'mpcrbm_dates', __( 'Please choose valid pickup and return dates.', 'car-rental-manager' ) );
+				}
+				$return_date_time = gmdate( 'Y-m-d', $timestamp );
+				if ( '' !== $return_time ) {
+					$return_date_time .= ' ' . self::decimal_time_to_hi( $return_time );
+				}
+
+				return self::parse_booking_period( $pickup, $return_date_time );
+			}
+
+			/**
+			 * How many units of a car are free for the WHOLE period start -> end.
+			 *
+			 * Counts every booking that overlaps the period (cancelled / refunded /
+			 * failed ones don't count) and takes the PEAK number of vehicles out at the
+			 * same time, so two short bookings that never overlap each other don't
+			 * over-block. Shared by the admin Add Booking screen and the customer
+			 * booking checks.
+			 *
+			 * @return int
+			 */
+			public static function get_available_stock_for_period( $car_id, DateTimeInterface $start, DateTimeInterface $end ) {
+				$stock = (int) MPCRBM_Global_Function::get_post_info( $car_id, 'mpcrbm_car_stock', 1 );
+				if ( $stock <= 0 ) {
+					return 0;
+				}
+
+				$ids = get_posts( array(
+					'post_type'      => 'mpcrbm_booking',
+					'post_status'    => 'publish',
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					'meta_query'     => array(
+						'relation' => 'AND',
+						array( 'key' => 'mpcrbm_id', 'value' => $car_id, 'compare' => '=', 'type' => 'NUMERIC' ),
+						array( 'key' => 'mpcrbm_date', 'value' => $end->format( 'Y-m-d H:i:s' ), 'compare' => '<', 'type' => 'DATETIME' ),
+						array( 'key' => 'return_date_time', 'value' => $start->format( 'Y-m-d H:i:s' ), 'compare' => '>', 'type' => 'DATETIME' ),
+						array( 'key' => 'mpcrbm_order_status', 'value' => array( 'cancelled', 'refunded', 'failed' ), 'compare' => 'NOT IN' ),
+					),
+				) );
+
+				$tz     = wp_timezone();
+				$events = array();
+				foreach ( $ids as $bid ) {
+					$bs = date_create( (string) get_post_meta( $bid, 'mpcrbm_date', true ), $tz );
+					$be = date_create( (string) get_post_meta( $bid, 'return_date_time', true ), $tz );
+					if ( ! $bs || ! $be ) {
+						continue;
+					}
+					$qty = max( 1, (int) get_post_meta( $bid, 'mpcrbm_car_quantity', true ) );
+					// Clip to the requested window.
+					$s = max( $bs->getTimestamp(), $start->getTimestamp() );
+					$e = min( $be->getTimestamp(), $end->getTimestamp() );
+					if ( $e <= $s ) {
+						continue;
+					}
+					$events[] = array( $s, $qty );
+					$events[] = array( $e, -$qty );
+				}
+				// Ends sort before starts at the same instant (back-to-back bookings don't clash).
+				usort( $events, static function ( $a, $b ) {
+					return $a[0] === $b[0] ? $a[1] <=> $b[1] : $a[0] <=> $b[0];
+				} );
+				$cur  = 0;
+				$peak = 0;
+				foreach ( $events as $ev ) {
+					$cur += $ev[1];
+					$peak = max( $peak, $cur );
+				}
+
+				return max( 0, $stock - $peak );
+			}
+
+			/**
+			 * Cars still free for a customer booking: the whole-period count, and never
+			 * more than the pickup-day count the booking form already uses for its
+			 * "fully booked" message.
+			 *
+			 * @return int
+			 */
+			public static function get_available_car_stock( $car_id, DateTimeInterface $start, DateTimeInterface $end ) {
+				$available = self::get_available_stock_for_period( $car_id, $start, $end );
+				if ( class_exists( 'MPCRBM_Frontend' ) ) {
+					$available = min( $available, (int) MPCRBM_Frontend::mpcrbm_get_available_stock_by_date( $car_id, $start->format( 'Y-m-d H:i' ) ) );
+				}
+
+				return $available;
+			}
+
 			public static function get_all_start_location( $post_id = '' ) {
 				$all_location = [];
 				if ( $post_id && $post_id > 0 ) {

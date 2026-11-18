@@ -60,7 +60,7 @@
 				// coupon machinery at all) validate and price a coupon created from this
 				// screen, without either of those files needing a hard dependency on this
 				// class — same loose-coupling idiom as mpcrbm_is_customer_blocked above.
-				add_filter( 'mpcrbm_validate_coupon', array( $this, 'filter_validate_coupon' ), 10, 4 );
+				add_filter( 'mpcrbm_validate_coupon', array( $this, 'filter_validate_coupon' ), 10, 5 );
 				// The Custom Payment checkout form only reveals its coupon field once it
 				// knows the typed email has one waiting, and validates a typed code ahead
 				// of final submit via a "Check" button — both handled here, right next to
@@ -95,9 +95,12 @@
 			 * @param float  $amount The rental price the discount applies against
 			 *                       (never the security deposit — same rule as the
 			 *                       WooCommerce path, see ajax_give_discount()'s form).
+			 * @param int    $car_id The booked car. Product/category restrictions are
+			 *                       checked against its hidden WooCommerce product; a
+			 *                       restricted coupon is refused when it is unknown.
 			 * @return array{valid: bool, message: string, discount?: float, coupon_id?: int}
 			 */
-			public function filter_validate_coupon( $result, $code, $email, $amount ) {
+			public function filter_validate_coupon( $result, $code, $email, $amount, $car_id = 0 ) {
 				if ( ! class_exists( 'WC_Coupon' ) ) {
 					return array( 'valid' => false, 'message' => __( 'Coupons are not available right now.', 'car-rental-manager' ) );
 				}
@@ -134,9 +137,38 @@
 					return array( 'valid' => false, 'message' => __( 'This coupon isn’t active yet.', 'car-rental-manager' ) );
 				}
 
-				$amount = max( 0.0, (float) $amount );
+				// The rest of the rules WooCommerce itself enforces at its checkout, so a
+				// code meant for something else in the shop can't discount a rental here.
+				$per_user = $coupon->get_usage_limit_per_user();
+				if ( $per_user > 0 ) {
+					// get_used_by() lists one entry (email or user id) per use, as recorded
+					// by increase_usage_count() on both checkouts.
+					$user_id = get_current_user_id();
+					$used    = 0;
+					foreach ( (array) $coupon->get_used_by() as $used_by ) {
+						$used_by = strtolower( trim( (string) $used_by ) );
+						if ( ( '' !== $email && $used_by === $email ) || ( $user_id && $used_by === (string) $user_id ) ) {
+							$used++;
+						}
+					}
+					if ( $used >= $per_user ) {
+						return array( 'valid' => false, 'message' => __( 'This coupon has already been used.', 'car-rental-manager' ) );
+					}
+				}
+
+				$amount  = max( 0.0, (float) $amount );
+				$minimum = (float) $coupon->get_minimum_amount();
+				$maximum = (float) $coupon->get_maximum_amount();
+				if ( ( $minimum > 0 && $amount < $minimum ) || ( $maximum > 0 && $amount > $maximum ) ) {
+					return array( 'valid' => false, 'message' => __( 'This coupon isn’t valid for this booking amount.', 'car-rental-manager' ) );
+				}
+
+				if ( ! $this->coupon_applies_to_car( $coupon, absint( $car_id ) ) ) {
+					return array( 'valid' => false, 'message' => __( 'This coupon isn’t valid for this vehicle.', 'car-rental-manager' ) );
+				}
+
 				if ( $coupon->get_discount_type() === 'percent' ) {
-					$discount = round( $amount * ( (float) $coupon->get_amount() / 100 ), 2 );
+					$discount = min( $amount, round( $amount * ( (float) $coupon->get_amount() / 100 ), 2 ) );
 				} else {
 					// Never discount past zero, and never past the rental price itself
 					// (a fixed-amount coupon bigger than the booking shouldn't make the
@@ -150,6 +182,39 @@
 					'discount'  => $discount,
 					'coupon_id' => $coupon_id,
 				);
+			}
+
+			/**
+			 * Product and category restrictions, checked against the car's hidden
+			 * WooCommerce product (the product a WooCommerce-mode booking of this car is
+			 * sold as). A coupon with no such restriction applies to every car.
+			 */
+			private function coupon_applies_to_car( WC_Coupon $coupon, int $car_id ): bool {
+				$product_ids  = array_map( 'absint', $coupon->get_product_ids() );
+				$excluded_ids = array_map( 'absint', $coupon->get_excluded_product_ids() );
+				$category_ids = array_map( 'absint', $coupon->get_product_categories() );
+				$excluded_cat = array_map( 'absint', $coupon->get_excluded_product_categories() );
+				if ( ! $product_ids && ! $excluded_ids && ! $category_ids && ! $excluded_cat ) {
+					return true;
+				}
+
+				$product_id = $car_id ? absint( get_post_meta( $car_id, 'link_wc_product', true ) ) : 0;
+				if ( ! $product_id || 'product' !== get_post_type( $product_id ) ) {
+					return false;
+				}
+				$product_cats = function_exists( 'wc_get_product_cat_ids' ) ? array_map( 'absint', wc_get_product_cat_ids( $product_id ) ) : array();
+
+				if ( $product_ids && ! in_array( $product_id, $product_ids, true ) ) {
+					return false;
+				}
+				if ( $category_ids && ! array_intersect( $product_cats, $category_ids ) ) {
+					return false;
+				}
+				if ( in_array( $product_id, $excluded_ids, true ) || array_intersect( $product_cats, $excluded_cat ) ) {
+					return false;
+				}
+
+				return true;
 			}
 
 			/**
@@ -209,7 +274,7 @@
 
 				$deposit_amount = (float) ( $draft['mpcrbm_security_deposit_amount'] ?? 0 );
 				$rental_amount  = max( 0.0, (float) $draft['mpcrbm_tp'] - $deposit_amount );
-				$result         = $this->filter_validate_coupon( null, $code, $email, $rental_amount );
+				$result         = $this->filter_validate_coupon( null, $code, $email, $rental_amount, absint( $draft['mpcrbm_id'] ?? 0 ) );
 
 				if ( empty( $result['valid'] ) ) {
 					wp_send_json_error( array( 'message' => $result['message'] ) );

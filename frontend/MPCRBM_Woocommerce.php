@@ -73,18 +73,33 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
          * ("array_merge(): Argument #1 must be of type array, null given").
          */
         public function cart_item_data( $cart_item_data, $product_id ) {
+            $linked_id = MPCRBM_Global_Function::get_post_info( $product_id, 'link_mpcrbm_id', $product_id );
+            $post_id = is_string( get_post_status( $linked_id ) ) ? $linked_id : $product_id;
+            $is_car  = get_post_type( $post_id ) == MPCRBM_Function::get_cpt();
+            // A car's hidden product carries a placeholder price; only a verified booking
+            // request may put it in the cart. WooCommerce turns an exception thrown here
+            // into a cart notice and refuses the add (any entry point: the plugin's own
+            // AJAX action, ?add-to-cart, the Store API).
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
+                if ( $is_car ) {
+                    throw new Exception( esc_html__( 'Please book this vehicle from its booking form.', 'car-rental-manager' ) );
+                }
                 return $cart_item_data;
             }
             // Sanitize and verify the nonce
             $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
             if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
+                if ( $is_car ) {
+                    throw new Exception( esc_html__( 'Please book this vehicle from its booking form.', 'car-rental-manager' ) );
+                }
                 return $cart_item_data;
             }
-            $linked_id = MPCRBM_Global_Function::get_post_info( $product_id, 'link_mpcrbm_id', $product_id );
-            $post_id = is_string( get_post_status( $linked_id ) ) ? $linked_id : $product_id;
-            if ( get_post_type( $post_id ) == MPCRBM_Function::get_cpt() ) {
-                $start_place      = isset( $_POST['mpcrbm_start_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_start_place'] ) ) : '';
+            if ( $is_car ) {
+                $booking_check = self::validate_booking_request( $post_id );
+                if ( is_wp_error( $booking_check ) ) {
+                    throw new Exception( esc_html( $booking_check->get_error_message() ) );
+                }
+                $start_place     = isset( $_POST['mpcrbm_start_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_start_place'] ) ) : '';
                 $end_place        = isset( $_POST['mpcrbm_end_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['mpcrbm_end_place'] ) ) : '';
                 $return           = isset( $_POST['mpcrbm_taxi_return'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_taxi_return'] ) ) : 1;
                 $start_time       = isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '';
@@ -881,6 +896,50 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
         }
 
         /**
+         * Server-side check of the booking form request in $_POST before anything is
+         * priced or reserved: a whole-number quantity of at least 1, a real pickup and a
+         * return on or after it, and enough cars free for the WHOLE rental period.
+         * Callers verify mpcrbm_transportation_type_nonce first.
+         *
+         * @param int $car_id The car (mpcrbm_rent) being booked.
+         *
+         * @return true|WP_Error Error codes: mpcrbm_quantity, mpcrbm_dates,
+         *                       mpcrbm_unavailable (none left), mpcrbm_stock (too many).
+         */
+        public static function validate_booking_request( $car_id ) {
+            // phpcs:disable WordPress.Security.NonceVerification.Missing -- callers verify the booking form nonce.
+            $quantity = MPCRBM_Function::parse_car_quantity( isset( $_POST['mpcrbm_car_quantity'] ) ? wp_unslash( $_POST['mpcrbm_car_quantity'] ) : null ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parse_car_quantity() returns an int.
+            if ( $quantity < 1 ) {
+                return new WP_Error( 'mpcrbm_quantity', __( 'Please choose a valid number of vehicles.', 'car-rental-manager' ) );
+            }
+            $period = MPCRBM_Function::get_request_rental_period(
+                isset( $_POST['mpcrbm_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_date'] ) ) : '',
+                isset( $_POST['mpcrbm_return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_date'] ) ) : '',
+                isset( $_POST['mpcrbm_return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_return_time'] ) ) : ''
+            );
+            // phpcs:enable WordPress.Security.NonceVerification.Missing
+            if ( is_wp_error( $period ) ) {
+                return $period;
+            }
+            $available = MPCRBM_Function::get_available_car_stock( absint( $car_id ), $period['start'], $period['end'] );
+            if ( $available < 1 ) {
+                return new WP_Error( 'mpcrbm_unavailable', __( 'This vehicle is not available for the selected dates. Please choose another date or vehicle.', 'car-rental-manager' ) );
+            }
+            if ( $quantity > $available ) {
+                return new WP_Error(
+                    'mpcrbm_stock',
+                    sprintf(
+                        /* translators: %d: number of vehicles still available for the selected dates */
+                        _n( 'Only %d vehicle is available for the selected dates. Please choose a lower quantity.', 'Only %d vehicles are available for the selected dates. Please choose a lower quantity.', $available, 'car-rental-manager' ),
+                        $available
+                    )
+                );
+            }
+
+            return true;
+        }
+
+        /**
          * Server-side total for the booking described by the current $_POST.
          *
          * Static so the standalone Custom Payment checkout
@@ -1201,31 +1260,20 @@ if ( ! class_exists( 'MPCRBM_Woocommerce' ) ) {
                 self::mpcrbm_send_cart_response( '0', $mpcrbm_buffer_level );
             }
 
-            // The quantity multiplies the rental price, so only a whole number of at least
-            // 1, and no more than the cars still free on that date, may book. Checked
-            // before the Booking Mode branch so the Custom Payment checkout gets the same
-            // guard as the WooCommerce cart.
+            // Quantity, dates and stock for the whole rental period are checked before the
+            // Booking Mode branch, so the Custom Payment checkout gets the same guard as the
+            // WooCommerce cart. "0" is the frontend's agreed "not available" signal.
+            $booking_check = self::validate_booking_request( $post_id );
+            if ( is_wp_error( $booking_check ) ) {
+                if ( 'mpcrbm_unavailable' === $booking_check->get_error_code() ) {
+                    self::mpcrbm_send_cart_response( '0', $mpcrbm_buffer_level );
+                }
+                self::mpcrbm_send_cart_response(
+                    wp_kses_post( self::mpcrbm_cart_error_html( $booking_check->get_error_message() ) ),
+                    $mpcrbm_buffer_level
+                );
+            }
             $quantity = MPCRBM_Function::parse_car_quantity( isset( $_POST['mpcrbm_car_quantity'] ) ? wp_unslash( $_POST['mpcrbm_car_quantity'] ) : null ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- parse_car_quantity() returns an int.
-            if ( $quantity < 1 ) {
-                self::mpcrbm_send_cart_response(
-                    wp_kses_post( self::mpcrbm_cart_error_html( __( 'Please choose a valid number of vehicles.', 'car-rental-manager' ) ) ),
-                    $mpcrbm_buffer_level
-                );
-            }
-            if ( $quantity > $already_booked ) {
-                self::mpcrbm_send_cart_response(
-                    wp_kses_post(
-                        self::mpcrbm_cart_error_html(
-                            sprintf(
-                                /* translators: %d: number of vehicles still available on the selected date */
-                                _n( 'Only %d vehicle is available for the selected date. Please choose a lower quantity.', 'Only %d vehicles are available for the selected date. Please choose a lower quantity.', $already_booked, 'car-rental-manager' ),
-                                $already_booked
-                            )
-                        )
-                    ),
-                    $mpcrbm_buffer_level
-                );
-            }
 
             // The explicit Booking Mode setting (MPCRBM_Booking_Mode) is the single
             // source of truth for which flow owns a booking, so a booking has one
