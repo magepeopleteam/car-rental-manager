@@ -331,7 +331,13 @@ if ($post_id) {
                                 // original price.
                                 ?>
                                 <div class="mpcrbm_price-total">
-                                    <?php echo esc_attr($mpcrbm_minutes_to_day); ?>-day total
+                                    <?php
+                                    echo esc_html( sprintf(
+                                        /* translators: %s: number of rental days, e.g. "8-day total". */
+                                        _n( '%s-day total', '%s-day total', (int) $mpcrbm_minutes_to_day, 'car-rental-manager' ),
+                                        number_format_i18n( $mpcrbm_minutes_to_day )
+                                    ) );
+                                    ?>
                                 </div>
 
                                 <?php if ($mpcrbm_total_save > 0): ?>

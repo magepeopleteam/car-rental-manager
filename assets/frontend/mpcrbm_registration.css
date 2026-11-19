@@ -740,6 +740,30 @@
 	 transform: translateY(-2px);
 	 border-color: #d7dbe3;
  }
+ /* The pricing-rules / security-deposit popups (.mpcrbm_display_pricing_rules)
+    are taller than the card, so the overflow:hidden above (and the one on
+    .mpcrbm_list_details at <=1200px) cut them off. While one is open, stop
+    clipping, round the image's own outer corner instead, and lift the card
+    over the next one. Browsers without :has() keep the old clipping. The
+    .mpcrbm-bs grid card (mpcrbm-bs-results.css) is left as it is. */
+ .mpcrbm_booking_vehicle:not(.mpcrbm-bs *):has(.mpcrbm_price_hover_wrap:hover),
+ .mpcrbm_booking_vehicle:not(.mpcrbm-bs *):has(.mpcrbm_price_hover_wrap:hover) .mpcrbm_list_details {
+	 overflow: visible;
+ }
+ .mpcrbm_booking_vehicle:not(.mpcrbm-bs *):has(.mpcrbm_price_hover_wrap:hover) {
+	 position: relative;
+	 z-index: 5;
+ }
+ .mpcrbm_booking_vehicle:not(.mpcrbm-bs *):has(.mpcrbm_price_hover_wrap:hover) .mpcrbm-image-box {
+	 overflow: hidden;
+	 border-start-start-radius: 15px;
+ }
+ @media (max-width: 1200px) {
+	 /* The image spans the top of the card here, so both top corners. */
+	 .mpcrbm_booking_vehicle:not(.mpcrbm-bs *):has(.mpcrbm_price_hover_wrap:hover) .mpcrbm-image-box {
+		 border-start-end-radius: 15px;
+	 }
+ }
 
  .mpcrbm .mpcrbm-image-box img:not(.wp_editor img){
 	width: 100%;
@@ -1269,6 +1293,21 @@ h2#mpcrbm_title_change{color:white;}
 	 align-items: center;
 	 flex-direction: row;
 	 gap: 20px;
+ }
+ /* The price column is only 38% of the details column. With a discount, the
+    struck-through rate, the discounted rate and the total no longer fit side
+    by side in a narrow theme content area (a ~620px card leaves ~140px), and
+    .mpcrbm_booking_vehicle clips overflow, so the total was cut off at the
+    card edge (left in RTL, right in LTR). Let the total wrap under the rate,
+    still on the end side above Select Car, as it is when both fit (the auto
+    margin then resolves exactly like space-between). The .mpcrbm-bs grid
+    card stacks these itself and is left as it is. */
+ .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_price_holder{
+	 flex-wrap: wrap;
+	 row-gap: 8px;
+ }
+ .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_price_holder > .mpcrbm_booking_items{
+	 margin-inline-start: auto;
  }
 
  
