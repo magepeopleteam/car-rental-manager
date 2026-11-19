@@ -259,6 +259,48 @@
     transform: rotate(45deg);
 }
 
+/* Discount popup on the search-result card's price row. The .mpcrbm-bs grid
+   card (mpcrbm-bs-results.css) has its own layout and is left as it is.
+   RTL: the ℹ sits at the row's left end, next to the card's left edge, so
+   right:0 opened the popup off the card. Open it towards the right. */
+.rtl .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules {
+    right: auto;
+    left: 0;
+}
+.rtl .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules::before {
+    right: auto;
+    left: 18px;
+}
+/* <=768px the price row is centred under the specs, so the ℹ is mid-card in
+   either direction and a 280-320px popup anchored to one side of it ran off
+   the screen. Centre it on the ℹ instead. */
+@media (max-width: 768px) {
+    .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules,
+    .rtl .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules {
+        right: auto;
+        left: 50%;
+        margin-left: -160px;
+    }
+    .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules::before,
+    .rtl .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules::before {
+        right: auto;
+        left: 50%;
+        margin-left: -6px;
+    }
+}
+@media (max-width: 480px) {
+    .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules,
+    .rtl .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_discount_info .mpcrbm_display_pricing_rules {
+        margin-left: -140px; /* width is 280px here (Mobile support, below) */
+    }
+    /* RTL mirror of Mobile support's left:0: the deposit badge starts at the
+       right here, so left:0 ran the popup off the right of the screen. */
+    .rtl .mpcrbm_booking_vehicle:not(.mpcrbm-bs *) .mpcrbm_deposit_tooltip {
+        left: auto;
+        right: 0;
+    }
+}
+
 /* Mobile support */
 @media (max-width: 480px) {
     .mpcrbm_display_pricing_rules {
