@@ -39,6 +39,7 @@
 				// SecureHold WP deposit holds. Loaded before Frontend: the WooCommerce cart
 				// and the booking templates ask it which deposits go on the card.
 				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_SecureHold_Compat.php';
+				require_once MPCRBM_PLUGIN_DIR . '/inc/MPCRBM_WiPay_Compat.php';
 				require_once MPCRBM_PLUGIN_DIR . '/admin/MPCRBM_Admin.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Frontend.php';
 				require_once MPCRBM_PLUGIN_DIR . '/frontend/MPCRBM_Manage_Review.php';
