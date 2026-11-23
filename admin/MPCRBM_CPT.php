@@ -8,8 +8,12 @@
 	} // Cannot access pages directly.
 	if ( ! class_exists( 'MPCRBM_CPT' ) ) {
 		class MPCRBM_CPT {
+			// One-time gate for the catch-all "Other" Car Brand term seeded below.
+			const CAR_BRAND_OTHER_SEEDED_OPTION = 'mpcrbm_car_brand_other_seeded';
+
 			public function __construct() {
 				add_action( 'init', [ $this, 'cpt' ] );
+				add_action( 'admin_init', [ $this, 'seed_default_car_brand_term' ] );
 				add_filter( 'manage_mpcrbm_rent_posts_columns', array( $this, 'rent_columns' ) );
 				add_action( 'manage_mpcrbm_rent_posts_custom_column', array( $this, 'rent_custom_column' ), 10, 2 );
 				add_filter( 'manage_edit-mpcrbm_rent_sortable_columns', array( $this, 'rent_sortable_columns' ) );
@@ -207,6 +211,47 @@
 
 
             }
+
+			/**
+			 * The Add/Edit Car screen makes Car Brand mandatory but only lists terms
+			 * an admin (or the demo importer) created, so a vehicle whose manufacturer
+			 * is missing from that list (e.g. Suzuki) cannot be saved. Seed one
+			 * catch-all "Other" term for unlisted manufacturers.
+			 *
+			 * The option gate makes this a one-time bootstrap: once it has run, an
+			 * admin can rename or delete the term in Car Rental > Taxonomies without
+			 * it being recreated on the next admin request.
+			 *
+			 * Hooked to admin_init because this class only loads in wp-admin and the
+			 * taxonomy is registered on init, which runs before admin_init.
+			 */
+			public function seed_default_car_brand_term() {
+				if ( get_option( self::CAR_BRAND_OTHER_SEEDED_OPTION ) ) {
+					return;
+				}
+				if ( ! taxonomy_exists( 'mpcrbm_car_brand' ) ) {
+					return;
+				}
+
+				$label = apply_filters( 'mpcrbm_car_brand_other_label', __( 'Other', 'car-rental-manager' ) );
+				$label = trim( wp_strip_all_tags( (string) $label ) );
+				if ( '' === $label ) {
+					$label = __( 'Other', 'car-rental-manager' );
+				}
+
+				// Never duplicate a term an admin already created: term_exists() checks
+				// the sanitized slug first and then the exact name, so a pre-existing
+				// term does not trigger a term_exists error/warning either.
+				if ( ! term_exists( $label, 'mpcrbm_car_brand' ) ) {
+					$inserted = wp_insert_term( $label, 'mpcrbm_car_brand' );
+					// Losing an insert race must not retry (and warn) on every load.
+					if ( is_wp_error( $inserted ) && 'term_exists' !== $inserted->get_error_code() ) {
+						return;
+					}
+				}
+
+				update_option( self::CAR_BRAND_OTHER_SEEDED_OPTION, '1' );
+			}
 
 			public function cpt(): void {
 				$cpt    = MPCRBM_Function::get_cpt();
