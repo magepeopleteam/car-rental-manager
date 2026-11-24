@@ -261,6 +261,11 @@ jQuery(document).ready(function ($) {
     });*/
 
 
+    // One month on phones, two side by side on wider screens.
+    function mpcrbm_calendar_month_count() {
+        return window.innerWidth < 768 ? 1 : 2;
+    }
+
     function initFlatpickr() {
 
         let minDay = $('input[name="mpcrbm_minimum_booking_day"]').val();
@@ -270,7 +275,7 @@ jQuery(document).ready(function ($) {
         let commonOptions = {
             minDate: "today",
             dateFormat: "Y-m-d",
-            showMonths: window.innerWidth < 768 ? 1 : 2, // ✅ responsive
+            showMonths: mpcrbm_calendar_month_count(),
             locale: {
                 firstDayOfWeek: mpcrbm_start_date
             },
@@ -375,15 +380,24 @@ jQuery(document).ready(function ($) {
         }));
     }
     initFlatpickr();
-    window.addEventListener("resize", () => {
 
-        selectors.forEach(function(selector) {
-            if (selector._flatpickr) {
-                selector._flatpickr.destroy();
+    // Rebuild the calendars only when the number of months they show has to change
+    // (the window crossed the 768px breakpoint). Phones fire "resize" whenever the
+    // address bar collapses or expands while the page scrolls, and flatpickr() on an
+    // input destroys that input's current calendar first, so rebuilding on every
+    // resize closed the open calendar as soon as the customer scrolled to reach a date.
+    let mpcrbm_calendar_months = mpcrbm_calendar_month_count();
+    let mpcrbm_calendar_resize_timer = null;
+    window.addEventListener("resize", function() {
+        clearTimeout(mpcrbm_calendar_resize_timer);
+        mpcrbm_calendar_resize_timer = setTimeout(function() {
+            let months = mpcrbm_calendar_month_count();
+            if (months === mpcrbm_calendar_months) {
+                return;
             }
-        });
-
-        initFlatpickr();
+            mpcrbm_calendar_months = months;
+            initFlatpickr();
+        }, 150);
     });
 
     function mpcrbm_get_car_qty( startDate, car_id, day_wise_price ){

@@ -353,13 +353,17 @@
 				}, $dates );
 				// Register and enqueue script
 				// Version bumped to 1.0.1 with the minimum-one-day fix in
-				// mpcrbm_get_selected_days() — this file is served with a fixed version
-				// string, so returning visitors keep the cached copy until it changes.
+				// mpcrbm_get_selected_days(), and to 1.0.2 when the calendars stopped
+				// rebuilding (and closing) on every window resize — this file is served
+				// with a fixed version string, so returning visitors keep the cached copy
+				// until it changes. It builds its calendars with flatpickr(), so it
+				// declares the flatpickr script (MPCRBM_Dependencies::mpcrbm_enque_flatpickr())
+				// as a dependency and is always printed after it.
 				wp_register_script(
 					'date-picker',
 					plugin_dir_url( __FILE__ ) . '../assets/date-picker/date-picker.js', // Corrected path
-					[ 'jquery', 'jquery-ui-datepicker' ],
-					'1.0.1',
+					[ 'jquery', 'jquery-ui-datepicker', 'flatpickr.min' ],
+					'1.0.2',
 					true
 				);
 				wp_enqueue_script( 'date-picker' );
@@ -1066,7 +1070,13 @@
                     }
                 }
                 foreach ($result as $key => $values) {
-                    $result[$key] = array_values(array_unique($values));
+                    $values = array_values(array_unique($values));
+                    // These lists feed the search-result filter sidebar. Without a sort they
+                    // came out in whatever order the matching cars were loaded, so years
+                    // and seat counts looked random. Natural order keeps 2009 before 2015
+                    // and "4 Passengers" before "10 Passengers"; text values go A-Z.
+                    sort( $values, SORT_NATURAL | SORT_FLAG_CASE );
+                    $result[$key] = $values;
                 }
 
 

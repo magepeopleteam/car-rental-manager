@@ -447,6 +447,24 @@ jQuery(document).ready(function($) {
         return true;
     }
 
+    // Location counterpart of mpcrbm_validate_search_dates(): mark the empty
+    // pick-up/return location field and move focus to it rather than searching
+    // without the location the form asks for.
+    function mpcrbm_flag_missing_location(field, error_selector) {
+        let $wrap = $(field).closest('.input_select');
+        $wrap.addClass('mpcrbm-field-invalid');
+        $wrap.find(error_selector).show();
+        if (field && typeof field.focus === 'function') {
+            field.focus();
+        }
+    }
+
+    $(document).on('change', '#mpcrbm_manual_start_place, #mpcrbm_manual_end_place, #mpcrbm_map_start_place, #mpcrbm_map_end_place', function() {
+        if ($(this).val()) {
+            $(this).closest('.input_select').removeClass('mpcrbm-field-invalid').find('.mpcrbm_field_error').hide();
+        }
+    });
+
     // Handle get vehicle button
     $(document).on("click", "#mpcrbm_get_vehicle", function() {
         let parent = $(this).closest(".mpcrbm_transport_search_area");
@@ -506,6 +524,14 @@ jQuery(document).ready(function($) {
             }
 
         }
+        // "Booking Car Without Location" (get_details_new.php) hides the location
+        // fields, so there is nothing to pick or wait for: search without a location
+        // instead of posting the hidden select's "Pick-Up Location" placeholder text,
+        // which matched no car's operation area and emptied the results.
+        let location_optional = parent.find('#mpcrbm_booking_without_location').val() === 'yes';
+        let start_place_value = location_optional ? '' : start_place.value;
+        let end_place_value = location_optional ? '' : end_place.value;
+        let places_ready = location_optional || (start_place_value && end_place_value);
         let start_date = target_date.val();
         let return_date = return_target_date.val();
         let time_input_hidden = mpcrbm_time_input_is_hidden(parent);
@@ -535,15 +561,15 @@ jQuery(document).ready(function($) {
                     .find("input.formControl")
                     .trigger("click");
             }
-        } else if (!start_place.value) {
-            start_place.focus();
-        } else if (!end_place.value) {
-            end_place.focus();
+        } else if (!location_optional && !start_place_value) {
+            mpcrbm_flag_missing_location(start_place, '#mpcrbm_pickup_location_error');
+        } else if (!location_optional && !end_place_value) {
+            mpcrbm_flag_missing_location(end_place, '#mpcrbm_return_location_error');
         } else {
             mpcrbm_loader(loaderTarget);
             mpcrbm_content_refresh(parent);
             if (price_based !== "manual") {
-                mpcrbm_set_cookie_distance_duration(start_place.value, end_place.value);
+                mpcrbm_set_cookie_distance_duration(start_place_value, end_place_value);
             }
             //let price_based = parent.find('[name="mpcrbm_price_based"]').val();
             function getGeometryLocation(address, callback) {
@@ -578,10 +604,10 @@ jQuery(document).ready(function($) {
             if (price_based !== 'manual') {
 
                 $.when(
-                    getCoordinatesAsync(start_place.value),
-                    getCoordinatesAsync(end_place.value)
+                    getCoordinatesAsync(start_place_value),
+                    getCoordinatesAsync(end_place_value)
                 ).done(function (startCoordinates, endCoordinates) {
-                    if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
+                    if (places_ready && start_date && start_time && return_date && return_time) {
                         let actionValue;
                         if ( mpcrbm_enable_view_search_result_page == 'No' ) {
 
@@ -592,10 +618,10 @@ jQuery(document).ready(function($) {
                                 url: mpcrbm_ajax_url,
                                 data: {
                                     action: actionValue,
-                                    start_place: start_place.value,
+                                    start_place: start_place_value,
                                     start_place_coordinates: startCoordinates,
                                     end_place_coordinates: endCoordinates,
-                                    end_place: end_place.value,
+                                    end_place: end_place_value,
                                     start_date: start_date,
                                     start_time: start_time,
                                     price_based: price_based,
@@ -644,10 +670,10 @@ jQuery(document).ready(function($) {
                                 url: mpcrbm_ajax_url,
                                 data: {
                                     action: actionValue,
-                                    start_place: start_place.value,
+                                    start_place: start_place_value,
                                     start_place_coordinates: startCoordinates,
                                     end_place_coordinates: endCoordinates,
-                                    end_place: end_place.value,
+                                    end_place: end_place_value,
                                     start_date: start_date,
                                     start_time: start_time,
                                     price_based: price_based,
@@ -698,7 +724,7 @@ jQuery(document).ready(function($) {
                     }
                 });
             } else {
-                if (start_place.value && end_place.value && start_date && start_time && return_date && return_time) {
+                if (places_ready && start_date && start_time && return_date && return_time) {
 
                     let actionValue;
                     if ( mpcrbm_enable_view_search_result_page === 'No' ) {
@@ -709,8 +735,8 @@ jQuery(document).ready(function($) {
                             url: mpcrbm_ajax_url,
                             data: {
                                 action: actionValue,
-                                start_place: start_place.value,
-                                end_place: end_place.value,
+                                start_place: start_place_value,
+                                end_place: end_place_value,
                                 start_date: start_date,
                                 start_time: start_time,
                                 price_based: price_based,
@@ -767,8 +793,8 @@ jQuery(document).ready(function($) {
                             url: mpcrbm_ajax_url,
                             data: {
                                 action: actionValue,
-                                start_place: start_place.value,
-                                end_place: end_place.value,
+                                start_place: start_place_value,
+                                end_place: end_place_value,
                                 start_date: start_date,
                                 start_time: start_time,
                                 price_based: price_based,

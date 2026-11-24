@@ -276,7 +276,8 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                             $mpcrbm_all_locations = array_unique(array_merge($mpcrbm_all_start_locations, $mpcrbm_multi_location_locations));
                                             ?>
                                             <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
-                                                <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
+                                                <?php // value="": the placeholder is not a location (its text used to be searched as one). ?>
+                                                <option selected disabled value=""><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
                                                 <?php if (sizeof($mpcrbm_all_locations) > 0) { ?>
                                                     <?php foreach ($mpcrbm_all_locations as $mpcrbm_start_location) {
                                                         $mpcrbm_start_selected = ( $mpcrbm_pickup_location === $mpcrbm_start_location) ? 'selected' : '';
@@ -301,7 +302,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                     </span>
                                         <?php if ($mpcrbm_price_based == 'manual') { ?>
                                             <select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
-                                                <option selected disabled><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
+                                                <option selected disabled value=""><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
                                                 <?php if (sizeof($mpcrbm_all_locations) > 0) {
                                                     ?>
                                                     <?php foreach ( $mpcrbm_all_locations as $mpcrbm_start_location ) {

@@ -13,7 +13,12 @@ $mpcrbm_return_date = gmdate('Y-m-d', strtotime('+1 day'));
 $mpcrbm_price_based = '';
 $mpcrbm_start_time = "10";
 $mpcrbm_return_time = "10";
-$mpcrbm_start_place = $mpcrbm_get_start_location;
+// The first location in the search form's list (get_details_new.php), which is never
+// set when no location exists. "Booking Car Without Location" carries no place at all,
+// the same as the search and the car details page do in that mode.
+$mpcrbm_start_place = ( isset( $mpcrbm_with_out_location ) && 'yes' === $mpcrbm_with_out_location )
+    ? ''
+    : ( $mpcrbm_get_start_location ?? '' );
 $mpcrbm_end_place = $mpcrbm_start_place;
 //error_log( print_r( [ '$get_start_location' => $get_start_location ], true ) );
 

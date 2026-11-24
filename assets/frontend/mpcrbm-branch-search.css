@@ -545,4 +545,9 @@
     .flatpickr-calendar { width: 100% !important; }
     .flatpickr-rContainer { width: 100% !important; }
     .flatpickr-days, .dayContainer { width: 100% !important; min-width: 0 !important; max-width: none !important; }
+    /* The days must stretch with the full-width grid: flatpickr caps each day at
+       39px, which packed 9-10 days into a row under the 7 weekday headings and
+       put every date under the wrong weekday (this file loads on every page, so
+       it hit every car-rental calendar on a phone, not just the branch search). */
+    .flatpickr-day { max-width: none !important; }
 }

@@ -265,6 +265,12 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                     // the server-rendered defaults instead.
                     ?>
                     <input type="hidden" id="mpcrbm_time_input_hidden" name="mpcrbm_time_input_hidden" value="<?php echo esc_attr( $mpcrbm_time_input_hidden ? 'yes' : 'no' ); ?>" />
+                    <?php
+                    // Flag read by mpcrbm_registration.js (#mpcrbm_get_vehicle): with
+                    // "Booking Car Without Location" the location fields below are hidden, so
+                    // the search must neither wait for nor send a location.
+                    ?>
+                    <input type="hidden" id="mpcrbm_booking_without_location" name="mpcrbm_booking_without_location" value="<?php echo esc_attr( 'yes' === $mpcrbm_with_out_location ? 'yes' : 'no' ); ?>" />
 
 
                     <?php
@@ -298,7 +304,8 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         $mpcrbm_all_locations = array_unique(array_merge($mpcrbm_all_start_locations, $mpcrbm_multi_location_locations));
                                         ?>
                                         <select id="mpcrbm_manual_start_place" class="mpcrbm_manual_start_place formControl">
-                                            <option selected disabled><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
+                                            <?php // value="": the placeholder is not a location (its text used to be searched as one). ?>
+                                            <option selected disabled value=""><?php esc_html_e('Pick-Up Location', 'car-rental-manager'); ?></option>
                                             <?php if (sizeof($mpcrbm_all_locations) > 0) { ?>
                                                 <?php foreach ($mpcrbm_all_locations as $mpcrbm_key => $mpcrbm_start_location) {
                                                     if( $mpcrbm_key === 0 ){
@@ -319,6 +326,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <input type="text" id="mpcrbm_map_start_place" class="formControl" placeholder="<?php esc_html_e('Enter Pick-Up Location', 'car-rental-manager'); ?>" value="" />
                                     <?php } ?>
                                 </label>
+                                <span class="mpcrbm_field_error" id="mpcrbm_pickup_location_error" style="display: none"><?php esc_html_e( 'Please select a pick-up location', 'car-rental-manager' ); ?></span>
                             </div>
                             <div class="mpcrbm-vertical-divider" id="mpcrbm-vertical-divide-location" style="display: none"></div>
                             <div class="mpcrbm_location_checkbox input_select" id="mpcrbm_drop_off_location" style="display: none">
@@ -330,7 +338,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                     <?php
                                     if ($mpcrbm_price_based == 'manual') { ?>
                                         <select id="mpcrbm_manual_end_place" class="mpcrbm_map_end_place formControl">
-                                            <option selected disabled><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
+                                            <option selected disabled value=""><?php esc_html_e('Return Location', 'car-rental-manager'); ?></option>
                                             <?php if (sizeof($mpcrbm_all_locations) > 0) {
                                                 ?>
                                                 <?php foreach ( $mpcrbm_all_locations as $mpcrbm_start_location ) {
@@ -346,6 +354,7 @@ if (sizeof($mpcrbm_all_dates) > 0) {
                                         <input class="formControl textCapitalize" type="text" id="mpcrbm_map_end_place" placeholder="<?php esc_html_e(' Enter Return Location', 'car-rental-manager'); ?>" value="" />
                                     <?php } ?>
                                 </label>
+                                <span class="mpcrbm_field_error" id="mpcrbm_return_location_error" style="display: none"><?php esc_html_e( 'Please select a return location', 'car-rental-manager' ); ?></span>
                             </div>
                         </div>
 

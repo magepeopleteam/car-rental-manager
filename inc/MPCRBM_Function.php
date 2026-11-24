@@ -1438,6 +1438,14 @@
 
             public static function mpcrbm_check_operation_area_seach_form($post_id, $start_place, $end_place)
             {
+                // "Booking Car Without Location" hides every location field, so a search
+                // never has a pick-up place to match. A car's operation area or branch must
+                // not filter it out then; this used to empty the results of every car
+                // that still had a location saved.
+                if ( MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'booking_with_out_location' ) === 'yes' ) {
+                    return true;
+                }
+
                 // 1. Branch check: only when branch assignment is enabled for this car
                 $branch_enabled = get_post_meta($post_id, 'mpcrbm_branch_enabled', true);
                 if ($branch_enabled === '1') {
