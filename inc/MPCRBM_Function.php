@@ -594,6 +594,104 @@
 			}
 
 			/**
+			 * Escape text for HTML output while neutralising WordPress shortcode brackets.
+			 *
+			 * esc_html() leaves `[` and `]` intact, so user-supplied values printed inside
+			 * markup that may pass through `do_shortcode()` (such as `the_content` filters)
+			 * could otherwise be executed as shortcodes. Encoding the brackets after
+			 * esc_html() preserves their visible glyphs without double-encoding `&`.
+			 *
+			 * @param mixed $value Raw text.
+			 *
+			 * @return string
+			 */
+			public static function esc_html_no_shortcodes( $value ): string {
+				if ( ! is_scalar( $value ) ) {
+					return '';
+				}
+
+				return str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), esc_html( (string) $value ) );
+			}
+
+			/**
+			 * Escape text for an HTML attribute while neutralising WordPress shortcode brackets.
+			 *
+			 * @param mixed $value Raw attribute value.
+			 *
+			 * @return string
+			 */
+			public static function esc_attr_no_shortcodes( $value ): string {
+				if ( ! is_scalar( $value ) ) {
+					return '';
+				}
+
+				return str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), esc_attr( (string) $value ) );
+			}
+
+			/**
+			 * Neutralise WordPress shortcode syntax inside rendered HTML without corrupting
+			 * script/style blocks or empty array input suffixes such as `name="qty[]"`.
+			 *
+			 * @param string $html Rendered HTML fragment.
+			 *
+			 * @return string
+			 */
+			public static function neutralize_shortcodes_in_html( $html ): string {
+				if ( ! is_string( $html ) || '' === $html || false === strpos( $html, '[' ) ) {
+					return (string) $html;
+				}
+
+				if ( ! function_exists( 'wp_html_split' ) ) {
+					return preg_replace( '/\[(?!\])|(?<!\[)\]/', '', $html );
+				}
+
+				$parts      = wp_html_split( $html );
+				$in_raw_tag = '';
+
+				foreach ( $parts as $index => $part ) {
+					if ( 0 === $index % 2 ) {
+						// Text node outside HTML tags.
+						if ( '' === $in_raw_tag ) {
+							$parts[ $index ] = str_replace( array( '[', ']' ), array( '&#91;', '&#93;' ), $part );
+						}
+						continue;
+					}
+
+					// HTML tag / comment node.
+					if ( 0 === strpos( $part, '<!--' ) ) {
+						continue;
+					}
+
+					if ( preg_match( '/^<\s*\/(script|style)\b/i', $part, $close_match ) ) {
+						if ( strtolower( $close_match[1] ) === $in_raw_tag ) {
+							$in_raw_tag = '';
+						}
+						continue;
+					}
+
+					if ( preg_match( '/^<\s*(script|style)\b/i', $part, $open_match ) ) {
+						if ( ! preg_match( '/\/\s*>$/', $part ) ) {
+							$in_raw_tag = strtolower( $open_match[1] );
+						}
+						continue;
+					}
+
+					if ( '' === $in_raw_tag && false !== strpos( $part, '[' ) ) {
+						// Encode brackets in tag attributes while leaving empty `[]` suffixes intact.
+						$parts[ $index ] = preg_replace_callback(
+							'/\[(?!\])|(?<!\[)\]/',
+							static function ( $match ) {
+								return '[' === $match[0] ? '&#91;' : '&#93;';
+							},
+							$part
+						);
+					}
+				}
+
+				return implode( '', $parts );
+			}
+
+			/**
 			 * Parse a requested car quantity (mpcrbm_car_quantity).
 			 *
 			 * The quantity multiplies the server-computed rental price, so it must be a

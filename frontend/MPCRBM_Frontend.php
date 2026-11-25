@@ -8,11 +8,19 @@
 	} // Cannot access pages directly.
 	if (!class_exists('MPCRBM_Frontend')) {
 		class MPCRBM_Frontend {
+			/**
+			 * Shortcode attributes captured from [mpcrbm_booking] before do_shortcode() runs.
+			 *
+			 * @var array|null
+			 */
+			private $search_shortcode_atts = null;
+
 			public function __construct() {
 				$this->load_file();
 				add_filter('single_template', array($this, 'load_single_template'));
 
-                add_filter('the_content', array($this, 'mpcrbm_display_search_result'));
+                add_filter('the_content', array($this, 'mpcrbm_capture_search_shortcode_atts'), 10);
+                add_filter('the_content', array($this, 'mpcrbm_display_search_result'), 12);
 
                 add_action( 'wp_ajax_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
                 add_action( 'wp_ajax_nopriv_mpcrbm_get_total_count_price_selected_car', [ $this, 'mpcrbm_get_total_count_price_selected_car' ] );
@@ -83,9 +91,40 @@
                 return $atts;
             }
 
-            public function mpcrbm_display_search_result( $content ) {
+            /**
+             * Capture [mpcrbm_booking] shortcode attributes before do_shortcode() runs at
+             * priority 11, and strip the shortcode tag on the configured search result page
+             * so mpcrbm_display_search_result() can render after do_shortcode() at priority 12.
+             *
+             * @param string $content Post content.
+             * @return string
+             */
+            public function mpcrbm_capture_search_shortcode_atts( $content ) {
+                if ( doing_action( 'wp_head' ) ) {
+                    return $content;
+                }
 
-                $search_shortcode_code = self::mpcrbm_get_conyent_shortcode( $content );
+                $search_page_slug = MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_view_search_result_page' );
+
+                if ( ! empty( $search_page_slug ) && is_page( $search_page_slug ) ) {
+                    $this->search_shortcode_atts = self::mpcrbm_get_conyent_shortcode( $content );
+                    if ( has_shortcode( $content, 'mpcrbm_booking' ) ) {
+                        $pattern = get_shortcode_regex( array( 'mpcrbm_booking' ) );
+                        $content = preg_replace( '/' . $pattern . '/s', '', $content );
+                    }
+                }
+
+                return $content;
+            }
+
+            public function mpcrbm_display_search_result( $content ) {
+                if ( doing_action( 'wp_head' ) ) {
+                    return $content;
+                }
+
+                $search_shortcode_code = is_array( $this->search_shortcode_atts )
+                    ? $this->search_shortcode_atts
+                    : self::mpcrbm_get_conyent_shortcode( $content );
 
                 $search_page_slug = MPCRBM_Global_Function::get_settings('mpcrbm_general_settings', 'enable_view_search_result_page');
 
@@ -96,8 +135,8 @@
                     }
                     // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
                     $result_data = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
-                    $progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
-                    $search_date = isset($_SESSION['search_date']) ? $_SESSION['search_date'] : '';
+                    $progress_bar = isset($_SESSION['progress_bar']) ? sanitize_text_field( wp_unslash( $_SESSION['progress_bar'] ) ) : '';
+                    $search_date = isset($_SESSION['search_date']) && is_array( $_SESSION['search_date'] ) ? $_SESSION['search_date'] : '';
                     // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
                     if ( isset($_SESSION['custom_content'] ) ) {
@@ -106,6 +145,10 @@
                         unset($_SESSION['search_date']);
                     }
                     session_write_close();
+
+                    // Neutralise any shortcode syntax in session-derived HTML as defense-in-depth
+                    // in addition to running after core do_shortcode() (priority 12).
+                    $result_data = MPCRBM_Function::neutralize_shortcodes_in_html( $result_data );
 
                     /*$user_id = MPCRBM_Transport_Search::get_guest_unique_id();
                     $result_data = get_transient('wtbm_custom_content_' . $user_id);
@@ -139,7 +182,7 @@
                     $params = shortcode_atts( $search_defaults, $search_attribute );
                     ob_start();
                     do_action( 'mpcrbm_transport_search', $params, $search_date );
-                    $action_output = ob_get_clean();
+                    $action_output = MPCRBM_Function::neutralize_shortcodes_in_html( ob_get_clean() );
                    // }
 
 

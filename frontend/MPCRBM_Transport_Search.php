@@ -110,26 +110,31 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
         }
 
         public static function is_valid_page_slug( $slug ) {
-            if ( empty( $slug ) ) {
+            if ( empty( $slug ) || ! is_scalar( $slug ) ) {
+                return false;
+            }
+            $slug = sanitize_text_field( (string) $slug );
+            if ( '' === $slug || 'no' === strtolower( $slug ) ) {
                 return false;
             }
             $page = get_page_by_path( $slug );
-            return ( $page !== null );
+            return ( $page instanceof WP_Post && in_array( $page->post_status, array( 'publish', 'private' ), true ) );
         }
 
         public function mpcrbm_get_map_search_result_redirect() {
-            ob_start(); // Output buffering শুরু
-
-            // Security check - nonce verify
+            // Security check - verify nonce BEFORE any side effects or output buffering.
             if ( ! isset( $_POST['mpcrbm_transportation_type_nonce'] ) ) {
                 wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
             }
             $nonce = sanitize_text_field( wp_unslash( $_POST['mpcrbm_transportation_type_nonce'] ) );
-            $progress_bar = isset( $_POST['progress_bar'] ) ? sanitize_text_field( wp_unslash( $_POST['progress_bar'] ) ) : '';
-
             if ( ! wp_verify_nonce( $nonce, 'mpcrbm_transportation_type_nonce' ) ) {
                 wp_die( esc_html__( 'Security check failed', 'car-rental-manager' ) );
             }
+
+            $raw_progress_bar = isset( $_POST['progress_bar'] ) ? sanitize_text_field( wp_unslash( $_POST['progress_bar'] ) ) : '';
+            $progress_bar     = in_array( $raw_progress_bar, array( 'yes', 'no' ), true ) ? $raw_progress_bar : '';
+
+            ob_start(); // Output buffering শুরু
 
             if ( function_exists( 'WC' ) && WC()->cart ) {
                 WC()->cart->empty_cart();
@@ -143,31 +148,40 @@ if ( ! class_exists( 'MPCRBM_Transport_Search' ) ) {
             include( MPCRBM_Function::template_path( 'registration/choose_vehicles.php' ) );
 
             $content = ob_get_clean(); // Buffer content get & clean
+            $content = MPCRBM_Function::neutralize_shortcodes_in_html( $content );
+
+            // Store only whitelisted, sanitised search parameters in the session (never raw $_POST).
+            $sanitized_search_data = array(
+                'start_place'  => isset( $_POST['start_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['start_place'] ) ) : '',
+                'end_place'    => isset( $_POST['end_place'] ) ? MPCRBM_Function::sanitize_location( wp_unslash( $_POST['end_place'] ) ) : '',
+                'start_date'   => isset( $_POST['start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['start_date'] ) ) : '',
+                'start_time'   => isset( $_POST['start_time'] ) ? sanitize_text_field( wp_unslash( $_POST['start_time'] ) ) : '',
+                'return_date'  => isset( $_POST['return_date'] ) ? sanitize_text_field( wp_unslash( $_POST['return_date'] ) ) : '',
+                'return_time'  => isset( $_POST['return_time'] ) ? sanitize_text_field( wp_unslash( $_POST['return_time'] ) ) : '',
+                'price_based'  => isset( $_POST['price_based'] ) ? sanitize_text_field( wp_unslash( $_POST['price_based'] ) ) : '',
+                'two_way'      => isset( $_POST['two_way'] ) ? absint( wp_unslash( $_POST['two_way'] ) ) : 2,
+                'waiting_time' => isset( $_POST['waiting_time'] ) ? absint( wp_unslash( $_POST['waiting_time'] ) ) : 0,
+                'fixed_time'   => isset( $_POST['fixed_time'] ) ? sanitize_text_field( wp_unslash( $_POST['fixed_time'] ) ) : '',
+                'progress_bar' => $progress_bar,
+            );
+
             if ( session_status() === PHP_SESSION_NONE ) {
                 session_start();
             }
-//                session_start();
             $_SESSION['custom_content'] = $content;
-            $_SESSION['progress_bar'] = $progress_bar;
-            $_SESSION['search_date'] = $_POST;
+            $_SESSION['progress_bar']   = $progress_bar;
+            $_SESSION['search_date']    = $sanitized_search_data;
             session_write_close();
 
-
-            /*
-            set_transient('wtbm_custom_content_' . $uid, $content, 5 * MINUTE_IN_SECONDS);
-            set_transient('wtbm_progress_bar_' . $uid, $progress_bar, 5 * MINUTE_IN_SECONDS);
-            set_transient('wtbm_search_date_' . $uid, $_POST, 5 * MINUTE_IN_SECONDS);*/
-
-
-            // Plugin settings থেকে search result page slug আনো
-            $search_page_slug = isset( $_POST['mpcrbm_enable_view_search_result_page'] )
-                ? sanitize_text_field( wp_unslash( $_POST['mpcrbm_enable_view_search_result_page'] ) )
-                : '';
+            // Read the search result page slug from plugin settings on the server (never trust $_POST).
+            $search_page_slug = MPCRBM_Global_Function::get_settings( 'mpcrbm_general_settings', 'enable_view_search_result_page', 'transport-result' );
+            $search_page_slug = is_scalar( $search_page_slug ) ? sanitize_text_field( (string) $search_page_slug ) : '';
 
             if ( ! self::is_valid_page_slug( $search_page_slug ) ) {
                 $search_page_slug = 'transport-result';
             }
-            $redirect_url = home_url( '/' . $search_page_slug . '/' );
+            $search_page  = get_page_by_path( $search_page_slug );
+            $redirect_url = $search_page ? get_permalink( $search_page ) : home_url( '/' . $search_page_slug . '/' );
 
             echo wp_json_encode( $redirect_url );
             wp_die();
