@@ -22,8 +22,9 @@ $mpcrbm_action_output = ob_get_clean();
 $mpcrbm_content .= $mpcrbm_action_output;
 
 // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-$mpcrbm_content .= isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
-$mpcrbm_progress_bar = isset($_SESSION['progress_bar']) ? $_SESSION['progress_bar'] : '';
+$mpcrbm_raw_result = isset($_SESSION['custom_content']) ? $_SESSION['custom_content'] : '';
+$mpcrbm_content   .= MPCRBM_Function::neutralize_shortcodes_in_html( $mpcrbm_raw_result );
+$mpcrbm_progress_bar = isset($_SESSION['progress_bar']) ? sanitize_text_field( wp_unslash( $_SESSION['progress_bar'] ) ) : '';
 if( $mpcrbm_progress_bar === 'no' ){
     $mpcrbm_progressbar_class = 'dNone';
 }else{
@@ -38,7 +39,9 @@ if ( empty( $mpcrbm_content ) ) {
 
 // Remove content from session after use
 unset($_SESSION['custom_content']);
+unset($_SESSION['progress_bar']);
 unset($_SESSION['search_date']);
+session_write_close();
 
 
 /**

@@ -294,8 +294,8 @@ if( $is_redirect === 'yes' ){
     <?php }?>
 <?php }?>
     <input type="hidden" name="mpcrbm_post_id" value="" data-price="" />
-    <input type="hidden" name="mpcrbm_start_place" value="<?php echo esc_attr($mpcrbm_start_place); ?>" />
-    <input type="hidden" name="mpcrbm_end_place" value="<?php echo esc_attr($mpcrbm_end_place); ?>" />
+    <input type="hidden" name="mpcrbm_start_place" value="<?php echo MPCRBM_Function::esc_attr_no_shortcodes( $mpcrbm_start_place ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_attr_no_shortcodes(). ?>" />
+    <input type="hidden" name="mpcrbm_end_place" value="<?php echo MPCRBM_Function::esc_attr_no_shortcodes( $mpcrbm_end_place ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_attr_no_shortcodes(). ?>" />
     <input type="hidden" name="mpcrbm_date" value="<?php echo esc_attr($mpcrbm_date); ?>" />
     <input type="hidden" name="mpcrbm_taxi_return" value="<?php echo esc_attr($mpcrbm_two_way); ?>" />
 

@@ -33,16 +33,16 @@
 					<div class="dividerL"></div>
 					<h6 class="_mB_xs"><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></h6>
 					<?php if($mpcrbm_price_based == 'manual'){ ?>
-						<p class="_textLight_1 mpcrbm_manual_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place,'mpcrbm_locations' )); ?></p>
+						<p class="_textLight_1 mpcrbm_manual_start_place"><?php echo MPCRBM_Function::esc_html_no_shortcodes( MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place, 'mpcrbm_locations' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_html_no_shortcodes(). ?></p>
 					<?php }else{ ?>
-						<p class="_textLight_1 mpcrbm_map_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_place, 'mpcrbm_locations')); ?></p>
+						<p class="_textLight_1 mpcrbm_map_start_place"><?php echo MPCRBM_Function::esc_html_no_shortcodes( MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place, 'mpcrbm_locations' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_html_no_shortcodes(). ?></p>
 					<?php } ?>
 					<div class="dividerL"></div>
 					<h6 class="_mB_xs"><?php esc_html_e('Return Location', 'car-rental-manager'); ?></h6>
 					<?php if($mpcrbm_price_based == 'manual'){ ?>
-						<p class="_textLight_1 mpcrbm_map_end_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_end_place,'mpcrbm_locations' )); ?></p>
+						<p class="_textLight_1 mpcrbm_map_end_place"><?php echo MPCRBM_Function::esc_html_no_shortcodes( MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_end_place, 'mpcrbm_locations' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_html_no_shortcodes(). ?></p>
 					<?php }else{ ?>
-						<p class="_textLight_1 mpcrbm_map_end_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_end_place, 'mpcrbm_locations')); ?></p>
+						<p class="_textLight_1 mpcrbm_map_end_place"><?php echo MPCRBM_Function::esc_html_no_shortcodes( MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_end_place, 'mpcrbm_locations' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_html_no_shortcodes(). ?></p>
 					<?php } ?>
 					
 					<?php if($mpcrbm_two_way>1){

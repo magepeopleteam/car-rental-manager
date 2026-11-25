@@ -31,9 +31,9 @@ $mpcrbm_price_based = $mpcrbm_price_based ?? '';
                                 <div class="mpcrbm_summary_text">
                                     <span><?php esc_html_e('Pickup Location', 'car-rental-manager'); ?></span>
                                     <?php if($mpcrbm_price_based == 'manual'){ ?>
-                                        <p class="_textLight_1 mpcrbm_manual_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place,'mpcrbm_locations' )); ?></p>
+                                        <p class="_textLight_1 mpcrbm_manual_start_place"><?php echo MPCRBM_Function::esc_html_no_shortcodes( MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place, 'mpcrbm_locations' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_html_no_shortcodes(). ?></p>
                                     <?php }else{ ?>
-                                        <p class="_textLight_1 mpcrbm_map_start_place"><?php echo esc_html(MPCRBM_Function::get_taxonomy_name_by_slug($mpcrbm_start_place, 'mpcrbm_locations')); ?></p>
+                                        <p class="_textLight_1 mpcrbm_map_start_place"><?php echo MPCRBM_Function::esc_html_no_shortcodes( MPCRBM_Function::get_taxonomy_name_by_slug( $mpcrbm_start_place, 'mpcrbm_locations' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Escaped in esc_html_no_shortcodes(). ?></p>
                                     <?php } ?>
                                 </div>
                             </div>
